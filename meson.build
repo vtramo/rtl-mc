@@ -1,4 +1,4 @@
-project('my-meson-project', 'cpp',
+project('rtl-mc', 'cpp',
   version : '0.1',
   meson_version : '>= 0.61.0',
   default_options : [
