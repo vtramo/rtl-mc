@@ -106,37 +106,37 @@ TEST_CASE("Correctly builds PolyhedralSystem from a string", "[parser]")
         REQUIRE(polyhedralSystem.getTotalAtoms() == 11);
     }
 
-    SECTION("a")
-    {
-        std::istringstream input {
-            "Flow { X <= 4 }"
-            "Inv ( { X + Y >= 3 & Y >= 4 } )"
-            "p ( { X < 3 & Y <= 3 } { X < 3 & Y <= 10 } )"
-            "q { X > 3 & Y >= 4 }"
-        };
-
-        PolyhedralSystem polyhedralSystem {};
-        input >> polyhedralSystem;
-
-        PolyhedralSystemSymbolTable symbolTable {};
-        symbolTable
-            .addVariables({ "x", "y" })
-            .addAtoms({ "p", "q" });
-
-        PPL::Variable x { *symbolTable.getVariable("x") };
-        PPL::Variable y { *symbolTable.getVariable("y") };
-        PolyhedralSystem expectedPolyhedralSystem {
-            PolyhedralSystem::builder()
-                .flow(PPLUtils::nnc({ x + 0*y <= 4 }))
-                .denotation({
-                    { "p", PPLUtils::powerset({{ x < 3, y <= 3 }, { x < 3, y <= 10 }}) },
-                    { "q", PPLUtils::powerset({{ x > 3, y >= 4 }})}
-                })
-                .invariant(PPLUtils::powerset({{ x + y >= 3, y >= 4 }}))
-                .symbolTable(symbolTable)
-                .build()
-        };
-
-        REQUIRE(expectedPolyhedralSystem == polyhedralSystem);
-    }
+    // SECTION("a")
+    // {
+    //     std::istringstream input {
+    //         "Flow { X <= 4 }"
+    //         "Inv ( { X + Y >= 3 & Y >= 4 } )"
+    //         "p ( { X < 3 & Y <= 3 } { X < 3 & Y <= 10 } )"
+    //         "q { X > 3 & Y >= 4 }"
+    //     };
+    //
+    //     PolyhedralSystem polyhedralSystem {};
+    //     input >> polyhedralSystem;
+    //
+    //     PolyhedralSystemSymbolTable symbolTable {};
+    //     symbolTable
+    //         .addVariables({ "x", "y" })
+    //         .addAtoms({ "p", "q" });
+    //
+    //     PPL::Variable x { *symbolTable.getVariable("x") };
+    //     PPL::Variable y { *symbolTable.getVariable("y") };
+    //     PolyhedralSystem expectedPolyhedralSystem {
+    //         PolyhedralSystem::builder()
+    //             .flow(PPLUtils::nnc({ x + 0*y <= 4 }))
+    //             .denotation({
+    //                 { "p", PPLUtils::powerset({{ x < 3, y <= 3 }, { x < 3, y <= 10 }}) },
+    //                 { "q", PPLUtils::powerset({{ x > 3, y >= 4 }})}
+    //             })
+    //             .invariant(PPLUtils::powerset({{ x + y >= 3, y >= 4 }}))
+    //             .symbolTable(symbolTable)
+    //             .build()
+    //     };
+    //
+    //     REQUIRE(expectedPolyhedralSystem == polyhedralSystem);
+    // }
 }

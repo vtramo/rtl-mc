@@ -1,14 +1,7 @@
 grammar PolyhedralSystem;
 import LinearExpression;
 
-system: flow  inv   atom+
-      | inv   flow  atom+
-      | atom+ inv   flow
-      | atom+ flow  inv
-      | inv   atom+ flow
-      | flow  atom+ inv
-
-      | atom+ flow  atom* inv atom*
+system: atom+ flow  atom* inv atom*
       | atom* flow  atom+ inv atom*
       | atom* flow  atom* inv atom+
 
