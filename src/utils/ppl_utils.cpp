@@ -19,7 +19,7 @@ namespace PPLUtils
     return polyhedron;
   }
 
-  Poly nnc(const std::initializer_list<PPL::Constraint>& constraints)
+  Poly poly(const std::initializer_list<PPL::Constraint>& constraints)
   {
     PPL::Constraint_System constraintSystem {};
     for (const PPL::Constraint& constraint : constraints)
@@ -31,20 +31,20 @@ namespace PPLUtils
 
   Powerset powerset(const std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra)
   {
-    std::vector<Poly> nncPolyhedra { };
+    std::list<Poly> nncPolyhedra {  };
     PPL::dimension_type spaceDimension { };
 
     for (const std::initializer_list<PPL::Constraint>& polyhedron: polyhedra)
     {
-      Poly nncPolyhedron { nnc(polyhedron) };
+      Poly nncPolyhedron { poly(polyhedron) };
       nncPolyhedra.push_back(nncPolyhedron);
       spaceDimension = std::max(spaceDimension, nncPolyhedron.space_dimension());
     }
 
     Powerset powerset { spaceDimension, PPL::EMPTY };
-    for (auto it = nncPolyhedra.rbegin(); it != nncPolyhedra.rend(); ++it)
+    for (const Poly& polyhedron: nncPolyhedra)
     {
-      powerset.add_disjunct(*it);
+      powerset.add_disjunct(polyhedron);
     }
 
     return powerset;
