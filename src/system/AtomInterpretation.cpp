@@ -42,8 +42,6 @@ const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& AtomInterpretation::notInterp
 
 bool AtomInterpretation::operator==(const AtomInterpretation& other) const
 {
-    this->interpretation().print();
-    other.interpretation().print();
     return m_interpretation == other.m_interpretation;
 }
 
