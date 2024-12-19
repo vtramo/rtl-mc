@@ -22,7 +22,7 @@ namespace
 AtomInterpretation::AtomInterpretation(const Powerset& interpretation)
     : AtomInterpretation(
         interpretation,
-        Powerset { interpretation.space_dimension() }
+        Powerset { interpretation.space_dimension(), PPL::UNIVERSE }
     ) {}
 
 AtomInterpretation::AtomInterpretation(

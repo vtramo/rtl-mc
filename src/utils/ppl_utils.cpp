@@ -41,8 +41,7 @@ namespace PPLUtils
       spaceDimension = std::max(spaceDimension, nncPolyhedron.space_dimension());
     }
 
-    Powerset powerset { spaceDimension };
-
+    Powerset powerset { spaceDimension, PPL::EMPTY };
     for (auto it = nncPolyhedra.rbegin(); it != nncPolyhedra.rend(); ++it)
     {
       powerset.add_disjunct(*it);

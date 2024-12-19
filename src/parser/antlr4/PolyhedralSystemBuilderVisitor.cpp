@@ -94,7 +94,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowerset(PolyhedralSystemParser::PowersetContext* ctx)
 {
-    Powerset powerset { m_symbolTable.getSpaceDimension() };
+    Powerset powerset { m_symbolTable.getSpaceDimension(), PPL::EMPTY };
 
     const std::vector polyContexts { ctx->poly() };
     for (PolyhedralSystemParser::PolyContext* polyContext: polyContexts)
@@ -131,7 +131,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitConstr(Po
     const auto leftLinearExpr { std::any_cast<PPL::Linear_Expression>(leftAny) };
     const auto rightLinearExpr { std::any_cast<PPL::Linear_Expression>(rightAny) };
 
-    Parma_Polyhedra_Library::dimension_type spaceDimensions { m_symbolTable.getSpaceDimension() };
+    const Parma_Polyhedra_Library::dimension_type spaceDimensions { m_symbolTable.getSpaceDimension() };
     switch (ctx->op->getType())
     {
     case PolyhedralSystemParser::LE: return PPL::Constraint { leftLinearExpr <= rightLinearExpr, spaceDimensions };

@@ -109,10 +109,9 @@ PolyhedralSystem PolyhedralSystemBuilder::build() const
 PolyhedralSystem PolyhedralSystemBuilder::buildPolyhedralSystem() const
 {
     std::map<std::string, AtomInterpretation> interpretations {};
-    for (auto& [atomId, powerSet]: *m_denotation)
+    for (auto& [atomId, powerset]: *m_denotation)
     {
-        const Powerset interpretationPowerset { powerSet };
-        const AtomInterpretation atomInterpretation { interpretationPowerset, *m_invariant };
+        const AtomInterpretation atomInterpretation { powerset, *m_invariant };
         interpretations.insert({ atomId, atomInterpretation });
     }
 
