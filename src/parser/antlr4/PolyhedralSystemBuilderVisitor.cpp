@@ -32,7 +32,7 @@ PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::PolyhedralSystemVisitor
 
 PolyhedralSystem PolyhedralSystemBuilderVisitor::buildPolyhedralSystem(PolyhedralSystemParser::SystemContext* parseTree)
 {
-    m_visitor.visit(parseTree);
+    m_visitor.visitSystem(parseTree);
     return PolyhedralSystem::builder()
         .flow(m_visitor.getFlow())
         .invariant(m_visitor.getInvariant())
@@ -55,7 +55,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitSystem(Po
         visit(atomContext);
     }
 
-    return PolyhedralSystemBaseVisitor::visitSystem(ctx);
+    return 0; // This value does not matter.
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInv(PolyhedralSystemParser::InvContext* ctx)
@@ -131,14 +131,13 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitConstr(Po
     const auto leftLinearExpr { std::any_cast<PPL::Linear_Expression>(leftAny) };
     const auto rightLinearExpr { std::any_cast<PPL::Linear_Expression>(rightAny) };
 
-    const Parma_Polyhedra_Library::dimension_type spaceDimensions { m_symbolTable.getSpaceDimension() };
     switch (ctx->op->getType())
     {
-    case PolyhedralSystemParser::LE: return PPL::Constraint { leftLinearExpr <= rightLinearExpr, spaceDimensions };
-    case PolyhedralSystemParser::LT: return PPL::Constraint { leftLinearExpr <  rightLinearExpr, spaceDimensions };
-    case PolyhedralSystemParser::EQ: return PPL::Constraint { leftLinearExpr == rightLinearExpr, spaceDimensions };
-    case PolyhedralSystemParser::GE: return PPL::Constraint { leftLinearExpr >= rightLinearExpr, spaceDimensions };
-    case PolyhedralSystemParser::GT: return PPL::Constraint { leftLinearExpr >  rightLinearExpr, spaceDimensions };
+    case PolyhedralSystemParser::LE: return PPL::Constraint { leftLinearExpr <= rightLinearExpr };
+    case PolyhedralSystemParser::LT: return PPL::Constraint { leftLinearExpr <  rightLinearExpr };
+    case PolyhedralSystemParser::EQ: return PPL::Constraint { leftLinearExpr == rightLinearExpr };
+    case PolyhedralSystemParser::GE: return PPL::Constraint { leftLinearExpr >= rightLinearExpr };
+    case PolyhedralSystemParser::GT: return PPL::Constraint { leftLinearExpr >  rightLinearExpr };
     default: throw std::runtime_error("PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitConstr::visitConstr: Unknown constraint");
     }
 }
@@ -161,8 +160,8 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitSignTerm(
 {
     const std::any term { visit(ctx->term()) };
     const auto linearExpr { std::any_cast<PPL::Linear_Expression>(term) };
-    const bool isMinusSing { ctx->op->getType() == PolyhedralSystemParser::MINUS };
-    return isMinusSing ? -linearExpr : linearExpr;
+    const bool isMinusSign { ctx->op->getType() == PolyhedralSystemParser::MINUS };
+    return isMinusSign ? -linearExpr : linearExpr;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* context)
