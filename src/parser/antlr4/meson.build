@@ -1,6 +1,14 @@
 current_source_dir = meson.current_source_dir()
 generated_dir = current_source_dir / 'generated'
 
+if get_option('generate_parser')
+    message('Generating ANTLR4 PolyhedralSystem parser... ')
+    is_windows = host_machine.system() == 'windows'
+    generate_script = is_windows ? 'generate-parser.bat' : 'generate-parser.sh'
+    run_command(generate_script, check: true)
+    message('Parser generation complete! (Location: ' + generated_dir + '/)')
+endif
+
 antlr4_source_files = [
     generated_dir / 'PolyhedralSystemBaseListener.cpp',
     generated_dir / 'PolyhedralSystemBaseListener.h',
