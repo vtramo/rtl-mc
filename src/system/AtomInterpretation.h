@@ -6,24 +6,23 @@
 #define ATOMINTERPRETATION_H
 
 #include "ppl.hh"
-
-namespace PPL = Parma_Polyhedra_Library;
+#include "ppl_aliases.h"
 
 class AtomInterpretation {
 public:
-    explicit AtomInterpretation(const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& interpretation);
+    explicit AtomInterpretation(const Powerset& interpretation);
     explicit AtomInterpretation(
-        PPL::Pointset_Powerset<PPL::NNC_Polyhedron> interpretation,
-        const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant
+        Powerset interpretation,
+        const Powerset& invariant
     );
 
-    const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& interpretation() const;
-    const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& notInterpretation() const;
+    const Powerset& interpretation() const;
+    const Powerset& notInterpretation() const;
 
     bool operator==(const AtomInterpretation& other) const;
 private:
-    const PPL::Pointset_Powerset<PPL::NNC_Polyhedron> m_interpretation {};
-    const PPL::Pointset_Powerset<PPL::NNC_Polyhedron> m_notInterpretation {};
+    const Powerset m_interpretation {};
+    const Powerset m_notInterpretation {};
 };
 
 

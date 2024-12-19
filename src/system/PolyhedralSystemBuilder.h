@@ -8,24 +8,23 @@
 
 #include "PolyhedralSystemSymbolTable.h"
 #include "ppl.hh"
+#include "ppl_aliases.h"
 
 class PolyhedralSystem;
 
-namespace PPL = Parma_Polyhedra_Library;
-
 class PolyhedralSystemBuilder {
 public:
-    PolyhedralSystemBuilder& flow(const PPL::NNC_Polyhedron& flow);
-    PolyhedralSystemBuilder& invariant(const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant);
-    PolyhedralSystemBuilder& denotation(const std::map<std::string, PPL::Pointset_Powerset<PPL::NNC_Polyhedron>>& denotation);
+    PolyhedralSystemBuilder& flow(const Poly& flow);
+    PolyhedralSystemBuilder& invariant(const Powerset& invariant);
+    PolyhedralSystemBuilder& denotation(const std::map<std::string, Powerset>& denotation);
     PolyhedralSystemBuilder& symbolTable(const PolyhedralSystemSymbolTable& polyhedralSystemSymbolTable);
     [[nodiscard]] PolyhedralSystem build() const;
 
 private:
     PolyhedralSystemSymbolTable* m_symbolTable { nullptr };
-    std::map<std::string, PPL::Pointset_Powerset<PPL::NNC_Polyhedron>>* m_denotation { nullptr };
-    PPL::Pointset_Powerset<PPL::NNC_Polyhedron>* m_invariant { nullptr };
-    PPL::NNC_Polyhedron* m_flow { nullptr };
+    std::map<std::string, Powerset>* m_denotation { nullptr };
+    Powerset* m_invariant { nullptr };
+    Poly* m_flow { nullptr };
 
     void checkInvariant() const;
     void checkSymbolTable() const;

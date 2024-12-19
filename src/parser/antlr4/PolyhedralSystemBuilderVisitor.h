@@ -12,8 +12,6 @@
 #include "PolyhedralSystemBaseVisitor.h"
 #include "ppl.hh"
 
-namespace PPL = Parma_Polyhedra_Library;
-
 class PolyhedralSystemBuilderVisitor final
 {
 private:
@@ -38,16 +36,16 @@ private:
         std::any visitVar(PolyhedralSystemParser::VarContext* context) override;
         std::any visitInt(PolyhedralSystemParser::IntContext* context) override;
 
-        [[nodiscard]] std::map<std::string, PPL::Pointset_Powerset<PPL::NNC_Polyhedron>> getDenotation() const;
-        [[nodiscard]] PPL::Pointset_Powerset<PPL::NNC_Polyhedron> getInvariant() const;
-        [[nodiscard]] PPL::NNC_Polyhedron getFlow() const;
+        [[nodiscard]] std::map<std::string, Powerset> getDenotation() const;
+        [[nodiscard]] Powerset getInvariant() const;
+        [[nodiscard]] Poly getFlow() const;
         [[nodiscard]] PolyhedralSystemSymbolTable getSymbolTable() const;
 
     private:
         PolyhedralSystemSymbolTable m_symbolTable {};
-        std::map<std::string, PPL::Pointset_Powerset<PPL::NNC_Polyhedron>> m_denotation {};
-        PPL::Pointset_Powerset<PPL::NNC_Polyhedron> m_invariant {};
-        PPL::NNC_Polyhedron m_flow {};
+        std::map<std::string, Powerset> m_denotation {};
+        Powerset m_invariant {};
+        Poly m_flow {};
     };
 
     PolyhedralSystemVisitor m_visitor;
@@ -55,8 +53,6 @@ private:
 public:
     explicit PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable symbolTable);
     PolyhedralSystem buildPolyhedralSystem(PolyhedralSystemParser::SystemContext* parseTree);
-
-private:
 };
 
 

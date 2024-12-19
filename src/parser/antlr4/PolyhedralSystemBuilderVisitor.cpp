@@ -44,10 +44,10 @@ PolyhedralSystem PolyhedralSystemBuilderVisitor::buildPolyhedralSystem(Polyhedra
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitSystem(PolyhedralSystemParser::SystemContext* ctx)
 {
     const std::any flowAny { visit(ctx->flow()) };
-    m_flow = std::any_cast<PPL::NNC_Polyhedron>(flowAny);
+    m_flow = std::any_cast<Poly>(flowAny);
 
     const std::any invAny { visit(ctx->inv()) };
-    m_invariant = std::any_cast<PPL::Pointset_Powerset<PPL::NNC_Polyhedron>>(invAny);
+    m_invariant = std::any_cast<Powerset>(invAny);
 
     const std::vector atomContexts { ctx->atom() };
     for (PolyhedralSystemParser::AtomContext* atomContext: atomContexts)
@@ -61,19 +61,19 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitSystem(Po
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInv(PolyhedralSystemParser::InvContext* ctx)
 {
     const std::any any { visit(ctx->powerset()) };
-    return { std::any_cast<PPL::Pointset_Powerset<PPL::NNC_Polyhedron>>(any) };
+    return { std::any_cast<Powerset>(any) };
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitFlow(PolyhedralSystemParser::FlowContext* ctx)
 {
     const std::any any { visit(ctx->poly()) };
-    return { std::any_cast<PPL::NNC_Polyhedron>(any) };
+    return { std::any_cast<Poly>(any) };
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPowerset(PolyhedralSystemParser::AtomPowersetContext* ctx)
 {
     const std::any any { visit(ctx->powerset()) };
-    const PPL::Pointset_Powerset powerset { std::any_cast<PPL::Pointset_Powerset<PPL::NNC_Polyhedron>>(any) };
+    const Powerset powerset { std::any_cast<Powerset>(any) };
     const std::string atomId { ctx->ID()->getText() };
     return m_denotation[atomId] = powerset;
 }
@@ -81,26 +81,26 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPower
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPoly(PolyhedralSystemParser::AtomPolyContext* ctx)
 {
     const std::any any { visit(ctx->poly()) };
-    const PPL::NNC_Polyhedron polyhedron { std::any_cast<PPL::NNC_Polyhedron>(any) };
+    const Poly polyhedron { std::any_cast<Poly>(any) };
     const std::string atomId { ctx->ID()->getText() };
-    return m_denotation[atomId] = PPL::Pointset_Powerset<PPL::NNC_Polyhedron> { polyhedron };
+    return m_denotation[atomId] = Powerset { polyhedron };
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx)
 {
     const std::string atomId { ctx->ID()->getText() };
-    return m_denotation[atomId] = PPL::Pointset_Powerset<PPL::NNC_Polyhedron> { m_symbolTable.getSpaceDimension(), PPL::EMPTY };
+    return m_denotation[atomId] = Powerset { m_symbolTable.getSpaceDimension(), PPL::EMPTY };
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowerset(PolyhedralSystemParser::PowersetContext* ctx)
 {
-    PPL::Pointset_Powerset<PPL::NNC_Polyhedron> powerset { m_symbolTable.getSpaceDimension() };
+    Powerset powerset { m_symbolTable.getSpaceDimension() };
 
     const std::vector polyContexts { ctx->poly() };
     for (PolyhedralSystemParser::PolyContext* polyContext: polyContexts)
     {
         const std::any any { visit(polyContext) };
-        const PPL::NNC_Polyhedron polyhedron { std::any_cast<PPL::NNC_Polyhedron>(any) };
+        const Poly polyhedron { std::any_cast<Poly>(any) };
         powerset.add_disjunct(polyhedron);
     }
 
@@ -120,7 +120,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPoly(Poly
         constraintSystem.insert(constraint);
     }
 
-    return PPL::NNC_Polyhedron { constraintSystem };
+    return Poly { constraintSystem };
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitConstr(PolyhedralSystemParser::ConstrContext* ctx)
@@ -188,18 +188,18 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInt(Polyh
     return PPL::Linear_Expression { coefficient };
 }
 
-PPL::NNC_Polyhedron PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getFlow() const
+Poly PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getFlow() const
 {
     return m_flow;
 }
 
-std::map<std::string, PPL::Pointset_Powerset<PPL::NNC_Polyhedron>> PolyhedralSystemBuilderVisitor::
+std::map<std::string, Powerset> PolyhedralSystemBuilderVisitor::
 PolyhedralSystemVisitor::getDenotation() const
 {
     return m_denotation;
 }
 
-PPL::Pointset_Powerset<PPL::NNC_Polyhedron>
+Powerset
 PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getInvariant() const
 {
     return m_invariant;

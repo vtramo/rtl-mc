@@ -24,15 +24,15 @@ namespace
 }
 
 
-PolyhedralSystemBuilder& PolyhedralSystemBuilder::flow(const PPL::NNC_Polyhedron& flow)
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::flow(const Poly& flow)
 {
-    m_flow = new PPL::NNC_Polyhedron { flow };
+    m_flow = new Poly { flow };
     return *this;
 }
 
-PolyhedralSystemBuilder& PolyhedralSystemBuilder::invariant(const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant)
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::invariant(const Powerset& invariant)
 {
-    m_invariant = new PPL::Pointset_Powerset { invariant };
+    m_invariant = new Powerset { invariant };
     return *this;
 }
 
@@ -43,7 +43,7 @@ PolyhedralSystemBuilder& PolyhedralSystemBuilder::symbolTable(const PolyhedralSy
 }
 
 PolyhedralSystemBuilder&
-PolyhedralSystemBuilder::denotation(const std::map<std::string, PPL::Pointset_Powerset<PPL::NNC_Polyhedron>>& denotation)
+PolyhedralSystemBuilder::denotation(const std::map<std::string, Powerset>& denotation)
 {
     m_denotation = new std::map { denotation };
     return *this;
@@ -111,7 +111,7 @@ PolyhedralSystem PolyhedralSystemBuilder::buildPolyhedralSystem() const
     std::map<std::string, AtomInterpretation> interpretations {};
     for (auto& [atomId, powerSet]: *m_denotation)
     {
-        const PPL::Pointset_Powerset interpretationPowerset { powerSet };
+        const Powerset interpretationPowerset { powerSet };
         const AtomInterpretation atomInterpretation { interpretationPowerset, *m_invariant };
         interpretations.insert({ atomId, atomInterpretation });
     }

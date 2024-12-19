@@ -6,7 +6,7 @@
 
 namespace PPLUtils
 {
-  PPL::NNC_Polyhedron& reflectionAffineImage(PPL::NNC_Polyhedron& polyhedron)
+  Poly& reflectionAffineImage(Poly& polyhedron)
   {
     const PPL::dimension_type spaceDimension { polyhedron.space_dimension() };
 
@@ -19,33 +19,33 @@ namespace PPLUtils
     return polyhedron;
   }
 
-  PPL::NNC_Polyhedron nnc(const std::initializer_list<PPL::Constraint>& constraints)
+  Poly nnc(const std::initializer_list<PPL::Constraint>& constraints)
   {
     PPL::Constraint_System constraintSystem {};
     for (const PPL::Constraint& constraint : constraints)
     {
       constraintSystem.insert(constraint);
     }
-    return PPL::NNC_Polyhedron { constraintSystem };
+    return Poly { constraintSystem };
   }
 
-  PPL::Pointset_Powerset<PPL::NNC_Polyhedron> powerset(const std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra)
+  Powerset powerset(const std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra)
   {
-    std::vector<PPL::NNC_Polyhedron> nncPolyhedra { };
+    std::vector<Poly> nncPolyhedra { };
     PPL::dimension_type spaceDimension { };
 
     for (const std::initializer_list<PPL::Constraint>& polyhedron: polyhedra)
     {
-      PPL::NNC_Polyhedron nncPolyhedron { nnc(polyhedron) };
+      Poly nncPolyhedron { nnc(polyhedron) };
       nncPolyhedra.push_back(nncPolyhedron);
       spaceDimension = std::max(spaceDimension, nncPolyhedron.space_dimension());
     }
 
-    PPL::Pointset_Powerset<PPL::NNC_Polyhedron> powerset { spaceDimension };
+    Powerset powerset { spaceDimension };
 
     for (auto it = nncPolyhedra.rbegin(); it != nncPolyhedra.rend(); ++it)
     {
-      powerset.add_disjunct(*it);  // Aggiungi l'elemento a powerset
+      powerset.add_disjunct(*it);
     }
 
     return powerset;

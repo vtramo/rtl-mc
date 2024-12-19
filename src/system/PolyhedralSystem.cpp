@@ -38,12 +38,12 @@ PolyhedralSystem buildPolyhedralSystem(antlr4::ANTLRInputStream* input)
     return polyhedralSystemBuilderVisitor.buildPolyhedralSystem(parseTree);
 }
 
-const PPL::NNC_Polyhedron& PolyhedralSystem::getFlow() const
+const Poly& PolyhedralSystem::getFlow() const
 {
     return m_flow;
 }
 
-const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& PolyhedralSystem::getInvariant() const
+const Powerset& PolyhedralSystem::getInvariant() const
 {
     return m_invariant;
 }
@@ -79,17 +79,17 @@ PolyhedralSystemBuilder PolyhedralSystem::builder()
 
 bool PolyhedralSystem::operator==(const PolyhedralSystem& other) const
 {
-    bool flowEqual = m_flow == other.m_flow;
-    bool invariantEqual = m_invariant == other.m_invariant;
-    bool denotationEqual = m_denotation == other.m_denotation;
-    bool symbolTableEqual = m_symbolTable == other.m_symbolTable;
+    const bool flowEqual = m_flow == other.m_flow;
+    const bool invariantEqual = m_invariant == other.m_invariant;
+    const bool denotationEqual = m_denotation == other.m_denotation;
+    const bool symbolTableEqual = m_symbolTable == other.m_symbolTable;
 
     return flowEqual && invariantEqual && denotationEqual && symbolTableEqual;
 }
 
 PolyhedralSystem::PolyhedralSystem(
-    const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant,
-    const PPL::NNC_Polyhedron& flow,
+    const Powerset& invariant,
+    const Poly& flow,
     const std::map<std::string, AtomInterpretation>& denotation,
     PolyhedralSystemSymbolTable& symbolTable
 ) : m_invariant { invariant }
@@ -101,7 +101,7 @@ PolyhedralSystem::PolyhedralSystem() = default;
 
 void PolyhedralSystem::computeReflectedFlow()
 {
-    PPL::NNC_Polyhedron preFlow { m_flow };
+    Poly preFlow { m_flow };
     m_reflectedFlow = PPLUtils::reflectionAffineImage(preFlow);
 }
 

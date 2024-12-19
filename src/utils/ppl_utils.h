@@ -6,15 +6,14 @@
 #define PPL_UTILS_H
 
 #include <ppl.hh>
-
-namespace PPL = Parma_Polyhedra_Library;
+#include "ppl_aliases.h"
 
 namespace PPLUtils {
-    PPL::NNC_Polyhedron& reflectionAffineImage(PPL::NNC_Polyhedron& polyhedron);
+    Poly& reflectionAffineImage(Poly& polyhedron);
 
-    PPL::NNC_Polyhedron nnc(const std::initializer_list<PPL::Constraint>& constraints);
+    Poly nnc(const std::initializer_list<PPL::Constraint>& constraints);
 
-    PPL::Pointset_Powerset<PPL::NNC_Polyhedron> powerset(const std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra);
+    Powerset powerset(const std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra);
 }
 
 #endif //PPL_UTILS_H

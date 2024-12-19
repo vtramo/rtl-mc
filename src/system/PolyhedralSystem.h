@@ -13,8 +13,6 @@
 #include "PolyhedralSystemSymbolTable.h"
 #include "AtomInterpretation.h"
 
-namespace PPL = Parma_Polyhedra_Library;
-
 PolyhedralSystem buildPolyhedralSystem(std::string_view);
 PolyhedralSystem buildPolyhedralSystem(std::istream&);
 PolyhedralSystem buildPolyhedralSystem(antlr4::ANTLRInputStream*);
@@ -24,8 +22,8 @@ class PolyhedralSystem {
 public:
     PolyhedralSystem();
 
-    [[nodiscard]] const PPL::NNC_Polyhedron& getFlow() const;
-    [[nodiscard]] const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& getInvariant() const;
+    [[nodiscard]] const Poly& getFlow() const;
+    [[nodiscard]] const Powerset& getInvariant() const;
     [[nodiscard]] const PolyhedralSystemSymbolTable& getSymbolTable() const;
     [[nodiscard]] std::optional<const AtomInterpretation*> getInterpretation(std::string_view atomId) const;
     [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
@@ -37,15 +35,15 @@ public:
     friend std::istream& operator>>(std::istream&, PolyhedralSystem&);
 
 private:
-    PPL::Pointset_Powerset<PPL::NNC_Polyhedron> m_invariant {};
-    PPL::NNC_Polyhedron m_flow {};
-    PPL::NNC_Polyhedron m_reflectedFlow {};
+    Powerset m_invariant {};
+    Poly m_flow {};
+    Poly m_reflectedFlow {};
     std::map<std::string, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
 
     PolyhedralSystem(
-        const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant,
-        const PPL::NNC_Polyhedron& flow,
+        const Powerset& invariant,
+        const Poly& flow,
         const std::map<std::string, AtomInterpretation>& denotation,
         PolyhedralSystemSymbolTable& symbolTable
     );
