@@ -17,13 +17,13 @@ system: flow  inv   atom+
       | atom* inv  atom* flow atom+
       ;
 
-inv: INV powerset NEWLINE?
+inv: INV powerset
    ;
 
-flow: FLOW poly NEWLINE?
+flow: FLOW poly
     ;
 
-atom: ID powerset NEWLINE?      # atomPowerset
+atom: ID powerset               # atomPowerset
     | ID '{'WS*'}'              # atomEmpty
     | ID poly                   # atomPoly
     ;
@@ -31,7 +31,7 @@ atom: ID powerset NEWLINE?      # atomPowerset
 powerset: '(' poly* ')'
         ;
 
-poly: '{' constr ('&' NEWLINE? constr)* '}'
+poly: '{' constr ('&' constr)* '}'
     ;
 
 constr: linearExpr op=(LE|LT|GT|GE|EQ) linearExpr
