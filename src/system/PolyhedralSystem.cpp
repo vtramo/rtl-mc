@@ -102,7 +102,7 @@ PolyhedralSystem::PolyhedralSystem() = default;
 void PolyhedralSystem::computeReflectedFlow()
 {
     Poly preFlow { m_flow };
-    m_reflectedFlow = PPLUtils::reflectionAffineImage(preFlow);
+    m_preFlow = PPLUtils::reflectionAffineImage(preFlow);
 }
 
 std::istream& operator>>(std::istream& istream, PolyhedralSystem& polyhedralSystem)
@@ -112,6 +112,6 @@ std::istream& operator>>(std::istream& istream, PolyhedralSystem& polyhedralSyst
     polyhedralSystem.m_symbolTable = buildedPolyhedralSystem.m_symbolTable;
     polyhedralSystem.m_flow = buildedPolyhedralSystem.m_flow;
     polyhedralSystem.m_invariant = buildedPolyhedralSystem.m_invariant;
-    polyhedralSystem.m_reflectedFlow = buildedPolyhedralSystem.m_reflectedFlow;
+    polyhedralSystem.m_preFlow = buildedPolyhedralSystem.m_preFlow;
     return istream;
 }

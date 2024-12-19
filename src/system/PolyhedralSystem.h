@@ -37,7 +37,7 @@ public:
 private:
     Powerset m_invariant {};
     Poly m_flow {};
-    Poly m_reflectedFlow {};
+    Poly m_preFlow {};
     std::map<std::string, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
 
