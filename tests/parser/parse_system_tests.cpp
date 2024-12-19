@@ -106,37 +106,41 @@ TEST_CASE("Correctly builds PolyhedralSystem from a string", "[parser]")
         REQUIRE(polyhedralSystem.getTotalAtoms() == 11);
     }
 
-    // SECTION("a")
-    // {
-    //     std::istringstream input {
-    //         "Flow { X <= 4 }"
-    //         "Inv ( { X + Y >= 3 & Y >= 4 } )"
-    //         "p ( { X < 3 & Y <= 3 } { X < 3 & Y <= 10 } )"
-    //         "q { X > 3 & Y >= 4 }"
-    //     };
-    //
-    //     PolyhedralSystem polyhedralSystem {};
-    //     input >> polyhedralSystem;
-    //
-    //     PolyhedralSystemSymbolTable symbolTable {};
-    //     symbolTable
-    //         .addVariables({ "x", "y" })
-    //         .addAtoms({ "p", "q" });
-    //
-    //     PPL::Variable x { *symbolTable.getVariable("x") };
-    //     PPL::Variable y { *symbolTable.getVariable("y") };
-    //     PolyhedralSystem expectedPolyhedralSystem {
-    //         PolyhedralSystem::builder()
-    //             .flow(PPLUtils::nnc({ x + 0*y <= 4 }))
-    //             .denotation({
-    //                 { "p", PPLUtils::powerset({{ x < 3, y <= 3 }, { x < 3, y <= 10 }}) },
-    //                 { "q", PPLUtils::powerset({{ x > 3, y >= 4 }})}
-    //             })
-    //             .invariant(PPLUtils::powerset({{ x + y >= 3, y >= 4 }}))
-    //             .symbolTable(symbolTable)
-    //             .build()
-    //     };
-    //
-    //     REQUIRE(expectedPolyhedralSystem == polyhedralSystem);
-    // }
+    SECTION("Parse a PolyhedralSystem spec then compare with the expected PolyhedralSystem")
+    {
+        std::istringstream input {
+            "Flow { X <= 4 }"
+            "Inv ( { 1*X + Y >= 3 & Y >= 4 } )"
+            "p ( { X < 3 & 1Y <= 3 } { X < 3 & 1*Y <= 10 } )"
+            "q { 1X > 3 & Y >= 4 }"
+        };
+
+
+        PolyhedralSystemSymbolTable symbolTable {};
+        symbolTable
+            .addVariables({ "x", "y" })
+            .addAtoms({ "p", "q" });
+
+        PPL::Variable x { *symbolTable.getVariable("x") };
+        PPL::Variable y { *symbolTable.getVariable("y") };
+        PolyhedralSystem expectedPolyhedralSystem {
+            PolyhedralSystem::builder()
+                .flow(PPLUtils::poly({ x + 0*y <= 4 }))
+                .denotation({
+                    { "p", PPLUtils::powerset({{ x < 3, y <= 3 }, { x < 3, y <= 10 }}) },
+                    { "q", PPLUtils::powerset({{ x > 3, y >= 4 }})}
+                })
+                .invariant(PPLUtils::powerset({{ x + y >= 3, y >= 4 }}))
+                .symbolTable(symbolTable)
+                .build()
+        };
+
+
+        PolyhedralSystem polyhedralSystem {};
+        input >> polyhedralSystem;
+
+        REQUIRE(expectedPolyhedralSystem.getTotalAtoms() == polyhedralSystem.getTotalAtoms());
+        REQUIRE(expectedPolyhedralSystem.getSpaceDimension() == polyhedralSystem.getSpaceDimension());
+        REQUIRE(expectedPolyhedralSystem == polyhedralSystem);
+    }
 }
