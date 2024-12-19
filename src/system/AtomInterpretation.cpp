@@ -12,7 +12,7 @@ namespace
     );
 
     PPL::Pointset_Powerset<PPL::NNC_Polyhedron> computeNotInvariantInterpretation(
-        const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariantInterpretation,
+        const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& interpretation,
         const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant
     );
 }
@@ -49,9 +49,9 @@ bool AtomInterpretation::operator==(const AtomInterpretation& other) const
 namespace
 {
     const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& computeInvariantInterpretation(
-    PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& interpretation,
-    const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant
-)
+        PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& interpretation,
+        const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant
+    )
     {
         if (invariant.is_universe())
         {
@@ -63,12 +63,12 @@ namespace
     }
 
     PPL::Pointset_Powerset<PPL::NNC_Polyhedron> computeNotInvariantInterpretation(
-        const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariantInterpretation,
+        const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& interpretation,
         const PPL::Pointset_Powerset<PPL::NNC_Polyhedron>& invariant
     )
     {
         PPL::Pointset_Powerset notInterpretation { invariant };
-        notInterpretation.difference_assign(invariantInterpretation);
+        notInterpretation.difference_assign(interpretation);
         return notInterpretation;
     }
 }
