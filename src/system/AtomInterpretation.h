@@ -11,10 +11,7 @@
 class AtomInterpretation {
 public:
     explicit AtomInterpretation(const Powerset& interpretation);
-    explicit AtomInterpretation(
-        Powerset interpretation,
-        const Powerset& invariant
-    );
+    explicit AtomInterpretation(const Powerset& interpretation, const Powerset& invariant);
 
     const Powerset& interpretation() const;
     const Powerset& notInterpretation() const;
