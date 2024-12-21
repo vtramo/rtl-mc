@@ -63,6 +63,17 @@ meson configure
 ```
 Questi comandi mostrano tutte le possibili opzioni/configurazioni, i loro valori attuali e i loro possibili valori.
 
+### Riflettere le nuove configurazioni in una build directory già esistente
+Quando si aggiungono nuove opzioni nel file `meson_options.txt` oppure quando si modifica uno o più `meson.build` files 
+oppure quando si aggiunge un nuovo `meson.build` file, per riflettere le nuove configurazioni in una build directory
+già esistente, eseguire il seguente comando:
+```
+meson setup <BUILD_DIR_PATH> --reconfigure
+```
+equivalentemente:
+```
+meson <BUILD_DIR_PATH> --reconfigure
+```
 ### Sanitizers
 Add Address and Undefined Behaviour sanitizers as built-in base options in the Meson build configuration via b_sanitize=address,undefined.
 
