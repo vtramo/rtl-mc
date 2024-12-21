@@ -10,16 +10,19 @@ project('rtl-mc', 'cpp',
 
 catch2_dep = dependency('catch2', fallback : ['catch2', 'catch2_with_main_dep'], version: '>=3.7.1')
 
+src_dir = 'src'
+parser_dir = 'parser'
+antlr4_dir = 'antlr4'
 include_directories = [
   include_directories('.'),
-  include_directories('src/utils'),
-  include_directories('src/parser'),
-  include_directories('src/system'),
-  include_directories('src/parser/antlr4'),
-  include_directories('src/parser/antlr4/generated'),
+  include_directories(src_dir / 'utils'),
+  include_directories(src_dir / parser_dir),
+  include_directories(src_dir / 'system'),
+  include_directories(src_dir / parser_dir / antlr4_dir),
+  include_directories(src_dir / parser_dir / antlr4_dir / 'generated' / 'g4'),
 ]
 
-subdir('src')
+subdir(src_dir)
 
 if get_option('enable_tests')
   subdir('tests')
