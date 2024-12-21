@@ -106,6 +106,14 @@ PolyhedralSystem PolyhedralSystemBuilder::build() const
     return buildPolyhedralSystem();
 }
 
+PolyhedralSystemBuilder::~PolyhedralSystemBuilder()
+{
+    delete m_flow;
+    delete m_invariant;
+    delete m_symbolTable;
+    delete m_denotation;
+}
+
 PolyhedralSystem PolyhedralSystemBuilder::buildPolyhedralSystem() const
 {
     std::map<std::string, AtomInterpretation> interpretations {};

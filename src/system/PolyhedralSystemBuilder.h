@@ -20,6 +20,8 @@ public:
     PolyhedralSystemBuilder& symbolTable(const PolyhedralSystemSymbolTable& polyhedralSystemSymbolTable);
     [[nodiscard]] PolyhedralSystem build() const;
 
+    ~PolyhedralSystemBuilder();
+
 private:
     PolyhedralSystemSymbolTable* m_symbolTable { nullptr };
     std::map<std::string, Powerset>* m_denotation { nullptr };
