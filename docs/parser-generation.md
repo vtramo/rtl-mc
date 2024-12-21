@@ -5,16 +5,16 @@
 ## Generazione parser
 The generation of the ANTLR4 PolyhedralSystem parser can be enabled or disabled using the `generate_parser` option (default: enabled).
 Displays the message "Generating ANTLR4 PolyhedralSystem parser..." before running the appropriate script to generate the parser.
-The script executed depends on the host operating system:
-- On Windows, `generate-parser.bat` is run.
-- On Unix-like systems, `generate-parser.sh` is run.
-
 Once the generation is complete, the message "Parser generation complete!" is shown,indicating the parser has been generated successfully at the specified location:
-`/home/vincenzo/projects/rtl-mc/src/parser/antlr4/generated/`.
+`/home/vincenzo/projects/rtl-mc/src/parser/antlr4/generated/g4`.
 
 Per disabilitare la generazione del parser:
 ```shell
 meson configure -Dgenerate_parser=false <BUILD_DIRECTORY_PATH> 
 ```
 
-Commit: [42fc4d2733b0c959268161fb3283467add395163](https://github.com/vtramo/rtl-mc/commit/42fc4d2733b0c959268161fb3283467add395163)
+La generazione del parser avviene a tempo di configurazione del progetto, sarebbe a dire ogni qualvolta viene eseguito
+uno di questi comandi meson:
+- `meson <BUILD_DIR_PATH>`
+- `meson <BUILD_DIR_PATH> --reconfigure`
+
