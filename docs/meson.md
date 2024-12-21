@@ -27,7 +27,8 @@ Per compilare il progetto:
 ```sh
 meson compile -C buildDir
 ```
-Si noti che è necessario specificare il percorso della build directory.
+Si noti che è necessario specificare il percorso della build directory. L'opzione `-C` sta per _change directory_. Prima
+di eseguire il comando, Meson entra nella directory specificata.
 
 Per eseguire i tests:
 ```sh
@@ -51,16 +52,16 @@ Per modificare una opzione qualsiasi, eseguire questo comando:
 meson configure -D${OPTION_NAME}=${OPTION_VALUE} ${BUILD_DIRECTORY_PATH} 
 ```
 
-### Cambiare settings dopo che la build directory è stata generata
-[Configuring a build directory](https://mesonbuild.com/Configuring-a-build-directory.html)
-```sh
-meson configure buildDir
-meson compile -C buildDir
+### Visualizzare la configurazione corrente di una build directory
+Per visualizzare la configurazione corrente di una build directory (i valori concreti delle [Meson Options](#meson-options)) eseguire questo comando:
 ```
-Per visualizzare la configurazione attuale, eseguire questo comando dalla root del progetto:
-```sh
+meson configure <BUILD_DIRECTORY_PATH>
+```
+Per visualizzare la configurazione di default determinata dai meson files, eseguire dalla root del progetto:
+```
 meson configure
 ```
+Questi comandi mostrano tutte le possibili opzioni/configurazioni, i loro valori attuali e i loro possibili valori.
 
 ### Sanitizers
 Add Address and Undefined Behaviour sanitizers as built-in base options in the Meson build configuration via b_sanitize=address,undefined.
@@ -74,8 +75,16 @@ Per disabilitare i sanitizers:
 ```shell
 meson configure -Db_sanitize=none <BUILD_DIRECTORY_PATH>
 ```
+I possibili valori di `-Db_sanitize` sono:
+- none
+- address
+- thread
+- undefined
+- memory
+- address,undefined
 
 ### Eseguire i test con valgrind attivo
+È necessario installare valgrind.
 ```shell
 meson test --wrap='valgrind --leak-check=full --error-exitcode=1' testname
 ```
