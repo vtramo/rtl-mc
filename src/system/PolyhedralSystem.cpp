@@ -43,6 +43,11 @@ const Poly& PolyhedralSystem::getFlow() const
     return m_flow;
 }
 
+const Poly& PolyhedralSystem::getPreFlow() const
+{
+    return m_preFlow;
+}
+
 const Powerset& PolyhedralSystem::getInvariant() const
 {
     return m_invariant;

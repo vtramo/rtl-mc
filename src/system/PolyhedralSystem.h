@@ -23,6 +23,7 @@ public:
     PolyhedralSystem();
 
     [[nodiscard]] const Poly& getFlow() const;
+    [[nodiscard]] const Poly& getPreFlow() const;
     [[nodiscard]] const Powerset& getInvariant() const;
     [[nodiscard]] const PolyhedralSystemSymbolTable& getSymbolTable() const;
     [[nodiscard]] std::optional<const AtomInterpretation*> getInterpretation(std::string_view atomId) const;
