@@ -49,4 +49,28 @@ namespace PPLUtils
 
     return powerset;
   }
+
+  Powerset intersect(const Powerset& a, const Powerset& b)
+  {
+    if (b.is_universe())
+    {
+      return a;
+    }
+
+    if (a.is_universe())
+    {
+      return b;
+    }
+
+    Powerset aCopy { a };
+    aCopy.intersection_assign(b);
+    return aCopy;
+  }
+
+  Powerset minus(const Powerset& a, const Powerset& b)
+  {
+    Powerset aCopy { a };
+    aCopy.difference_assign(b);
+    return aCopy;
+  }
 }

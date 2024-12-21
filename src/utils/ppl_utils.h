@@ -14,6 +14,10 @@ namespace PPLUtils {
     Poly poly(const std::initializer_list<PPL::Constraint>& constraints);
 
     Powerset powerset(std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra);
+
+    Powerset intersect(const Powerset& a, const Powerset& b);
+
+    Powerset minus(const Powerset& a, const Powerset& b);
 }
 
 #endif //PPL_UTILS_H
