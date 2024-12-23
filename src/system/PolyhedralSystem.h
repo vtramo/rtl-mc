@@ -20,7 +20,7 @@ std::istream& operator>>(std::istream& istream, PolyhedralSystem& polyhedralSyst
 
 class PolyhedralSystem {
 public:
-    PolyhedralSystem();
+    PolyhedralSystem() = default;
 
     [[nodiscard]] const Poly& getFlow() const;
     [[nodiscard]] const Poly& getPreFlow() const;

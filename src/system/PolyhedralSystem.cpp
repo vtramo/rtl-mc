@@ -102,7 +102,6 @@ PolyhedralSystem::PolyhedralSystem(
   , m_denotation { denotation }
   , m_symbolTable { std::move(symbolTable) } {}
 
-PolyhedralSystem::PolyhedralSystem() = default;
 
 void PolyhedralSystem::computeReflectedFlow()
 {
