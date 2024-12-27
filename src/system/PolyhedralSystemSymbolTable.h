@@ -5,10 +5,8 @@
 #ifndef POLYHEDRALSYSTEMSYMBOLTABLE_H
 #define POLYHEDRALSYSTEMSYMBOLTABLE_H
 
-#include "ppl.hh"
+#include "ppl_aliases.h"
 #include <optional>
-
-namespace PPL = Parma_Polyhedra_Library;
 
 class PolyhedralSystemSymbolTable {
 public:
@@ -23,11 +21,12 @@ public:
   [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
   [[nodiscard]] int getTotalAtoms() const;
 
-  bool operator==(const PolyhedralSystemSymbolTable& other) const;
+  friend bool operator== (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2);
+  friend bool operator!= (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2);
 
 private:
-  std::map<std::string, PPL::Variable> m_variableById {};
-  std::map<PPL::dimension_type, std::string> m_idByVariable {};
+  std::unordered_map<std::string, PPL::Variable> m_variableById {};
+  std::unordered_map<PPL::dimension_type, std::string> m_idBySpaceDimension {};
   PPL::dimension_type m_dimensions {};
   std::set<std::string> m_atomIds {};
 };

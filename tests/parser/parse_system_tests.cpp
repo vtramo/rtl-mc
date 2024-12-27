@@ -118,11 +118,11 @@ TEST_CASE("Correctly builds PolyhedralSystem from a string", "[parser]")
 
         PolyhedralSystemSymbolTable symbolTable {};
         symbolTable
-            .addVariables({ "x", "y" })
+            .addVariables({ "X", "Y" })
             .addAtoms({ "p", "q" });
 
-        PPL::Variable x { *symbolTable.getVariable("x") };
-        PPL::Variable y { *symbolTable.getVariable("y") };
+        PPL::Variable x { *symbolTable.getVariable("X") };
+        PPL::Variable y { *symbolTable.getVariable("Y") };
         PolyhedralSystem expectedPolyhedralSystem {
             PolyhedralSystem::builder()
                 .flow(PPLUtils::poly({ x + 0*y <= 4 }))

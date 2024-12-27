@@ -152,4 +152,9 @@ namespace PPLUtils
         result->difference_assign(b);
         return result;
     }
+
+    bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y)
+    {
+        return x.space_dimension() == y.space_dimension();
+    }
 }

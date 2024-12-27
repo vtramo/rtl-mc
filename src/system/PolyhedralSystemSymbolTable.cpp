@@ -4,6 +4,16 @@
 
 #include "PolyhedralSystemSymbolTable.h"
 
+#include <ppl_utils.h>
+
+namespace
+{
+    bool areVariableByIdMapsEqual(
+        const std::unordered_map<std::string, PPL::Variable>& map1,
+        const std::unordered_map<std::string, PPL::Variable>& map2
+    );
+}
+
 PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addVariable(const std::string_view id)
 {
     if (containsVariable(id))
@@ -14,7 +24,7 @@ PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addVariable(const std:
     const PPL::Variable variable { m_dimensions };
     const std::string idStr { id };
     m_variableById.insert(std::make_pair(idStr, variable));
-    m_idByVariable.insert(std::make_pair(variable.space_dimension(), idStr));
+    m_idBySpaceDimension.insert({ variable.space_dimension(), idStr });
     m_dimensions++;
 
     return *this;
@@ -67,7 +77,7 @@ std::optional<PPL::Variable> PolyhedralSystemSymbolTable::getVariable(const std:
 
 std::optional<std::string> PolyhedralSystemSymbolTable::getVariableId(const PPL::Variable variable) const
 {
-    if (const auto it { m_idByVariable.find(variable.space_dimension()) }; it != m_idByVariable.end()) {
+    if (const auto it { m_idBySpaceDimension.find(variable.space_dimension()) }; it != m_idBySpaceDimension.end()) {
         return it->second;
     }
 
@@ -84,8 +94,33 @@ int PolyhedralSystemSymbolTable::getTotalAtoms() const
     return static_cast<int>(m_atomIds.size());
 }
 
-bool PolyhedralSystemSymbolTable::operator==(const PolyhedralSystemSymbolTable& other) const
+bool operator== (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2)
 {
-    return m_dimensions == other.m_dimensions &&
-           m_atomIds    == other.m_atomIds; // TODO: compare maps
+    return symbolTable1.m_dimensions == symbolTable2.m_dimensions &&
+           symbolTable1.m_atomIds    == symbolTable2.m_atomIds &&
+           areVariableByIdMapsEqual(symbolTable1.m_variableById, symbolTable2.m_variableById) &&
+           symbolTable1.m_idBySpaceDimension == symbolTable2.m_idBySpaceDimension;
+}
+
+bool operator!= (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2)
+{
+    return !(operator== (symbolTable1, symbolTable2));
+}
+
+namespace
+{
+    bool areVariableByIdMapsEqual(
+        const std::unordered_map<std::string, PPL::Variable>& map1,
+        const std::unordered_map<std::string, PPL::Variable>& map2
+    )
+    {
+        if (map1.size() != map2.size()) return false;
+
+        return std::all_of(map1.begin(), map1.end(), [&map2](const auto& pair) {
+            const auto& varId = pair.first;
+            const auto& var1 = pair.second;
+            auto it = map2.find(varId);
+            return it != map2.end() && PPLUtils::haveSameSpaceDimension(var1, it->second);
+        });
+    }
 }

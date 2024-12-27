@@ -22,6 +22,8 @@ namespace PPLUtils {
     std::unique_ptr<Powerset> minus(const Powerset& a, Powerset&& b);
     std::unique_ptr<Powerset> minus(Powerset&& a, const Powerset& b);
     std::unique_ptr<Powerset> minus(Powerset&& a, Powerset&& b);
+
+    bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y);
 }
 
 #endif //PPL_UTILS_H
