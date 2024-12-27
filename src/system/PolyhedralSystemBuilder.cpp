@@ -3,24 +3,16 @@
 //
 
 #include "PolyhedralSystemBuilder.h"
-
 #include "PolyhedralSystem.h"
 
 
 namespace
 {
-    void checkDimensionEquality(
-        const PPL::dimension_type flowSpaceDimension,
-        const PPL::dimension_type otherDimension,
+    void assertDimensionEquality(
+        PPL::dimension_type spaceDimension1,
+        PPL::dimension_type spaceDimension2,
         const std::string& context
-    )
-    {
-        if (flowSpaceDimension != otherDimension)
-        {
-            throw std::invalid_argument("PolyhedralSystemBuilder::checkSpaceDimensions: Space dimension mismatch in " + context + ". Expected: "
-                + std::to_string(flowSpaceDimension) + ", Found: " + std::to_string(otherDimension));
-        }
-    }
+    );
 }
 
 
@@ -49,7 +41,7 @@ PolyhedralSystemBuilder::denotation(const std::map<std::string, Powerset>& denot
     return *this;
 }
 
-void PolyhedralSystemBuilder::checkFlow() const
+void PolyhedralSystemBuilder::assertFlowIsNotNull() const
 {
     if (!m_flow)
     {
@@ -57,7 +49,7 @@ void PolyhedralSystemBuilder::checkFlow() const
     }
 }
 
-void PolyhedralSystemBuilder::checkInvariant() const
+void PolyhedralSystemBuilder::assertInvariantIsNotNull() const
 {
     if (!m_invariant)
     {
@@ -65,7 +57,7 @@ void PolyhedralSystemBuilder::checkInvariant() const
     }
 }
 
-void PolyhedralSystemBuilder::checkSymbolTable() const
+void PolyhedralSystemBuilder::assertSymbolTableIsNotNull() const
 {
     if (!m_symbolTable)
     {
@@ -73,7 +65,7 @@ void PolyhedralSystemBuilder::checkSymbolTable() const
     }
 }
 
-void PolyhedralSystemBuilder::checkDenotation() const
+void PolyhedralSystemBuilder::assertDenotationIsNotNull() const
 {
     if (!m_denotation)
     {
@@ -81,27 +73,27 @@ void PolyhedralSystemBuilder::checkDenotation() const
     }
 }
 
-void PolyhedralSystemBuilder::checkSpaceDimensions() const
+void PolyhedralSystemBuilder::assertThatAllDimensionsAreEqual() const
 {
     const PPL::dimension_type flowSpaceDimension = m_flow->space_dimension();
 
-    checkDimensionEquality(flowSpaceDimension, m_invariant->space_dimension(), "Invariant");
-    checkDimensionEquality(flowSpaceDimension, m_symbolTable->getSpaceDimension(), "Symbol Table");
+    assertDimensionEquality(flowSpaceDimension, m_invariant->space_dimension(), "Invariant");
+    assertDimensionEquality(flowSpaceDimension, m_symbolTable->getSpaceDimension(), "Symbol Table");
 
     for (auto& [atomId, atomPowerset]: *m_denotation)
     {
-        checkDimensionEquality(flowSpaceDimension, atomPowerset.space_dimension(), "Denotation entry: " + atomId);
+        assertDimensionEquality(flowSpaceDimension, atomPowerset.space_dimension(), "Denotation entry: " + atomId);
     }
 }
 
 PolyhedralSystem PolyhedralSystemBuilder::build() const
 {
-    checkInvariant();
-    checkFlow();
-    checkDenotation();
-    checkSymbolTable();
+    assertInvariantIsNotNull();
+    assertFlowIsNotNull();
+    assertDenotationIsNotNull();
+    assertSymbolTableIsNotNull();
 
-    checkSpaceDimensions();
+    assertThatAllDimensionsAreEqual();
 
     return buildPolyhedralSystem();
 }
@@ -116,6 +108,11 @@ PolyhedralSystemBuilder::~PolyhedralSystemBuilder()
 
 PolyhedralSystem PolyhedralSystemBuilder::buildPolyhedralSystem() const
 {
+    assert(m_flow && "PolyhedralSystemBuilder::buildPolyhedralSystem(): Flow is not set!");
+    assert(m_invariant && "PolyhedralSystemBuilder::buildPolyhedralSystem(): Invariant is not set!");
+    assert(m_symbolTable && "PolyhedralSystemBuilder::buildPolyhedralSystem(): Symbol Table is not set!");
+    assert(m_denotation && "PolyhedralSystemBuilder::buildPolyhedralSystem(): Denotation is not set!");
+
     std::map<std::string, AtomInterpretation> interpretations {};
     for (auto& [atomId, powerset]: *m_denotation)
     {
@@ -129,5 +126,21 @@ PolyhedralSystem PolyhedralSystemBuilder::buildPolyhedralSystem() const
         interpretations,
         *m_symbolTable,
     };
+}
+
+namespace
+{
+    void assertDimensionEquality(
+        const PPL::dimension_type spaceDimension1,
+        const PPL::dimension_type spaceDimension2,
+        const std::string& context
+    )
+    {
+        if (spaceDimension1 != spaceDimension2)
+        {
+            throw std::invalid_argument("PolyhedralSystemBuilder::checkSpaceDimensions: Space dimension mismatch in " + context + ". Expected: "
+                + std::to_string(spaceDimension1) + ", Found: " + std::to_string(spaceDimension2));
+        }
+    }
 }
 

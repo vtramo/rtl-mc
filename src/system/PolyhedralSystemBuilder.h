@@ -7,7 +7,6 @@
 #define POLYHEDRALSYSTEMBUILDER_H
 
 #include "PolyhedralSystemSymbolTable.h"
-#include "ppl.hh"
 #include "ppl_aliases.h"
 
 class PolyhedralSystem;
@@ -28,12 +27,12 @@ private:
     Powerset* m_invariant { nullptr };
     Poly* m_flow { nullptr };
 
-    void checkInvariant() const;
-    void checkSymbolTable() const;
-    void checkFlow() const;
-    void checkDenotation() const;
+    void assertInvariantIsNotNull() const;
+    void assertSymbolTableIsNotNull() const;
+    void assertFlowIsNotNull() const;
+    void assertDenotationIsNotNull() const;
 
-    void checkSpaceDimensions() const;
+    void assertThatAllDimensionsAreEqual() const;
 
     [[nodiscard]] PolyhedralSystem buildPolyhedralSystem() const;
 };
