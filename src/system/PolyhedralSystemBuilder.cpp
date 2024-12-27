@@ -5,7 +5,6 @@
 #include "PolyhedralSystemBuilder.h"
 #include "PolyhedralSystem.h"
 
-
 namespace
 {
     void assertDimensionEquality(
@@ -18,26 +17,26 @@ namespace
 
 PolyhedralSystemBuilder& PolyhedralSystemBuilder::flow(const Poly& flow)
 {
-    m_flow = new Poly { flow };
+    m_flow = std::make_unique<Poly>(flow);
     return *this;
 }
 
 PolyhedralSystemBuilder& PolyhedralSystemBuilder::invariant(const Powerset& invariant)
 {
-    m_invariant = new Powerset { invariant };
+    m_invariant = std::make_unique<Powerset>(invariant);
     return *this;
 }
 
 PolyhedralSystemBuilder& PolyhedralSystemBuilder::symbolTable(const PolyhedralSystemSymbolTable& polyhedralSystemSymbolTable)
 {
-    m_symbolTable = new PolyhedralSystemSymbolTable { polyhedralSystemSymbolTable };
+    m_symbolTable = std::make_unique<PolyhedralSystemSymbolTable>(polyhedralSystemSymbolTable);
     return *this;
 }
 
 PolyhedralSystemBuilder&
 PolyhedralSystemBuilder::denotation(const std::map<std::string, Powerset>& denotation)
 {
-    m_denotation = new std::map { denotation };
+    m_denotation = std::make_unique<std::map<std::string, Powerset>>(denotation);
     return *this;
 }
 
@@ -96,14 +95,6 @@ PolyhedralSystem PolyhedralSystemBuilder::build() const
     assertThatAllDimensionsAreEqual();
 
     return buildPolyhedralSystem();
-}
-
-PolyhedralSystemBuilder::~PolyhedralSystemBuilder()
-{
-    delete m_flow;
-    delete m_invariant;
-    delete m_symbolTable;
-    delete m_denotation;
 }
 
 PolyhedralSystem PolyhedralSystemBuilder::buildPolyhedralSystem() const

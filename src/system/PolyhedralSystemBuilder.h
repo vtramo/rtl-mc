@@ -7,7 +7,6 @@
 #define POLYHEDRALSYSTEMBUILDER_H
 
 #include "PolyhedralSystemSymbolTable.h"
-#include "ppl_aliases.h"
 
 class PolyhedralSystem;
 
@@ -19,22 +18,28 @@ public:
     PolyhedralSystemBuilder& symbolTable(const PolyhedralSystemSymbolTable& polyhedralSystemSymbolTable);
     [[nodiscard]] PolyhedralSystem build() const;
 
-    ~PolyhedralSystemBuilder();
+    explicit PolyhedralSystemBuilder(const PolyhedralSystem& polyhedralSystem) = delete;
+    PolyhedralSystemBuilder& operator= (const PolyhedralSystem& polyhedralSystem) = delete;
+
+    explicit PolyhedralSystemBuilder(PolyhedralSystem&& polyhedralSystem) = delete;
+    PolyhedralSystemBuilder& operator= (PolyhedralSystem&& polyhedralSystem) = delete;
+
+    PolyhedralSystemBuilder() = default;
+    ~PolyhedralSystemBuilder() = default;
 
 private:
-    PolyhedralSystemSymbolTable* m_symbolTable { nullptr };
-    std::map<std::string, Powerset>* m_denotation { nullptr };
-    Powerset* m_invariant { nullptr };
-    Poly* m_flow { nullptr };
+    std::unique_ptr<PolyhedralSystemSymbolTable> m_symbolTable { nullptr };
+    std::unique_ptr<std::map<std::string, Powerset>> m_denotation { nullptr };
+    std::unique_ptr<Powerset> m_invariant { nullptr };
+    std::unique_ptr<Poly> m_flow { nullptr };
+
+    [[nodiscard]] PolyhedralSystem buildPolyhedralSystem() const;
 
     void assertInvariantIsNotNull() const;
     void assertSymbolTableIsNotNull() const;
     void assertFlowIsNotNull() const;
     void assertDenotationIsNotNull() const;
-
     void assertThatAllDimensionsAreEqual() const;
-
-    [[nodiscard]] PolyhedralSystem buildPolyhedralSystem() const;
 };
 
 
