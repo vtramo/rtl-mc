@@ -21,6 +21,20 @@ PolyhedralSystemBuilder& PolyhedralSystemBuilder::flow(const Poly& flow)
     return *this;
 }
 
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::flow(Poly&& flow)
+{
+    m_flow = std::make_unique<Poly>();
+    m_flow->m_swap(flow);
+    return *this;
+}
+
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::invariant(Powerset&& invariant)
+{
+    m_invariant = std::make_unique<Powerset>();
+    m_invariant->m_swap(invariant);
+    return *this;
+}
+
 PolyhedralSystemBuilder& PolyhedralSystemBuilder::invariant(const Powerset& invariant)
 {
     m_invariant = std::make_unique<Powerset>(invariant);
@@ -33,10 +47,22 @@ PolyhedralSystemBuilder& PolyhedralSystemBuilder::symbolTable(const PolyhedralSy
     return *this;
 }
 
-PolyhedralSystemBuilder&
-PolyhedralSystemBuilder::denotation(const std::map<std::string, Powerset>& denotation)
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::symbolTable(PolyhedralSystemSymbolTable&& polyhedralSystemSymbolTable)
 {
-    m_denotation = std::make_unique<std::map<std::string, Powerset>>(denotation);
+    m_symbolTable = std::make_unique<PolyhedralSystemSymbolTable>(std::move(polyhedralSystemSymbolTable));
+    return *this;
+}
+
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(const std::unordered_map<Atom, Powerset>& denotation)
+{
+    m_denotation = std::make_unique<std::unordered_map<Atom, Powerset>>(denotation);
+    return *this;
+}
+
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(std::unordered_map<std::string, Powerset>&& denotation)
+{
+    m_denotation = std::make_unique<std::unordered_map<std::string, Powerset>>();
+    m_denotation->swap(denotation);
     return *this;
 }
 
@@ -97,6 +123,22 @@ PolyhedralSystem PolyhedralSystemBuilder::build() const
     return buildPolyhedralSystem();
 }
 
+std::unordered_map<Atom, AtomInterpretation> PolyhedralSystemBuilder::buildDenotation() const
+{
+    std::unordered_map<Atom, AtomInterpretation> interpretations {};
+    interpretations.reserve(m_denotation->size());
+
+    for (auto& [atom, interpretation]: *m_denotation)
+    {
+        interpretations.emplace(
+            std::piecewise_construct,
+            std::forward_as_tuple(atom),
+            std::forward_as_tuple(std::move(interpretation), *m_invariant));
+    }
+
+    return interpretations;
+}
+
 PolyhedralSystem PolyhedralSystemBuilder::buildPolyhedralSystem() const
 {
     assert(m_flow && "PolyhedralSystemBuilder::buildPolyhedralSystem(): Flow is not set!");
@@ -104,18 +146,13 @@ PolyhedralSystem PolyhedralSystemBuilder::buildPolyhedralSystem() const
     assert(m_symbolTable && "PolyhedralSystemBuilder::buildPolyhedralSystem(): Symbol Table is not set!");
     assert(m_denotation && "PolyhedralSystemBuilder::buildPolyhedralSystem(): Denotation is not set!");
 
-    std::map<std::string, AtomInterpretation> interpretations {};
-    for (auto& [atomId, powerset]: *m_denotation)
-    {
-        AtomInterpretation atomInterpretation { std::move(powerset), *m_invariant };
-        interpretations.insert({ atomId, std::move(atomInterpretation) });
-    }
+    auto denotation { buildDenotation() };
 
     return {
-        *m_invariant,
-        *m_flow,
-        interpretations,
-        *m_symbolTable,
+        std::move(*m_invariant),
+        std::move(*m_flow),
+        std::move(denotation),
+        std::move(*m_symbolTable),
     };
 }
 

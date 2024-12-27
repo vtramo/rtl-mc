@@ -5,15 +5,17 @@
 #ifndef POLYHEDRALSYSTEMBUILDERVISITOR_H
 #define POLYHEDRALSYSTEMBUILDERVISITOR_H
 
-#include <PolyhedralSystem.h>
-#include <PolyhedralSystemSymbolTable.h>
-
+#include "PolyhedralSystem.h"
+#include "PolyhedralSystemSymbolTable.h"
 #include "PolyhedralSystemParser.h"
 #include "PolyhedralSystemBaseVisitor.h"
-#include "ppl.hh"
 
 class PolyhedralSystemBuilderVisitor final
 {
+public:
+    explicit PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable symbolTable);
+    PolyhedralSystem buildPolyhedralSystem(PolyhedralSystemParser::SystemContext* parseTree);
+
 private:
     class PolyhedralSystemVisitor final : public PolyhedralSystemBaseVisitor
     {
@@ -36,23 +38,19 @@ private:
         std::any visitVar(PolyhedralSystemParser::VarContext* context) override;
         std::any visitInt(PolyhedralSystemParser::IntContext* context) override;
 
-        [[nodiscard]] std::map<std::string, Powerset> getDenotation() const;
+        [[nodiscard]] std::unordered_map<std::string, Powerset> getDenotation() const;
         [[nodiscard]] Powerset getInvariant() const;
         [[nodiscard]] Poly getFlow() const;
         [[nodiscard]] PolyhedralSystemSymbolTable getSymbolTable() const;
 
     private:
         PolyhedralSystemSymbolTable m_symbolTable {};
-        std::map<std::string, Powerset> m_denotation {};
+        std::unordered_map<std::string, Powerset> m_denotation {};
         Powerset m_invariant {};
         Poly m_flow {};
     };
 
     PolyhedralSystemVisitor m_visitor;
-
-public:
-    explicit PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable symbolTable);
-    PolyhedralSystem buildPolyhedralSystem(PolyhedralSystemParser::SystemContext* parseTree);
 };
 
 

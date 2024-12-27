@@ -58,7 +58,7 @@ const PolyhedralSystemSymbolTable& PolyhedralSystem::getSymbolTable() const
     return m_symbolTable;
 }
 
-std::optional<const AtomInterpretation*> PolyhedralSystem::getInterpretation(const std::string_view atomId) const
+std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const std::string_view atomId) const
 {
     if (const auto it { m_denotation.find(std::string(atomId)) }; it != m_denotation.end()) {
         return &it->second;
@@ -82,12 +82,12 @@ PolyhedralSystemBuilder PolyhedralSystem::builder()
     return PolyhedralSystemBuilder {};
 }
 
-bool PolyhedralSystem::operator==(const PolyhedralSystem& other) const
+bool operator==(const PolyhedralSystem& polyhedralSystem1, const PolyhedralSystem& polyhedralSystem2)
 {
-    const bool flowEqual = m_flow == other.m_flow;
-    const bool invariantEqual = m_invariant == other.m_invariant;
-    const bool denotationEqual = m_denotation == other.m_denotation;
-    const bool symbolTableEqual = m_symbolTable == other.m_symbolTable;
+    const bool flowEqual = polyhedralSystem1.m_flow == polyhedralSystem2.m_flow;
+    const bool invariantEqual = polyhedralSystem1.m_invariant == polyhedralSystem2.m_invariant;
+    const bool denotationEqual = polyhedralSystem1.m_denotation == polyhedralSystem2.m_denotation;
+    const bool symbolTableEqual = polyhedralSystem1.m_symbolTable == polyhedralSystem2.m_symbolTable;
 
     return flowEqual && invariantEqual && denotationEqual && symbolTableEqual;
 }
@@ -95,18 +95,34 @@ bool PolyhedralSystem::operator==(const PolyhedralSystem& other) const
 PolyhedralSystem::PolyhedralSystem(
     const Powerset& invariant,
     const Poly& flow,
-    const std::map<std::string, AtomInterpretation>& denotation,
-    PolyhedralSystemSymbolTable& symbolTable
+    const std::unordered_map<std::string, AtomInterpretation>& denotation,
+    const PolyhedralSystemSymbolTable& symbolTable
 ) : m_invariant { invariant }
   , m_flow { flow }
   , m_denotation { denotation }
-  , m_symbolTable { std::move(symbolTable) } {}
+  , m_symbolTable { symbolTable }
+{
+    computePreFlow();
+}
+
+PolyhedralSystem::PolyhedralSystem(
+    Powerset&& invariant,
+    Poly&& flow,
+    std::unordered_map<std::string, AtomInterpretation>&& denotation,
+    PolyhedralSystemSymbolTable&& symbolTable
+) : m_denotation { std::move(denotation) }
+  , m_symbolTable { std::move(symbolTable) }
+{
+    m_invariant.m_swap(invariant);
+    m_flow.m_swap(flow);
+    computePreFlow();
+}
 
 
-void PolyhedralSystem::computeReflectedFlow()
+void PolyhedralSystem::computePreFlow()
 {
     Poly preFlow { m_flow };
-    m_preFlow = PPLUtils::reflectionAffineImage(preFlow);
+    m_preFlow.m_swap(PPLUtils::reflectionAffineImage(preFlow));
 }
 
 std::istream& operator>>(std::istream& istream, PolyhedralSystem& polyhedralSystem)

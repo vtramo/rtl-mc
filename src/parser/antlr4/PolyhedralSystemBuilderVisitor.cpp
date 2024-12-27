@@ -192,14 +192,12 @@ Poly PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getFlow() const
     return m_flow;
 }
 
-std::map<std::string, Powerset> PolyhedralSystemBuilderVisitor::
-PolyhedralSystemVisitor::getDenotation() const
+std::unordered_map<std::string, Powerset> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getDenotation() const
 {
     return m_denotation;
 }
 
-Powerset
-PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getInvariant() const
+Powerset PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getInvariant() const
 {
     return m_invariant;
 }

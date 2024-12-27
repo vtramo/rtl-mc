@@ -8,9 +8,6 @@
 #include "PolyhedralSystemBaseListener.h"
 #include "PolyhedralSystemParser.h"
 #include "PolyhedralSystemSymbolTable.h"
-#include "ppl.hh"
-
-namespace PPL = Parma_Polyhedra_Library;
 
 class PolyhedralSystemSymbolTableListener final : public PolyhedralSystemBaseListener
 {
