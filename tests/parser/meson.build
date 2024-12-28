@@ -10,6 +10,11 @@ install_data(
     install_dir: meson.project_build_root() / 'tests' / 'parser',
     install_tag: 'tests'
 )
+install_data(
+    sources: [meson.current_source_dir() / 'polyhedral-system-test-1.txt'],
+    install_dir: meson.project_build_root(),
+    install_tag: 'tests'
+)
 
 parse_system_tests_exe = executable(
     'parse_system_tests',
