@@ -35,6 +35,44 @@ Per eseguire i tests:
 meson test -C buildDir
 ```
 
+### Dipendenze
+Il progetto ha bisogno delle seguenti dipendenze:
+- PPL >= 14.0.0
+- GMP >= 6.3.0
+- GMPXX >= 6.3.0
+- ANTLR4 Runtime >= 4.13.0: https://www.antlr.org/
+- Catch2 >=3.7.1 (test framework)
+
+Un ulteriore dipendenza è [ANTLR4 CLI Tools](https://github.com/antlr/antlr4-tools/blob/master/README.md). In particolare, deve essere possibile usare il comando `antlr4` per generare
+automaticamente il parser durante la build.
+
+Meson provvederà a installare automaticamente Catch2 come [subproject](https://mesonbuild.com/Subprojects.html).
+Il resto delle dipendenze devono essere installate manualmente. Un modo per farlo è installare le dipendenze manualmente e successivamente
+creare dei pkg config files per ogni dipendenza in uno dei percorsi specificati dal seguente comando:
+```
+pkg-config --variable pc_path pkg-config
+```
+Meson cercherà in uno di questo percorsi il pkg config file corrispondente a ogni dipendenza. Un pkg config file specifica
+dove si trova la dipendenza sul sistema.
+#### Esempio pkg config file
+Su un sistema Ubuntu, tipicamente uno dei percorsi in cui vengono posizionati i pkg config files è `/usr/local/lib/pkgconfig`.
+Per specificare, ad esempio, dove si trova la dipendenza ANTLR4 Runtime sul sistema, creiamo in questa directory un file
+con lo stesso nome della dipendenza `antlr4-runtime.pc`. Il nome deve essere uguale a quello specificato in `src/meson.build`
+dalla funzione `dependency('antlr4-runtime', version: '>=4.13.0')`:
+```text
+prefix=/usr/local
+includedir=${prefix}/include
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+
+Name: AntLR V4 Runtime
+Version: 4.13.2
+Description:
+URL:
+Cflags: -I${includedir}
+Libs: -L${libdir} -lantlr4-runtime
+```
+
 ### Meson Options
 In Meson esistono due tipi di options:
 - [Built-in options](https://mesonbuild.com/Builtin-options.html)
