@@ -6,29 +6,18 @@
 
 namespace
 {
-    int extractCoefficient(PolyhedralSystemParser::IntTimesVarContext* context)
-    {
-        antlr4::tree::TerminalNode* unsignedIntToken { context->UNSIGNED_INT() };
-        const std::string unsignedIntTokenStr { unsignedIntToken->getText() };
-        return std::stoi(unsignedIntTokenStr);
-    }
-
-    bool startsWithMinusSign(const PolyhedralSystemParser::LinearExprContext* linearExprContext)
-    {
-        const antlr4::Token* token { linearExprContext->op };
-        if (!token)
-            return false;
-
-        return token->getType() == PolyhedralSystemParser::MINUS;
-    }
+    int extractCoefficient(PolyhedralSystemParser::IntTimesVarContext* context);
+    bool startsWithMinusSign(const PolyhedralSystemParser::LinearExprContext* linearExprContext);
+    bool isNegativeTerm(const PolyhedralSystemParser::SignTermContext* ctx);
 }
 
+PolyhedralSystemBuilderVisitor::PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable& symbolTable)
+    : m_visitor { PolyhedralSystemVisitor { symbolTable } }
+{}
 
-PolyhedralSystemBuilderVisitor::PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable symbolTable)
-    : m_visitor { PolyhedralSystemVisitor { std::move(symbolTable) } } {}
-
-PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::PolyhedralSystemVisitor(PolyhedralSystemSymbolTable symbolTable)
-    : m_symbolTable { std::move(symbolTable) } {}
+PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::PolyhedralSystemVisitor(PolyhedralSystemSymbolTable& symbolTable)
+    : m_symbolTable { symbolTable }
+{}
 
 PolyhedralSystem PolyhedralSystemBuilderVisitor::buildPolyhedralSystem(PolyhedralSystemParser::SystemContext* parseTree)
 {
@@ -43,11 +32,14 @@ PolyhedralSystem PolyhedralSystemBuilderVisitor::buildPolyhedralSystem(Polyhedra
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitSystem(PolyhedralSystemParser::SystemContext* ctx)
 {
-    const std::any flowAny { visit(ctx->flow()) };
-    m_flow = std::any_cast<Poly>(flowAny);
+    const int flowKey { std::any_cast<int>(visit(ctx->flow())) };
+    const auto flow { popPoly(flowKey) };
+    m_flow.m_swap(*flow);
 
-    const std::any invAny { visit(ctx->inv()) };
-    m_invariant = std::any_cast<Powerset>(invAny);
+    auto any = visit(ctx->inv());
+    const int invariantKey { std::any_cast<int>(any) };
+    const auto invariant { popPowerset(invariantKey) };
+    m_invariant.m_swap(*invariant);
 
     const std::vector atomContexts { ctx->atom() };
     for (PolyhedralSystemParser::AtomContext* atomContext: atomContexts)
@@ -60,123 +52,169 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitSystem(Po
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInv(PolyhedralSystemParser::InvContext* ctx)
 {
-    const std::any any { visit(ctx->powerset()) };
-    return { std::any_cast<Powerset>(any) };
+    int any_cast = std::any_cast<int>(visit(ctx->powerset()));
+    return any_cast;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitFlow(PolyhedralSystemParser::FlowContext* ctx)
 {
-    const std::any any { visit(ctx->poly()) };
-    return { std::any_cast<Poly>(any) };
+    int any_cast = std::any_cast<int>(visit(ctx->poly()));
+    return any_cast;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPowerset(PolyhedralSystemParser::AtomPowersetContext* ctx)
 {
-    const std::any any { visit(ctx->powerset()) };
-    const Powerset powerset { std::any_cast<Powerset>(any) };
+    const int key { std::any_cast<int>(visit(ctx->powerset())) };
+    auto powerset { popPowerset(key) };
     const std::string atomId { ctx->ID()->getText() };
-    return m_denotation[atomId] = powerset;
+    m_denotation[atomId] = *powerset;
+    m_powersets[m_visitKey] = std::move(powerset);
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPoly(PolyhedralSystemParser::AtomPolyContext* ctx)
 {
-    const std::any any { visit(ctx->poly()) };
-    const Poly polyhedron { std::any_cast<Poly>(any) };
+    const int key { std::any_cast<int>(visit(ctx->poly())) };
+    const auto poly { popPoly(key) };
     const std::string atomId { ctx->ID()->getText() };
-    return m_denotation[atomId] = Powerset { polyhedron };
+    auto powerset { std::make_unique<Powerset>(*poly) };
+    m_denotation[atomId] = *powerset;
+    m_powersets[m_visitKey] = std::move(powerset);
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx)
 {
     const std::string atomId { ctx->ID()->getText() };
-    return m_denotation[atomId] = Powerset { m_symbolTable.getSpaceDimension(), PPL::EMPTY };
+    auto bottomPowerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
+    m_denotation[atomId] = *bottomPowerset;
+    m_powersets[m_visitKey] = std::move(bottomPowerset);
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowerset(PolyhedralSystemParser::PowersetContext* ctx)
 {
-    Powerset powerset { m_symbolTable.getSpaceDimension(), PPL::EMPTY };
+    auto powerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
 
     const std::vector polyContexts { ctx->poly() };
     for (PolyhedralSystemParser::PolyContext* polyContext: polyContexts)
     {
-        const std::any any { visit(polyContext) };
-        const Poly polyhedron { std::any_cast<Poly>(any) };
-        powerset.add_disjunct(polyhedron);
+        const int key { std::any_cast<int>(visit(polyContext)) };
+        const auto polyhedron { popPoly(key) };
+        powerset->add_disjunct(*polyhedron);
     }
 
-    return powerset;
+    m_powersets[m_visitKey] = std::move(powerset);
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPoly(PolyhedralSystemParser::PolyContext* ctx)
 {
     PPL::Constraint_System constraintSystem {};
-    constraintSystem.set_space_dimension(m_symbolTable.getSpaceDimension());
+    constraintSystem.set_space_dimension(m_symbolTable.get().getSpaceDimension());
 
     const std::vector constraintContexts { ctx->constr() };
     for (PolyhedralSystemParser::ConstrContext* constraintContext: constraintContexts)
     {
-        const std::any any { visit(constraintContext) };
-        const PPL::Constraint constraint { std::any_cast<PPL::Constraint>(any) };
-        constraintSystem.insert(constraint);
+        const int key { std::any_cast<int>(visit(constraintContext)) };
+        const auto constraint { popConstraint(key) };
+        constraintSystem.insert(*constraint);
     }
 
-    return Poly { constraintSystem };
+    m_polyhedra[m_visitKey] = std::move(std::make_unique<Poly>(constraintSystem, PPL::Recycle_Input {}));
+
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitConstr(PolyhedralSystemParser::ConstrContext* ctx)
 {
     const std::vector linearExpressionContexts { ctx->linearExpr() };
-    const std::any leftAny { visit(linearExpressionContexts[0]) };
-    const std::any rightAny { visit(linearExpressionContexts[1]) };
-    const auto leftLinearExpr { std::any_cast<PPL::Linear_Expression>(leftAny) };
-    const auto rightLinearExpr { std::any_cast<PPL::Linear_Expression>(rightAny) };
+    assert(linearExpressionContexts.size() == 2);
+
+    const int leftKey { std::any_cast<int>(visit(linearExpressionContexts[0])) };
+    const int rightKey { std::any_cast<int>(visit(linearExpressionContexts[1])) };
+
+    const auto leftLinearExpr { popLinearExpression(leftKey) };
+    const auto rightLinearExpr { popLinearExpression(rightKey) };
 
     switch (ctx->op->getType())
     {
-    case PolyhedralSystemParser::LE: return PPL::Constraint { leftLinearExpr <= rightLinearExpr };
-    case PolyhedralSystemParser::LT: return PPL::Constraint { leftLinearExpr <  rightLinearExpr };
-    case PolyhedralSystemParser::EQ: return PPL::Constraint { leftLinearExpr == rightLinearExpr };
-    case PolyhedralSystemParser::GE: return PPL::Constraint { leftLinearExpr >= rightLinearExpr };
-    case PolyhedralSystemParser::GT: return PPL::Constraint { leftLinearExpr >  rightLinearExpr };
-    default: throw std::runtime_error("PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitConstr::visitConstr: Unknown constraint");
+    case PolyhedralSystemParser::LE:
+        m_constraints[m_visitKey] = std::move(std::make_unique<PPL::Constraint>(*leftLinearExpr <= *rightLinearExpr));
+        break;
+    case PolyhedralSystemParser::LT:
+        m_constraints[m_visitKey] = std::move(std::make_unique<PPL::Constraint>(*leftLinearExpr < *rightLinearExpr));
+        break;
+    case PolyhedralSystemParser::EQ:
+        m_constraints[m_visitKey] = std::move(std::make_unique<PPL::Constraint>(*leftLinearExpr == *rightLinearExpr));
+        break;
+    case PolyhedralSystemParser::GE:
+        m_constraints[m_visitKey] = std::move(std::make_unique<PPL::Constraint>(*leftLinearExpr >= *rightLinearExpr));
+        break;
+    case PolyhedralSystemParser::GT:
+        m_constraints[m_visitKey] = std::move(std::make_unique<PPL::Constraint>(*leftLinearExpr > *rightLinearExpr));
+        break;
+    default:
+        throw std::runtime_error("PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitConstr::visitConstr: Unknown constraint");
     }
+
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitLinearExpr(PolyhedralSystemParser::LinearExprContext* ctx)
 {
-    const std::any term { visit(ctx->term()) };
-    const auto linearExpr { std::any_cast<PPL::Linear_Expression>(term) };
-    PPL::Linear_Expression signedLinearExpression { startsWithMinusSign(ctx) ? -linearExpr : linearExpr };
+    const int key { std::any_cast<int>(visit(ctx->term())) };
+    auto linearExpressionResult { popLinearExpression(key) };
+
+    if (startsWithMinusSign(ctx))
+    {
+        auto minusLinearExpression { -(*linearExpressionResult) };
+        linearExpressionResult->m_swap(minusLinearExpression);
+    }
+
     for (PolyhedralSystemParser::SignTermContext* signTerm : ctx->signTerm())
     {
-        const std::any any { visit(signTerm) };
-        const PPL::Linear_Expression linearExpression { std::any_cast<PPL::Linear_Expression>(any) };
-        signedLinearExpression += linearExpression;
+        const int signTermKey { std::any_cast<int>(visit(signTerm)) };
+        const auto linearExpression { popLinearExpression(signTermKey) };
+        *linearExpressionResult += *linearExpression;
     }
-    return signedLinearExpression;
+
+    m_linearExpressions[m_visitKey] = std::move(linearExpressionResult);
+    return std::make_any<int>(m_visitKey++);
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitSignTerm(PolyhedralSystemParser::SignTermContext* ctx)
 {
-    const std::any term { visit(ctx->term()) };
-    const auto linearExpr { std::any_cast<PPL::Linear_Expression>(term) };
-    const bool isMinusSign { ctx->op->getType() == PolyhedralSystemParser::MINUS };
-    return isMinusSign ? -linearExpr : linearExpr;
+    const int key { std::any_cast<int>(visit(ctx->term())) };
+
+    auto linearExpression { popLinearExpression(key) };
+    if (isNegativeTerm(ctx))
+    {
+        auto minusLinearExpression { -(*linearExpression) };
+        linearExpression->m_swap(minusLinearExpression);
+    }
+
+    m_linearExpressions[m_visitKey] = std::move(linearExpression);
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* context)
 {
     const std::string varId { context->ID()->getText() };
-    const PPL::Variable variable { *m_symbolTable.getVariable(varId) };
+    const PPL::Variable variable { *m_symbolTable.get().getVariable(varId) };
     const int coefficient { extractCoefficient(context) };
-    return PPL::Linear_Expression { coefficient * variable };
+    auto linearExpression { std::make_unique<PPL::Linear_Expression>(coefficient * variable) };
+    m_linearExpressions.insert(std::make_pair(m_visitKey, std::move(linearExpression)));
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitVar(PolyhedralSystemParser::VarContext* context)
 {
     const std::string varId { context->ID()->getText() };
-    const auto variable { *m_symbolTable.getVariable(varId) };
-    return PPL::Linear_Expression { variable };
+    const auto variable { *m_symbolTable.get().getVariable(varId) };
+    auto linearExpression { std::make_unique<PPL::Linear_Expression>(variable) };
+    m_linearExpressions.insert(std::make_pair(m_visitKey, std::move(linearExpression)));
+    return m_visitKey++;
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInt(PolyhedralSystemParser::IntContext* context)
@@ -184,7 +222,9 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInt(Polyh
     antlr4::tree::TerminalNode* unsignedIntToken { context->UNSIGNED_INT() };
     const std::string unsignedIntTokenStr { unsignedIntToken->getText() };
     const int coefficient { std::stoi(unsignedIntTokenStr) };
-    return PPL::Linear_Expression { coefficient };
+    auto linearExpression { std::make_unique<PPL::Linear_Expression>(coefficient) };
+    m_linearExpressions.insert(std::make_pair(m_visitKey, std::move(linearExpression)));
+    return m_visitKey++;
 }
 
 Poly PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getFlow() const
@@ -205,4 +245,64 @@ Powerset PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getInvariant()
 PolyhedralSystemSymbolTable PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getSymbolTable() const
 {
     return m_symbolTable;
+}
+
+std::unique_ptr<PPL::Linear_Expression> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::popLinearExpression(const int visitKey)
+{
+    const auto pair { m_linearExpressions.find(visitKey) };
+    assert(pair != m_linearExpressions.end());
+    auto linearExpression { std::move(pair->second) };
+    m_linearExpressions.erase(pair);
+    return linearExpression;
+}
+
+std::unique_ptr<Poly> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::popPoly(const int visitKey)
+{
+    const auto pair { m_polyhedra.find(visitKey) };
+    assert(pair != m_polyhedra.end());
+    auto poly { std::move(pair->second) };
+    m_polyhedra.erase(pair);
+    return poly;
+}
+
+std::unique_ptr<Powerset> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::popPowerset(const int visitKey)
+{
+    const auto pair { m_powersets.find(visitKey) };
+    assert(pair != m_powersets.end());
+    auto powerset { std::move(pair->second) };
+    m_powersets.erase(pair);
+    return powerset;
+}
+
+std::unique_ptr<PPL::Constraint> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::popConstraint(const int visitKey)
+{
+    const auto pair { m_constraints.find(visitKey) };
+    assert(pair != m_constraints.end());
+    auto constraint { std::move(pair->second) };
+    m_constraints.erase(pair);
+    return constraint;
+}
+
+namespace
+{
+    int extractCoefficient(PolyhedralSystemParser::IntTimesVarContext* context)
+    {
+        antlr4::tree::TerminalNode* unsignedIntToken { context->UNSIGNED_INT() };
+        const std::string unsignedIntTokenStr { unsignedIntToken->getText() };
+        return std::stoi(unsignedIntTokenStr);
+    }
+
+    bool startsWithMinusSign(const PolyhedralSystemParser::LinearExprContext* linearExprContext)
+    {
+        const antlr4::Token* token { linearExprContext->op };
+        if (!token)
+            return false;
+
+        return token->getType() == PolyhedralSystemParser::MINUS;
+    }
+
+    bool isNegativeTerm(const PolyhedralSystemParser::SignTermContext* ctx)
+    {
+        return ctx->op->getType() == PolyhedralSystemParser::MINUS;
+    }
 }

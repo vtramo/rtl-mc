@@ -13,7 +13,7 @@
 class PolyhedralSystemBuilderVisitor final
 {
 public:
-    explicit PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable symbolTable);
+    explicit PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable& symbolTable);
     PolyhedralSystem buildPolyhedralSystem(PolyhedralSystemParser::SystemContext* parseTree);
 
 private:
@@ -21,7 +21,7 @@ private:
     {
 
     public:
-        explicit PolyhedralSystemVisitor(PolyhedralSystemSymbolTable symbolTable);
+        explicit PolyhedralSystemVisitor(PolyhedralSystemSymbolTable& symbolTable);
 
         std::any visitSystem(PolyhedralSystemParser::SystemContext* ctx) override;
         std::any visitInv(PolyhedralSystemParser::InvContext* ctx) override;
@@ -44,15 +44,24 @@ private:
         [[nodiscard]] PolyhedralSystemSymbolTable getSymbolTable() const;
 
     private:
-        PolyhedralSystemSymbolTable m_symbolTable {};
+        int m_visitKey {};
+        std::unordered_map<int, std::unique_ptr<Powerset>> m_powersets {};
+        std::unordered_map<int, std::unique_ptr<Poly>> m_polyhedra {};
+        std::unordered_map<int, std::unique_ptr<PPL::Linear_Expression>> m_linearExpressions {};
+        std::unordered_map<int, std::unique_ptr<PPL::Constraint>> m_constraints {};
+
+        std::reference_wrapper<PolyhedralSystemSymbolTable> m_symbolTable;
         std::unordered_map<std::string, Powerset> m_denotation {};
         Powerset m_invariant {};
         Poly m_flow {};
+
+        std::unique_ptr<PPL::Constraint> popConstraint(int visitKey);
+        std::unique_ptr<PPL::Linear_Expression> popLinearExpression(int visitKey);
+        std::unique_ptr<Poly> popPoly(int visitKey);
+        std::unique_ptr<Powerset> popPowerset(int visitKey);
     };
 
     PolyhedralSystemVisitor m_visitor;
 };
-
-
 
 #endif //POLYHEDRALSYSTEMBUILDERVISITOR_H
