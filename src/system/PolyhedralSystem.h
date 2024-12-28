@@ -30,7 +30,7 @@ public:
 
     PolyhedralSystem(const PolyhedralSystem&) = delete;
     PolyhedralSystem& operator= (const PolyhedralSystem&) = delete;
-    PolyhedralSystem(PolyhedralSystem&&) = delete;
+    PolyhedralSystem(PolyhedralSystem&&) noexcept;
 
     friend bool operator==(const PolyhedralSystem&, const PolyhedralSystem&);
     friend std::istream& operator>>(std::istream&, PolyhedralSystem&&);
@@ -56,6 +56,7 @@ private:
     );
 
     PolyhedralSystem& operator= (PolyhedralSystem&&) noexcept;
+
     friend class PolyhedralSystemBuilder;
 
     void computePreFlow();

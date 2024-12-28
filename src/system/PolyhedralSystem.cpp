@@ -118,6 +118,15 @@ PolyhedralSystem::PolyhedralSystem(
     computePreFlow();
 }
 
+PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
+    : m_denotation { std::move(polyhedralSystem.m_denotation) }
+    , m_symbolTable { std::move(polyhedralSystem.m_symbolTable) }
+{
+    m_flow.m_swap(polyhedralSystem.m_flow);
+    m_invariant.m_swap(polyhedralSystem.m_invariant);
+    m_preFlow.m_swap(polyhedralSystem.m_preFlow);
+}
+
 PolyhedralSystem& PolyhedralSystem::operator=(PolyhedralSystem&& polyhedralSystem) noexcept
 {
     m_denotation = std::move(polyhedralSystem.m_denotation);
