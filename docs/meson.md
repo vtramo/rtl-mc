@@ -34,6 +34,14 @@ Per eseguire i tests:
 ```sh
 meson test -C buildDir
 ```
+Alcuni test cases necessitano di un file di input per funzionare (ad esempio per leggere la specifica di un PolyhedralSystem,
+eseguire il parsing e confrontare il risultato con l'output desiderato). Prima di eseguire i tests, è necessario rendere
+disponibile questi file di input ai test eseguibili. Per farlo, eseguire il seguente comando:
+```
+meson install --tags tests
+```
+Il comando installerà i file di input nella build directory, nella stessa directory dei test eseguibili.
+Cercherò di trovare un modo per evitare questo passaggio.
 
 ### Dipendenze
 Il progetto ha bisogno delle seguenti dipendenze:
