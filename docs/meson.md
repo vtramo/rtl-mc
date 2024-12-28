@@ -99,5 +99,9 @@ I possibili valori di `-Db_sanitize` sono:
 ```shell
 meson test --wrap='valgrind --leak-check=full --error-exitcode=1' testname
 ```
+**ATTENZIONE:** per usare valgrind è necessario prima disabilitare ogni sanitizers usando questo comando:
+```
+meson configure -Db_sanitize=none buildDir
+```
 - https://mesonbuild.com/Unit-tests.html#other-test-options
 - https://stackoverflow.com/questions/57734973/how-to-use-valgrind-with-meson
