@@ -15,7 +15,7 @@ meson configure -Dgenerate_parser=false <BUILD_DIRECTORY_PATH>
 
 La generazione del parser avviene a tempo di configurazione del progetto, sarebbe a dire ogni qualvolta viene eseguito
 uno di questi comandi meson:
-- `meson <BUILD_DIR_PATH>` (per creare una nuova build directory)
-- `meson <BUILD_DIR_PATH> --reconfigure` (per riflettere i cambiamenti di configurazione in una build directory gia' esistente)
+- `meson setup <BUILD_DIR_PATH>` (per creare una nuova build directory)
+- `meson setup <BUILD_DIR_PATH> --reconfigure` (per riflettere i cambiamenti di configurazione in una build directory gia' esistente)
 
 Ricordarsi di settare la build option `generate_parser` uguale a true (default).

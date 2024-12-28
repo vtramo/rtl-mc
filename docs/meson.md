@@ -15,12 +15,6 @@ Per creare una build directory, eseguire il seguente comando dalla root del prog
 meson setup buildDir
 ```
 dove _buildDir_ è il nome della build directory. Il nome della build directory è arbitrario.
-
-Equivalentemente:
-```sh
-meson buildDir
-```
-il comando di default se non specificato è `meson setup`.
 Meson creerà una build directory chiamata _buildDir_ configurata in base ai files `meson.build`s e `meson_options.txt`.
 
 Per compilare il progetto:
@@ -115,10 +109,6 @@ oppure quando si aggiunge un nuovo `meson.build` file, per riflettere le nuove c
 già esistente, eseguire il seguente comando:
 ```
 meson setup <BUILD_DIR_PATH> --reconfigure
-```
-equivalentemente:
-```
-meson <BUILD_DIR_PATH> --reconfigure
 ```
 ### Sanitizers
 Add Address and Undefined Behaviour sanitizers as built-in base options in the Meson build configuration via b_sanitize=address,undefined.
