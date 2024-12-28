@@ -118,6 +118,16 @@ PolyhedralSystem::PolyhedralSystem(
     computePreFlow();
 }
 
+PolyhedralSystem& PolyhedralSystem::operator=(PolyhedralSystem&& polyhedralSystem) noexcept
+{
+    m_denotation = std::move(polyhedralSystem.m_denotation);
+    m_flow.m_swap(polyhedralSystem.m_flow);
+    m_invariant.m_swap(polyhedralSystem.m_invariant);
+    m_preFlow.m_swap(polyhedralSystem.m_preFlow);
+    m_symbolTable = std::move(polyhedralSystem.m_symbolTable);
+    return *this;
+}
+
 
 void PolyhedralSystem::computePreFlow()
 {
@@ -125,13 +135,9 @@ void PolyhedralSystem::computePreFlow()
     m_preFlow.m_swap(PPLUtils::reflectionAffineImage(preFlow));
 }
 
-std::istream& operator>>(std::istream& istream, PolyhedralSystem& polyhedralSystem)
+std::istream& operator>>(std::istream& istream, PolyhedralSystem&& polyhedralSystem)
 {
-    const PolyhedralSystem buildedPolyhedralSystem { buildPolyhedralSystem(istream) };
-    polyhedralSystem.m_denotation = buildedPolyhedralSystem.m_denotation;
-    polyhedralSystem.m_symbolTable = buildedPolyhedralSystem.m_symbolTable;
-    polyhedralSystem.m_flow = buildedPolyhedralSystem.m_flow;
-    polyhedralSystem.m_invariant = buildedPolyhedralSystem.m_invariant;
-    polyhedralSystem.m_preFlow = buildedPolyhedralSystem.m_preFlow;
+    PolyhedralSystem buildedPolyhedralSystem { buildPolyhedralSystem(istream) };
+    polyhedralSystem = std::move(buildedPolyhedralSystem);
     return istream;
 }

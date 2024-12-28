@@ -28,11 +28,12 @@ public:
 
     [[nodiscard]] static PolyhedralSystemBuilder builder();
 
+    PolyhedralSystem(const PolyhedralSystem&) = delete;
     PolyhedralSystem& operator= (const PolyhedralSystem&) = delete;
-    PolyhedralSystem& operator= (PolyhedralSystem&&) = delete;
+    PolyhedralSystem(PolyhedralSystem&&) = delete;
 
     friend bool operator==(const PolyhedralSystem&, const PolyhedralSystem&);
-    friend std::istream& operator>>(std::istream&, PolyhedralSystem&);
+    friend std::istream& operator>>(std::istream&, PolyhedralSystem&&);
 private:
     Powerset m_invariant {};
     Poly m_flow {};
@@ -54,6 +55,7 @@ private:
         PolyhedralSystemSymbolTable&& symbolTable
     );
 
+    PolyhedralSystem& operator= (PolyhedralSystem&&) noexcept;
     friend class PolyhedralSystemBuilder;
 
     void computePreFlow();
