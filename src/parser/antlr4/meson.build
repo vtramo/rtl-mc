@@ -32,6 +32,10 @@ antlr4_source_files = [
     current_source_dir / 'PolyhedralSystemSymbolTableListener.cpp',
     current_source_dir / 'PolyhedralSystemBuilderVisitor.h',
     current_source_dir / 'PolyhedralSystemBuilderVisitor.cpp',
+    current_source_dir / 'PolyhedralSystemErrorListener.h',
+    current_source_dir / 'PolyhedralSystemErrorListener.cpp',
+    current_source_dir / 'PolyhedralSystemParsingResult.h',
+    current_source_dir / 'PolyhedralSystemSyntaxError.h',
 ]
 
 project_source_files += antlr4_source_files

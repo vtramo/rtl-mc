@@ -8,35 +8,10 @@
 #include "PolyhedralSystemBuilderVisitor.h"
 #include "PolyhedralSystemLexer.h"
 #include "PolyhedralSystemParser.h"
+#include "PolyhedralSystemParsingResult.h"
 #include "PolyhedralSystemSymbolTableListener.h"
+#include "PolyhedralSystemErrorListener.h"
 #include "ppl_utils.h"
-
-
-PolyhedralSystem buildPolyhedralSystem(const std::string_view input)
-{
-    antlr4::ANTLRInputStream antlrInput { input };
-    return buildPolyhedralSystem(&antlrInput);
-}
-
-PolyhedralSystem buildPolyhedralSystem(std::istream& input)
-{
-    antlr4::ANTLRInputStream antlrInput { input };
-    return buildPolyhedralSystem(&antlrInput);
-}
-
-PolyhedralSystem buildPolyhedralSystem(antlr4::ANTLRInputStream* input)
-{
-    PolyhedralSystemLexer lexer { input };
-    antlr4::CommonTokenStream tokens { &lexer };
-    PolyhedralSystemParser parser { &tokens };
-    PolyhedralSystemParser::SystemContext* parseTree = parser.system();
-    antlr4::tree::ParseTreeWalker walker {};
-    PolyhedralSystemSymbolTableListener symbolTableListener {};
-    walker.walk(&symbolTableListener, parseTree);
-    PolyhedralSystemSymbolTable symbolTable { symbolTableListener.getSymbolTable() };
-    PolyhedralSystemBuilderVisitor polyhedralSystemBuilderVisitor { symbolTable };
-    return polyhedralSystemBuilderVisitor.buildPolyhedralSystem(parseTree);
-}
 
 const Poly& PolyhedralSystem::getFlow() const
 {
@@ -146,7 +121,55 @@ void PolyhedralSystem::computePreFlow()
 
 std::istream& operator>>(std::istream& istream, PolyhedralSystem&& polyhedralSystem)
 {
-    PolyhedralSystem buildedPolyhedralSystem { buildPolyhedralSystem(istream) };
-    polyhedralSystem = std::move(buildedPolyhedralSystem);
+    PolyhedralSystemParsingResult parsingResult { parsePolyhedralSystem(istream) };
+
+    if (parsingResult.ok())
+    {
+        polyhedralSystem = std::move(*parsingResult);
+        return istream;
+    }
+
+    istream.setstate(std::ios::failbit);
+    polyhedralSystem = {};
+
     return istream;
+}
+
+PolyhedralSystemParsingResult parsePolyhedralSystem(const std::string_view input)
+{
+    antlr4::ANTLRInputStream antlrInput { input };
+    return parsePolyhedralSystem(&antlrInput);
+}
+
+PolyhedralSystemParsingResult parsePolyhedralSystem(std::istream& input)
+{
+    antlr4::ANTLRInputStream antlrInput { input };
+    return parsePolyhedralSystem(&antlrInput);
+}
+
+PolyhedralSystemParsingResult parsePolyhedralSystem(antlr4::ANTLRInputStream* input)
+{
+    PolyhedralSystemLexer lexer { input };
+    PolyhedralSystemErrorListener* errorListener { new PolyhedralSystemErrorListener {} };
+    lexer.removeErrorListeners();
+    lexer.addErrorListener(errorListener);
+    antlr4::CommonTokenStream tokens { &lexer };
+    PolyhedralSystemParser parser { &tokens };
+    parser.removeErrorListeners();
+    parser.addErrorListener(errorListener);
+    PolyhedralSystemParser::SystemContext* parseTree = parser.system();
+    if (errorListener->hasErrors())
+    {
+        std::vector errors { errorListener->getErrors() };
+        delete errorListener;
+        return PolyhedralSystemParsingResult { errors };
+    }
+
+    delete errorListener;
+    antlr4::tree::ParseTreeWalker walker {};
+    PolyhedralSystemSymbolTableListener symbolTableListener {};
+    walker.walk(&symbolTableListener, parseTree);
+    PolyhedralSystemSymbolTable symbolTable { symbolTableListener.getSymbolTable() };
+    PolyhedralSystemBuilderVisitor polyhedralSystemBuilderVisitor { symbolTable };
+    return PolyhedralSystemParsingResult { polyhedralSystemBuilderVisitor.buildPolyhedralSystem(parseTree) };
 }

@@ -6,7 +6,6 @@
 #define POLYHEDRALSYSTEM_H
 
 #include <optional>
-
 #include "ANTLRInputStream.h"
 #include "PolyhedralSystemBuilder.h"
 #include "PolyhedralSystemSymbolTable.h"
@@ -62,7 +61,8 @@ private:
     void computePreFlow();
 };
 
-PolyhedralSystem buildPolyhedralSystem(std::string_view);
-PolyhedralSystem buildPolyhedralSystem(std::istream&);
-PolyhedralSystem buildPolyhedralSystem(antlr4::ANTLRInputStream*);
+class PolyhedralSystemParsingResult;
+PolyhedralSystemParsingResult parsePolyhedralSystem(std::string_view);
+PolyhedralSystemParsingResult parsePolyhedralSystem(std::istream&);
+PolyhedralSystemParsingResult parsePolyhedralSystem(antlr4::ANTLRInputStream*);
 #endif //POLYHEDRALSYSTEM_H

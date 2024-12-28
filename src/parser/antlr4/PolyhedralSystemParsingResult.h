@@ -1,0 +1,87 @@
+//
+// Created by vincenzo on 28/12/24.
+//
+
+#ifndef POLYHEDRALSYSTEMPARSINGRESULT_H
+#define POLYHEDRALSYSTEMPARSINGRESULT_H
+
+#include <vector>
+#include <memory>
+
+#include "PolyhedralSystemSyntaxError.h"
+#include "PolyhedralSystem.h"
+
+bool isLexicalError(const PolyhedralSystemParserError& error);
+bool isSyntaxError(const PolyhedralSystemParserError& error);
+bool isUnknownError(const PolyhedralSystemParserError& error);
+
+class PolyhedralSystemParsingResult {
+public:
+    [[nodiscard]] bool ok() const { return m_syntaxErrors.empty(); }
+    [[nodiscard]] int errorCount() const { return static_cast<int>(m_syntaxErrors.size()); }
+    [[nodiscard]] int lexicalErrorCount() const { return m_lexicalErrorCount; }
+    [[nodiscard]] int syntaxErrorCount() const { return m_syntaxErrorCount; }
+    [[nodiscard]] int unknownErrorCount() const { return m_unknownErrorCount; }
+
+    [[nodiscard]] std::vector<PolyhedralSystemParserError> errors() const { return m_syntaxErrors; }
+    [[nodiscard]] std::vector<PolyhedralSystemParserError> lexicalErrors() const
+    {
+        return {
+            m_syntaxErrors.begin(),
+            m_syntaxErrors.begin() + m_lexicalErrorCount
+        };
+    }
+
+    [[nodiscard]] std::vector<PolyhedralSystemParserError> syntaxErrors() const
+    {
+        return {
+            m_syntaxErrors.begin() + m_lexicalErrorCount,
+            m_syntaxErrors.begin() + m_lexicalErrorCount + m_syntaxErrorCount
+        };
+    }
+
+    [[nodiscard]] std::vector<PolyhedralSystemParserError> unknownErrors() const
+    {
+        return {
+            m_syntaxErrors.begin() + m_lexicalErrorCount + m_syntaxErrorCount,
+            m_syntaxErrors.end()
+        };
+    }
+
+    explicit PolyhedralSystemParsingResult(std::vector<PolyhedralSystemParserError> syntaxErrors)
+        : m_syntaxErrors { std::move(syntaxErrors) }
+    {
+        const auto itBeginSyntaxErrors { std::partition(m_syntaxErrors.begin(), m_syntaxErrors.end(), isLexicalError) };
+        const auto itBeginUnknownErrors { std::partition(itBeginSyntaxErrors, m_syntaxErrors.end(), isSyntaxError) };
+
+        m_lexicalErrorCount = static_cast<int>(std::distance(m_syntaxErrors.begin(), itBeginSyntaxErrors));
+        m_syntaxErrorCount = static_cast<int>(std::distance(itBeginSyntaxErrors, itBeginUnknownErrors));
+        m_unknownErrorCount = static_cast<int>(std::distance(itBeginUnknownErrors, m_syntaxErrors.end()));
+    }
+
+    explicit PolyhedralSystemParsingResult(PolyhedralSystem&& polyhedralSystem)
+        : m_polyhedralSystem { std::make_unique<PolyhedralSystem>(std::move(polyhedralSystem)) } {}
+
+    [[nodiscard]] PolyhedralSystem& operator* () const { return *m_polyhedralSystem; }
+private:
+    std::vector<PolyhedralSystemParserError> m_syntaxErrors {};
+    std::unique_ptr<PolyhedralSystem> m_polyhedralSystem { nullptr };
+    int m_lexicalErrorCount {};
+    int m_syntaxErrorCount {};
+    int m_unknownErrorCount {};
+};
+
+inline bool isLexicalError(const PolyhedralSystemParserError& error)
+{
+    return error.type() == PolyhedralSystemParserError::Type::lexical;
+};
+inline bool isSyntaxError(const PolyhedralSystemParserError& error)
+{
+    return error.type() == PolyhedralSystemParserError::Type::syntax;
+};
+inline bool isUnknownError(const PolyhedralSystemParserError& error)
+{
+    return error.type() == PolyhedralSystemParserError::Type::unknown;
+};
+
+#endif //POLYHEDRALSYSTEMPARSINGRESULT_H
