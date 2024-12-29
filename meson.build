@@ -5,7 +5,7 @@ project('rtl-mc', 'cpp',
     'warning_level=3',
     'buildtype=debugoptimized',
     'cpp_std=c++17',
-    'b_sanitize=address,undefined' # https://github.com/google/sanitizers
+    'b_sanitize=none' # https://github.com/google/sanitizers
   ])
 
 catch2_dep = dependency('catch2', fallback : ['catch2', 'catch2_with_main_dep'], version: '>=3.7.1')
