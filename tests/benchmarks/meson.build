@@ -1,14 +1,3 @@
-install_data(
-    sources: [meson.current_source_dir() / 'polyhedral-system-benchmark-1.txt'],
-    install_dir: meson.project_build_root() / 'tests' / 'benchmarks',
-    install_tag: 'tests'
-)
-install_data(
-    sources: [meson.current_source_dir() / 'polyhedral-system-benchmark-1.txt'],
-    install_dir: meson.project_build_root(),
-    install_tag: 'tests'
-)
-
 parse_system_benchmarks_source_files = [
     'parser.cpp',
     antlr4_source_files,
@@ -23,4 +12,4 @@ parse_system_benchmarks_exe = executable(
     include_directories : include_directories
 )
 
-benchmark('parser-benchmarks', parse_system_benchmarks_exe)
+benchmark('parser-benchmarks', parse_system_benchmarks_exe, suite: ['parser'], workdir: meson.current_source_dir())
