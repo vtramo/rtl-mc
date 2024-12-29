@@ -28,14 +28,6 @@ Per eseguire i tests:
 ```sh
 meson test -C buildDir
 ```
-Alcuni test cases necessitano di un file di input per funzionare (ad esempio per leggere la specifica di un PolyhedralSystem,
-eseguire il parsing e confrontare il risultato con l'output desiderato). Prima di eseguire i tests, è necessario rendere
-disponibile questi file di input ai test eseguibili. Per farlo, eseguire il seguente comando:
-```
-meson install --tags tests
-```
-Il comando installerà i file di input nella build directory, nella stessa directory dei test eseguibili.
-Cercherò di trovare un modo per evitare questo passaggio.
 
 ### Dipendenze
 Il progetto ha bisogno delle seguenti dipendenze:
@@ -49,8 +41,9 @@ Un ulteriore dipendenza è [ANTLR4 CLI Tools](https://github.com/antlr/antlr4-to
 automaticamente il parser durante la build.
 
 Meson provvederà a installare automaticamente Catch2 come [subproject](https://mesonbuild.com/Subprojects.html).
-Il resto delle dipendenze devono essere installate manualmente. Un modo per farlo è installare le dipendenze manualmente e successivamente
-creare dei pkg config files per ogni dipendenza in uno dei percorsi specificati dal seguente comando:
+Il resto delle dipendenze devono essere installate manualmente. Un modo per farlo è installare le dipendenze manualmente
+sul proprio sistema e successivamente creare/generare dei pkg config files per ogni dipendenza in uno dei percorsi
+specificati dal seguente comando:
 ```
 pkg-config --variable pc_path pkg-config
 ```
@@ -110,6 +103,10 @@ già esistente, eseguire il seguente comando:
 ```
 meson setup <BUILD_DIR_PATH> --reconfigure
 ```
+oppure per ripartire da zero:
+```
+meson setup <BUILD_DIR_PATH> --wipe
+```
 ### Sanitizers
 Add Address and Undefined Behaviour sanitizers as built-in base options in the Meson build configuration via b_sanitize=address,undefined.
 
@@ -123,7 +120,7 @@ Per disabilitare i sanitizers:
 meson configure -Db_sanitize=none <BUILD_DIRECTORY_PATH>
 ```
 I possibili valori di `-Db_sanitize` sono:
-- none
+- none (questo è il valore di default default)
 - address
 - thread
 - undefined
@@ -133,7 +130,7 @@ I possibili valori di `-Db_sanitize` sono:
 ### Eseguire i test con valgrind attivo
 È necessario installare valgrind.
 ```shell
-meson test --wrap='valgrind --leak-check=full --error-exitcode=1' testname
+meson test --wrap='valgrind --leak-check=full --error-exitcode=1' -C <BUILD_DIR_PATH>
 ```
 **ATTENZIONE:** per usare valgrind è necessario prima disabilitare ogni sanitizers usando questo comando:
 ```
@@ -141,3 +138,8 @@ meson configure -Db_sanitize=none buildDir
 ```
 - https://mesonbuild.com/Unit-tests.html#other-test-options
 - https://stackoverflow.com/questions/57734973/how-to-use-valgrind-with-meson
+
+
+
+- Catch2 Dynamic tests: https://stackoverflow.com/questions/72582804/how-to-add-parameters-to-section-names-in-catch2
+- Catch2 https://android.googlesource.com/platform/external/catch2/+/e7c3bdb3/docs/test-cases-and-sections.md
