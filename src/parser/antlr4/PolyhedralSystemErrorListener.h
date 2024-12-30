@@ -6,7 +6,7 @@
 #define POLYHEDRALSYSTEMERRORLISTENER_H
 
 #include "antlr4-runtime.h"
-#include "PolyhedralSystemSyntaxError.h"
+#include "PolyhedralSystemParserError.h"
 
 
 class PolyhedralSystemErrorListener final: public antlr4::BaseErrorListener {

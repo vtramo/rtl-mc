@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 
-#include "PolyhedralSystemSyntaxError.h"
+#include "PolyhedralSystemParserError.h"
 #include "PolyhedralSystem.h"
 
 bool isLexicalError(const PolyhedralSystemParserError& error);

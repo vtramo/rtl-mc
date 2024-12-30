@@ -2,8 +2,8 @@
 // Created by vincenzo on 28/12/24.
 //
 
-#ifndef POLYHEDRALSYSTEMSYNTAXERROR_H
-#define POLYHEDRALSYSTEMSYNTAXERROR_H
+#ifndef POLYHEDRALSYSTEMPARSERERROR_H
+#define POLYHEDRALSYSTEMPARSERERROR_H
 
 #include <string>
 
@@ -41,4 +41,4 @@ private:
       Type m_type {};
 };
 
-#endif //POLYHEDRALSYSTEMSYNTAXERROR_H
+#endif //POLYHEDRALSYSTEMPARSERERROR_H

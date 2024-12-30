@@ -10,7 +10,7 @@
 namespace PPLUtils {
     Poly& reflectionAffineImage(Poly& polyhedron);
 
-    Poly poly(std::vector<PPL::Constraint> constraints);
+    Poly poly(std::vector<PPL::Constraint>&& constraints);
 
     Powerset powerset(std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra);
 

@@ -21,7 +21,7 @@ namespace PPLUtils
         return polyhedron;
     }
 
-    Poly poly(std::vector<PPL::Constraint> constraints)
+    Poly poly(std::vector<PPL::Constraint>&& constraints)
     {
         PPL::Constraint_System constraintSystem {};
 

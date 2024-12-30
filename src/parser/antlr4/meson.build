@@ -35,7 +35,7 @@ antlr4_source_files = [
     current_source_dir / 'PolyhedralSystemErrorListener.h',
     current_source_dir / 'PolyhedralSystemErrorListener.cpp',
     current_source_dir / 'PolyhedralSystemParsingResult.h',
-    current_source_dir / 'PolyhedralSystemSyntaxError.h',
+    current_source_dir / 'PolyhedralSystemParserError.h',
 ]
 
 project_source_files += antlr4_source_files
