@@ -1,0 +1,20 @@
+%! Author = vincenzo
+%! Date = 30/12/24
+
+% Preamble
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{letltxmacro}
+\LetLtxMacro{\ttt}{\texttt}
+
+% Document
+\begin{document}
+$\begin{aligned}
+     \tt{F}\,\varphi &\,\overset{\ttt{n}}{=} true\,\ttt{U}\,\varphi \\
+     &\overset{\ttt{dsc}}{=} true\,\ttt{U}\,(\varphi\,\land\,(true\,\lor\, sing)) \\
+     &\,= true\,\ttt{U}\,(\varphi\,\land\,sing) \\
+     &\,\overset{\ttt{t}}{=} true\,\ttt{U}\,(\,\boxed\varphi\,\land\,sing\,\land\,alive)
+\end{aligned}$
+\end{document}

@@ -1,0 +1,22 @@
+%! Author = vincenzo
+%! Date = 30/12/24
+
+% Preamble
+\documentclass[11pt]{article}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{letltxmacro}
+\LetLtxMacro{\ttt}{\texttt}
+
+% Document
+\begin{document}
+
+$\begin{aligned}
+     \ttt{G}\,\varphi &\overset{\ttt{n}}{=} \neg \ttt{F}\neg \varphi \\
+     &\overset{\ttt{n}}{=} \neg (true\,\ttt{U}\,\neg\varphi) \\
+     &\overset{\ttt{dsc}}{=}\neg (true\,\ttt{U}\,(\neg\varphi \land sing)) \\
+     &\overset{\ttt{t}}{=}\neg (true\,\ttt{U}\,(\neg\,\boxed\varphi\,\land\,sing\,\land\,alive))
+\end{aligned}$
+
+\end{document}
