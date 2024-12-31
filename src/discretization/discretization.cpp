@@ -40,7 +40,7 @@ spot::formula toDiscretizedLtlFormula(spot::formula&& formula)
 spot::formula ndtF(spot::formula&& formula)
 {
     spot::formula child { toDiscretizedLtlFormula(formula[0]) };
-    return U(top(), singAndAliveAnd(std::move(child)));
+    return U(top(), And({ std::move(child), alive() }));
 }
 
 spot::formula ndtG(spot::formula&& formula)
@@ -53,6 +53,7 @@ spot::formula ndtU(spot::formula&& formula)
 {
     spot::formula child1 { toDiscretizedLtlFormula(formula[0]) };
     spot::formula child2 { toDiscretizedLtlFormula(formula[1]) };
+
     return U(child1, And({
                          std::move(child2),
                          singOr(std::move(child1)),
@@ -64,6 +65,7 @@ spot::formula ndtR(spot::formula&& formula)
 {
     spot::formula child1 { toDiscretizedLtlFormula(formula[0]) };
     spot::formula child2 { toDiscretizedLtlFormula(formula[1]) };
+
     return Not(U(Not(child1), And({
                                   Not(std::move(child2)),
                                   singOrNot(std::move(child1)),
@@ -94,10 +96,10 @@ spot::formula ndtS(spot::formula&& formula)
         And({
             notSing(),
             U(std::move(child1), And({
-                          std::move(child2),
-                          singOr(child1),
-                          alive()
-                      }))})
+                                     std::move(child2),
+                                     singOr(child1),
+                                     alive()
+                                 }))})
     });
 }
 
@@ -108,7 +110,7 @@ spot::formula ndtM(spot::formula&& formula)
     spot::formula child1AndChild2 { And({ child1, child2 }) };
 
     return And({
-        U(top(), singAndAliveAnd(std::move(child1AndChild2))),
+        U(top(), And({ std::move(child1AndChild2), alive() })),
 
         Not(U(Not(child1), And({
                                Not(std::move(child1)),
