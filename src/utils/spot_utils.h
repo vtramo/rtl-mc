@@ -28,5 +28,6 @@ spot::formula singOr(const spot::formula& formula);
 spot::formula singOrNot(spot::formula&& formula);
 spot::formula singAndAliveAnd(spot::formula&& formula);
 
+spot::formula generateRtlf(int atomicPropSetSize, int formulaSize, spot::op replaceXWith = spot::op::F);
 
 #endif //SPOT_UTILS_H

@@ -1,6 +1,9 @@
 #include "spot_constants.h"
 #include "spot_utils.h"
 
+#include <spot/tl/apcollect.hh>
+#include <spot/tl/randomltl.hh>
+
 spot::formula top()
 {
     return spot::formula::tt();
@@ -131,3 +134,34 @@ spot::formula notSing()
     return Not(spot::constants::g_sing);
 }
 
+spot::formula generateRtlf(const int atomicPropSetSize, const int formulaSize, spot::op replaceXWith)
+{
+    const spot::atomic_prop_set AP {  spot::create_atomic_prop_set(atomicPropSetSize) };
+    const spot::random_ltl randomLtl { &AP };
+    spot::formula generatedFormula { randomLtl.generate(formulaSize) };
+
+    auto replaceX = [&] (spot::formula formula, auto&& self)
+    {
+        if (formula.is(spot::op::X))
+        {
+            switch (replaceXWith)
+            {
+            case spot::op::F:
+                formula = { F(formula[0]) };
+                break;
+
+            case spot::op::G:
+                formula = { G(formula[0]) };
+                break;
+
+            default:
+                formula = { F(formula[0]) };
+                break;
+            }
+        }
+
+        return formula.map(self, self);
+    };
+
+    return replaceX(generatedFormula, replaceX);
+}
