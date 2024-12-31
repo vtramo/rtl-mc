@@ -6,13 +6,13 @@
 spot::formula imposeSingOpenLastProperty(spot::formula&& formula);
 spot::formula discretize(spot::formula&& formula);
 
-static spot::formula toDiscretizedLtlFormula(spot::formula&& formula);
-static spot::formula ndtF(spot::formula&& formula);
-static spot::formula ndtG(spot::formula&& formula);
-static spot::formula ndtU(spot::formula&& formula);
-static spot::formula ndtR(spot::formula&& formula);
-static spot::formula ndtS(spot::formula&& formula);
-static spot::formula ndtM(spot::formula&& formula);
-static spot::formula ndtW(spot::formula&& formula);
+spot::formula toDiscretizedLtlFormula(spot::formula&& formula);
+spot::formula ndtF(spot::formula&& formula);
+spot::formula ndtG(spot::formula&& formula);
+spot::formula ndtU(spot::formula&& formula);
+spot::formula ndtR(spot::formula&& formula);
+spot::formula ndtS(spot::formula&& formula);
+spot::formula ndtM(spot::formula&& formula);
+spot::formula ndtW(spot::formula&& formula);
 
 #endif //DISCRETIZATION_H

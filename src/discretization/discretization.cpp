@@ -53,54 +53,42 @@ spot::formula ndtU(spot::formula&& formula)
 {
     spot::formula child1 { toDiscretizedLtlFormula(formula[0]) };
     spot::formula child2 { toDiscretizedLtlFormula(formula[1]) };
+    spot::formula child1Copy { child1 };
 
-    return U(child1, And({
-                         std::move(child2),
-                         singOr(std::move(child1)),
-                         alive()
-                     }));
+    return U(std::move(child1Copy), And({
+                                        std::move(child2),
+                                        singOr(std::move(child1)),
+                                        alive()
+                                    }));
 }
 
 spot::formula ndtR(spot::formula&& formula)
 {
     spot::formula child1 { toDiscretizedLtlFormula(formula[0]) };
     spot::formula child2 { toDiscretizedLtlFormula(formula[1]) };
+    spot::formula child1Copy { child1 };
 
-    return Not(U(Not(child1), And({
-                                  Not(std::move(child2)),
-                                  singOrNot(std::move(child1)),
-                                  alive()
-                              })));
+    return Not(U(Not(std::move(child1Copy)), And({
+                                                 Not(std::move(child2)),
+                                                 singOrNot(std::move(child1)),
+                                                 alive()
+                                             })));
 }
 
 spot::formula ndtS(spot::formula&& formula)
 {
-    spot::formula child1 { toDiscretizedLtlFormula(formula[0]) }; // p1
-    spot::formula child2 { toDiscretizedLtlFormula(formula[1]) }; // p2
+    spot::formula p1 { toDiscretizedLtlFormula(formula[0]) };
+    spot::formula p2 { toDiscretizedLtlFormula(formula[1]) };
 
-    // a | b
-    return Or({
+    spot::formula x { And({ std::move(p2), singOr(p1), alive() }) }; // (p2 & (p1 | sing) & alive)
+    spot::formula y { U(std::move(p1), std::move(x)) }; // (p1 U (p2 & (p1 | sing) & alive)
 
-        // a := sing & X(alive & (p1 U (p2 & (p1 | sing) & alive)))
-        And({
-            sing(),
-            X(And({
-                alive(),
-                U(child1, And({
-                              child2,
-                              singOr(child1),
-                              alive()
-                          }))}))}),
+    spot::formula a { And({ sing(), X(And({ alive(), y }))}) };
+    spot::formula b { And({ notSing(), std::move(y) }) };
 
-        // b := Not(sing) & (p1 U (p2 & (p1 | sing) & alive))
-        And({
-            notSing(),
-            U(std::move(child1), And({
-                                     std::move(child2),
-                                     singOr(child1),
-                                     alive()
-                                 }))})
-    });
+    // a := sing & X(alive & (p1 U (p2 & (p1 | sing) & alive)))
+    // b := Not(sing) & (p1 U (p2 & (p1 | sing) & alive))
+    return Or({ std::move(a), std::move(b) });
 }
 
 spot::formula ndtM(spot::formula&& formula)
@@ -108,15 +96,16 @@ spot::formula ndtM(spot::formula&& formula)
     spot::formula child1 { toDiscretizedLtlFormula(formula[0]) };
     spot::formula child2 { toDiscretizedLtlFormula(formula[1]) };
     spot::formula child1AndChild2 { And({ child1, child2 }) };
+    spot::formula child1Copy { child1 };
 
     return And({
         U(top(), And({ std::move(child1AndChild2), alive() })),
 
-        Not(U(Not(child1), And({
-                               Not(std::move(child1)),
-                               singOrNot(std::move(child2)),
-                               alive()
-                            })))
+        Not(U(Not(std::move(child1)), And({
+                                          Not(std::move(child1Copy)),
+                                          singOrNot(std::move(child2)),
+                                          alive()
+                                      })))
     });
 }
 
@@ -125,13 +114,8 @@ spot::formula ndtW(spot::formula&& formula)
     spot::formula child1 { toDiscretizedLtlFormula(formula[0]) };
     spot::formula child2 { toDiscretizedLtlFormula(formula[1]) };
 
-    return Or({
-        U(child1, And({
-                      std::move(child2),
-                      singOr(child1),
-                      alive()
-                  })),
+    spot::formula a { U(child1, And({ std::move(child2), singOr(child1), alive() })) };
+    spot::formula b { Not(U(top(), singAndAliveAnd(Not(std::move(child1))))) };
 
-        Not(U(top(), singAndAliveAnd(Not(std::move(child1)))))
-    });
+    return Or({ std::move(a), std::move(b) });
 }
