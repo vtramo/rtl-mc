@@ -36,6 +36,8 @@ Il progetto ha bisogno delle seguenti dipendenze:
 - GMPXX >= 6.3.0
 - ANTLR4 Runtime >= 4.13.0: https://www.antlr.org/
 - Catch2 >=3.7.1 (test framework)
+- SPOT 2.12.1 (Installare la nostra versione modificata https://github.com/vtramo/spot/tree/mc/rtlf). Questa versione
+  introduce un nuovo operatore strict until operator (S). Il branch è `mc/rtlf`.
 
 Un ulteriore dipendenza è [ANTLR4 CLI Tools](https://github.com/antlr/antlr4-tools/blob/master/README.md). In particolare, deve essere possibile usare il comando `antlr4` per generare
 automaticamente il parser durante la build.
