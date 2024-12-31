@@ -12,4 +12,7 @@ parse_system_tests_exe = executable(
     include_directories : include_directories
 )
 
+# Copy test files into build directory
+configure_file(input: 'polyhedral-system-test-1.txt', output: 'polyhedral-system-test-1.txt', copy: true)
+
 test('parser', parse_system_tests_exe, suite: ['parser'], workdir: meson.current_source_dir())
