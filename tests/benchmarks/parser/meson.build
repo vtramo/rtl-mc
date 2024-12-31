@@ -1,6 +1,6 @@
 parse_system_benchmarks_source_files = [
     'parser_benchmarks.cpp',
-    benchmark_utils_src_files,
+    test_utils_src_files,
     antlr4_source_files,
     polyhedral_system_source_files,
     ppl_utils_source_files

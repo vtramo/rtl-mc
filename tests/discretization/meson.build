@@ -11,4 +11,7 @@ discretization_tests_exe = executable(
     include_directories : include_directories
 )
 
+# Copy benchmark files into build directory
+configure_file(input: 'discretization-test-1.txt', output: 'discretization-test-1.txt', copy: true)
+
 test('discretization', discretization_tests_exe, suite: ['discretization'], workdir: meson.current_source_dir())

@@ -1,6 +1,6 @@
 discretization_benchmarks_source_files = [
     discretization_source_files,
-    benchmark_utils_src_files,
+    test_utils_src_files,
     'discretization_benchmarks.cpp',
     spot_utils_source_files,
 ]

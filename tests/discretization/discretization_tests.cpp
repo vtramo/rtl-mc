@@ -1,3 +1,4 @@
+#include <test_utils.h>
 #include <catch2/catch_test_macros.hpp>
 #include <spot/tl/parse.hh>
 #include <spot/twaalgos/contains.hh>
@@ -137,5 +138,14 @@ TEST_CASE("Discretization tests", "[discretization]")
         spot::formula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
+    }
+
+    SECTION("Discretize large RTLf formula from discretization-test-1.txt")
+    {
+        std::string formulaStr { readTestFileAsString("discretization-test-1.txt") };
+        spot::parsed_formula parsedFormula { spot::parse_infix_psl(formulaStr) };
+        REQUIRE(parsedFormula.errors.empty());
+
+        discretize(std::move(parsedFormula.f));
     }
 }

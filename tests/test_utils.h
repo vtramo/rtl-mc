@@ -4,7 +4,7 @@
 #include <sstream>
 #include <cassert>
 
-inline std::string readBenchmarkFileAsString(std::string_view filename)
+inline std::string readTestFileAsString(std::string_view filename)
 {
     std::string testCaseFilePath { filename };
     std::ifstream input { testCaseFilePath };
