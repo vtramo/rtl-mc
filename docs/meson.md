@@ -122,26 +122,9 @@ Per disabilitare i sanitizers:
 meson configure -Db_sanitize=none <BUILD_DIRECTORY_PATH>
 ```
 I possibili valori di `-Db_sanitize` sono:
-- none (questo è il valore di default default)
+- none (questo è il valore di default)
 - address
 - thread
 - undefined
 - memory
 - address,undefined
-
-### Eseguire i test con valgrind attivo
-È necessario installare valgrind.
-```shell
-meson test --wrap='valgrind --leak-check=full --error-exitcode=1' -C <BUILD_DIR_PATH>
-```
-**ATTENZIONE:** per usare valgrind è necessario prima disabilitare ogni sanitizers usando questo comando:
-```
-meson configure -Db_sanitize=none buildDir
-```
-- https://mesonbuild.com/Unit-tests.html#other-test-options
-- https://stackoverflow.com/questions/57734973/how-to-use-valgrind-with-meson
-
-
-
-- Catch2 Dynamic tests: https://stackoverflow.com/questions/72582804/how-to-add-parameters-to-section-names-in-catch2
-- Catch2 https://android.googlesource.com/platform/external/catch2/+/e7c3bdb3/docs/test-cases-and-sections.md
