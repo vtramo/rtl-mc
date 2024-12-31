@@ -16,6 +16,7 @@ project_source_files = ['main.cpp']
 
 subdir('parser')
 subdir('system')
+subdir('discretization')
 subdir('utils')
 
 project_exe = executable(

@@ -15,7 +15,7 @@ namespace spot::constants {
         })
     };
 
-    inline const formula singOpenProperty {
+    inline const formula singOpenLastProperty {
         And({
             g_sing,
             Not(U(top(), And({ Not(Or({ g_last, Equiv(g_sing, X(g_sing)) })), g_alive }))),
