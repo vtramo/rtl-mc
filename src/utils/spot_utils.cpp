@@ -181,7 +181,7 @@ namespace SpotUtils
                             return hasX;
                         });
 
-        return hasX;
+        return !hasX;
     }
 
     spot::atomic_prop_set atomicPropSet(std::set<std::string>&& atoms)
