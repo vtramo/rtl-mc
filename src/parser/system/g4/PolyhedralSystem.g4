@@ -14,11 +14,13 @@ inv: INV powerset
    ;
 
 flow: FLOW poly
+    | FLOW poly+ { notifyErrorListeners("Too many poly!"); }
     ;
 
-atom: ID powerset               # atomPowerset
-    | ID '{'WS*'}'              # atomEmpty
-    | ID poly                   # atomPoly
+atom: ID powerset                                           # atomPowerset
+    | ID '{'WS*'}'                                          # atomEmpty
+    | ID poly                                               # atomPoly
+    | ID poly+ { notifyErrorListeners("Too many poly!"); }  # atomTooManyPoly
     ;
 
 powerset: '(' poly* ')'
