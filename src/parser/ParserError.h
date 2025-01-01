@@ -3,7 +3,7 @@
 
 #include <optional>
 #include <string>
-#include "LocationError.h"
+#include "PositionError.h"
 
 
 class ParserError {
@@ -16,19 +16,18 @@ public:
     };
 
     [[nodiscard]] std::string_view errorMessage() const { return m_errorMessage; }
-    [[nodiscard]] LocationError startLocation() const { return m_startLocation; }
-    [[nodiscard]] std::optional<LocationError> endLocation() const { return m_endLocation; }
+    [[nodiscard]] PositionError startLocation() const { return m_startPosition; }
+    [[nodiscard]] std::optional<PositionError> endLocation() const { return m_endPosition; }
     [[nodiscard]] Type type() const { return m_type; }
 
     ParserError(
-        const LocationError& startLocation,
+        const PositionError& startPosition,
         const std::string_view errorMessage,
         const Type type
     ) : m_errorMessage { errorMessage }
-      , m_startLocation { startLocation }
+      , m_startPosition { startPosition }
       , m_type { type }
       {
-          
       }
 
     ParserError(
@@ -37,29 +36,37 @@ public:
         const std::size_t charPositionInLine,
         const Type type
     ) : m_errorMessage { errorMessage }
-      , m_startLocation { LocationError { line, charPositionInLine } }
+      , m_startPosition { PositionError { line, charPositionInLine } }
       , m_type { type }
       {
-          
       }
 
     ParserError(
-        const LocationError& startLocation,
-        const LocationError& endLocation,
+        const PositionError& startPosition,
+        const PositionError& endPosition,
         const std::string_view errorMessage,
         const Type type
     ) : m_errorMessage { errorMessage }
-      , m_startLocation { startLocation }
-      , m_endLocation { endLocation }
+      , m_startPosition { startPosition }
+      , m_endPosition { endPosition }
       , m_type { type }
       {
-          
       }
+
+    explicit ParserError(spot::one_parse_error&& spotParserError)
+      : ParserError(
+          PositionError { spotParserError.first.begin },
+          PositionError { spotParserError.first.end },
+          std::move(spotParserError.second),
+          Type::unknown
+        )
+    {
+    }
 
 private:
       std::string m_errorMessage {};
-      LocationError m_startLocation {};
-      std::optional<LocationError> m_endLocation {};
+      PositionError m_startPosition {};
+      std::optional<PositionError> m_endPosition {};
       Type m_type {};
 };
 

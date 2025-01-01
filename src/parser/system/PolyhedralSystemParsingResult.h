@@ -59,6 +59,7 @@ public:
         : m_polyhedralSystem { std::make_unique<PolyhedralSystem>(std::move(polyhedralSystem)) } {}
 
     [[nodiscard]] PolyhedralSystem& operator* () const { return *m_polyhedralSystem; }
+    [[nodiscard]] bool operator! () const { return ok(); }
 private:
     std::vector<ParserError> m_syntaxErrors {};
     std::unique_ptr<PolyhedralSystem> m_polyhedralSystem { nullptr };

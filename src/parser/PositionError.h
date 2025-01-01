@@ -1,25 +1,25 @@
-//
-// Created by vincenzo on 01/01/25.
-//
-
 #ifndef LOCATION_H
 #define LOCATION_H
 
-class LocationError
+#include <spot/tl/parse.hh>
+
+class PositionError
 {
 public:
 
     [[nodiscard]] std::size_t line() const { return m_line; }
     [[nodiscard]] std::size_t charPositionInLine() const { return m_charPositionInLine; }
 
-    LocationError(const std::size_t m_line, const std::size_t m_char_position_in_line)
-        : m_charPositionInLine { m_char_position_in_line }
+    PositionError(const std::size_t m_line, const std::size_t m_charPositionInLine)
+        : m_charPositionInLine { m_charPositionInLine }
         , m_line { m_line }
     {
-
     }
 
-    LocationError() = default;
+    explicit PositionError(const spot::position& position): PositionError(position.line, position.column)
+    {}
+
+    PositionError() = default;
 
 private:
     std::size_t m_charPositionInLine {};
