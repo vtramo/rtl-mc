@@ -14,9 +14,6 @@ void PolyhedralSystemErrorListener::syntaxError(
     if (const antlr4::Lexer* lexer { dynamic_cast<antlr4::Lexer*>(recognizer) }; lexer != nullptr)
     {
         errorType = ParserError::Type::lexical;
-        assert(lexer);
-        std::cerr << "Token error text: " << offendingSymbol << '\n';
-        std::cerr << "Token length" << offendingSymbol->getText().length() << '\n';
     } else if (const antlr4::Parser* parser { dynamic_cast<antlr4::Parser*>(recognizer) }; parser != nullptr)
     {
         errorType = ParserError::Type::syntax;

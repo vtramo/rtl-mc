@@ -185,8 +185,9 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.unknownErrors().empty());
 
         const ParserError nonIntegerError { polyhedralSystemParsingResult.lexicalErrors()[0] };
-        REQUIRE(nonIntegerError.line() == 1);
-        REQUIRE(nonIntegerError.charPositionInLine() == 13);
+        const LocationError locationError { nonIntegerError.startLocation() };
+        REQUIRE(locationError.line() == 1);
+        REQUIRE(locationError.charPositionInLine() == 13);
     }
 
     SECTION("Non-integer coefficient [TEST 2]")
@@ -210,8 +211,9 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.unknownErrors().empty());
 
         const ParserError nonIntegerError { polyhedralSystemParsingResult.lexicalErrors()[0] };
-        REQUIRE(nonIntegerError.line() == 3);
-        REQUIRE(nonIntegerError.charPositionInLine() == 11);
+        const LocationError locationError { nonIntegerError.startLocation() };
+        REQUIRE(locationError.line() == 3);
+        REQUIRE(locationError.charPositionInLine() == 11);
     }
 
     SECTION("Non-integer coefficient [TEST 3]")
@@ -234,8 +236,9 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.unknownErrors().empty());
 
         const ParserError firstNonIntegerError { polyhedralSystemParsingResult.lexicalErrors()[0] };
-        REQUIRE(firstNonIntegerError.line() == 4);
-        REQUIRE(firstNonIntegerError.charPositionInLine() == 18);
+        const LocationError locationError { firstNonIntegerError.startLocation() };
+        REQUIRE(locationError.line() == 4);
+        REQUIRE(locationError.charPositionInLine() == 18);
     }
 
     SECTION("Empty [TEST 1]")
@@ -292,8 +295,9 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.unknownErrors().empty());
 
         const ParserError invalidVariableIdError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        REQUIRE(invalidVariableIdError.line() == 10);
-        REQUIRE(invalidVariableIdError.charPositionInLine() == 20);
+        const LocationError locationError { invalidVariableIdError.startLocation() };
+        REQUIRE(locationError.line() == 10);
+        REQUIRE(locationError.charPositionInLine() == 20);
     }
 
     SECTION("Parsing an invalid input with >>")
@@ -335,8 +339,9 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.unknownErrors().empty());
 
         const ParserError firstNonIntegerError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        REQUIRE(firstNonIntegerError.line() == 4);
-        REQUIRE(firstNonIntegerError.charPositionInLine() == 0);
+        const LocationError locationError { firstNonIntegerError.startLocation() };
+        REQUIRE(locationError.line() == 4);
+        REQUIRE(locationError.charPositionInLine() == 0);
     }
 
     SECTION("Missing FLOW")
@@ -358,7 +363,8 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.unknownErrors().empty());
 
         const ParserError firstNonIntegerError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        REQUIRE(firstNonIntegerError.line() == 3);
-        REQUIRE(firstNonIntegerError.charPositionInLine() == 4);
+        const LocationError locationError { firstNonIntegerError.startLocation() };
+        REQUIRE(locationError.line() == 3);
+        REQUIRE(locationError.charPositionInLine() == 4);
     }
 }
