@@ -1,7 +1,3 @@
-//
-// Created by vincenzo on 28/12/24.
-//
-
 #include "PolyhedralSystemErrorListener.h"
 
 void PolyhedralSystemErrorListener::syntaxError(
@@ -13,23 +9,26 @@ void PolyhedralSystemErrorListener::syntaxError(
     std::exception_ptr e
 )
 {
-    PolyhedralSystemParserError::Type errorType {};
+    ParserError::Type errorType {};
 
     if (const antlr4::Lexer* lexer { dynamic_cast<antlr4::Lexer*>(recognizer) }; lexer != nullptr)
     {
-        errorType = PolyhedralSystemParserError::Type::lexical;
+        errorType = ParserError::Type::lexical;
+        assert(lexer);
+        std::cerr << "Token error text: " << offendingSymbol << '\n';
+        std::cerr << "Token length" << offendingSymbol->getText().length() << '\n';
     } else if (const antlr4::Parser* parser { dynamic_cast<antlr4::Parser*>(recognizer) }; parser != nullptr)
     {
-        errorType = PolyhedralSystemParserError::Type::syntax;
+        errorType = ParserError::Type::syntax;
     } else
     {
-        errorType = PolyhedralSystemParserError::Type::unknown;
+        errorType = ParserError::Type::unknown;
     }
 
     addError({ msg, line, charPositionInLine, errorType });
 }
 
-void PolyhedralSystemErrorListener::addError(PolyhedralSystemParserError&& error)
+void PolyhedralSystemErrorListener::addError(ParserError&& error)
 {
     m_errors.push_back(std::move(error));
 }
@@ -39,7 +38,7 @@ bool PolyhedralSystemErrorListener::hasErrors() const
     return !m_errors.empty();
 }
 
-std::vector<PolyhedralSystemParserError> PolyhedralSystemErrorListener::getErrors() const
+std::vector<ParserError> PolyhedralSystemErrorListener::getErrors() const
 {
     return m_errors;
 }

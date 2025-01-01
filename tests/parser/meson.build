@@ -1,6 +1,6 @@
 parse_system_tests_source_files = [
     'parse_system_tests.cpp',
-    antlr4_source_files,
+    polyhedral_system_parser_source_files,
     polyhedral_system_source_files,
     ppl_utils_source_files
 ]

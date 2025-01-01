@@ -1,12 +1,8 @@
-//
-// Created by vincenzo on 28/12/24.
-//
-
 #ifndef POLYHEDRALSYSTEMERRORLISTENER_H
 #define POLYHEDRALSYSTEMERRORLISTENER_H
 
 #include "antlr4-runtime.h"
-#include "PolyhedralSystemParserError.h"
+#include "ParserError.h"
 
 
 class PolyhedralSystemErrorListener final: public antlr4::BaseErrorListener {
@@ -20,10 +16,10 @@ public:
       std::exception_ptr e) override;
 
     [[nodiscard]] bool hasErrors() const;
-    [[nodiscard]] std::vector<PolyhedralSystemParserError> getErrors() const;
+    [[nodiscard]] std::vector<ParserError> getErrors() const;
 private:
-    std::vector<PolyhedralSystemParserError> m_errors {};
+    std::vector<ParserError> m_errors {};
 
-    void addError(PolyhedralSystemParserError&& error);
+    void addError(ParserError&& error);
 };
 #endif //POLYHEDRALSYSTEMERRORLISTENER_H

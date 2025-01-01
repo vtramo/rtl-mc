@@ -12,15 +12,17 @@ catch2_dep = dependency('catch2', fallback : ['catch2', 'catch2_with_main_dep'],
 
 src_dir = 'src'
 parser_dir = 'parser'
-antlr4_dir = 'antlr4'
+system_dir = 'system'
 include_directories = [
   include_directories('.'),
   include_directories(src_dir / 'utils'),
   include_directories(src_dir / parser_dir),
-  include_directories(src_dir / 'system'),
+  include_directories(src_dir / system_dir),
   include_directories(src_dir / 'discretization'),
-  include_directories(src_dir / parser_dir / antlr4_dir),
-  include_directories(src_dir / parser_dir / antlr4_dir / 'generated' / 'g4'),
+  include_directories(src_dir / parser_dir),
+  include_directories(src_dir / parser_dir / 'rtlf'),
+  include_directories(src_dir / parser_dir / system_dir),
+  include_directories(src_dir / parser_dir / system_dir / 'generated' / 'g4'),
 ]
 
 subdir(src_dir)

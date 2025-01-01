@@ -49,3 +49,5 @@ EQ: '='  ;
 FLOW: F L O W;
 INV: I N V;
 ID: LETTER DIGIT? ;
+
+ANY_ID: ID | FLOW | INV ;

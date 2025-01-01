@@ -2,3 +2,4 @@ buildDir
 subprojects/*
 !subprojects/*.wrap
 .idea
+src/parser/system/generated/g4

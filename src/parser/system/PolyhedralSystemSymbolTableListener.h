@@ -1,7 +1,3 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #ifndef PPLVARSYMBOLTABLELISTENER_H
 #define PPLVARSYMBOLTABLELISTENER_H
 

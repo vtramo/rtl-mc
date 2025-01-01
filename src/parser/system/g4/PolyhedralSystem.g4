@@ -29,4 +29,3 @@ poly: '{' constr ('&' constr)* '}'
 
 constr: linearExpr op=(LE|LT|GT|GE|EQ) linearExpr
       ;
-

@@ -1,7 +1,3 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #include "PolyhedralSystemBuilderVisitor.h"
 
 namespace
@@ -58,7 +54,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInv(Polyh
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitFlow(PolyhedralSystemParser::FlowContext* ctx)
 {
-    int any_cast = std::any_cast<int>(visit(ctx->poly()));
+    int any_cast = std::any_cast<int>(visit(ctx->poly()[0])); // First rule is ok!
     return any_cast;
 }
 

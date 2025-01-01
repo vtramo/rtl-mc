@@ -15,7 +15,7 @@ if get_option('generate_parser')
     message('Parser generation complete! (Location: ' + generated_dir + ')')
 endif
 
-antlr4_source_files = [
+polyhedral_system_parser_source_files = [
     generated_dir / 'PolyhedralSystemBaseListener.cpp',
     generated_dir / 'PolyhedralSystemBaseListener.h',
     generated_dir / 'PolyhedralSystemBaseVisitor.cpp',
@@ -35,7 +35,6 @@ antlr4_source_files = [
     current_source_dir / 'PolyhedralSystemErrorListener.h',
     current_source_dir / 'PolyhedralSystemErrorListener.cpp',
     current_source_dir / 'PolyhedralSystemParsingResult.h',
-    current_source_dir / 'PolyhedralSystemParserError.h',
 ]
 
-project_source_files += antlr4_source_files
+project_source_files += polyhedral_system_parser_source_files

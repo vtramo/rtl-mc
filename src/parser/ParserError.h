@@ -2,13 +2,13 @@
 // Created by vincenzo on 28/12/24.
 //
 
-#ifndef POLYHEDRALSYSTEMPARSERERROR_H
-#define POLYHEDRALSYSTEMPARSERERROR_H
+#ifndef PARSERERROR_H
+#define PARSERERROR_H
 
 #include <string>
 
 
-class PolyhedralSystemParserError {
+class ParserError {
 public:
       enum class Type
       {
@@ -22,7 +22,7 @@ public:
       [[nodiscard]] std::size_t charPositionInLine() const { return m_charPositionInLine; }
       [[nodiscard]] Type type() const { return m_type; }
 
-      PolyhedralSystemParserError(
+      ParserError(
           const std::string_view errorMessage,
           const std::size_t line,
           const std::size_t charPositionInLine,
@@ -41,4 +41,4 @@ private:
       Type m_type {};
 };
 
-#endif //POLYHEDRALSYSTEMPARSERERROR_H
+#endif //PARSERERROR_H
