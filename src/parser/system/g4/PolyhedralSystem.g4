@@ -32,10 +32,10 @@ atom: VARID powerset                                                            
     | VARID '{' WS* '}'                                                                 # atomEmpty
     | VARID poly                                                                        # atomPoly
 
-    | VARID '{' WS* '}' '}'+        { notifyErrorListeners("Too many parentheses"); }   # atomEmpty
-    | VARID '{'+ '{' WS* '}'        { notifyErrorListeners("Too many parentheses"); }   # atomEmpty
-    | VARID '{'+ '{' WS* '}' '}'+   { notifyErrorListeners("Too many parentheses"); }   # atomEmpty
-    | VARID poly+                   { notifyErrorListeners("Only one polyhedron is allowed! If you want a set of polyhedra, use a powerset."); }  # atomTooManyPoly
+    | VARID '{' WS* '}' '}'+        { notifyErrorListeners("Too many parentheses"); }   # atomError
+    | VARID '{'+ '{' WS* '}'        { notifyErrorListeners("Too many parentheses"); }   # atomError
+    | VARID '{'+ '{' WS* '}' '}'+   { notifyErrorListeners("Too many parentheses"); }   # atomError
+    | VARID poly+                   { notifyErrorListeners("Only one polyhedron is allowed! If you want a set of polyhedra, use a powerset."); }  # atomError
     ;
 
 powerset: '(' poly* ')'
@@ -55,10 +55,14 @@ poly: '{' constr ('&' constr)* '}'
     | constr ('&' constr)* '}'                  { notifyErrorListeners("Missing closing '}'"); }
     | constr ('&' constr)* '}'                  { notifyErrorListeners("Missing opening '{'"); }
     | '{' (constr '&' constr)* constr '}'       { notifyErrorListeners("Constraints must be concatenated with '&' operator."); }
+    | '{' constr ('&' constr)* '&' '}'          { notifyErrorListeners("Missing right constraint."); }
+    | '{' '&' constr ('&' constr)* '}'          { notifyErrorListeners("Missing left constraint."); }
     ;
 
 constr: linearExpr op=(LE|LT|GT|GE|EQ) linearExpr
 
       | linearExpr linearExpr { notifyErrorListeners("You must specify a valid operator (<=, <, >, >=, =) between the linear expressions."); }
+      | linearExpr op=(LE|LT|GT|GE|EQ) { notifyErrorListeners("Missing right linear expression"); }
+      | op=(LE|LT|GT|GE|EQ) linearExpr { notifyErrorListeners("Missing left linear expression"); }
       | linearExpr op=~(LE|LT|GT|GE|EQ) { notifyErrorListeners("Invalid operator '" + $op.text + "'. Valid operators are: <=, <, >, >=, =."); }
       ;

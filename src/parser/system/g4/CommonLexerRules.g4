@@ -35,6 +35,7 @@ WS: [ \t\r\n]+ -> skip ;
 
 UNSIGNED_INT:   (DIGIT|[1-9]DIGIT*)   ;
 NEWLINE:   '\r'? '\n'  ;
+FLOAT  : '-'? UNSIGNED_INT '.' UNSIGNED_INT ;
 
 TIMES: '*' ;
 PLUS : '+' ;
