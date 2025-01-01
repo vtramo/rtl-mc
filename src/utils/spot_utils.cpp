@@ -135,35 +135,81 @@ namespace SpotUtils
         return Not(spot::constants::g_sing);
     }
 
-spot::formula generateRtlf(const int atomicPropSetSize, const int formulaSize, spot::op replaceXWith)
-{
-    const spot::atomic_prop_set AP {  spot::create_atomic_prop_set(atomicPropSetSize) };
-    const spot::random_ltl randomLtl { &AP };
-    spot::formula generatedFormula { randomLtl.generate(formulaSize) };
-
-    auto replaceX = [&] (spot::formula formula, auto&& self)
+    spot::formula generateRtlf(const int atomicPropSetSize, const int formulaSize, spot::op replaceXWith)
     {
-        if (formula.is(spot::op::X))
+        const spot::atomic_prop_set AP {  spot::create_atomic_prop_set(atomicPropSetSize) };
+        const spot::random_ltl randomLtl { &AP };
+        spot::formula generatedFormula { randomLtl.generate(formulaSize) };
+
+        auto replaceX = [&] (spot::formula formula, auto&& self)
         {
-            switch (replaceXWith)
+            if (formula.is(spot::op::X))
             {
-            case spot::op::F:
-                formula = { F(formula[0]) };
-                break;
+                switch (replaceXWith)
+                {
+                case spot::op::F:
+                    formula = { F(formula[0]) };
+                    break;
 
-            case spot::op::G:
-                formula = { G(formula[0]) };
-                break;
+                case spot::op::G:
+                    formula = { G(formula[0]) };
+                    break;
 
-            default:
-                formula = { F(formula[0]) };
-                break;
+                default:
+                    formula = { F(formula[0]) };
+                    break;
+                }
             }
-        }
 
-        return formula.map(self, self);
-    };
+            return formula.map(self, self);
+        };
 
-    return replaceX(generatedFormula, replaceX);
+        return replaceX(generatedFormula, replaceX);
+    }
+
+    bool isXFree(spot::formula& formula)
+    {
+        bool hasX { false };
+
+        formula.traverse([&hasX] (const spot::formula& child)
+                        {
+                            if (child.is(spot::op::X))
+                            {
+                                hasX = true;
+                            }
+
+                            return hasX;
+                        });
+
+        return hasX;
+    }
+
+    spot::atomic_prop_set atomicPropSet(std::set<std::string>&& atoms)
+    {
+        spot::atomic_prop_set atomicPropVector {};
+        for (const auto& atom : atoms)
+            atomicPropVector.insert(ap(atom));
+        return atomicPropVector;
+    }
+
+    spot::atomic_prop_vector collectAtomsNotIn(spot::atomic_prop_set&& forbiddenAtoms, spot::formula& formula)
+    {
+        spot::atomic_prop_vector result {};
+        result.reserve(forbiddenAtoms.size());
+
+        formula.traverse([&] (const spot::formula& child)
+        {
+            if (child.is(spot::op::ap))
+            {
+                if (forbiddenAtoms.find(child) != forbiddenAtoms.end())
+                {
+                    result.push_back(child);
+                }
+            }
+
+            return false;
+        });
+
+        return result;
     }
 }

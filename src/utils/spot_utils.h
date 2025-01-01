@@ -1,7 +1,12 @@
 #ifndef SPOT_UTILS_H
 #define SPOT_UTILS_H
 
+#include <spot/tl/apcollect.hh>
 #include <spot/tl/formula.hh>
+namespace spot
+{
+    using atomic_prop_vector = std::vector<formula>;
+}
 
 namespace SpotUtils
 {
@@ -30,7 +35,10 @@ namespace SpotUtils
     spot::formula singOrNot(spot::formula&& formula);
     spot::formula singAndAliveAnd(spot::formula&& formula);
 
-spot::formula generateRtlf(int atomicPropSetSize, int formulaSize, spot::op replaceXWith = spot::op::F);
+    spot::formula generateRtlf(int atomicPropSetSize, int formulaSize, spot::op replaceXWith = spot::op::F);
+    bool isXFree(spot::formula& formula);
+    spot::atomic_prop_set atomicPropSet(std::set<std::string>&& atoms);
+    spot::atomic_prop_vector collectAtomsNotIn(spot::atomic_prop_set&& forbiddenAtoms, spot::formula& formula);
 }
 
 #endif //SPOT_UTILS_H
