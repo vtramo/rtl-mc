@@ -3,27 +3,27 @@
 
 void PolyhedralSystemSymbolTableListener::enterIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* ctx)
 {
-    addVariable(ctx->ID()->getText());
+    addVariable(ctx->VARID()->getText());
 }
 
 void PolyhedralSystemSymbolTableListener::enterVar(PolyhedralSystemParser::VarContext* ctx)
 {
-    addVariable(ctx->ID()->getText());
+    addVariable(ctx->VARID()->getText());
 }
 
 void PolyhedralSystemSymbolTableListener::enterAtomPowerset(PolyhedralSystemParser::AtomPowersetContext* ctx)
 {
-    addAtom(ctx->ID()->getText());
+    addAtom(ctx->VARID()->getText());
 }
 
 void PolyhedralSystemSymbolTableListener::enterAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx)
 {
-    addAtom(ctx->ID()->getText());
+    addAtom(ctx->VARID()->getText());
 }
 
 void PolyhedralSystemSymbolTableListener::enterAtomPoly(PolyhedralSystemParser::AtomPolyContext* ctx)
 {
-    addAtom(ctx->ID()->getText());
+    addAtom(ctx->VARID()->getText());
 }
 
 [[nodiscard]] PolyhedralSystemSymbolTable PolyhedralSystemSymbolTableListener::getSymbolTable() const

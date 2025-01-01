@@ -18,8 +18,7 @@ subdir('parser')
 subdir('system')
 subdir('discretization')
 subdir('utils')
-subdir('spot-examples')
-subdir('parser-dev')
+
 
 project_exe = executable(
     meson.project_name(),

@@ -54,7 +54,8 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInv(Polyh
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitFlow(PolyhedralSystemParser::FlowContext* ctx)
 {
-    int any_cast = std::any_cast<int>(visit(ctx->poly()[0])); // First rule is ok!
+    // The first rule is the right one (ctx->poly()[0])! (flow: FLOW poly). The remaining ones are error alternatives.
+    int any_cast = std::any_cast<int>(visit(ctx->poly()[0]));
     return any_cast;
 }
 
@@ -62,7 +63,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPower
 {
     const int key { std::any_cast<int>(visit(ctx->powerset())) };
     auto powerset { popPowerset(key) };
-    const std::string atomId { ctx->ID()->getText() };
+    const std::string atomId { ctx->VARID()->getText() };
     m_denotation[atomId] = *powerset;
     m_powersets[m_visitKey] = std::move(powerset);
     return m_visitKey++;
@@ -72,7 +73,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPoly(
 {
     const int key { std::any_cast<int>(visit(ctx->poly())) };
     const auto poly { popPoly(key) };
-    const std::string atomId { ctx->ID()->getText() };
+    const std::string atomId { ctx->VARID()->getText() };
     auto powerset { std::make_unique<Powerset>(*poly) };
     m_denotation[atomId] = *powerset;
     m_powersets[m_visitKey] = std::move(powerset);
@@ -81,7 +82,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPoly(
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx)
 {
-    const std::string atomId { ctx->ID()->getText() };
+    const std::string atomId { ctx->VARID()->getText() };
     auto bottomPowerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
     m_denotation[atomId] = *bottomPowerset;
     m_powersets[m_visitKey] = std::move(bottomPowerset);
@@ -196,7 +197,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitSignTerm(
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* context)
 {
-    const std::string varId { context->ID()->getText() };
+    const std::string varId { context->VARID()->getText() };
     const PPL::Variable variable { *m_symbolTable.get().getVariable(varId) };
     const int coefficient { extractCoefficient(context) };
     auto linearExpression { std::make_unique<PPL::Linear_Expression>(coefficient * variable) };
@@ -206,7 +207,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitIntTimesV
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitVar(PolyhedralSystemParser::VarContext* context)
 {
-    const std::string varId { context->ID()->getText() };
+    const std::string varId { context->VARID()->getText() };
     const auto variable { *m_symbolTable.get().getVariable(varId) };
     auto linearExpression { std::make_unique<PPL::Linear_Expression>(variable) };
     m_linearExpressions.insert(std::make_pair(m_visitKey, std::move(linearExpression)));

@@ -9,7 +9,9 @@ linearExpr
 signTerm : op=(PLUS|MINUS) term
          ;
 
-term :  UNSIGNED_INT TIMES? ID   # intTimesVar
-     |  ID                       # var
-     |  UNSIGNED_INT             # int
+term :  UNSIGNED_INT TIMES? VARID   # intTimesVar
+     |  VARID                       # var
+     |  UNSIGNED_INT                # int
+
+     | UNSIGNED_INT op=~TIMES VARID   { notifyErrorListeners("Invalid operator '" + $op.text + "'. Only '*' is allowed."); }  # intTimesVar
      ;
