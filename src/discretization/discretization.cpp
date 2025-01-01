@@ -1,6 +1,8 @@
 #include "discretization.h"
 #include "spot_constants.h"
 
+using namespace SpotUtils;
+
 spot::formula discretize(spot::formula&& formula)
 {
     spot::formula discretizedLtlFormula { toDiscretizedLtlFormula(std::move(formula)) };

@@ -4,6 +4,9 @@
 #include "spot_utils.h"
 
 namespace spot::constants {
+
+    using namespace SpotUtils;
+
     inline const formula g_nullFormula {};
 
     inline const formula g_alive { ap("alive") };

@@ -6,6 +6,8 @@
 #include "discretization.h"
 #include "spot_utils.h"
 
+using namespace SpotUtils;
+
 TEST_CASE("Discretization tests", "[discretization]")
 {
     SECTION("F p0")
