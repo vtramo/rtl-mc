@@ -13,9 +13,12 @@ catch2_dep = dependency('catch2', fallback : ['catch2', 'catch2_with_main_dep'],
 src_dir = 'src'
 parser_dir = 'parser'
 system_dir = 'system'
+utils_dir = 'utils'
 include_directories = [
   include_directories('.'),
-  include_directories(src_dir / 'utils'),
+  include_directories(src_dir / utils_dir),
+  include_directories(src_dir / utils_dir / 'ppl'),
+  include_directories(src_dir / utils_dir / 'spot'),
   include_directories(src_dir / system_dir),
   include_directories(src_dir / 'discretization'),
   include_directories(src_dir / parser_dir),

@@ -1,5 +1,5 @@
 #include "parsertlf.h"
-#include <spot_utils.h>
+#include "spot_utils.h"
 #include <spot/tl/parse.hh>
 
 static RtlfParsingResult toRtlfParsingResult(spot::parse_error_list&& spotErrors);
