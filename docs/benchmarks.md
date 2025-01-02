@@ -11,7 +11,13 @@ meson configure -Db_sanitize=none buildDir
 ```
 e ricompilare (altrimenti i risultati non saranno "precisi").
 
-Un esempio di output:
+### Eseguire una determinata benchmark suite
+- `meson test --benchmark -C buildDir -v discretization`
+- `meson test --benchmark -C buildDir -v system-parser`
+- `meson test --benchmark -C buildDir -v rtlf-parser`
+
+### Risultati attuali
+Eseguito su una macchina con processore 13th Gen Intel(R) Core(TM) i9-13900KF e 64GB di RAM
 ```
 -------------------------------------------------------------------------------
 PolyhedralSystem Parser benchmarks
@@ -31,8 +37,6 @@ PolyhedralSystem Parser benchmark 1            100             1      16.279 s
 ===============================================================================
 
 
-...
-
 
 -------------------------------------------------------------------------------
 Discretization benchmarks
@@ -44,16 +48,29 @@ benchmark name                       samples       iterations    est run time
                                      mean          low mean      high mean
                                      std dev       low std dev   high std dev
 -------------------------------------------------------------------------------
-Discretization benchmark 1                     100             1    15.7095 ms 
-                                        158.552 us    157.119 us    162.348 us 
-                                        11.1957 us    5.26598 us    23.9665 us 
+Discretization benchmark 1                     100             1    272.996 ms 
+                                         2.7611 ms    2.75646 ms    2.76591 ms 
+                                        24.2133 us    20.8521 us    29.8995 us 
                                                                                
 
-==============================================================================
+===============================================================================
 
+
+
+-------------------------------------------------------------------------------
+RTLf Parser benchmarks
+-------------------------------------------------------------------------------
+../tests/benchmarks/parser/rtlf/rtlf_parser_benchmarks.cpp:7
+...............................................................................
+
+benchmark name                       samples       iterations    est run time
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+RTLf Parser benchmark 1                        100             1    20.0518 ms 
+                                        201.285 us    200.498 us    203.515 us 
+                                         6.2494 us    2.80045 us    13.4992 us 
+                                                                               
+
+===============================================================================
 ```
-
-### Eseguire una determinata benchmark suite
-- `meson test --benchmark -C buildDir -v discretization`
-- `meson test --benchmark -C buildDir -v system-parser`
-- `meson test --benchmark -C buildDir -v rtlf-parser`
