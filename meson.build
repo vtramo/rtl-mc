@@ -16,7 +16,6 @@ system_dir = 'system'
 include_directories = [
   include_directories('.'),
   include_directories(src_dir / 'utils'),
-  include_directories(src_dir / parser_dir),
   include_directories(src_dir / system_dir),
   include_directories(src_dir / 'discretization'),
   include_directories(src_dir / parser_dir),
