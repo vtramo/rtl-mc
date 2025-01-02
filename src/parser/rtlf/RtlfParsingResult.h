@@ -18,7 +18,7 @@ public:
     [[nodiscard]] spot::atomic_prop_vector illegalAtoms() const { return m_illegalAtoms; }
 
     [[nodiscard]] spot::formula& operator* () { return *m_rtlf; }
-    [[nodiscard]] bool operator! () const { return ok(); }
+    [[nodiscard]] bool operator! () const { return !ok(); }
 
     [[nodiscard]] static RtlfParsingResult ok(spot::formula&& rtlf)
     {
@@ -52,13 +52,13 @@ private:
     RtlfParsingResult(
       std::optional<spot::formula>&& rtlf,
       std::vector<ParserError>&& parserErrors,
-      std::vector<spot::formula>&& forbiddenAtoms,
+      std::vector<spot::formula>&& illegalAtoms,
       const bool isLtl = false,
       const bool isXFree = false
     )
       : m_rtlf { std::move(rtlf) }
       , m_parserErrors { std::move(parserErrors) }
-      , m_illegalAtoms { std::move(forbiddenAtoms) }
+      , m_illegalAtoms { std::move(illegalAtoms) }
       , m_isLtl { isLtl }
       , m_isXFree { isXFree }
     {
