@@ -10,6 +10,7 @@ namespace spot::constants {
     inline const formula g_nullFormula {};
 
     inline const formula g_alive { ap("alive") };
+    inline const formula g_aliveUntilGNotAlive { U(g_alive, G(Not(g_alive))) };
     inline const formula g_sing { ap("sing") };
     inline const formula g_last { // alive & X!G!alive
         And({
@@ -19,7 +20,7 @@ namespace spot::constants {
     };
 
     // sing & !(1 U (alive & !((alive & X!G!alive) | (sing <-> X!sing)))) & !(1 U (alive & !(1 U (alive & sing & X!G!alive))))
-    inline const formula singOpenLastProperty {
+    inline const formula g_singOpenLastProperty {
         And({
             g_sing,
             Not(U(top(), And({ Not(Or({ g_last, Equiv(g_sing, X(Not(g_sing))) })), g_alive }))),

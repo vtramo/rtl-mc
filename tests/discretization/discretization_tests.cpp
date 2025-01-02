@@ -13,7 +13,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     SECTION("F p0")
     {
         spot::formula expectedFormula {
-            imposeSingOpenLastProperty( // <-- It forces the alternation between singular and open intervals and F(last & sing).
+            imposeSingOpenLastAndAliveProperty( // <-- It forces the alternation between singular and open intervals and F(last & sing) and alive property.
                 U(top(), And({
                                 ap("p0"),
                                 Or({ top(), sing() }), // <-- automatically simplified by Spot
@@ -31,7 +31,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     SECTION("F p0 & F p1")
     {
         spot::formula expectedFormula {
-            imposeSingOpenLastProperty(
+            imposeSingOpenLastAndAliveProperty(
                 And({
                     U(top(), And({ ap("p0"), alive() })),
                     U(top(), And({ ap("p1"), alive() })),
@@ -48,7 +48,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     SECTION("F p0 & F p1 using spot parser as oracle")
     {
         spot::formula expectedFormula {
-            imposeSingOpenLastProperty(
+            imposeSingOpenLastAndAliveProperty(
                 spot::parse_infix_psl(
                     "(true U (p0 & alive)) & "
                     "(true U (p1 & alive))"
@@ -68,7 +68,8 @@ TEST_CASE("Discretization tests", "[discretization]")
             spot::parse_infix_psl(
                 "(true U (p0 & alive)) & "
                 "(true U (p1 & alive)) & "
-                "sing & !(1 U (alive & !((alive & X!G!alive) | (sing <-> X!sing)))) & !(1 U (alive & !(1 U (alive & sing & X!G!alive))))"
+                "sing & !(1 U (alive & !((alive & X!G!alive) | (sing <-> X!sing)))) & !(1 U (alive & !(1 U (alive & sing & X!G!alive)))) &"
+                "alive & alive U G!alive"
             ).f
         };
 
@@ -81,7 +82,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     SECTION("G p0")
     {
         spot::formula expectedFormula {
-            imposeSingOpenLastProperty(spot::parse_infix_psl("!(true U (!p0 & sing & alive))").f)
+            imposeSingOpenLastAndAliveProperty(spot::parse_infix_psl("!(true U (!p0 & sing & alive))").f)
         };
 
         spot::formula formula { spot::parse_infix_psl("G p0").f };
@@ -93,7 +94,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     SECTION("G p0 & F p1")
     {
         spot::formula expectedFormula {
-            imposeSingOpenLastProperty(
+            imposeSingOpenLastAndAliveProperty(
                 spot::parse_infix_psl(
                     "!(true U (!p0 & sing & alive)) &"
                     "(true U (p1 & alive))"
@@ -110,7 +111,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     SECTION("G(p0 & p1) & p2 & G p3 & F(p4 & F p5)")
     {
         spot::formula expectedFormula {
-            imposeSingOpenLastProperty(
+            imposeSingOpenLastAndAliveProperty(
                 spot::parse_infix_psl(
                     "!(true U (!(p0 & p1) & sing & alive)) & p2 &"
                     "!(true U (!p3 & sing & alive)) &"
@@ -128,7 +129,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     SECTION("p0 S p1") // This requires our modified version of Spot (strict until operator)
     {
         spot::formula expectedFormula {
-            imposeSingOpenLastProperty(
+            imposeSingOpenLastAndAliveProperty(
                 spot::parse_infix_psl(
                     "(sing & X((p0 U (p1 & (p0 | sing) & alive)) & alive)) | "
                     "(!sing & (p0 U (p1 & (p0 | sing) & alive)))"

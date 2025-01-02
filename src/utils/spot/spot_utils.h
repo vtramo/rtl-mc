@@ -34,6 +34,8 @@ namespace SpotUtils
     spot::formula singOr(const spot::formula& formula);
     spot::formula singOrNot(spot::formula&& formula);
     spot::formula singAndAliveAnd(spot::formula&& formula);
+    spot::formula singOpenLastProperty();
+    spot::formula aliveUntilGNotAlive();
 
     spot::formula generateRtlf(int atomicPropSetSize, int formulaSize, spot::op replaceXWith = spot::op::F);
     bool isXFree(spot::formula& formula);

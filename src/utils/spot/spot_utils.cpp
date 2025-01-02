@@ -135,6 +135,16 @@ namespace SpotUtils
         return Not(spot::constants::g_sing);
     }
 
+    spot::formula singOpenLastProperty()
+    {
+        return spot::constants::g_singOpenLastProperty;
+    }
+
+    spot::formula aliveUntilGNotAlive()
+    {
+        return spot::constants::g_aliveUntilGNotAlive;
+    }
+
     spot::formula generateRtlf(const int atomicPropSetSize, const int formulaSize, spot::op replaceXWith)
     {
         const spot::atomic_prop_set AP {  spot::create_atomic_prop_set(atomicPropSetSize) };

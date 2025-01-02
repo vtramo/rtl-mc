@@ -6,13 +6,19 @@ using namespace SpotUtils;
 spot::formula discretize(spot::formula&& formula)
 {
     spot::formula discretizedLtlFormula { toDiscretizedLtlFormula(std::move(formula)) };
-    return imposeSingOpenLastProperty(std::move(discretizedLtlFormula));
+    return imposeSingOpenLastAndAliveProperty(std::move(discretizedLtlFormula));
 }
 
-spot::formula imposeSingOpenLastProperty(spot::formula&& formula)
+spot::formula imposeSingOpenLastAndAliveProperty(spot::formula&& formula)
 {
-    spot::formula singOpenLastProperty { spot::constants::singOpenLastProperty };
-    return  { And({ std::move(formula), std::move(singOpenLastProperty) }) };
+    return {
+        And({
+                std::move(formula),
+                singOpenLastProperty(),
+                alive(),
+                aliveUntilGNotAlive(),
+            })
+    };
 }
 
 spot::formula toDiscretizedLtlFormula(spot::formula&& formula)

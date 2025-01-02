@@ -3,7 +3,7 @@
 
 #include <spot/tl/formula.hh>
 
-spot::formula imposeSingOpenLastProperty(spot::formula&& formula);
+spot::formula imposeSingOpenLastAndAliveProperty(spot::formula&& formula);
 spot::formula discretize(spot::formula&& formula);
 
 spot::formula toDiscretizedLtlFormula(spot::formula&& formula);
