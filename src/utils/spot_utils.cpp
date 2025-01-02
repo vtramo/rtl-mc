@@ -201,7 +201,7 @@ namespace SpotUtils
         {
             if (child.is(spot::op::ap))
             {
-                if (forbiddenAtoms.find(child) != forbiddenAtoms.end())
+                if (!forbiddenAtoms.count(child))
                 {
                     result.push_back(child);
                 }
