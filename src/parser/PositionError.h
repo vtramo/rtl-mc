@@ -16,7 +16,7 @@ public:
     {
     }
 
-    explicit PositionError(const spot::position& position): PositionError(position.line, position.column)
+    explicit PositionError(const spot::position& position): PositionError(position.line, position.column - 1)
     {}
 
     PositionError() = default;
