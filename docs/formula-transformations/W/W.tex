@@ -12,10 +12,10 @@
 % Document
 \begin{document}
     $\begin{aligned}
-         \varphi_1\,\tt{W}\,\varphi_2 &\,\overset{\ttt{def}}{=} (\varphi_1\,\ttt{U}\,\varphi_2)\,\lor\,\ttt{G}\,\varphi_1 \\
-         &\overset{\ttt{n,dsc,t}}{=} \begin{aligned}
+         \varphi_1\,\ttt{W}\,\varphi_2 &\,= (\varphi_1\,\ttt{U}\,\varphi_2)\,\lor\,\ttt{G}\,\varphi_1 \\
+         &\overset{\ttt{dsc,t}}{=} \begin{aligned}
                                          &\boxed{\varphi_1}\,\ttt{U}\,(\,\boxed{\varphi_2}\,\land\,(\,\boxed{\varphi_1}\,\lor\,sing)\,\land\,alive))\,\lor\\
-                                         &\neg (true\,\ttt{U}\,(\neg\,\boxed{\varphi_1}\,\land\,sing\,\land\,alive))
+                                         &\,\ttt{G}(\boxed{\varphi_1}\,\lor\,\neg alive)
          \end{aligned}
     \end{aligned}$
 \end{document}

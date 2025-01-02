@@ -14,11 +14,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     {
         spot::formula expectedFormula {
             imposeSingOpenLastAndAliveProperty( // <-- It forces the alternation between singular and open intervals and F(last & sing) and alive property.
-                U(top(), And({
-                                ap("p0"),
-                                Or({ top(), sing() }), // <-- automatically simplified by Spot
-                                alive()
-                         }))
+                F(And({ ap("p0"), alive() }))
             )
         };
 
@@ -33,8 +29,8 @@ TEST_CASE("Discretization tests", "[discretization]")
         spot::formula expectedFormula {
             imposeSingOpenLastAndAliveProperty(
                 And({
-                    U(top(), And({ ap("p0"), alive() })),
-                    U(top(), And({ ap("p1"), alive() })),
+                    F(And({ ap("p0"), alive() })),
+                    F(And({ ap("p1"), alive() }))
                 })
             )
         };
@@ -50,8 +46,8 @@ TEST_CASE("Discretization tests", "[discretization]")
         spot::formula expectedFormula {
             imposeSingOpenLastAndAliveProperty(
                 spot::parse_infix_psl(
-                    "(true U (p0 & alive)) & "
-                    "(true U (p1 & alive))"
+                    "F(p0 & alive) & "
+                    "F(p1 & alive)"
                 ).f
             )
         };
@@ -66,8 +62,8 @@ TEST_CASE("Discretization tests", "[discretization]")
     {
         spot::formula expectedFormula {
             spot::parse_infix_psl(
-                "(true U (p0 & alive)) & "
-                "(true U (p1 & alive)) & "
+                "F(p0 & alive) & "
+                "F(p1 & alive) & "
                 "sing & !(1 U (alive & !((alive & X!G!alive) | (sing <-> X!sing)))) & !(1 U (alive & !(1 U (alive & sing & X!G!alive)))) &"
                 "alive & alive U G!alive"
             ).f
@@ -82,7 +78,7 @@ TEST_CASE("Discretization tests", "[discretization]")
     SECTION("G p0")
     {
         spot::formula expectedFormula {
-            imposeSingOpenLastAndAliveProperty(spot::parse_infix_psl("!(true U (!p0 & sing & alive))").f)
+            imposeSingOpenLastAndAliveProperty(spot::parse_infix_psl("G(p0 | !alive)").f)
         };
 
         spot::formula formula { spot::parse_infix_psl("G p0").f };
@@ -96,8 +92,8 @@ TEST_CASE("Discretization tests", "[discretization]")
         spot::formula expectedFormula {
             imposeSingOpenLastAndAliveProperty(
                 spot::parse_infix_psl(
-                    "!(true U (!p0 & sing & alive)) &"
-                    "(true U (p1 & alive))"
+                    "G(p0 | !alive) &"
+                    "F(p1 & alive)"
                 ).f
             )
         };
@@ -113,14 +109,28 @@ TEST_CASE("Discretization tests", "[discretization]")
         spot::formula expectedFormula {
             imposeSingOpenLastAndAliveProperty(
                 spot::parse_infix_psl(
-                    "!(true U (!(p0 & p1) & sing & alive)) & p2 &"
-                    "!(true U (!p3 & sing & alive)) &"
-                    "(true U ((p4 & (true U (p5 & alive))) & alive))"
+                    "G((p0 & p1) | !alive) & p2 &"
+                    "G(p3 | !alive) &"
+                    "F((p4 & F(p5 & alive)) & alive)"
                 ).f
             )
         };
 
         spot::formula formula { spot::parse_infix_psl("G(p0 & p1) & p2 & G p3 & F(p4 & F p5)").f };
+        spot::formula discretizedFormula { discretize(std::move(formula)) };
+
+        REQUIRE(discretizedFormula == expectedFormula);
+    }
+
+    SECTION("p0 U p1")
+    {
+        spot::formula expectedFormula {
+            imposeSingOpenLastAndAliveProperty(
+                spot::parse_infix_psl("p0 U (p1 & (p0 | sing) & alive))").f
+            )
+        };
+
+        spot::formula formula { spot::parse_infix_psl("p0 U p1").f };
         spot::formula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
@@ -138,6 +148,52 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 S p1").f };
+        spot::formula discretizedFormula { discretize(std::move(formula)) };
+
+        REQUIRE(discretizedFormula == expectedFormula);
+    }
+
+    SECTION("p0 R p1")
+    {
+        spot::formula expectedFormula {
+            imposeSingOpenLastAndAliveProperty(spot::parse_infix_psl("(p0 R (p1 | (p0 & !sing) | !alive))").f)
+        };
+
+        spot::formula formula { spot::parse_infix_psl("p0 R p1").f };
+        spot::formula discretizedFormula { discretize(std::move(formula)) };
+
+        REQUIRE(discretizedFormula == expectedFormula);
+    }
+
+    SECTION("p0 M p1")
+    {
+        spot::formula expectedFormula {
+            imposeSingOpenLastAndAliveProperty(
+                spot::parse_infix_psl(
+                    "(p0 R (p1 | (p0 & !sing) | !alive)) &"
+                    "F(p0 & p1 & alive)"
+                ).f
+            )
+        };
+
+        spot::formula formula { spot::parse_infix_psl("p0 M p1").f };
+        spot::formula discretizedFormula { discretize(std::move(formula)) };
+
+        REQUIRE(discretizedFormula == expectedFormula);
+    }
+
+    SECTION("p0 W p1")
+    {
+        spot::formula expectedFormula {
+            imposeSingOpenLastAndAliveProperty(
+                spot::parse_infix_psl(
+                    "(p0 U (p1 & (p0 | sing) & alive)) |"
+                    "G(p0 | !alive)"
+                ).f
+            )
+        };
+
+        spot::formula formula { spot::parse_infix_psl("p0 W p1").f };
         spot::formula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);

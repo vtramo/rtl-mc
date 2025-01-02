@@ -115,6 +115,11 @@ namespace SpotUtils
         return spot::constants::g_alive;
     }
 
+    spot::formula notAlive()
+    {
+        return Not(spot::constants::g_alive);
+    }
+
     spot::formula singAndAlive()
     {
         return And({ spot::constants::g_sing, spot::constants::g_alive });

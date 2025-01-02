@@ -29,6 +29,7 @@ namespace SpotUtils
     spot::formula Not(const spot::formula& formula);
     spot::formula sing();
     spot::formula alive();
+    spot::formula notAlive();
     spot::formula notSing();
     spot::formula singOr(spot::formula&& formula);
     spot::formula singOr(const spot::formula& formula);

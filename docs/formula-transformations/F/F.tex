@@ -12,9 +12,10 @@
 % Document
 \begin{document}
 $\begin{aligned}
-     \tt{F}\,\varphi &\,\overset{\ttt{n}}{=} true\,\ttt{U}\,\varphi \\
+     \ttt{F}\,\varphi &\,= true\,\ttt{U}\,\varphi \\
      &\overset{\ttt{dsc}}{=} true\,\ttt{U}\,(\varphi\,\land\,(true\,\lor\, sing)) \\
      &\,= true\,\ttt{U}\,\varphi \\
-     &\,\overset{\ttt{t}}{=} true\,\ttt{U}\,(\,\boxed\varphi\,\land\,alive)
+     &\,\overset{\ttt{t}}{=} true\,\ttt{U}\,(\,\varphi\,\land\,alive) \\
+     & = \ttt{F}\,(\boxed{\varphi}\,\land\,alive)
 \end{aligned}$
 \end{document}

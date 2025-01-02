@@ -13,10 +13,9 @@
 \begin{document}
 
 $\begin{aligned}
-     \ttt{G}\,\varphi &\overset{\ttt{n}}{=} \neg \ttt{F}\neg \varphi \\
-     &\overset{\ttt{n}}{=} \neg (true\,\ttt{U}\,\neg\varphi) \\
-     &\overset{\ttt{dsc}}{=}\neg (true\,\ttt{U}\,(\neg\varphi \land sing)) \\
-     &\overset{\ttt{t}}{=}\neg (true\,\ttt{U}\,(\neg\,\boxed\varphi\,\land\,sing\,\land\,alive))
+     \ttt{G}\,\varphi &= \neg \ttt{F}\neg \varphi \\
+     &\overset{\ttt{dsc}}{=} \neg \ttt{F}\,(\neg\varphi\,\land\,alive) \\
+     &{=}\, \ttt{G}(\boxed{\varphi}\,\lor\,\neg alive)
 \end{aligned}$
 
 \end{document}

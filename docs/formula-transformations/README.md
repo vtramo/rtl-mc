@@ -1,6 +1,5 @@
 ## Discretizzazione di una formula RTLf
 Una formula RTLf deve subire una serie di trasformazioni tra cui:
-- **Trasformazione in una formula equivalente**: La formula RTLf viene convertita in una forma che contiene solo gli operatori until, strict until e i connettivi booleani (AND, OR, NOT);
 - **Discretizzazione secondo le regole del paper**: la formula RTLf viene discretizzata, trasformandola in una formula LTLf;
 - **Trasformazione in una formula LTL**: La formula LTLf ottenuta viene successivamente trasformata in una formula LTL.
 
