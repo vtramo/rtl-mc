@@ -6,6 +6,8 @@
 #include "AtomInterpretation.h"
 #include "ppl_aliases.h"
 
+using namespace PPL::IO_Operators;
+
 AtomInterpretation::AtomInterpretation(const Powerset& interpretation)
     : AtomInterpretation(
         interpretation,
@@ -70,7 +72,7 @@ bool operator!=(const AtomInterpretation& interpretation1, const AtomInterpretat
 
 std::ostream& operator<<(std::ostream& out, const AtomInterpretation& interpretation)
 {
-    // out << "Interpretation: " << interpretation.interpretation() << '\n';
-    // out << "NOT Interpretation: " << interpretation.notInterpretation() << '\n';
+    out << "Interpretation: " << interpretation.interpretation() << '\n';
+    out << "Not Interpretation: " << interpretation.notInterpretation() << '\n';
     return out;
 }
