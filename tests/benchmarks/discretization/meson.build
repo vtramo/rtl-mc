@@ -15,4 +15,4 @@ discretization_benchmarks_exe = executable(
 # Copy benchmark files into build directory
 configure_file(input: 'discretization-benchmark-1.txt', output: 'discretization-benchmark-1.txt', copy: true)
 
-benchmark('discretization-benchmarks', discretization_benchmarks_exe, suite: ['discretization'], workdir: meson.current_source_dir())
+benchmark('discretization', discretization_benchmarks_exe, suite: ['discretization'], workdir: meson.current_source_dir())

@@ -3,11 +3,11 @@
 #include "PolyhedralSystem.h"
 #include "test_utils.h"
 
-TEST_CASE("Parser benchmarks", "[benchmark][parser]")
+TEST_CASE("PolyhedralSystem Parser benchmarks")
 {
-    std::istringstream input { readTestFileAsString("polyhedral-system-benchmark-1.txt") };
+    std::istringstream input { readTestFileAsString("polyhedral-system-parser-benchmark-1.txt") };
 
-    BENCHMARK("Parser benchmark 1")
+    BENCHMARK("PolyhedralSystem Parser benchmark 1")
     {
         PolyhedralSystem polyhedralSystem {};
         input >> std::move(polyhedralSystem);

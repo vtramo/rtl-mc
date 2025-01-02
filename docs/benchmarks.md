@@ -14,18 +14,18 @@ e ricompilare (altrimenti i risultati non saranno "precisi").
 Un esempio di output:
 ```
 -------------------------------------------------------------------------------
-Parser benchmarks
+PolyhedralSystem Parser benchmarks
 -------------------------------------------------------------------------------
-../tests/benchmarks/parser/parser_benchmarks.cpp:6
+../tests/benchmarks/parser/system/system_parser_benchmarks.cpp:6
 ...............................................................................
 
 benchmark name                       samples       iterations    est run time
                                      mean          low mean      high mean
                                      std dev       low std dev   high std dev
 -------------------------------------------------------------------------------
-Parser benchmark 1                             100             5    1.11601 ms 
-                                        2.41365 us    2.29888 us    2.90215 us 
-                                        1.03211 us    190.412 ns    2.41793 us 
+PolyhedralSystem Parser benchmark 1            100             1      16.279 s 
+                                        1.24324 us    757.561 ns    3.64414 us 
+                                        4.78789 us    14.3642 ns    10.4883 us 
                                                                                
 
 ===============================================================================
@@ -54,5 +54,6 @@ Discretization benchmark 1                     100             1    15.7095 ms
 ```
 
 ### Eseguire una determinata benchmark suite
-- `meson test --benchmark -C buildDir -v discretization-benchmarks`
-- `meson test --benchmark -C buildDir -v parser-benchmarks`
+- `meson test --benchmark -C buildDir -v discretization`
+- `meson test --benchmark -C buildDir -v system-parser`
+- `meson test --benchmark -C buildDir -v rtlf-parser`
