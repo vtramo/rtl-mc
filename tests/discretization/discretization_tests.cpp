@@ -62,10 +62,10 @@ TEST_CASE("Discretization tests", "[discretization]")
     {
         spot::formula expectedFormula {
             spot::parse_infix_psl(
-                "F(p0 & alive) & "
-                "F(p1 & alive) & "
-                "sing & !(1 U (alive & !((alive & X!G!alive) | (sing <-> X!sing)))) & !(1 U (alive & !(1 U (alive & sing & X!G!alive)))) &"
-                "alive & alive U G!alive"
+                "F(p0 & alive) &"
+                "F(p1 & alive) &"
+                "sing & alive & (alive U G!alive) &"
+                "G((sing <-> X(!sing & alive)) | (alive & XG!alive) | !alive) & F((alive & XG!alive) & sing & alive)"
             ).f
         };
 
