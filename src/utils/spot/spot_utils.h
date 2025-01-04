@@ -43,6 +43,8 @@ namespace SpotUtils
     bool isXFree(spot::formula& formula);
     spot::atomic_prop_vector collectAtomsNotIn(spot::atomic_prop_set&& forbiddenAtoms, spot::formula& formula);
     spot::atomic_prop_vector collectPositiveLiterals(spot::formula&& formula);
+    spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard);
+    bool containsSing(const spot::atomic_prop_set& labels);
 }
 
 #endif //SPOT_UTILS_H

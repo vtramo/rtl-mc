@@ -3,6 +3,9 @@
 
 #include <spot/tl/apcollect.hh>
 #include <spot/tl/randomltl.hh>
+#include <spot/twa/formula2bdd.hh>
+#include <spot/twa/twagraph.hh>
+
 namespace SpotUtils
 {
     spot::formula top()
@@ -249,5 +252,27 @@ namespace SpotUtils
         });
 
         return result;
+    }
+
+    spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard)
+    {
+        minterms_of minterms { guard, twaGraph->ap_vars() };
+        spot::atomic_prop_set labels { };
+
+        for (const bdd& minterm: minterms)
+        {
+            spot::formula mintermFormula { bdd_to_formula(minterm, twaGraph->get_dict()) };
+            for (spot::formula& label: collectPositiveLiterals(std::move(mintermFormula)))
+            {
+                labels.insert(std::move(label));
+            }
+        }
+
+        return labels;
+    }
+
+    bool containsSing(const spot::atomic_prop_set& labels)
+    {
+        return labels.find(sing()) != labels.end();
     }
 }
