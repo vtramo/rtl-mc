@@ -11,6 +11,7 @@ namespace spot
 namespace SpotUtils
 {
     spot::formula top();
+    spot::atomic_prop_set AP(std::set<std::string>&& atoms);
     spot::formula ap(std::string_view ap);
     spot::formula F(spot::formula&& formula);
     spot::formula X(spot::formula&& formula);
@@ -40,8 +41,8 @@ namespace SpotUtils
 
     spot::formula generateRtlf(int atomicPropSetSize, int formulaSize, spot::op replaceXWith = spot::op::F);
     bool isXFree(spot::formula& formula);
-    spot::atomic_prop_set atomicPropSet(std::set<std::string>&& atoms);
     spot::atomic_prop_vector collectAtomsNotIn(spot::atomic_prop_set&& forbiddenAtoms, spot::formula& formula);
+    spot::atomic_prop_vector collectPositiveLiterals(spot::formula&& formula);
 }
 
 #endif //SPOT_UTILS_H

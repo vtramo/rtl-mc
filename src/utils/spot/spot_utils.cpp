@@ -199,7 +199,7 @@ namespace SpotUtils
         return !hasX;
     }
 
-    spot::atomic_prop_set atomicPropSet(std::set<std::string>&& atoms)
+    spot::atomic_prop_set AP(std::set<std::string>&& atoms)
     {
         spot::atomic_prop_set atomicPropVector {};
         for (const auto& atom : atoms)
@@ -220,6 +220,29 @@ namespace SpotUtils
                 {
                     result.push_back(child);
                 }
+            }
+
+            return false;
+        });
+
+        return result;
+    }
+
+    spot::atomic_prop_vector collectPositiveLiterals(spot::formula&& formula)
+    {
+        spot::atomic_prop_vector result {};
+        result.reserve(formula.size());
+
+        formula.traverse([&] (const spot::formula& child)
+        {
+            if (child.is(spot::op::Not) && child[0].is(spot::op::ap))
+            {
+                return true;
+            }
+
+            if (child.is(spot::op::ap))
+            {
+                result.push_back(child);
             }
 
             return false;
