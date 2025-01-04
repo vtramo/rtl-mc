@@ -18,6 +18,7 @@ subdir('parser')
 subdir('system')
 subdir('discretization')
 subdir('utils')
+subdir('automaton')
 
 
 project_exe = executable(

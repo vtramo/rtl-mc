@@ -88,7 +88,7 @@ spot::formula dsctS(spot::formula&& formula)
 
     spot::formula p1Up2 { dsctU(U(std::move(p1), std::move(p2))) };
     spot::formula a { And({ sing(), X(And({ alive(), p1Up2 }))}) };
-    spot::formula b { And({ notSing(), p1Up2 }) };
+    spot::formula b { And({ notSing(), std::move(p1Up2) }) };
 
     // a := sing & X(alive & (p1 U (p2 & (p1 | sing) & alive)))
     // b := !sing & (p1 U (p2 & (p1 | sing) & alive))

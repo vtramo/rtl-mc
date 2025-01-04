@@ -21,6 +21,7 @@ include_directories = [
   include_directories(src_dir / utils_dir / 'spot'),
   include_directories(src_dir / system_dir),
   include_directories(src_dir / 'discretization'),
+  include_directories(src_dir / 'automaton'),
   include_directories(src_dir / parser_dir),
   include_directories(src_dir / parser_dir / 'rtlf'),
   include_directories(src_dir / parser_dir / system_dir),
