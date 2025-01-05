@@ -16,6 +16,8 @@ public:
 
   [[nodiscard]] const spot::atomic_prop_set& atoms() const { return m_atoms; }
   [[nodiscard]] bool containsAtom(const spot::formula& atom) const { return m_atoms.count(atom); }
+  [[nodiscard]] bool isEmpty() const { return m_atoms.empty(); }
+
   [[nodiscard]] std::string toString() const
   {
     std::string result {};
