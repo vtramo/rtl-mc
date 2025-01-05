@@ -10,10 +10,12 @@ public:
 
     explicit BackwardNFA(spot::formula&& rtlf);
 
-    [[nodiscard]] const std::vector<State*>& predecessors(int state) const;
+    [[nodiscard]] const std::vector<State>& states() const;
     [[nodiscard]] const std::vector<State*>& finalStates() const;
+    [[nodiscard]] const std::vector<State*>& predecessors(int state) const;
     [[nodiscard]] bool hasPredecessors(int state) const;
     [[nodiscard]] int totalStates() const;
+    [[nodiscard]] int totalFinalStates() const;
 
 private:
     std::vector<State> m_states {};

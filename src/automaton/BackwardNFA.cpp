@@ -33,7 +33,7 @@ void BackwardNFA::buildAutomaton()
         srcState->setIsInitial( this->isInitial(srcStateId) );
         srcState->setIsFinal( m_nfa->state_is_accepting(srcStateId) );
 
-        bool isSing {};
+        bool isSing { false };
         spot::atomic_prop_set labels {};
         for (auto& edge: m_nfa->out(srcStateId))
         {
@@ -80,6 +80,11 @@ int BackwardNFA::totalStates() const
     return static_cast<int>(m_nfa->num_states());
 }
 
+int BackwardNFA::totalFinalStates() const
+{
+    return m_finalStates.size();
+}
+
 const std::vector<State*>& BackwardNFA::predecessors(const int state) const
 {
     assert(state >= 0 && state < totalStates() && "State is out of range!");
@@ -91,6 +96,11 @@ const std::vector<State*>& BackwardNFA::predecessors(const int state) const
     }
 
     return m_predecessors[state];
+}
+
+const std::vector<State>& BackwardNFA::states() const
+{
+    return m_states;
 }
 
 const std::vector<State*>& BackwardNFA::finalStates() const

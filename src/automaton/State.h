@@ -11,7 +11,7 @@ public:
     [[nodiscard]] const spot::atomic_prop_set& labels() const { return m_labels; }
     [[nodiscard]] const Powerset& denotation() const { return m_denotation; }
     [[nodiscard]] bool isInitial() const { return m_isInitial; }
-    [[nodiscard]] bool isSing() const { return !m_isSing; }
+    [[nodiscard]] bool isSing() const { return m_isSing; }
     [[nodiscard]] bool isFinal() const { return m_isFinal; }
 
 private:
