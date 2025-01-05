@@ -231,10 +231,9 @@ namespace SpotUtils
         return result;
     }
 
-    spot::atomic_prop_vector collectPositiveLiterals(spot::formula&& formula)
+    spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula)
     {
-        spot::atomic_prop_vector result {};
-        result.reserve(formula.size());
+        spot::atomic_prop_set result {};
 
         formula.traverse([&] (const spot::formula& child)
         {
@@ -245,7 +244,7 @@ namespace SpotUtils
 
             if (child.is(spot::op::ap))
             {
-                result.push_back(child);
+                result.insert(child);
             }
 
             return false;
@@ -256,13 +255,16 @@ namespace SpotUtils
 
     spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard)
     {
+        spot::formula formula = spot::bdd_to_formula(guard, twaGraph->get_dict());
+        std::cout << "Start formula: " << formula << std::endl;
         minterms_of minterms { guard, twaGraph->ap_vars() };
         spot::atomic_prop_set labels { };
 
         for (const bdd& minterm: minterms)
         {
             spot::formula mintermFormula { bdd_to_formula(minterm, twaGraph->get_dict()) };
-            for (spot::formula& label: collectPositiveLiterals(std::move(mintermFormula)))
+            std::cout << "Minterm: " << mintermFormula << std::endl;
+            for (const spot::formula& label: collectPositiveLiterals(std::move(mintermFormula)))
             {
                 labels.insert(std::move(label));
             }

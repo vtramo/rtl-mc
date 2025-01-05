@@ -3,6 +3,7 @@
 #include "BackwardNFA.h"
 #include "systemparser.h"
 #include <spot/tl/print.hh>
+#include <spot/twaalgos/hoa.hh>
 
 int main()
 {

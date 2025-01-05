@@ -2,6 +2,8 @@
 #include "discretization.h"
 #include "spot_utils.h"
 #include <spot/tl/formula.hh>
+#include <spot/twa/formula2bdd.hh>
+#include <spot/twaalgos/hoa.hh>
 #include <spot/twaalgos/translate.hh>
 #include <spot/twaalgos/remprop.hh>
 
@@ -13,7 +15,7 @@ BackwardNFA::BackwardNFA(spot::formula&& rtlf, LabelDenotationMap& labelDenotati
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
     ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
-    m_nfa = { spot::to_finite(ltlToNbaTranslator.run(&m_discretizedLtlFormula)) };
+    m_nfa = { to_finite(ltlToNbaTranslator.run(&m_discretizedLtlFormula)) };
     buildAutomaton(labelDenotationMap);
 }
 
@@ -30,17 +32,10 @@ void BackwardNFA::buildAutomaton(LabelDenotationMap& labelDenotationMap)
         srcState->setIsInitial( this->isInitial(srcStateId) );
         srcState->setIsFinal( m_nfa->state_is_accepting(srcStateId) );
 
-        bool isSing { false };
-        spot::atomic_prop_set stateLabels {};
+        bdd outgoingGuardsAnd { bdd_true() };
         for (auto& edge: m_nfa->out(srcStateId))
         {
-            const spot::atomic_prop_set extractedLabels { extractLabelsFromEdgeGuard(m_nfa, edge.cond) };
-            stateLabels.insert(extractedLabels.begin(), extractedLabels.end());
-
-            if (!isSing)
-            {
-                isSing = containsSing(extractedLabels);
-            }
+            outgoingGuardsAnd &= edge.cond;
 
             const unsigned dstState { edge.dst };
             if (!this->isInitial(dstState))
@@ -49,8 +44,9 @@ void BackwardNFA::buildAutomaton(LabelDenotationMap& labelDenotationMap)
             }
         }
 
+        spot::atomic_prop_set stateLabels { collectPositiveLiterals(bdd_to_formula(outgoingGuardsAnd, m_nfa->get_dict())) };
+        srcState->setIsSing( containsSing(stateLabels) );
         AtomSet atomSet { std::move(stateLabels) };
-        srcState->setIsSing(isSing);
         srcState->setDenotation(labelDenotationMap.getDenotation(atomSet));
         srcState->setLabels(std::move(atomSet));
 

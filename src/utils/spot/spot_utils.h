@@ -42,7 +42,7 @@ namespace SpotUtils
     spot::formula generateRtlf(int atomicPropSetSize, int formulaSize, spot::op replaceXWith = spot::op::F);
     bool isXFree(spot::formula& formula);
     spot::atomic_prop_vector collectAtomsNotIn(spot::atomic_prop_set&& forbiddenAtoms, spot::formula& formula);
-    spot::atomic_prop_vector collectPositiveLiterals(spot::formula&& formula);
+    spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula);
     spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard);
     bool containsSing(const spot::atomic_prop_set& labels);
 }
