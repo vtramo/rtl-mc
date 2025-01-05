@@ -1,7 +1,3 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #include "PolyhedralSystemBuilder.h"
 #include "PolyhedralSystem.h"
 
@@ -53,7 +49,7 @@ PolyhedralSystemBuilder& PolyhedralSystemBuilder::symbolTable(PolyhedralSystemSy
     return *this;
 }
 
-PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(const std::unordered_map<Atom, Powerset>& denotation)
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(const std::unordered_map<std::string, Powerset>& denotation)
 {
     m_denotation = std::make_unique<std::unordered_map<Atom, Powerset>>(denotation);
     return *this;
@@ -61,7 +57,7 @@ PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(const std::unordere
 
 PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(std::unordered_map<std::string, Powerset>&& denotation)
 {
-    m_denotation = std::make_unique<std::unordered_map<std::string, Powerset>>();
+    m_denotation = std::make_unique<std::unordered_map<Atom, Powerset>>();
     m_denotation->swap(denotation);
     return *this;
 }

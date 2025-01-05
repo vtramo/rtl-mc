@@ -1,9 +1,6 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #include "PolyhedralSystem.h"
 
+#include "spot_utils.h"
 #include <utility>
 #include "PolyhedralSystemBuilderVisitor.h"
 #include "PolyhedralSystemLexer.h"
@@ -33,13 +30,27 @@ const PolyhedralSystemSymbolTable& PolyhedralSystem::getSymbolTable() const
     return m_symbolTable;
 }
 
-std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const std::string_view atomId) const
+std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const std::string_view ap) const
 {
-    if (const auto it { m_denotation.find(std::string(atomId)) }; it != m_denotation.end()) {
+    if (const auto it { m_denotation.find(std::string { ap }) }; it != m_denotation.end()) {
         return &it->second;
     }
 
-    return std::nullopt;
+     return {};
+}
+
+std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const spot::formula ap) const
+{
+    if (!ap.is(spot::op::ap))
+    {
+        return {};
+    }
+
+    if (const auto it { m_denotation.find(ap.ap_name()) }; it != m_denotation.end()) {
+        return &it->second;
+    }
+
+     return {};
 }
 
 PPL::dimension_type PolyhedralSystem::getSpaceDimension() const
@@ -70,7 +81,7 @@ bool operator==(const PolyhedralSystem& polyhedralSystem1, const PolyhedralSyste
 PolyhedralSystem::PolyhedralSystem(
     const Powerset& invariant,
     const Poly& flow,
-    const std::unordered_map<std::string, AtomInterpretation>& denotation,
+    const std::unordered_map<Atom, AtomInterpretation>& denotation,
     const PolyhedralSystemSymbolTable& symbolTable
 ) : m_invariant { invariant }
   , m_flow { flow }
@@ -83,7 +94,7 @@ PolyhedralSystem::PolyhedralSystem(
 PolyhedralSystem::PolyhedralSystem(
     Powerset&& invariant,
     Poly&& flow,
-    std::unordered_map<std::string, AtomInterpretation>&& denotation,
+    std::unordered_map<Atom, AtomInterpretation>&& denotation,
     PolyhedralSystemSymbolTable&& symbolTable
 ) : m_denotation { std::move(denotation) }
   , m_symbolTable { std::move(symbolTable) }

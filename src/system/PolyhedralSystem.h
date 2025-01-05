@@ -1,11 +1,9 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #ifndef POLYHEDRALSYSTEM_H
 #define POLYHEDRALSYSTEM_H
 
 #include <optional>
+#include <spot/tl/formula.hh>
+
 #include "ANTLRInputStream.h"
 #include "PolyhedralSystemBuilder.h"
 #include "PolyhedralSystemSymbolTable.h"
@@ -21,7 +19,8 @@ public:
     [[nodiscard]] const Poly& getPreFlow() const;
     [[nodiscard]] const Powerset& getInvariant() const;
     [[nodiscard]] const PolyhedralSystemSymbolTable& getSymbolTable() const;
-    [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(std::string_view atomId) const;
+    [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(std::string_view ap) const;
+    [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(spot::formula ap) const;
     [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
     [[nodiscard]] int getTotalAtoms() const;
 

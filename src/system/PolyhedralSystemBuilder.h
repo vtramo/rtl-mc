@@ -1,8 +1,3 @@
-
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #ifndef POLYHEDRALSYSTEMBUILDER_H
 #define POLYHEDRALSYSTEMBUILDER_H
 
@@ -22,8 +17,8 @@ public:
     PolyhedralSystemBuilder& invariant(const Powerset& invariant);
     PolyhedralSystemBuilder& invariant(Powerset&& invariant);
 
-    PolyhedralSystemBuilder& denotation(const std::unordered_map<Atom, Powerset>& denotation);
-    PolyhedralSystemBuilder& denotation(std::unordered_map<Atom, Powerset>&& denotation);
+    PolyhedralSystemBuilder& denotation(const std::unordered_map<std::string, Powerset>& denotation);
+    PolyhedralSystemBuilder& denotation(std::unordered_map<std::string, Powerset>&& denotation);
 
     PolyhedralSystemBuilder& symbolTable(const PolyhedralSystemSymbolTable& polyhedralSystemSymbolTable);
     PolyhedralSystemBuilder& symbolTable(PolyhedralSystemSymbolTable&& polyhedralSystemSymbolTable);
@@ -54,7 +49,5 @@ private:
     void assertDenotationIsNotNull() const;
     void assertThatAllDimensionsAreEqual() const;
 };
-
-
 
 #endif //POLYHEDRALSYSTEMBUILDER_H

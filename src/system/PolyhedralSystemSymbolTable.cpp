@@ -1,10 +1,6 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #include "PolyhedralSystemSymbolTable.h"
-
-#include <ppl_utils.h>
+#include "spot_utils.h"
+#include "ppl_utils.h"
 
 namespace
 {
@@ -40,15 +36,15 @@ PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addVariables(const std
     return *this;
 }
 
-PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtom(const std::string_view id)
+PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtom(const std::string_view atom)
 {
-    m_atomIds.insert(std::string { id });
+    m_atoms.insert(SpotUtils::ap(atom));
     return *this;
 }
 
-PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtoms(const std::initializer_list<std::string_view> ids)
+PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtoms(const std::initializer_list<std::string_view> atoms)
 {
-    for (const auto &id: ids)
+    for (const auto &id: atoms)
     {
         addAtom(id);
     }
@@ -61,9 +57,14 @@ bool PolyhedralSystemSymbolTable::containsVariable(const std::string_view id) co
     return m_variableById.count(std::string { id });
 }
 
-bool PolyhedralSystemSymbolTable::containsAtom(const std::string_view id) const
+bool PolyhedralSystemSymbolTable::containsAtom(const std::string_view atom) const
 {
-    return m_atomIds.count(std::string { id });
+    return m_atoms.count(SpotUtils::ap(atom));
+}
+
+spot::atomic_prop_set PolyhedralSystemSymbolTable::atoms() const
+{
+    return m_atoms;
 }
 
 std::optional<PPL::Variable> PolyhedralSystemSymbolTable::getVariable(const std::string_view id) const
@@ -91,20 +92,20 @@ PPL::dimension_type PolyhedralSystemSymbolTable::getSpaceDimension() const
 
 int PolyhedralSystemSymbolTable::getTotalAtoms() const
 {
-    return static_cast<int>(m_atomIds.size());
+    return static_cast<int>(m_atoms.size());
 }
 
 bool operator== (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2)
 {
     return symbolTable1.m_dimensions == symbolTable2.m_dimensions &&
-           symbolTable1.m_atomIds    == symbolTable2.m_atomIds &&
+           symbolTable1.m_atoms    == symbolTable2.m_atoms &&
            areVariableByIdMapsEqual(symbolTable1.m_variableById, symbolTable2.m_variableById) &&
            symbolTable1.m_idBySpaceDimension == symbolTable2.m_idBySpaceDimension;
 }
 
 bool operator!= (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2)
 {
-    return !(operator== (symbolTable1, symbolTable2));
+    return !(symbolTable1 == symbolTable2);
 }
 
 namespace

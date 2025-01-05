@@ -2,7 +2,8 @@ parse_system_tests_source_files = [
     'parse_system_tests.cpp',
     polyhedral_system_parser_source_files,
     polyhedral_system_source_files,
-    ppl_utils_source_files
+    ppl_utils_source_files,
+    spot_utils_source_files
 ]
 
 parse_system_tests_exe = executable(
