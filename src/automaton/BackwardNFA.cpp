@@ -29,16 +29,16 @@ void BackwardNFA::buildAutomaton()
     for (unsigned srcStateId { 0 }; srcStateId < totalStates; ++srcStateId)
     {
         State* srcState { &m_states[srcStateId] };
-        srcState->setId(srcStateId);
+        srcState->setIndex(srcStateId);
         srcState->setIsInitial( this->isInitial(srcStateId) );
         srcState->setIsFinal( m_nfa->state_is_accepting(srcStateId) );
 
         bool isSing { false };
-        spot::atomic_prop_set labels {};
+        spot::atomic_prop_set stateLabels {};
         for (auto& edge: m_nfa->out(srcStateId))
         {
             const spot::atomic_prop_set extractedLabels { extractLabelsFromEdgeGuard(m_nfa, edge.cond) };
-            labels.insert(extractedLabels.begin(), extractedLabels.end());
+            stateLabels.insert(extractedLabels.begin(), extractedLabels.end());
 
             if (!isSing)
             {
@@ -52,9 +52,10 @@ void BackwardNFA::buildAutomaton()
             }
         }
 
+        AtomSet atomSet { std::move(stateLabels) };
         srcState->setIsSing(isSing);
-        srcState->setLabels(std::move(labels));
-        // srcState->setDenotation() TODO:
+        // srcState->setDenotation(labelDenotationMap.getDenotation(atomSet));
+        srcState->setLabels(std::move(atomSet));
 
         if (srcState->isFinal())
         {
