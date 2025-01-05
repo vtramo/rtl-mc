@@ -6,6 +6,7 @@ using Parma_Polyhedra_Library::IO_Operators::operator<<;
 LabelDenotationMap::LabelDenotationMap(const PolyhedralSystem& polyhedralSystem)
     : m_polyhedralSystem { polyhedralSystem }
 {
+    m_denotation.insert({{}, Powerset { polyhedralSystem.getSpaceDimension(), PPL::EMPTY }});
 }
 
 bool LabelDenotationMap::containsDenotation(const AtomSet& labels) const
