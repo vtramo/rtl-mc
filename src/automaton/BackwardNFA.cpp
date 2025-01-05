@@ -1,26 +1,23 @@
 #include "BackwardNFA.h"
-
-#include <spot_utils.h>
-
 #include "discretization.h"
+#include "spot_utils.h"
 #include <spot/tl/formula.hh>
 #include <spot/twaalgos/translate.hh>
 #include <spot/twaalgos/remprop.hh>
 
 using namespace SpotUtils;
-using ConstStatePtrVec = const std::vector<const State* const>;
 
-BackwardNFA::BackwardNFA(spot::formula&& rtlf)
+BackwardNFA::BackwardNFA(spot::formula&& rtlf, LabelDenotationMap& labelDenotationMap)
 {
     spot::formula discretizedLtl { discretize(std::move(rtlf)) };
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
     ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
     m_nfa = { spot::to_finite(ltlToNbaTranslator.run(&discretizedLtl)) };
-    buildAutomaton();
+    buildAutomaton(labelDenotationMap);
 }
 
-void BackwardNFA::buildAutomaton()
+void BackwardNFA::buildAutomaton(LabelDenotationMap& labelDenotationMap)
 {
     unsigned totalStates { m_nfa->num_states() };
     m_states.resize(totalStates);
@@ -54,7 +51,7 @@ void BackwardNFA::buildAutomaton()
 
         AtomSet atomSet { std::move(stateLabels) };
         srcState->setIsSing(isSing);
-        // srcState->setDenotation(labelDenotationMap.getDenotation(atomSet));
+        srcState->setDenotation(labelDenotationMap.getDenotation(atomSet));
         srcState->setLabels(std::move(atomSet));
 
         if (srcState->isFinal())

@@ -4,11 +4,12 @@
 #include <spot/tl/formula.hh>
 #include <spot/twa/fwd.hh>
 #include "State.h"
+#include "LabelDenotationMap.h"
 
 class BackwardNFA {
 public:
 
-    explicit BackwardNFA(spot::formula&& rtlf);
+    explicit BackwardNFA(spot::formula&& rtlf, LabelDenotationMap& labelDenotationMap);
 
     [[nodiscard]] const std::vector<State>& states() const;
     [[nodiscard]] const std::vector<State*>& finalStates() const;
@@ -23,7 +24,7 @@ private:
     std::vector<State*> m_finalStates {};
     spot::twa_graph_ptr m_nfa {};
 
-    void buildAutomaton();
+    void buildAutomaton(LabelDenotationMap& labelDenotationMap);
     bool isInitial(unsigned state) const;
 };
 
