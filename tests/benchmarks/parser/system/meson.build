@@ -3,7 +3,8 @@ parse_system_benchmarks_source_files = [
     test_utils_src_files,
     polyhedral_system_parser_source_files,
     polyhedral_system_source_files,
-    ppl_utils_source_files
+    ppl_utils_source_files,
+    spot_utils_source_files
 ]
 
 parse_system_benchmarks_exe = executable(
