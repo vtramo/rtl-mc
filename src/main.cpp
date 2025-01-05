@@ -23,18 +23,6 @@ int main()
 
     LabelDenotationMap atomSetDenotationMap { polyhedralSystem };
     BackwardNFA backwardNfa { spot::parse_infix_psl("G i & t0 & G t1 & (F p & F(q & F(p & Fq)))").f, atomSetDenotationMap };
-    std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
-
-    for (const State& state: backwardNfa.states())
-    {
-        std::cout << std::boolalpha;
-        std::cout << "State: " << state.index() << '\n';
-        std::cout << "Initial: " << state.isInitial() << '\n';
-        std::cout << "Sing: " << state.isSing() << '\n';
-        std::cout << "Final: " << state.isFinal() << '\n';
-        std::cout << "Labels: " << state.labels() << '\n';
-        std::cout << "Predecessors: " << backwardNfa.predecessors(state.index()) << "\n\n";
-    }
-
+    std::cout << backwardNfa << '\n';
     std::cout << atomSetDenotationMap << '\n';
 }

@@ -17,15 +17,22 @@ public:
     [[nodiscard]] bool hasPredecessors(int state) const;
     [[nodiscard]] int totalStates() const;
     [[nodiscard]] int totalFinalStates() const;
+    [[nodiscard]] int totalEdges() const;
+    [[nodiscard]] const spot::formula& discretizedLtlFormula() const;
 
 private:
     std::vector<State> m_states {};
     std::vector<std::vector<State*>> m_predecessors {};
     std::vector<State*> m_finalStates {};
     spot::twa_graph_ptr m_nfa {};
+    spot::formula m_discretizedLtlFormula {};
 
     void buildAutomaton(LabelDenotationMap& labelDenotationMap);
     bool isInitial(unsigned state) const;
 };
+
+std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
+std::ostream& operator<< (std::ostream& out, const std::vector<State*>& states);
+std::ostream& operator<<(std::ostream& out, const std::vector<State>& states);
 
 #endif

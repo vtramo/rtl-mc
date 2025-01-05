@@ -40,9 +40,12 @@ Powerset LabelDenotationMap::getDenotation(const AtomSet& labels)
 
 std::ostream& operator<<(std::ostream& out, LabelDenotationMap& atomSetDenotationMap)
 {
+    out << "LABEL DENOTATION MAP\n";
+
     for (const auto &[labels, powerset] : atomSetDenotationMap.m_denotation)
     {
-        out << "Labels: " << labels << ", Denotation: " << powerset << '\n';
+        out << "Labels: " << labels << '\n';
+        out << "Denotation: " << powerset << "\n\n";
     }
 
     return out;

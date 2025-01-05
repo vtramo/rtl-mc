@@ -8,12 +8,12 @@
 using namespace SpotUtils;
 
 BackwardNFA::BackwardNFA(spot::formula&& rtlf, LabelDenotationMap& labelDenotationMap)
+    : m_discretizedLtlFormula { discretize(std::move(rtlf)) }
 {
-    spot::formula discretizedLtl { discretize(std::move(rtlf)) };
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
     ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
-    m_nfa = { spot::to_finite(ltlToNbaTranslator.run(&discretizedLtl)) };
+    m_nfa = { spot::to_finite(ltlToNbaTranslator.run(&m_discretizedLtlFormula)) };
     buildAutomaton(labelDenotationMap);
 }
 
@@ -96,6 +96,11 @@ const std::vector<State*>& BackwardNFA::predecessors(const int state) const
     return m_predecessors[state];
 }
 
+int BackwardNFA::totalEdges() const
+{
+    return static_cast<int>(m_nfa->num_edges());
+}
+
 const std::vector<State>& BackwardNFA::states() const
 {
     return m_states;
@@ -104,4 +109,57 @@ const std::vector<State>& BackwardNFA::states() const
 const std::vector<State*>& BackwardNFA::finalStates() const
 {
     return m_finalStates;
+}
+
+const spot::formula& BackwardNFA::discretizedLtlFormula() const
+{
+    return m_discretizedLtlFormula;
+}
+
+std::ostream& operator<<(std::ostream& out, const std::vector<State>& states)
+{
+    out << "[";
+    bool first = true;
+    for (const auto& state : states)
+    {
+        out << (first ? "" : ", ") << state.index();
+        first = false;
+    }
+    out << "]";
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const std::vector<State*>& states)
+{
+    out << "[";
+    bool first = true;
+    for (const auto& state : states)
+    {
+        out << (first ? "" : ", ") << state->index();
+        first = false;
+    }
+    out << "]";
+    return out;
+}
+
+
+std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
+{
+    out << "BACKWARD NFA\n";
+    out << "Total states: " << backwardNfa.totalStates() << '\n';
+    out << "Total edges: " << backwardNfa.totalEdges() << '\n';
+    out << "Discretized LTL Formula: " << backwardNfa.discretizedLtlFormula() << "\n\n";
+
+    for (const State& state: backwardNfa.states())
+    {
+        out << std::boolalpha;
+        out << "State: " << state.index() << '\n';
+        out << "Initial: " << state.isInitial() << '\n';
+        out << "Sing: " << state.isSing() << '\n';
+        out << "Final: " << state.isFinal() << '\n';
+        out << "Labels: " << state.labels() << '\n';
+        out << "Predecessors: " << backwardNfa.predecessors(state.index()) << "\n\n";
+    }
+
+    return out << std::noboolalpha;
 }
