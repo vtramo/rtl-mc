@@ -35,6 +35,8 @@ polyhedral_system_parser_source_files = [
     current_source_dir / 'PolyhedralSystemErrorListener.h',
     current_source_dir / 'PolyhedralSystemErrorListener.cpp',
     current_source_dir / 'PolyhedralSystemParsingResult.h',
+    current_source_dir / 'systemparser.h',
+    current_source_dir / 'systemparser.cpp',
 ]
 
 project_source_files += polyhedral_system_parser_source_files

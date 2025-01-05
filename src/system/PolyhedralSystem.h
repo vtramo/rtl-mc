@@ -4,7 +4,6 @@
 #include <optional>
 #include <spot/tl/formula.hh>
 
-#include "ANTLRInputStream.h"
 #include "PolyhedralSystemBuilder.h"
 #include "PolyhedralSystemSymbolTable.h"
 #include "AtomInterpretation.h"
@@ -60,8 +59,4 @@ private:
     void computePreFlow();
 };
 
-class PolyhedralSystemParsingResult;
-PolyhedralSystemParsingResult parsePolyhedralSystem(std::string_view);
-PolyhedralSystemParsingResult parsePolyhedralSystem(std::istream&);
-PolyhedralSystemParsingResult parsePolyhedralSystem(antlr4::ANTLRInputStream*);
 #endif //POLYHEDRALSYSTEM_H

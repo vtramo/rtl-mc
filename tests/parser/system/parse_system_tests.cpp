@@ -2,6 +2,7 @@
 #include "PolyhedralSystemParsingResult.h"
 #include "ppl_utils.h"
 #include "PolyhedralSystem.h"
+#include "systemparser.h"
 
 TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 {
