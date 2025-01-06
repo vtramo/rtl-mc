@@ -1,0 +1,1 @@
+p1 & q1 & v1 U (r1 R z1) & G x1 & F(u1 & F(p2 & (F p3 | u2 W p4))) & (t | Gw)
