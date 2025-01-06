@@ -1,65 +1,56 @@
 #ifndef ATOMSET_H
 #define ATOMSET_H
 
-#include <string>
+#include <spot_constants.h>
 #include <spot/tl/apcollect.hh>
 
-class AtomSet {
+class AtomSet
+{
 public:
-  AtomSet() = default;
+    using AtomSetIterator = std::set<spot::formula>::iterator;
 
-  explicit AtomSet(spot::atomic_prop_set&& atomSet)
-      : m_atoms { std::move(atomSet) }
-  {
-    m_hashcode = std::hash<std::string>{}(this->toString());
-  }
+    AtomSet() = default;
 
-  [[nodiscard]] const spot::atomic_prop_set& atoms() const { return m_atoms; }
-  [[nodiscard]] bool containsAtom(const spot::formula& atom) const { return m_atoms.count(atom); }
-  [[nodiscard]] bool isEmpty() const { return m_atoms.empty(); }
+    explicit AtomSet(spot::atomic_prop_set&& atomSet, bool excludeSingForOptimization = false);
 
-  [[nodiscard]] std::string toString() const
-  {
-    std::string result {};
-    result.reserve(m_atoms.size());
-    result += "{";
-    bool first = true;
-    for (const auto& atom : m_atoms)
-    {
-      result += (first ? "" : ", ") + atom.ap_name();
-      first = false;
-    }
-    return result += "}";
-  }
+    [[nodiscard]] const spot::atomic_prop_set& atoms() const;
+    [[nodiscard]] int size() const;
+    [[nodiscard]] bool containsAtom(const spot::formula& atom) const;
+    [[nodiscard]] bool isEmpty() const;
+    [[nodiscard]] AtomSetIterator begin() const { return m_atoms.begin(); }
+    [[nodiscard]] AtomSetIterator end() const { return m_atoms.end(); }
 
-  friend bool operator== (const AtomSet& atomSet1, const AtomSet& atomSet2);
-  friend struct std::hash<AtomSet>;
+    friend bool operator==(const AtomSet& atomSet1, const AtomSet& atomSet2);
+    friend std::ostream& operator<<(std::ostream& out, const AtomSet& atomSet);
+    friend struct std::hash<AtomSet>;
+
 private:
-  spot::atomic_prop_set m_atoms {};
-  std::size_t m_hashcode {};
+    spot::atomic_prop_set m_atoms {};
+    std::size_t m_hashcode {};
+    bool m_isSingRemoved { false };
 };
 
-inline bool operator== (const AtomSet& atomSet1, const AtomSet& atomSet2)
-{
-  return atomSet1.m_hashcode == atomSet2.m_hashcode;
-}
+bool operator==(const AtomSet& atomSet1, const AtomSet& atomSet2);
+bool operator!=(const AtomSet& atomSet1, const AtomSet& atomSet2);
 
-inline bool operator!= (const AtomSet& atomSet1, const AtomSet& atomSet2)
+template <>
+struct std::hash<AtomSet>
 {
-  return !(atomSet1 == atomSet2);
-}
+    std::size_t operator()(const AtomSet* const atomSet) const noexcept
+    {
+        std::string result {};
+        result.reserve(atomSet->size());
+        for (const auto& atom: atomSet->atoms())
+        {
+            result += atom.ap_name();
+        }
+        return std::hash<std::string>{}(result);
+    }
 
-inline std::ostream& operator<< (std::ostream& out, const AtomSet& atomSet)
-{
-  return out << atomSet.toString();
-}
-
-template<>
-struct std::hash<AtomSet> {
-  std::size_t operator()(const AtomSet& atomSet) const noexcept
-  {
-    return atomSet.m_hashcode;
-  }
+    std::size_t operator()(const AtomSet& atomSet) const noexcept
+    {
+        return operator()(&atomSet);
+    }
 };
 
 #endif //ATOMSET_H

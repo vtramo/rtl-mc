@@ -46,7 +46,7 @@ void BackwardNFA::buildAutomaton(LabelDenotationMap& labelDenotationMap)
 
         spot::atomic_prop_set stateLabels { collectPositiveLiterals(bdd_to_formula(outgoingGuardsAnd, m_nfa->get_dict())) };
         srcState->setIsSing( containsSing(stateLabels) );
-        AtomSet atomSet { std::move(stateLabels) };
+        AtomSet atomSet { std::move(stateLabels), true };
         srcState->setDenotation(labelDenotationMap.getDenotation(atomSet));
         srcState->setLabels(std::move(atomSet));
 

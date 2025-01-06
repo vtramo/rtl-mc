@@ -5,6 +5,7 @@ automaton_source_files = [
     current_source_dir / 'BackwardNFA.h',
     current_source_dir / 'State.h',
     current_source_dir / 'AtomSet.h',
+    current_source_dir / 'AtomSet.cpp',
     current_source_dir / 'LabelDenotationMap.h',
     current_source_dir / 'LabelDenotationMap.cpp',
 ]
