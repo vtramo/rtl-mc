@@ -30,4 +30,15 @@ private:
     void setIsFinal(const bool isFinal) { m_isFinal = isFinal; }
 };
 
+inline std::ostream& operator<< (std::ostream& out, const State& state)
+{
+    out << std::boolalpha;
+    out << "State: " << state.index() << '\n';
+    out << "Initial: " << state.isInitial() << '\n';
+    out << "Sing: " << state.isSing() << '\n';
+    out << "Final: " << state.isFinal() << '\n';
+    out << "Labels: " << state.labels() << '\n';
+    return out << std::noboolalpha;
+}
+
 #endif //STATE_H

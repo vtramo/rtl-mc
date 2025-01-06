@@ -148,14 +148,9 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
 
     for (const State& state: backwardNfa.states())
     {
-        out << std::boolalpha;
-        out << "State: " << state.index() << '\n';
-        out << "Initial: " << state.isInitial() << '\n';
-        out << "Sing: " << state.isSing() << '\n';
-        out << "Final: " << state.isFinal() << '\n';
-        out << "Labels: " << state.labels() << '\n';
+        out << state;
         out << "Predecessors: " << backwardNfa.predecessors(state.index()) << "\n\n";
     }
 
-    return out << std::noboolalpha;
+    return out;
 }
