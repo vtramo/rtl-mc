@@ -19,7 +19,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("F p0").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -36,7 +36,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("F p0 & F p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -53,7 +53,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("F p0 & F p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -70,7 +70,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("F p0 & F p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -82,7 +82,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G p0").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -99,7 +99,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G p0 & F p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -117,7 +117,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G(p0 & p1) & p2 & G p3 & F(p4 & F p5)").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -131,7 +131,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 U p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -148,7 +148,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 S p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -160,7 +160,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 R p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -177,7 +177,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 M p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -194,7 +194,7 @@ TEST_CASE("Discretization tests", "[discretization]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 W p1").f };
-        spot::formula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }

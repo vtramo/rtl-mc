@@ -16,10 +16,10 @@ namespace
 }
 
 
-spot::formula discretize(spot::formula&& formula)
+DiscreteLtlFormula discretize(spot::formula&& formula)
 {
     spot::formula discretizedLtlFormula { toDiscretizedLtlFormula(std::move(formula)) };
-    return imposeSingOpenLastAndAliveProperty(std::move(discretizedLtlFormula));
+    return DiscreteLtlFormula { imposeSingOpenLastAndAliveProperty(std::move(discretizedLtlFormula)) };
 }
 
 spot::formula imposeSingOpenLastAndAliveProperty(spot::formula&& formula)

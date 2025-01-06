@@ -1,9 +1,14 @@
-#include "LabelDenotationMap.h"
-#include "PolyhedralSystemParsingResult.h"
-#include "BackwardNFA.h"
-#include "systemparser.h"
+
+#include <spot/tl/parse.hh>
 #include <spot/tl/print.hh>
 #include <spot/twaalgos/hoa.hh>
+#include "BackwardNFA.h"
+#include "LabelDenotationMap.h"
+#include "DiscreteLtlFormula.h"
+#include "PolyhedralSystemParsingResult.h"
+#include "systemparser.h"
+#include "PolyhedralSystem.h"
+#include "discretization.h"
 
 int main()
 {
@@ -22,8 +27,9 @@ int main()
     assert(polyhedralSystemParsingResult.ok());
     PolyhedralSystem polyhedralSystem { std::move(*polyhedralSystemParsingResult) };
 
-    LabelDenotationMap atomSetDenotationMap { polyhedralSystem };
-    BackwardNFA backwardNfa { spot::parse_infix_psl("G i & t0 & G t1 & (F p & F(q & F(p & Fq)))").f, atomSetDenotationMap };
+    LabelDenotationMap labelDenotationMap { polyhedralSystem };
+    DiscreteLtlFormula discreteLtlFormula { discretize(spot::parse_infix_psl("G i & t0 & G t1 & (F p & F(q & F(p & Fq)))").f) };
+    BackwardNFA backwardNfa { std::move(discreteLtlFormula), labelDenotationMap };
     std::cout << backwardNfa << '\n';
-    std::cout << atomSetDenotationMap << '\n';
+    std::cout << labelDenotationMap << '\n';
 }

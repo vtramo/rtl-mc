@@ -8,13 +8,13 @@
 
 using namespace SpotUtils;
 
-BackwardNFA::BackwardNFA(spot::formula&& formula, LabelDenotationMap& labelDenotationMap)
-    : m_formula { std::move(formula) }
+BackwardNFA::BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, LabelDenotationMap& labelDenotationMap)
+    : m_ltlFormula { std::move(discreteLtlFormula) }
 {
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
     ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
-    m_nfa = { to_finite(ltlToNbaTranslator.run(&m_formula)) };
+    m_nfa = { spot::to_finite(ltlToNbaTranslator.run(m_ltlFormula.formula())) };
     buildAutomaton(labelDenotationMap);
 }
 
@@ -105,9 +105,9 @@ const std::vector<State*>& BackwardNFA::finalStates() const
     return m_finalStates;
 }
 
-const spot::formula& BackwardNFA::formula() const
+const DiscreteLtlFormula& BackwardNFA::formula() const
 {
-    return m_formula;
+    return m_ltlFormula;
 }
 
 std::ostream& operator<<(std::ostream& out, const std::vector<State>& states)

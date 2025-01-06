@@ -4,6 +4,7 @@
 #include <optional>
 #include <spot/tl/formula.hh>
 
+#include "ppl_aliases.h"
 #include "PolyhedralSystemBuilder.h"
 #include "PolyhedralSystemSymbolTable.h"
 #include "AtomInterpretation.h"
