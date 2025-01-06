@@ -19,8 +19,8 @@ public:
     [[nodiscard]] const Poly& getPreFlow() const;
     [[nodiscard]] const Powerset& getInvariant() const;
     [[nodiscard]] const PolyhedralSystemSymbolTable& getSymbolTable() const;
-    [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(std::string_view ap) const;
-    [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(spot::formula ap) const;
+    [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(std::string_view atom) const;
+    [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(const spot::formula& atom) const;
     [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
     [[nodiscard]] int getTotalAtoms() const;
 
@@ -59,5 +59,7 @@ private:
 
     void computePreFlow();
 };
+
+std::ostream& operator<<(std::ostream&, const PolyhedralSystem&);
 
 #endif //POLYHEDRALSYSTEM_H

@@ -32,6 +32,7 @@ namespace PPLOutput
         }
         else
         {
+            result += "( ";
             Powerset::const_iterator powersetIterator { powerset.begin() };
             Powerset::const_iterator end { powerset.end() };
             while (powersetIterator != end)
@@ -41,6 +42,7 @@ namespace PPLOutput
                 if (++powersetIterator != end)
                     result += ", ";
             }
+            result += " )";
         }
 
         return result;
@@ -76,7 +78,7 @@ namespace PPLOutput
 
                 if (++constraintIterator != end)
                 {
-                    result += ", ";
+                    result += " & ";
                 }
             }
         }

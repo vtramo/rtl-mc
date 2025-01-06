@@ -1,5 +1,7 @@
 #include "PolyhedralSystem.h"
 
+#include <ppl_output.h>
+
 #include "spot_utils.h"
 #include <utility>
 #include "ppl_utils.h"
@@ -34,14 +36,14 @@ std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretati
      return {};
 }
 
-std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const spot::formula ap) const
+std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const spot::formula& atom) const
 {
-    if (!ap.is(spot::op::ap))
+    if (!atom.is(spot::op::ap))
     {
         return {};
     }
 
-    if (const auto it { m_denotation.find(ap.ap_name()) }; it != m_denotation.end()) {
+    if (const auto it { m_denotation.find(atom.ap_name()) }; it != m_denotation.end()) {
         return &it->second;
     }
 
@@ -139,4 +141,19 @@ std::istream& operator>>(std::istream& istream, PolyhedralSystem&& polyhedralSys
     polyhedralSystem = {};
 
     return istream;
+}
+
+std::ostream& operator<<(std::ostream& out, const PolyhedralSystem& polyhedralSystem)
+{
+    const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem.getSymbolTable() };
+    out << "Inv " << PPLOutput::toString(polyhedralSystem.getInvariant(), symbolTable) << '\n';
+    out << "Flow " << PPLOutput::toString(polyhedralSystem.getFlow(), symbolTable) << "\n\n";
+
+    for (const auto& atom: symbolTable.atoms())
+    {
+        const AtomInterpretation* atomInterpretation { *polyhedralSystem.getInterpretation(atom) };
+        out << atom << " " << PPLOutput::toString(atomInterpretation->interpretation(), symbolTable) << '\n';
+    }
+
+    return out;
 }

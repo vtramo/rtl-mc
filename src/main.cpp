@@ -26,6 +26,7 @@ int main()
 
     assert(polyhedralSystemParsingResult.ok());
     PolyhedralSystem polyhedralSystem { std::move(*polyhedralSystemParsingResult) };
+    std::cout << polyhedralSystem << '\n';
 
     LabelDenotationMap labelDenotationMap { polyhedralSystem };
     DiscreteLtlFormula discreteLtlFormula { discretize(spot::parse_infix_psl("G i & t0 & G t1 & (F p & F(q & F(p & Fq)))").f) };
