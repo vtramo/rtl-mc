@@ -10,7 +10,8 @@
 class BackwardNFA {
 public:
 
-    explicit BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, LabelDenotationMap& labelDenotationMap);
+    BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, LabelDenotationMap& labelDenotationMap);
+    BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, LabelDenotationMap& labelDenotationMap);
 
     [[nodiscard]] const std::vector<State>& states() const;
     [[nodiscard]] const std::vector<State*>& finalStates() const;

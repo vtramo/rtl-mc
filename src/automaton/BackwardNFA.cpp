@@ -8,6 +8,9 @@
 
 using namespace SpotUtils;
 
+BackwardNFA::BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, LabelDenotationMap& labelDenotationMap)
+    : BackwardNFA(DiscreteLtlFormula { discreteLtlFormula }, labelDenotationMap) {}
+
 BackwardNFA::BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, LabelDenotationMap& labelDenotationMap)
     : m_ltlFormula { std::move(discreteLtlFormula) }
 {
