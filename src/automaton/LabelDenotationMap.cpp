@@ -21,6 +21,11 @@ Powerset LabelDenotationMap::getDenotation(const AtomSet& labels)
         return m_denotation.at(labels);
     }
 
+    return computeDenotation(labels);
+}
+
+Powerset LabelDenotationMap::computeDenotation(const AtomSet& labels)
+{
     Powerset labelDenotation { m_polyhedralSystem.get().getSpaceDimension(), PPL::UNIVERSE };
     PolyhedralSystemSymbolTable symbolTable { m_polyhedralSystem.get().getSymbolTable() };
     for (const auto& atom: symbolTable.atoms())

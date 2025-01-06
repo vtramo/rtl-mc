@@ -6,17 +6,21 @@
 #include "ppl_aliases.h"
 #include <spot/tl/apcollect.hh>
 
-class LabelDenotationMap {
+class LabelDenotationMap
+{
 public:
-  explicit LabelDenotationMap(const PolyhedralSystem& polyhedralSystem);
+    explicit LabelDenotationMap(const PolyhedralSystem& polyhedralSystem);
 
-  [[nodiscard]] Powerset getDenotation(const AtomSet& labels);
-  [[nodiscard]] bool containsDenotation(const AtomSet& labels) const;
+    [[nodiscard]] Powerset getDenotation(const AtomSet& labels);
+    [[nodiscard]] bool containsDenotation(const AtomSet& labels) const;
 
-  friend std::ostream& operator<< (std::ostream& out, LabelDenotationMap& atomSetDenotationMap);
+    friend std::ostream& operator<<(std::ostream& out, LabelDenotationMap& atomSetDenotationMap);
+
 private:
-  std::unordered_map<AtomSet, Powerset> m_denotation {};
-  std::reference_wrapper<const PolyhedralSystem> m_polyhedralSystem;
+    std::unordered_map<AtomSet, Powerset> m_denotation {};
+    std::reference_wrapper<const PolyhedralSystem> m_polyhedralSystem;
+
+    Powerset computeDenotation(const AtomSet& labels);
 };
 
 #endif //LABELDENOTATIONMAP_H
