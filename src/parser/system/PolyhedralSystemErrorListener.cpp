@@ -2,11 +2,11 @@
 
 void PolyhedralSystemErrorListener::syntaxError(
     antlr4::Recognizer *recognizer,
-    antlr4::Token* offendingSymbol,
+    [[maybe_unused]] antlr4::Token* offendingSymbol,
     size_t line,
     size_t charPositionInLine,
     const std::string &msg,
-    std::exception_ptr e
+    [[maybe_unused]] std::exception_ptr e
 )
 {
     ParserError::Type errorType {};
