@@ -1,5 +1,4 @@
 #include "BackwardNFA.h"
-#include "discretization.h"
 #include "spot_utils.h"
 #include <spot/tl/formula.hh>
 #include <spot/twa/formula2bdd.hh>
@@ -9,13 +8,13 @@
 
 using namespace SpotUtils;
 
-BackwardNFA::BackwardNFA(spot::formula&& rtlf, LabelDenotationMap& labelDenotationMap)
-    : m_discretizedLtlFormula { discretize(std::move(rtlf)) }
+BackwardNFA::BackwardNFA(spot::formula&& formula, LabelDenotationMap& labelDenotationMap)
+    : m_formula { std::move(formula) }
 {
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
     ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
-    m_nfa = { to_finite(ltlToNbaTranslator.run(&m_discretizedLtlFormula)) };
+    m_nfa = { to_finite(ltlToNbaTranslator.run(&m_formula)) };
     buildAutomaton(labelDenotationMap);
 }
 
@@ -45,7 +44,6 @@ void BackwardNFA::buildAutomaton(LabelDenotationMap& labelDenotationMap)
         }
 
         spot::atomic_prop_set stateLabels { collectPositiveLiterals(bdd_to_formula(outgoingGuardsAnd, m_nfa->get_dict())) };
-        srcState->setIsSing( containsSing(stateLabels) );
         AtomSet atomSet { std::move(stateLabels), true };
         srcState->setDenotation(labelDenotationMap.getDenotation(atomSet));
         srcState->setLabels(std::move(atomSet));
@@ -107,9 +105,9 @@ const std::vector<State*>& BackwardNFA::finalStates() const
     return m_finalStates;
 }
 
-const spot::formula& BackwardNFA::discretizedLtlFormula() const
+const spot::formula& BackwardNFA::formula() const
 {
-    return m_discretizedLtlFormula;
+    return m_formula;
 }
 
 std::ostream& operator<<(std::ostream& out, const std::vector<State>& states)
@@ -144,7 +142,7 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
     out << "BACKWARD NFA\n";
     out << "Total states: " << backwardNfa.totalStates() << '\n';
     out << "Total edges: " << backwardNfa.totalEdges() << '\n';
-    out << "Discretized LTL Formula: " << backwardNfa.discretizedLtlFormula() << "\n\n";
+    out << "Discretized LTL Formula: " << backwardNfa.formula() << "\n\n";
 
     for (const State& state: backwardNfa.states())
     {

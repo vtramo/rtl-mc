@@ -9,7 +9,7 @@
 class BackwardNFA {
 public:
 
-    explicit BackwardNFA(spot::formula&& rtlf, LabelDenotationMap& labelDenotationMap);
+    explicit BackwardNFA(spot::formula&& formula, LabelDenotationMap& labelDenotationMap);
 
     [[nodiscard]] const std::vector<State>& states() const;
     [[nodiscard]] const std::vector<State*>& finalStates() const;
@@ -18,14 +18,14 @@ public:
     [[nodiscard]] int totalStates() const;
     [[nodiscard]] int totalFinalStates() const;
     [[nodiscard]] int totalEdges() const;
-    [[nodiscard]] const spot::formula& discretizedLtlFormula() const;
+    [[nodiscard]] const spot::formula& formula() const;
 
 private:
     std::vector<State> m_states {};
     std::vector<std::vector<State*>> m_predecessors {};
     std::vector<State*> m_finalStates {};
     spot::twa_graph_ptr m_nfa {};
-    spot::formula m_discretizedLtlFormula {};
+    spot::formula m_formula {};
 
     void buildAutomaton(LabelDenotationMap& labelDenotationMap);
     bool isInitial(unsigned state) const;
