@@ -15,9 +15,10 @@ e ricompilare (altrimenti i risultati non saranno "precisi").
 - `meson test --benchmark -C buildDir -v discretization`
 - `meson test --benchmark -C buildDir -v system-parser`
 - `meson test --benchmark -C buildDir -v rtlf-parser`
+- `meson test --benchmark -C buildDir -t 2 -v automaton-construction` (`-t 2` per incrementare il timeout!!)
 
 ### Risultati attuali
-Eseguito su una macchina con processore 13th Gen Intel(R) Core(TM) i9-13900KF e 64GB di RAM
+Eseguiti su una macchina con processore 13th Gen Intel(R) Core(TM) i9-13900KF e 64GB di RAM
 ```
 -------------------------------------------------------------------------------
 PolyhedralSystem Parser benchmarks
@@ -73,4 +74,22 @@ RTLf Parser benchmark 1                        100             1    20.0518 ms
                                                                                
 
 ===============================================================================
+
+
+-------------------------------------------------------------------------------
+Automaton construction benchmarks
+-------------------------------------------------------------------------------
+../tests/benchmarks/automaton/automaton_benchmarks.cpp:10
+...............................................................................
+
+benchmark name                       samples       iterations    est run time
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+Automaton construction benchmark 1             100             1     28.0814 s 
+                                          285.3 ms    284.512 ms    286.594 ms 
+                                         5.0559 ms    3.59694 ms    8.36769 ms 
+                                                                               
+
+==============================================================================
 ```
