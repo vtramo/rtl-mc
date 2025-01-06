@@ -6,8 +6,8 @@
 
 namespace PPLOutput
 {
-    std::string toString(const Powerset& powerset, const PolyhedralSystemSymbolTable& symbolTable);
-    std::string toString(const Poly& poly, const PolyhedralSystemSymbolTable& symbolTable);
+    std::string toString(const Powerset& powerset, const PolyhedralSystemSymbolTable& symbolTable, bool minimizeConstraints = true);
+    std::string toString(const Poly& poly, const PolyhedralSystemSymbolTable& symbolTable, bool minimizeConstraints = true);
     std::string toString(const PPL::Constraint_System& system, const PolyhedralSystemSymbolTable& symbolTable);
     std::string toString(const PPL::Constraint& constraint, const PolyhedralSystemSymbolTable& symbolTable);
     std::string toString(const PPL::Constraint::Type& constraintType);

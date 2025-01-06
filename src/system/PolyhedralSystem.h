@@ -23,6 +23,7 @@ public:
     [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(const spot::formula& atom) const;
     [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
     [[nodiscard]] int getTotalAtoms() const;
+    void setConstraintOutputMinimized(bool);
 
     [[nodiscard]] static PolyhedralSystemBuilder builder();
 
@@ -38,6 +39,7 @@ private:
     Poly m_preFlow {};
     std::unordered_map<Atom, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
+    bool m_minimizeConstraintsOutput { false };
 
     PolyhedralSystem(
         const Powerset& invariant,
@@ -53,6 +55,7 @@ private:
         PolyhedralSystemSymbolTable&& symbolTable
     );
 
+    friend std::ostream& operator<<(std::ostream&, const PolyhedralSystem&);
     PolyhedralSystem& operator= (PolyhedralSystem&&) noexcept;
 
     friend class PolyhedralSystemBuilder;

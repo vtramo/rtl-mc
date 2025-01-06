@@ -26,6 +26,7 @@ int main()
 
     assert(polyhedralSystemParsingResult.ok());
     PolyhedralSystem polyhedralSystem { std::move(*polyhedralSystemParsingResult) };
+    polyhedralSystem.setConstraintOutputMinimized(false);
     std::cout << polyhedralSystem << '\n';
 
     LabelDenotationMap labelDenotationMap { polyhedralSystem };

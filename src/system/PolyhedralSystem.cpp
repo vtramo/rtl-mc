@@ -143,16 +143,22 @@ std::istream& operator>>(std::istream& istream, PolyhedralSystem&& polyhedralSys
     return istream;
 }
 
+void PolyhedralSystem::setConstraintOutputMinimized(const bool minimizeConstraintsOutput)
+{
+    m_minimizeConstraintsOutput = minimizeConstraintsOutput;
+}
+
 std::ostream& operator<<(std::ostream& out, const PolyhedralSystem& polyhedralSystem)
 {
+    const bool minimizeConstraints { polyhedralSystem.m_minimizeConstraintsOutput };
     const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem.getSymbolTable() };
-    out << "Inv " << PPLOutput::toString(polyhedralSystem.getInvariant(), symbolTable) << '\n';
-    out << "Flow " << PPLOutput::toString(polyhedralSystem.getFlow(), symbolTable) << "\n\n";
+    out << "Inv " << PPLOutput::toString(polyhedralSystem.getInvariant(), symbolTable, minimizeConstraints) << '\n';
+    out << "Flow " << PPLOutput::toString(polyhedralSystem.getFlow(), symbolTable, minimizeConstraints) << "\n\n";
 
     for (const auto& atom: symbolTable.atoms())
     {
         const AtomInterpretation* atomInterpretation { *polyhedralSystem.getInterpretation(atom) };
-        out << atom << " " << PPLOutput::toString(atomInterpretation->interpretation(), symbolTable) << '\n';
+        out << atom << " " << PPLOutput::toString(atomInterpretation->interpretation(), symbolTable, minimizeConstraints) << '\n';
     }
 
     return out;

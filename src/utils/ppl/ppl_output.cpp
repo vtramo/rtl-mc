@@ -18,7 +18,7 @@ PPL_U(T)& PPL_U(id) = holder_ ## id.item()
 
 namespace PPLOutput
 {
-    std::string toString(const Powerset& powerset, const PolyhedralSystemSymbolTable& symbolTable)
+    std::string toString(const Powerset& powerset, const PolyhedralSystemSymbolTable& symbolTable, const bool minimizeConstraints)
     {
         std::string result{};
 
@@ -48,7 +48,7 @@ namespace PPLOutput
         return result;
     }
 
-    std::string toString(const Poly& poly, const PolyhedralSystemSymbolTable& symbolTable)
+    std::string toString(const Poly& poly, const PolyhedralSystemSymbolTable& symbolTable, const bool minimizeConstraints)
     {
         std::string result{};
 
@@ -56,6 +56,7 @@ namespace PPLOutput
             result += "false";
         else
             result += toString(poly.minimized_constraints(), symbolTable);
+            const PPL::Constraint_System& constraints { minimizeConstraints ? poly.minimized_constraints() : poly.constraints() };
 
         return result;
     }
