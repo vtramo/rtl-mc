@@ -22,12 +22,19 @@ private:
         std::any visitSystem(PolyhedralSystemParser::SystemContext* ctx) override;
         std::any visitInv(PolyhedralSystemParser::InvContext* ctx) override;
         std::any visitFlow(PolyhedralSystemParser::FlowContext* ctx) override;
+
         std::any visitAtomPowerset(PolyhedralSystemParser::AtomPowersetContext* ctx) override;
         std::any visitAtomPoly(PolyhedralSystemParser::AtomPolyContext* ctx) override;
         std::any visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx) override;
-        std::any visitPowerset(PolyhedralSystemParser::PowersetContext* ctx) override;
-        std::any visitPoly(PolyhedralSystemParser::PolyContext* ctx) override;
+
+        std::any visitPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext* ctx) override;
+        std::any visitPowersetTrue(PolyhedralSystemParser::PowersetTrueContext* ctx) override;
+
+        std::any visitPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext* ctx) override;
+        std::any visitPolyTrue(PolyhedralSystemParser::PolyTrueContext* ctx) override;
+
         std::any visitConstr(PolyhedralSystemParser::ConstrContext* ctx) override;
+
         std::any visitLinearExpr(PolyhedralSystemParser::LinearExprContext* ctx) override;
         std::any visitIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* context) override;
         std::any visitSignTerm(PolyhedralSystemParser::SignTermContext* ctx) override;

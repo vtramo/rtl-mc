@@ -89,7 +89,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty
     return m_visitKey++;
 }
 
-std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowerset(PolyhedralSystemParser::PowersetContext* ctx)
+std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext* ctx)
 {
     auto powerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
 
@@ -105,7 +105,14 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowerset(
     return m_visitKey++;
 }
 
-std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPoly(PolyhedralSystemParser::PolyContext* ctx)
+std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowersetTrue([[maybe_unused]] PolyhedralSystemParser::PowersetTrueContext* ctx)
+{
+    auto powerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::UNIVERSE) };
+    m_powersets[m_visitKey] = std::move(powerset);
+    return m_visitKey++;
+}
+
+std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext* ctx)
 {
     PPL::Constraint_System constraintSystem {};
     constraintSystem.set_space_dimension(m_symbolTable.get().getSpaceDimension());
@@ -119,7 +126,12 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPoly(Poly
     }
 
     m_polyhedra[m_visitKey] = std::move(std::make_unique<Poly>(constraintSystem, PPL::Recycle_Input {}));
+    return m_visitKey++;
+}
 
+std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPolyTrue([[maybe_unused]] PolyhedralSystemParser::PolyTrueContext* ctx)
+{
+    m_polyhedra[m_visitKey] = std::move(std::make_unique<Poly>(PPL::UNIVERSE));
     return m_visitKey++;
 }
 

@@ -24,11 +24,11 @@ namespace PPLOutput
 
         if (powerset.is_bottom())
         {
-            result += "false";
+            result += "( )";
         }
         else if (powerset.is_top())
         {
-            result += "true";
+            result += "( true )";
         }
         else
         {
@@ -37,10 +37,10 @@ namespace PPLOutput
             Powerset::const_iterator end { powerset.end() };
             while (powersetIterator != end)
             {
-                result += "{ " + toString(powersetIterator->pointset(), symbolTable) + " }";
+                result += toString(powersetIterator->pointset(), symbolTable, minimizeConstraints);
 
                 if (++powersetIterator != end)
-                    result += ", ";
+                    result += " ";
             }
             result += " )";
         }
@@ -53,10 +53,12 @@ namespace PPLOutput
         std::string result{};
 
         if (poly.is_empty())
-            result += "false";
+            result += "{ }";
         else
-            result += toString(poly.minimized_constraints(), symbolTable);
+        {
             const PPL::Constraint_System& constraints { minimizeConstraints ? poly.minimized_constraints() : poly.constraints() };
+            result += "{ " + toString(constraints, symbolTable) + " }";
+        }
 
         return result;
     }
@@ -182,7 +184,7 @@ namespace PPLOutput
     {
         std::string result {};
 
-        static constexpr char varNameLetters[] { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" }; // :(
+        static constexpr char varNameLetters[] { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
         constexpr PPL::dimension_type numLetters { sizeof(varNameLetters) - 1 };
 
         if (const auto variableName { symbolTable.getVariableName(variable) })

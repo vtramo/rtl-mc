@@ -29,34 +29,36 @@ flow: FLOW poly
     ;
 
 atom: VARID powerset                                                                    # atomPowerset
-    | VARID '{' WS* '}'                                                                 # atomEmpty
+    | VARID '{' '}'                                                                     # atomEmpty
     | VARID poly                                                                        # atomPoly
 
-    | VARID '{' WS* '}' '}'+        { notifyErrorListeners("Too many parentheses"); }   # atomError
-    | VARID '{'+ '{' WS* '}'        { notifyErrorListeners("Too many parentheses"); }   # atomError
-    | VARID '{'+ '{' WS* '}' '}'+   { notifyErrorListeners("Too many parentheses"); }   # atomError
+    | VARID '{' '}' '}'+        { notifyErrorListeners("Too many parentheses"); }   # atomError
+    | VARID '{'+ '{' '}'        { notifyErrorListeners("Too many parentheses"); }   # atomError
+    | VARID '{'+ '{' '}' '}'+   { notifyErrorListeners("Too many parentheses"); }   # atomError
     | VARID poly+                   { notifyErrorListeners("Only one polyhedron is allowed! If you want a set of polyhedra, use a powerset."); }  # atomError
     ;
 
-powerset: '(' poly* ')'
+powerset: '(' poly* ')'     # powersetEmptyOrNotEmpty
+        | '(' 'true' ')'    # powersetTrue
 
-        | '(' poly* ')' ')'+        { notifyErrorListeners("Too many parentheses"); }
-        | '('+ '(' poly* ')' ')'+   { notifyErrorListeners("Too many parentheses"); }
-        | '('+ '(' poly* ')'+       { notifyErrorListeners("Too many parentheses"); }
-        | '(' poly*                 { notifyErrorListeners("Missing closing ')'"); }
-        | poly* ')'                 { notifyErrorListeners("Missing opening '('"); }
+        | '(' poly* ')' ')'+        { notifyErrorListeners("Too many parentheses"); }  # powersetError
+        | '('+ '(' poly* ')' ')'+   { notifyErrorListeners("Too many parentheses"); }  # powersetError
+        | '('+ '(' poly* ')'+       { notifyErrorListeners("Too many parentheses"); }  # powersetError
+        | '(' poly*                 { notifyErrorListeners("Missing closing ')'");  }  # powersetError
+        | poly* ')'                 { notifyErrorListeners("Missing opening '('");  }  # powersetError
         ;
 
-poly: '{' constr ('&' constr)* '}'
+poly: '{' constr ('&' constr)* '}'  # polyAtLeastOneConstr
+    | '{' 'true' '}'                # polyTrue
 
-    | '{' constr ('&' constr)* '}' '}'+         { notifyErrorListeners("Too many parentheses"); }
-    | '{'+ '{' constr ('&' constr)* '}' '}'+    { notifyErrorListeners("Too many parentheses"); }
-    | '{'+ '{' constr ('&' constr)* '}'+        { notifyErrorListeners("Too many parentheses"); }
-    | constr ('&' constr)* '}'                  { notifyErrorListeners("Missing closing '}'"); }
-    | constr ('&' constr)* '}'                  { notifyErrorListeners("Missing opening '{'"); }
-    | '{' (constr '&' constr)* constr '}'       { notifyErrorListeners("Constraints must be concatenated with '&' operator."); }
-    | '{' constr ('&' constr)* '&' '}'          { notifyErrorListeners("Missing right constraint."); }
-    | '{' '&' constr ('&' constr)* '}'          { notifyErrorListeners("Missing left constraint."); }
+    | '{' constr ('&' constr)* '}' '}'+         { notifyErrorListeners("Too many parentheses"); }  # polyError
+    | '{'+ '{' constr ('&' constr)* '}' '}'+    { notifyErrorListeners("Too many parentheses"); }  # polyError
+    | '{'+ '{' constr ('&' constr)* '}'+        { notifyErrorListeners("Too many parentheses"); }  # polyError
+    | constr ('&' constr)* '}'                  { notifyErrorListeners("Missing closing '}'"); }   # polyError
+    | constr ('&' constr)* '}'                  { notifyErrorListeners("Missing opening '{'"); }   # polyError
+    | '{' (constr '&' constr)* constr '}'       { notifyErrorListeners("Constraints must be concatenated with '&' operator."); } # polyError
+    | '{' constr ('&' constr)* '&' '}'          { notifyErrorListeners("Missing right constraint."); } # polyError
+    | '{' '&' constr ('&' constr)* '}'          { notifyErrorListeners("Missing left constraint."); }  # polyError
     ;
 
 constr: linearExpr op=(LE|LT|GT|GE|EQ) linearExpr
