@@ -1,4 +1,5 @@
 #include "LabelDenotationMap.h"
+#include "ppl_output.h"
 #include "spot_utils.h"
 
 using Parma_Polyhedra_Library::IO_Operators::operator<<;
@@ -51,7 +52,7 @@ std::ostream& operator<<(std::ostream& out, LabelDenotationMap& atomSetDenotatio
     for (const auto &[labels, powerset] : atomSetDenotationMap.m_denotation)
     {
         out << "Labels: " << labels << '\n';
-        out << "Denotation: " << powerset << "\n\n";
+        out << "Denotation: " << PPLOutput::toString(powerset, atomSetDenotationMap.m_polyhedralSystem.get().getSymbolTable()) << "\n\n";
     }
 
     return out;

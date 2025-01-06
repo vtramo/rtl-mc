@@ -15,7 +15,7 @@ public:
   [[nodiscard]] bool containsAtom(std::string_view atom) const;
   [[nodiscard]] spot::atomic_prop_set atoms() const;
   [[nodiscard]] std::optional<PPL::Variable> getVariable(std::string_view id) const;
-  [[nodiscard]] std::optional<std::string> getVariableId(PPL::Variable variable) const;
+  [[nodiscard]] std::optional<std::string> getVariableName(const PPL::Variable& variable) const;
   [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
   [[nodiscard]] int getTotalAtoms() const;
 

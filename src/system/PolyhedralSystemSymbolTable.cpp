@@ -76,7 +76,7 @@ std::optional<PPL::Variable> PolyhedralSystemSymbolTable::getVariable(const std:
     return std::nullopt;
 }
 
-std::optional<std::string> PolyhedralSystemSymbolTable::getVariableId(const PPL::Variable variable) const
+std::optional<std::string> PolyhedralSystemSymbolTable::getVariableName(const PPL::Variable& variable) const
 {
     if (const auto it { m_idBySpaceDimension.find(variable.space_dimension()) }; it != m_idBySpaceDimension.end()) {
         return it->second;
