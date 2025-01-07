@@ -15,6 +15,8 @@ if get_option('generate_parser')
     message('Parser generation complete! (Location: ' + generated_dir + ')')
 endif
 
+include_directories += include_directories(generated_dir_relative_path / 'g4')
+
 polyhedral_system_parser_source_files = [
     generated_dir / 'PolyhedralSystemBaseListener.cpp',
     generated_dir / 'PolyhedralSystemBaseListener.h',
