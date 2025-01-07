@@ -19,3 +19,6 @@ uno di questi comandi meson:
 - `meson setup <BUILD_DIR_PATH> --reconfigure` (per riflettere i cambiamenti di configurazione in una build directory gia' esistente)
 
 Ricordarsi di settare la build option `generate_parser` uguale a true (default).
+
+## Tools per testing della grammatica
+- http://lab.antlr.org/

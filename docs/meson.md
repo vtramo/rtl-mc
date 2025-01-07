@@ -69,7 +69,8 @@ URL:
 Cflags: -I${includedir}
 Libs: -L${libdir} -lantlr4-runtime
 ```
-
+Quando si installa una libreria, tipicamente si usa make install per generare automaticamente un pkg config file. Questo
+non viene sempre fatto. Ad esempio, ANTLR4 e PPL non generano questo file, mentre spot sì.
 ### Meson Options
 In Meson esistono due tipi di options:
 - [Built-in options](https://mesonbuild.com/Builtin-options.html)
