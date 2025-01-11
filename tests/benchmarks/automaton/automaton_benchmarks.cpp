@@ -17,6 +17,7 @@ TEST_CASE("Automaton construction benchmarks", "[benchmark][automaton]")
     std::istringstream polyhedralSystemInput { readTestFileAsString("automaton-polyhedral-system-benchmark-1.txt") };
     PolyhedralSystem polyhedralSystem {};
     polyhedralSystemInput >> std::move(polyhedralSystem);
+    polyhedralSystemInput >> polyhedralSystem;
 
     BENCHMARK("Automaton construction benchmark 1")
     {

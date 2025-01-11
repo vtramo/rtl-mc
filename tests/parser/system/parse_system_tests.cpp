@@ -51,7 +51,7 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
             "q { X > 3 & Y >= 4 }"
         };
         PolyhedralSystem polyhedralSystem {};
-        input >> std::move(polyhedralSystem);
+        input >> polyhedralSystem;
 
         REQUIRE(polyhedralSystem.getSpaceDimension() == 2);
         REQUIRE(polyhedralSystem.getTotalAtoms() == 2);
@@ -67,7 +67,7 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
             "Flow { X <= 4 }"
         };
         PolyhedralSystem polyhedralSystem {};
-        input >> std::move(polyhedralSystem);
+        input >> polyhedralSystem;
 
         REQUIRE(polyhedralSystem.getSpaceDimension() == 2);
         REQUIRE(polyhedralSystem.getTotalAtoms() == 3);
@@ -84,7 +84,7 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
             "Flow { X <= 4 }"
         };
         PolyhedralSystem polyhedralSystem {};
-        input >> std::move(polyhedralSystem);
+        input >> polyhedralSystem;
 
         REQUIRE(polyhedralSystem.getSpaceDimension() == 3);
         REQUIRE(polyhedralSystem.getTotalAtoms() == 4);
@@ -108,7 +108,7 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
             "p3 { 4L < 1 & 4Z < 1 }"
             "u1 ( { 10X < 3 & 40Y <= 3 } { 99X > 10 & 21Y <= 2 } { 2M <= 10 } { 3X = 3 } )"
         };
-        input >> std::move(polyhedralSystem);
+        input >> polyhedralSystem;
 
         REQUIRE(polyhedralSystem.getSpaceDimension() == 6);
         REQUIRE(polyhedralSystem.getTotalAtoms() == 11);
@@ -145,7 +145,7 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
 
         PolyhedralSystem polyhedralSystem {};
-        input >> std::move(polyhedralSystem);
+        input >> polyhedralSystem;
 
         REQUIRE(expectedPolyhedralSystem.getTotalAtoms() == polyhedralSystem.getTotalAtoms());
         REQUIRE(expectedPolyhedralSystem.getSpaceDimension() == polyhedralSystem.getSpaceDimension());
@@ -159,7 +159,7 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         input.open(testCaseFilePath);
 
         PolyhedralSystem polyhedralSystem {};
-        input >> std::move(polyhedralSystem);
+        input >> polyhedralSystem;
     }
 }
 
@@ -311,7 +311,7 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         };
 
         PolyhedralSystem polyhedralSystem {};
-        input >> std::move(polyhedralSystem);
+        input >> polyhedralSystem;
 
         REQUIRE(input.fail());
         REQUIRE(polyhedralSystem.getFlow().is_universe());

@@ -127,7 +127,7 @@ void PolyhedralSystem::computePreFlow()
     m_preFlow.m_swap(PPLUtils::reflectionAffineImage(preFlow));
 }
 
-std::istream& operator>>(std::istream& istream, PolyhedralSystem&& polyhedralSystem)
+std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSystem)
 {
     PolyhedralSystemParsingResult parsingResult { parsePolyhedralSystem(istream) };
 

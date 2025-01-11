@@ -10,6 +10,6 @@ TEST_CASE("PolyhedralSystem Parser benchmarks")
     BENCHMARK("PolyhedralSystem Parser benchmark 1")
     {
         PolyhedralSystem polyhedralSystem {};
-        input >> std::move(polyhedralSystem);
+        input >> polyhedralSystem;
     };
 }

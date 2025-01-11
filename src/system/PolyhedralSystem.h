@@ -1,5 +1,4 @@
-#ifndef POLYHEDRALSYSTEM_H
-#define POLYHEDRALSYSTEM_H
+#pragma once
 
 #include <optional>
 #include <spot/tl/formula.hh>
@@ -31,8 +30,8 @@ public:
     PolyhedralSystem& operator= (const PolyhedralSystem&) = delete;
     PolyhedralSystem(PolyhedralSystem&&) noexcept;
 
-    friend bool operator==(const PolyhedralSystem&, const PolyhedralSystem&);
-    friend std::istream& operator>>(std::istream&, PolyhedralSystem&&);
+    friend bool operator== (const PolyhedralSystem&, const PolyhedralSystem&);
+    friend std::istream& operator>> (std::istream&, PolyhedralSystem&);
 private:
     Powerset m_invariant {};
     Poly m_flow {};
@@ -55,7 +54,7 @@ private:
         PolyhedralSystemSymbolTable&& symbolTable
     );
 
-    friend std::ostream& operator<<(std::ostream&, const PolyhedralSystem&);
+    friend std::ostream& operator<< (std::ostream&, const PolyhedralSystem&);
     PolyhedralSystem& operator= (PolyhedralSystem&&) noexcept;
 
     friend class PolyhedralSystemBuilder;
@@ -64,5 +63,4 @@ private:
 };
 
 std::ostream& operator<<(std::ostream&, const PolyhedralSystem&);
-
-#endif //POLYHEDRALSYSTEM_H
+std::ostream& operator<< (std::ostream&, const PolyhedralSystem&);
