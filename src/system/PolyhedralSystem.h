@@ -62,5 +62,6 @@ private:
     void computePreFlow();
 };
 
-std::ostream& operator<<(std::ostream&, const PolyhedralSystem&);
+using PolyhedralSystemSharedPtr = std::shared_ptr<PolyhedralSystem>;
+
 std::ostream& operator<< (std::ostream&, const PolyhedralSystem&);
