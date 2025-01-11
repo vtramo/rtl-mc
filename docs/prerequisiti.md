@@ -8,8 +8,7 @@ La documentazione su come buildare il progetto è in corso d'opera.
 - ANTLR4 CLI Tools: https://github.com/antlr/antlr4-tools/blob/master/README.md
 - Meson >= 0.64.0 https://mesonbuild.com/Getting-meson.html
 - Catch2 >=3.7.1 (test framework, installato automaticamente da meson)
-- SPOT 2.12.1 (Installare la nostra versione modificata https://github.com/vtramo/spot/tree/mc/rtlf). Questa versione
-introduce un nuovo operatore strict until operator (S). Il branch è `mc/rtlf`.
+- SPOT 2.12.1
 
 Please note that there might be some issues with the build process as I'm currently working on the best way
 to streamline it after the dependencies are installed. However, it shouldn't be anything complicated, even at this stage.

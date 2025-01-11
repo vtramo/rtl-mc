@@ -11,38 +11,46 @@
 
 % Document
 \begin{document}
+% X
+$\boxed{\begin{aligned}
+            \ttt{X}\,\varphi &\,\overset{\ttt{dsc}}{\equiv} (sing\,\land\,\ttt{X}\,(\varphi))\,\lor\,(\neg sing\,\land\,(\varphi))\\
+            &\,\overset{\ttt{t}}{\equiv} (sing\,\land\,\ttt{X}\,(\boxed{\varphi}\,\land\, alive))\,\lor\,(\neg sing\,\land\,\boxed{\varphi})
+\end{aligned}}$
+
+\vspace{0.25cm}
+
 % U
 $\boxed{\begin{aligned}
-            \varphi_1\,\ttt{U}\,\varphi_2 &\,\overset{\ttt{dsc}}{=} \varphi_1\,\ttt{U}\,(\varphi_2\,\land\,(\varphi_1\,\lor\,sing))\\
-            &\overset{\ttt{t}}{=} \boxed{\varphi_1}\,\ttt{U}\,(\,\boxed{\varphi_2}\,\land\,(\,\boxed{\varphi_1}\,\lor\,sing)\,\land\,alive))
+            \varphi_1\,\ttt{U}\,\varphi_2 &\,\overset{\ttt{dsc}}{\equiv} \varphi_1\,\ttt{U}\,(\varphi_2\,\land\,(\varphi_1\,\lor\,sing))\\
+            &\overset{\ttt{t}}{\equiv} \boxed{\varphi_1}\,\ttt{U}\,(\,\boxed{\varphi_2}\,\land\,(\,\boxed{\varphi_1}\,\lor\,sing)\,\land\,alive))
 \end{aligned}}$
 
 \vspace{0.25cm}
 
 % F
 $\boxed{\begin{aligned}
-     \ttt{F}\,\varphi &\,= true\,\ttt{U}\,\varphi \\
-     &\overset{\ttt{dsc}}{=} true\,\ttt{U}\,(\varphi\,\land\,(true\,\lor\, sing)) \\
-     &\,= true\,\ttt{U}\,\varphi \\
-     &\,\overset{\ttt{t}}{=} true\,\ttt{U}\,(\,\varphi\,\land\,alive) \\
-     & = \ttt{F}\,(\boxed{\varphi}\,\land\,alive)
+     \ttt{F}\,\varphi &\,\equiv true\,\ttt{U}\,\varphi \\
+     &\overset{\ttt{dsc}}{\equiv} true\,\ttt{U}\,(\varphi\,\land\,(true\,\lor\, sing)) \\
+     &\,\equiv true\,\ttt{U}\,\varphi \\
+     &\,\overset{\ttt{t}}{\equiv} true\,\ttt{U}\,(\,\varphi\,\land\,alive) \\
+     & \equiv \ttt{F}\,(\boxed{\varphi}\,\land\,alive)
 \end{aligned}}$
 
 \vspace{0.25cm}
 
 % G
 $\boxed{\begin{aligned}
-      \ttt{G}\,\varphi &= \neg \ttt{F}\neg \varphi \\
-      &\overset{\ttt{dsc}}{=} \neg \ttt{F}\,(\neg\varphi\,\land\,alive) \\
-      &{=}\, \ttt{G}(\boxed{\varphi}\,\lor\,\neg alive)
+      \ttt{G}\,\varphi &\,\equiv \neg \ttt{F}\neg \varphi \\
+      &\overset{\ttt{dsc}}{\equiv} \neg \ttt{F}\,(\neg\varphi\,\land\,alive) \\
+      &{\equiv}\, \ttt{G}(\boxed{\varphi}\,\lor\,\neg alive)
 \end{aligned}}$
 
 \vspace{0.25cm}
 
 % W
 $\boxed{\begin{aligned}
-            \varphi_1\,\ttt{W}\,\varphi_2 &\,= (\varphi_1\,\ttt{U}\,\varphi_2)\,\lor\,\ttt{G}\,\varphi_1 \\
-            &\overset{\ttt{dsc,t}}{=} \begin{aligned}
+            \varphi_1\,\ttt{W}\,\varphi_2 &\,\equiv (\varphi_1\,\ttt{U}\,\varphi_2)\,\lor\,\ttt{G}\,\varphi_1 \\
+            &\overset{\ttt{dsc,t}}{\equiv} \begin{aligned}
                                           &\boxed{\varphi_1}\,\ttt{U}\,(\,\boxed{\varphi_2}\,\land\,(\,\boxed{\varphi_1}\,\lor\,sing)\,\land\,alive))\,\lor\\
                                           &\,\ttt{G}(\boxed{\varphi_1}\,\lor\,\neg alive)
             \end{aligned}
@@ -52,30 +60,32 @@ $\boxed{\begin{aligned}
 
 % R
 $\boxed{\begin{aligned}
-            \varphi_1\,\ttt{R}\,\varphi_2 &\,\overset{\ttt{n}}{=} \neg(\neg\varphi_1\,\ttt{U}\,\neg\varphi_2) \\
-            &\overset{\ttt{dsc}}{=} \neg(\neg\varphi_1\,\ttt{U}\,(\neg\varphi_2\,\land\,(\neg\varphi_1\,\lor\,sing)))\\
-            &\overset{\ttt{t}}{=} \neg(\neg\,\varphi_1\,\ttt{U}\,(\neg\,\varphi_2\,\land\,(\neg\,\varphi_1\,\lor\,sing)\,\land\,alive))\\
-            &= \boxed{\varphi_1}\,\ttt{R}\,(\boxed{\varphi_2}\,\lor\,(\boxed{\varphi_1}\,\land\,\neg sing)\,\lor\,\neg alive)
+            \varphi_1\,\ttt{R}\,\varphi_2 &\,\overset{\ttt{n}}{\equiv} \neg(\neg\varphi_1\,\ttt{U}\,\neg\varphi_2) \\
+            &\overset{\ttt{dsc}}{\equiv} \neg(\neg\varphi_1\,\ttt{U}\,(\neg\varphi_2\,\land\,(\neg\varphi_1\,\lor\,sing)))\\
+            &\overset{\ttt{t}}{\equiv} \neg(\neg\,\varphi_1\,\ttt{U}\,(\neg\,\varphi_2\,\land\,(\neg\,\varphi_1\,\lor\,sing)\,\land\,alive))\\
+            &\equiv \boxed{\varphi_1}\,\ttt{R}\,(\boxed{\varphi_2}\,\lor\,(\boxed{\varphi_1}\,\land\,\neg sing)\,\lor\,\neg alive)
 \end{aligned}}$
 
 \vspace{0.25cm}
 
 % M
 $\boxed{\begin{aligned}
-      \varphi_1\,\tt{M}\,\varphi_2 &\,= \varphi_1\,\ttt{R}\,\varphi_2\,\land\,\ttt{F}(\varphi_1\,\land\,\varphi_2) \\
-      &\overset{\ttt{dsc,t}}{=} \begin{aligned}
+      \varphi_1\,\ttt{M}\,\varphi_2 &\,\equiv \varphi_1\,\ttt{R}\,\varphi_2\,\land\,\ttt{F}(\varphi_1\,\land\,\varphi_2) \\
+      &\overset{\ttt{dsc,t}}{\equiv} \begin{aligned}
                                      &(\boxed{\varphi_1}\,\ttt{R}\,(\boxed{\varphi_2}\,\lor\,(\boxed{\varphi_1}\,\land\,\neg sing)\,\lor\,\neg alive))\,\land\\
                                      &\,\ttt{F}\,(\boxed{\varphi_1}\,\land\,\boxed{\varphi_2}\,\land\,alive)
       \end{aligned}
 \end{aligned}}$
 
-\vspace{0.25cm}
+\vspace{1.5cm}
 
 % S
+\textbf{Non necessario}\\
+\vspace{0.15cm}
 $\boxed{\begin{aligned}
-      \varphi_1\,\ttt{S}\,\varphi_2 \,&\overset{\ttt{dsc}}{=} (sing\,\land\,\ttt{X}\,(\varphi_1\,\ttt{U}\,\varphi_2)) \lor (\neg sing\,\land\,(\varphi_1\,\ttt{U}\,\varphi_2))\\
-      &\overset{\ttt{t}}{=} (sing\,\land\,\ttt{X}\,((\varphi_1\ttt{U}\,\varphi_2) \land alive)) \lor (\neg sing\,\land\,(\varphi_1\ttt{U}\,\varphi_2))\\
-      &\begin{aligned}\overset{\ttt{dsc,t}}{=}&(sing\,\land\,\ttt{X}\,((\boxed{\varphi_1}\,\ttt{U}\,(\,\boxed{\varphi_2}\,\land\,(\,\boxed{\varphi_1}\,\lor\,sing)\,\land\,alive)) \land alive))\,\lor\, \\
+      \varphi_1\,\ttt{S}\,\varphi_2 \,&\overset{\ttt{dsc}}{\equiv} (sing\,\land\,\ttt{X}\,(\varphi_1\,\ttt{U}\,\varphi_2)) \lor (\neg sing\,\land\,(\varphi_1\,\ttt{U}\,\varphi_2))\\
+      &\overset{\ttt{t}}{\equiv} (sing\,\land\,\ttt{X}\,((\varphi_1\ttt{U}\,\varphi_2) \land alive)) \lor (\neg sing\,\land\,(\varphi_1\ttt{U}\,\varphi_2))\\
+      &\begin{aligned}\overset{\ttt{dsc,t}}{\equiv}&(sing\,\land\,\ttt{X}\,((\boxed{\varphi_1}\,\ttt{U}\,(\,\boxed{\varphi_2}\,\land\,(\,\boxed{\varphi_1}\,\lor\,sing)\,\land\,alive)) \land alive))\,\lor\, \\
       &(\neg sing\,\land\,(\boxed{\varphi_1}\,\ttt{U}\,(\,\boxed{\varphi_2}\,\land\,(\,\boxed{\varphi_1}\,\lor\,sing)\,\land\,alive)))\end{aligned}
 \end{aligned}}$
 \end{document}

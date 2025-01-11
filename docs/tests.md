@@ -2,6 +2,7 @@
 - `meson test -C buildDir system-parser -v` (PolyhedralSystem parser)
 - `meson test -C buildDir rtlf-parser -v` (RTLf parser)
 - `meson test -C buildDir discretization -v` (discretization)
+- `meson test -C buildDir automaton -v` (automaton)
 - `meson test -C buildDir -v` (tutti i test escluso i benchmarks)
 
 ### Eseguire i test con valgrind attivo
