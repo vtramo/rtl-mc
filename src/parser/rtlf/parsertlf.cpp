@@ -22,11 +22,6 @@ RtlfParsingResult parseRtlf(const std::string_view rtlf)
         return RtlfParsingResult::notLtlFormula(std::move(rtlfFormula));
     }
 
-    if (!isXFree(rtlfFormula))
-    {
-        return RtlfParsingResult::notXFree(std::move(rtlfFormula));
-    }
-
     return RtlfParsingResult::ok(std::move(rtlfFormula));
 }
 

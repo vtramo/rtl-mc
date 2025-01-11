@@ -1,40 +1,38 @@
-#ifndef BACKWARDAUTOMATON
-#define BACKWARDAUTOMATON
+#pragma once
 
-#include <spot/tl/formula.hh>
-#include <spot/twa/fwd.hh>
-#include "State.h"
+#include <PolyhedralSystemLabelDenotationMap.h>
+#include <spot/twa/twagraph.hh>
 #include "DiscreteLtlFormula.h"
-#include "LabelDenotationMap.h"
+#include "StateDenotation.h"
 
 class BackwardNFA {
 public:
+    using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>;
 
-    BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, LabelDenotationMap& labelDenotationMap);
-    BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, LabelDenotationMap& labelDenotationMap);
+    BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap);
+    BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap);
 
-    [[nodiscard]] const std::vector<State>& states() const;
-    [[nodiscard]] const std::vector<State*>& finalStates() const;
-    [[nodiscard]] const std::vector<State*>& predecessors(int state) const;
-    [[nodiscard]] bool hasPredecessors(int state) const;
     [[nodiscard]] int totalStates() const;
     [[nodiscard]] int totalFinalStates() const;
     [[nodiscard]] int totalEdges() const;
+    [[nodiscard]] bool isInitialState(int state) const;
+    [[nodiscard]] bool isFinalState(int state) const;
+    [[nodiscard]] bool hasPredecessors(int state) const;
+    [[nodiscard]] EdgeIterator predecessors(int state) const;
+    [[nodiscard]] const std::vector<int>& finalStates() const;
     [[nodiscard]] const DiscreteLtlFormula& formula() const;
+    [[nodiscard]] const StateDenotation& stateDenotation(int state) const;
 
+    void printHoaFormat(std::ostream& os) const;
+    void printDotFormat(std::ostream& os) const;
+
+    friend std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
 private:
-    std::vector<State> m_states {};
-    std::vector<std::vector<State*>> m_predecessors {};
-    std::vector<State*> m_finalStates {};
-    spot::twa_graph_ptr m_nfa {};
-    DiscreteLtlFormula m_ltlFormula {};
+    spot::twa_graph_ptr m_backwardNfa {};
+    std::vector<int> m_finalStates {};
+    std::unordered_map<int, StateDenotation> m_stateDenotationById {};
+    DiscreteLtlFormula m_discreteLtlFormula {};
+    PolyhedralSystemLabelDenotationMap m_labelDenotationMap {};
 
-    void buildAutomaton(LabelDenotationMap& labelDenotationMap);
-    bool isInitial(unsigned state) const;
+    void transposeNfa();
 };
-
-std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
-std::ostream& operator<< (std::ostream& out, const std::vector<State*>& states);
-std::ostream& operator<<(std::ostream& out, const std::vector<State>& states);
-
-#endif

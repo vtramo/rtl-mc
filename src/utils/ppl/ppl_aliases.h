@@ -11,6 +11,8 @@
 
 using Poly = Parma_Polyhedra_Library::NNC_Polyhedron;
 using Powerset = Parma_Polyhedra_Library::Pointset_Powerset<Poly>;
+using PowersetSharedPtr = std::shared_ptr<Powerset>;
+using PowersetUniquePtr = std::unique_ptr<Powerset>;
 namespace PPL = Parma_Polyhedra_Library;
 
 #endif //PPL_ALIASES_H

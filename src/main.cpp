@@ -3,7 +3,7 @@
 #include <spot/tl/print.hh>
 #include <spot/twaalgos/hoa.hh>
 #include "BackwardNFA.h"
-#include "LabelDenotationMap.h"
+#include "PolyhedralSystemLabelDenotationMap.h"
 #include "DiscreteLtlFormula.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
@@ -25,13 +25,15 @@ int main()
     };
 
     assert(polyhedralSystemParsingResult.ok());
-    PolyhedralSystem polyhedralSystem { std::move(*polyhedralSystemParsingResult) };
-    polyhedralSystem.setConstraintOutputMinimized(false);
-    std::cout << polyhedralSystem << '\n';
+    PolyhedralSystemSharedPtr polyhedralSystem { std::make_shared<PolyhedralSystem>(std::move(*polyhedralSystemParsingResult)) };
+    polyhedralSystem->setConstraintOutputMinimized(false);
+    std::cout << *polyhedralSystem << '\n';
 
-    LabelDenotationMap labelDenotationMap { polyhedralSystem };
-    DiscreteLtlFormula discreteLtlFormula { discretize(spot::parse_infix_psl("G i & t0 & G t1 & (F p & F(q & F(p & Fq)))").f) };
-    BackwardNFA backwardNfa { std::move(discreteLtlFormula), labelDenotationMap };
+    PolyhedralSystemLabelDenotationMap polyhedralSystemLabelDenotationMap { polyhedralSystem };
+    DiscreteLtlFormula discreteLtlFormula { discretizeToLtl(spot::parse_infix_psl("G(a & b) & t & G(t1) & F(ab & F(ba))").f) };
+    BackwardNFA backwardNfa { std::move(discreteLtlFormula), std::move(polyhedralSystemLabelDenotationMap) };
     std::cout << backwardNfa << '\n';
-    std::cout << labelDenotationMap << '\n';
+    std::cout << polyhedralSystemLabelDenotationMap << '\n';
+
+    backwardNfa.printDotFormat(std::cout);
 }

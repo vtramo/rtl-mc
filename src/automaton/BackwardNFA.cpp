@@ -1,78 +1,85 @@
 #include "BackwardNFA.h"
+
+#include <ppl_output.h>
+
 #include "spot_utils.h"
 #include <spot/tl/formula.hh>
 #include <spot/twa/formula2bdd.hh>
 #include <spot/twaalgos/hoa.hh>
 #include <spot/twaalgos/translate.hh>
 #include <spot/twaalgos/remprop.hh>
+#include <spot/twaalgos/dot.hh>
 
 using namespace SpotUtils;
 
-BackwardNFA::BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, LabelDenotationMap& labelDenotationMap)
-    : BackwardNFA(DiscreteLtlFormula { discreteLtlFormula }, labelDenotationMap) {}
+BackwardNFA::BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap)
+    : BackwardNFA(DiscreteLtlFormula { discreteLtlFormula }, std::move(polyhedralSystemLabelDenotationMap))
+{}
 
-BackwardNFA::BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, LabelDenotationMap& labelDenotationMap)
-    : m_ltlFormula { std::move(discreteLtlFormula) }
+BackwardNFA::BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap)
+    : m_discreteLtlFormula { std::move(discreteLtlFormula) }
+    , m_labelDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
 {
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
     ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
-    m_nfa = { spot::to_finite(ltlToNbaTranslator.run(m_ltlFormula.formula())) };
-    buildAutomaton(labelDenotationMap);
+    m_backwardNfa = { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
+    transposeNfa();
 }
 
-void BackwardNFA::buildAutomaton(LabelDenotationMap& labelDenotationMap)
+void BackwardNFA::transposeNfa()
 {
-    unsigned totalStates { m_nfa->num_states() };
-    m_states.resize(totalStates);
-    m_predecessors.resize(totalStates);
+    const unsigned totalStates { m_backwardNfa->num_states() };
+    m_stateDenotationById.reserve(totalStates);
 
     for (unsigned srcStateId { 0 }; srcStateId < totalStates; ++srcStateId)
     {
-        State* srcState { &m_states[srcStateId] };
-        srcState->setIndex(srcStateId);
-        srcState->setIsInitial( this->isInitial(srcStateId) );
-        srcState->setIsFinal( m_nfa->state_is_accepting(srcStateId) );
-
         bdd outgoingGuardsAnd { bdd_true() };
-        for (auto& edge: m_nfa->out(srcStateId))
+        for (auto& nfaEdge: m_backwardNfa->out(srcStateId))
         {
-            outgoingGuardsAnd &= edge.cond;
-
-            const unsigned dstState { edge.dst };
-            if (!this->isInitial(dstState))
+            if (m_backwardNfa->get_init_state_number() != nfaEdge.dst)
             {
-                m_predecessors[static_cast<int>(dstState)].push_back(srcState);
+                unsigned nfaEdgeDst = nfaEdge.dst;
+                nfaEdge.dst = srcStateId;
+                nfaEdge.src = nfaEdgeDst;
             }
+
+            outgoingGuardsAnd &= nfaEdge.cond;
         }
 
-        spot::atomic_prop_set stateLabels { collectPositiveLiterals(bdd_to_formula(outgoingGuardsAnd, m_nfa->get_dict())) };
-        AtomSet atomSet { std::move(stateLabels), true };
-        srcState->setDenotation(labelDenotationMap.getDenotation(atomSet));
-        srcState->setLabels(std::move(atomSet));
-
-        if (srcState->isFinal())
-        {
-            m_finalStates.push_back(srcState);
-        }
+        spot::atomic_prop_set stateLabels { collectPositiveLiterals(spot::bdd_to_formula(outgoingGuardsAnd, m_backwardNfa->get_dict())) };
+        AtomSet stateLabelsAtomSet { std::move(stateLabels) };
+        PowersetUniquePtr powerset { m_labelDenotationMap.getDenotation(stateLabelsAtomSet) };
+        StateDenotation stateDenotation { std::move(stateLabelsAtomSet), std::move(*powerset) };
+        m_stateDenotationById.emplace(std::make_pair(srcStateId, std::move(stateDenotation)));
     }
 }
 
-bool BackwardNFA::isInitial(const unsigned state) const
+bool BackwardNFA::isInitialState(const int state) const
 {
-    return m_nfa->get_init_state_number() == state;
+    assert(state >= 0 && state < totalStates() && "State is out of range!");
+
+    return static_cast<int>(m_backwardNfa->get_init_state_number()) == state;
+}
+
+bool BackwardNFA::isFinalState(const int state) const
+{
+    assert(state >= 0 && state < totalStates() && "State is out of range!");
+
+    return m_backwardNfa->state_is_accepting(state);
 }
 
 bool BackwardNFA::hasPredecessors(const int state) const
 {
     assert(state >= 0 && state < totalStates() && "State is out of range!");
 
-    return !m_predecessors[state].empty();
+    auto edgeStorages = m_backwardNfa->out(state);
+    return edgeStorages.begin() != edgeStorages.end();
 }
 
 int BackwardNFA::totalStates() const
 {
-    return static_cast<int>(m_nfa->num_states());
+    return static_cast<int>(m_backwardNfa->num_states());
 }
 
 int BackwardNFA::totalFinalStates() const
@@ -80,78 +87,75 @@ int BackwardNFA::totalFinalStates() const
     return m_finalStates.size();
 }
 
-const std::vector<State*>& BackwardNFA::predecessors(const int state) const
+BackwardNFA::EdgeIterator BackwardNFA::predecessors(const int state) const
 {
     assert(state >= 0 && state < totalStates() && "State is out of range!");
 
-    if (!hasPredecessors(state))
-    {
-        static std::vector<State*> emptyVector {};
-        return emptyVector;
-    }
-
-    return m_predecessors[state];
+    return m_backwardNfa->out(state);
 }
 
 int BackwardNFA::totalEdges() const
 {
-    return static_cast<int>(m_nfa->num_edges());
+    return static_cast<int>(m_backwardNfa->num_edges());
 }
 
-const std::vector<State>& BackwardNFA::states() const
-{
-    return m_states;
-}
-
-const std::vector<State*>& BackwardNFA::finalStates() const
+const std::vector<int>& BackwardNFA::finalStates() const
 {
     return m_finalStates;
 }
 
 const DiscreteLtlFormula& BackwardNFA::formula() const
 {
-    return m_ltlFormula;
+    return m_discreteLtlFormula;
 }
 
-std::ostream& operator<<(std::ostream& out, const std::vector<State>& states)
+const StateDenotation& BackwardNFA::stateDenotation(const int state) const
 {
-    out << "[";
-    bool first = true;
-    for (const auto& state : states)
-    {
-        out << (first ? "" : ", ") << state.index();
-        first = false;
-    }
-    out << "]";
-    return out;
+    assert(state >= 0 && state < totalStates() && "State is out of range!");
+
+    return m_stateDenotationById.at(state);
 }
 
-std::ostream& operator<<(std::ostream& out, const std::vector<State*>& states)
+void BackwardNFA::printHoaFormat(std::ostream& os) const
 {
-    out << "[";
-    bool first = true;
-    for (const auto& state : states)
-    {
-        out << (first ? "" : ", ") << state->index();
-        first = false;
-    }
-    out << "]";
-    return out;
+    spot::print_hoa(os, m_backwardNfa);
 }
 
+void BackwardNFA::printDotFormat(std::ostream& os) const
+{
+    spot::print_dot(os, m_backwardNfa);
+}
 
 std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
 {
-    out << "BACKWARD NFA\n";
-    out << "Total states: " << backwardNfa.totalStates() << '\n';
-    out << "Total edges: " << backwardNfa.totalEdges() << '\n';
-    out << "Discretized LTL Formula: " << backwardNfa.formula() << "\n\n";
+    int totalStates { backwardNfa.totalStates() };
 
-    for (const State& state: backwardNfa.states())
+    out << "BACKWARD NFA\n";
+    out << "Total states: " << totalStates << '\n';
+    out << "Total edges: " << backwardNfa.totalEdges() << '\n';
+    out << "Discrete LTL Formula: " << backwardNfa.formula() << "\n\n";
+
+    for (int state = 0; state < totalStates; ++state)
     {
-        out << state;
-        out << "Predecessors: " << backwardNfa.predecessors(state.index()) << "\n\n";
+        const StateDenotation& stateDenotation { backwardNfa.stateDenotation(state) };
+
+        out << "State " << state << '\n';
+        out << "Labels: " << stateDenotation.labels() << std::boolalpha << '\n';
+        const PolyhedralSystem& polyhedralSystem { backwardNfa.m_labelDenotationMap.getPolyhedralSystem() };
+        out << "Denotation: " << PPLOutput::toString(stateDenotation.denotation(), polyhedralSystem.getSymbolTable()) << '\n';
+        out << "IsSing: " << stateDenotation.isSingular() << '\n';
+        out << "IsInitial: " << backwardNfa.isInitialState(state) << '\n';
+        out << "IsFinal: " << backwardNfa.isFinalState(state) << '\n';
+
+        out << "Predecessors: [";
+        bool first = true;
+        for (const auto& edge: backwardNfa.predecessors(state))
+        {
+            out << (first ? "" : ", ") << edge.src;
+            first = false;
+        }
+        out << "]\n\n";
     }
 
-    return out;
+    return out << std::noboolalpha;
 }

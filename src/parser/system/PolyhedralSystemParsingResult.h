@@ -1,5 +1,4 @@
-#ifndef POLYHEDRALSYSTEMPARSINGRESULT_H
-#define POLYHEDRALSYSTEMPARSINGRESULT_H
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -58,8 +57,18 @@ public:
     explicit PolyhedralSystemParsingResult(PolyhedralSystem&& polyhedralSystem)
         : m_polyhedralSystem { std::make_unique<PolyhedralSystem>(std::move(polyhedralSystem)) } {}
 
-    [[nodiscard]] PolyhedralSystem& operator* () const { return *m_polyhedralSystem; }
+    [[nodiscard]] PolyhedralSystem& operator* () const
+    {
+        if (!m_polyhedralSystem)
+        {
+            throw std::runtime_error("Parsing failed: PolyhedralSystem is null due to parsing errors.");
+        }
+
+        return *m_polyhedralSystem;
+    }
+
     [[nodiscard]] bool operator! () const { return ok(); }
+
 private:
     std::vector<ParserError> m_syntaxErrors {};
     std::unique_ptr<PolyhedralSystem> m_polyhedralSystem { nullptr };
@@ -71,14 +80,14 @@ private:
 inline bool isLexicalError(const ParserError& error)
 {
     return error.type() == ParserError::Type::lexical;
-};
+}
+
 inline bool isSyntaxError(const ParserError& error)
 {
     return error.type() == ParserError::Type::syntax;
-};
+}
+
 inline bool isUnknownError(const ParserError& error)
 {
     return error.type() == ParserError::Type::unknown;
-};
-
-#endif //POLYHEDRALSYSTEMPARSINGRESULT_H
+}

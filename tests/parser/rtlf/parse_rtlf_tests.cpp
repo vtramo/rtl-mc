@@ -11,7 +11,6 @@ TEST_CASE("Correctly parse a RTLf formula", "[good]")
 
         REQUIRE(rtlfParsingResult.ok());
         REQUIRE(rtlfParsingResult.isLtl());
-        REQUIRE(rtlfParsingResult.isXFree());
         REQUIRE(!rtlfParsingResult.isUsingIllegalAtoms());
         REQUIRE(*rtlfParsingResult == spot::parse_infix_psl(rtlf).f);
     }
@@ -23,7 +22,6 @@ TEST_CASE("Correctly parse a RTLf formula", "[good]")
 
         REQUIRE(rtlfParsingResult.ok());
         REQUIRE(rtlfParsingResult.isLtl());
-        REQUIRE(rtlfParsingResult.isXFree());
         REQUIRE(!rtlfParsingResult.isUsingIllegalAtoms());
         REQUIRE(*rtlfParsingResult == spot::parse_infix_psl(rtlf).f);
     }
@@ -35,7 +33,6 @@ TEST_CASE("Correctly parse a RTLf formula", "[good]")
 
         REQUIRE(rtlfParsingResult.ok());
         REQUIRE(rtlfParsingResult.isLtl());
-        REQUIRE(rtlfParsingResult.isXFree());
         REQUIRE(!rtlfParsingResult.isUsingIllegalAtoms());
         REQUIRE(*rtlfParsingResult == spot::parse_infix_psl(rtlf).f);
     }
@@ -47,7 +44,6 @@ TEST_CASE("Correctly parse a RTLf formula", "[good]")
 
         REQUIRE(rtlfParsingResult.ok());
         REQUIRE(rtlfParsingResult.isLtl());
-        REQUIRE(rtlfParsingResult.isXFree());
         REQUIRE(!rtlfParsingResult.isUsingIllegalAtoms());
         REQUIRE(*rtlfParsingResult == spot::parse_infix_psl(rtlf).f);
     }
@@ -80,7 +76,6 @@ TEST_CASE("Correctly report syntax errors when parsing a RTLf formula", "[bad]")
         REQUIRE(!rtlfParsingResult);
         REQUIRE(!rtlfParsingResult.hasParserErrors());
         REQUIRE(rtlfParsingResult.isLtl());
-        REQUIRE(rtlfParsingResult.isXFree());
         REQUIRE(rtlfParsingResult.isUsingIllegalAtoms());
         REQUIRE(rtlfParsingResult.illegalAtoms().size() == 1);
         REQUIRE(rtlfParsingResult.illegalAtoms()[0] == SpotUtils::ap("p3"));
