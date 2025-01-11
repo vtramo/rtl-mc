@@ -9,10 +9,18 @@ TEST_CASE("Discretization benchmarks", "[benchmark][discretization]")
     std::string formulaStr { readTestFileAsString("discretization-benchmark-1.txt") };
     spot::parsed_formula parsedFormula { spot::parse_infix_psl(formulaStr) };
 
-    BENCHMARK("Discretization benchmark 1")
+    BENCHMARK("RTLf to LTL (our version)")
     {
         spot::formula formula { parsedFormula.f };
         REQUIRE(parsedFormula.errors.empty());
-        discretize(std::move(formula));
+        discretizeToLtl(std::move(formula));
+    };
+
+    BENCHMARK("RTLf to LTL (spot)")
+    {
+        spot::formula formula { parsedFormula.f };
+        REQUIRE(parsedFormula.errors.empty());
+        DiscreteFiniteLtlFormula discreteFormula { discretize(std::move(formula)) };
+        DiscreteLtlFormula __ { discreteFormula.toLtl() };
     };
 }

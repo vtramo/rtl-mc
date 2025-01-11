@@ -33,6 +33,16 @@ namespace SpotUtils
         return spot::formula::X(formula);
     }
 
+    spot::formula strongX(const spot::formula& formula)
+    {
+        return spot::formula::unop(spot::op::strong_X, formula);
+    }
+
+    spot::formula strongX(spot::formula&& formula)
+    {
+        return spot::formula::unop(spot::op::strong_X, std::move(formula));
+    }
+
     spot::formula G(spot::formula&& formula)
     {
         return spot::formula::G(std::move(formula));
@@ -141,6 +151,11 @@ namespace SpotUtils
     spot::formula notSing()
     {
         return Not(spot::constants::g_sing);
+    }
+
+    spot::formula singOpenLastPropertyFinite()
+    {
+        return spot::constants::g_singOpenLastPropertyFinite;
     }
 
     spot::formula singOpenLastProperty()
@@ -256,14 +271,12 @@ namespace SpotUtils
     spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard)
     {
         spot::formula formula = spot::bdd_to_formula(guard, twaGraph->get_dict());
-        std::cout << "Start formula: " << formula << std::endl;
         minterms_of minterms { guard, twaGraph->ap_vars() };
         spot::atomic_prop_set labels { };
 
         for (const bdd& minterm: minterms)
         {
             spot::formula mintermFormula { bdd_to_formula(minterm, twaGraph->get_dict()) };
-            std::cout << "Minterm: " << mintermFormula << std::endl;
             for (const spot::formula& label: collectPositiveLiterals(std::move(mintermFormula)))
             {
                 labels.insert(std::move(label));
@@ -276,5 +289,10 @@ namespace SpotUtils
     bool containsSing(const spot::atomic_prop_set& labels)
     {
         return labels.find(sing()) != labels.end();
+    }
+
+    bool isSing(const spot::formula& formula)
+    {
+        return spot::constants::g_sing == formula;
     }
 }

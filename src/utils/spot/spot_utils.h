@@ -3,6 +3,7 @@
 
 #include <spot/tl/apcollect.hh>
 #include <spot/tl/formula.hh>
+
 namespace spot
 {
     using atomic_prop_vector = std::vector<formula>;
@@ -15,6 +16,8 @@ namespace SpotUtils
     spot::formula ap(std::string_view ap);
     spot::formula F(spot::formula&& formula);
     spot::formula X(spot::formula&& formula);
+    spot::formula strongX(spot::formula&& formula);
+    spot::formula strongX(const spot::formula& formula);
     spot::formula X(const spot::formula& formula);
     spot::formula G(spot::formula&& formula);
     spot::formula G(const spot::formula& formula);
@@ -36,8 +39,9 @@ namespace SpotUtils
     spot::formula singOr(const spot::formula& formula);
     spot::formula singOrNot(spot::formula&& formula);
     spot::formula singAndAliveAnd(spot::formula&& formula);
-    spot::formula singOpenLastProperty();
     spot::formula aliveUntilGNotAlive();
+    spot::formula singOpenLastPropertyFinite();
+    spot::formula singOpenLastProperty();
 
     spot::formula generateRtlf(int atomicPropSetSize, int formulaSize, spot::op replaceXWith = spot::op::F);
     bool isXFree(spot::formula& formula);
@@ -45,6 +49,7 @@ namespace SpotUtils
     spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula);
     spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard);
     bool containsSing(const spot::atomic_prop_set& labels);
+    bool isSing(const spot::formula& formula);
 }
 
 #endif //SPOT_UTILS_H

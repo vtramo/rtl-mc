@@ -3,8 +3,9 @@
 
 #include <spot/tl/formula.hh>
 #include "DiscreteLtlFormula.h"
+#include "DiscreteFiniteLtlFormula.h"
 
-spot::formula imposeSingOpenLastAndAliveProperty(spot::formula&& formula);
-DiscreteLtlFormula discretize(spot::formula&& formula);
+DiscreteLtlFormula discretizeToLtl(spot::formula&& formula);
+DiscreteFiniteLtlFormula discretize(spot::formula&& formula);
 
 #endif //DISCRETIZATION_H

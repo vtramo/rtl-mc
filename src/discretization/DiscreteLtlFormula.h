@@ -1,7 +1,8 @@
-#ifndef DISCRETIZELTLFORMULA_H
-#define DISCRETIZELTLFORMULA_H
+#pragma once
 
 #include <spot/tl/formula.hh>
+
+class DiscreteFiniteLtlFormula;
 
 class DiscreteLtlFormula
 {
@@ -11,7 +12,8 @@ private:
     spot::formula m_discreteLtlFormula{};
 
     friend class BackwardNFA;
-    friend DiscreteLtlFormula discretize(spot::formula&& formula);
+    friend class DiscreteFiniteLtlFormula;
+    friend DiscreteLtlFormula discretizeToLtl(spot::formula&& formula);
 
     DiscreteLtlFormula() = default;
     explicit DiscreteLtlFormula(spot::formula&& formula)
@@ -30,5 +32,3 @@ inline std::ostream& operator<< (std::ostream& os, const DiscreteLtlFormula& for
 {
     return os << formula.formula();;
 }
-
-#endif //DISCRETIZELTLFORMULA_H
