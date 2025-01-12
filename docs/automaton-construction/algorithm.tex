@@ -1,0 +1,142 @@
+\documentclass{article}
+\usepackage{minted}
+\usepackage{booktabs}
+\usepackage[shortlabels]{enumitem}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{stmaryrd}
+\usepackage{tikz}
+\usepackage{textcomp}
+\usepackage{letltxmacro}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\SetArgSty{textnormal}
+\LinesNumbered
+\DontPrintSemicolon
+
+\begin{document}
+    Un \textit{Transition-based Nondeterministic Finite Automaton} (TNFA) è una tupla $\mathcal{A}=(S,\Sigma,S_0,R,Acc)$ con accettazione transition-based.
+    \vspace{0.25cm}\\
+    Da un TNFA $\mathcal{A}$ può essere derivato (per i nostri scopi) un \textit{State-based Nondeterministic Finite Automaton} (SNBA) $\mathcal{A'}$ con accettazione state-based ed etichettatura sugli stati nel seguente modo:
+    \begin{itemize}
+
+        \item $\mathcal{A}' = (S',S'_0,R',L, Acc')$ dove:
+        \begin{itemize}
+            \item $S' = \{s_t\,|\,t\in R\}$,
+            \item $S'_0 = \{s_t\,|\,t=(s,a,s')\,\text{ e }\,s \in S_0\}$,
+            \item $R' \subseteq S' \times S'$ è definita dalla seguente regola:
+            \[
+                \frac{
+                    t=(s,a,s')\,\land\, t'=(s',b,s'')
+                }
+                {
+                    s_t \longrightarrow s'_t
+                }
+            \]
+            \item $L(s_t) = a$, se $t=(s,a,s')$,
+            \item $Acc' = \{s_t\,|\,t\in Acc\}\subseteq S'$.
+        \end{itemize}
+    \end{itemize}
+
+    \LinesNumbered
+    \begin{algorithm}
+        \caption{\texttt{backwardSNBA}($\mathcal{A}$): conversione in un SNFA trasposto dato un TNFA $\mathcal{A}$ in input}\label{alg:backwardsnba}
+        \KwData{$\mathcal{A}=(S,\Sigma,S_0,R,Acc)$: TNFA $\mathcal{A}$ in input}\\
+        \KwData{$outTransitionStases \gets \emptyset$: mappa che associa a ogni stato $s\in S$ i suoi transition states $s_t \in S'$ in uscita}\\
+        \KwData{$inTransitionStases \gets \emptyset$: mappa che associa a ogni stato $s\in S$ i suoi transition states $s'_{t'} \in S'$ in entrata}\\
+        \KwOut{SNFA $\mathcal{A}' = (S',S'_0,R',L, Acc')$ trasposto}
+        \vspace{0.30cm}\\
+        $\mathcal{A}' \gets (S'=\emptyset,S'_0 =\emptyset, R'=\emptyset, L=\emptyset, Acc' =\emptyset)$\;
+        \For{$s\in S$} {
+            \For{$(s, t, s')\in R(s)$} {
+                \For{$stateDenotation \in \texttt{extractStateDenotations}(\mathcal{A}, t.\texttt{cond})$} {\label{alg:extractStateDenotations}
+                    $s_t = \texttt{newTransitionState}(stateDenotation)$\;
+                    $S' = S'\,\cup\, {s_t}$\;
+
+                    \vspace{0.20cm}\\
+
+                    \If{$s \in S_0$} {
+                        $S'_0 = S'_0\,\cup\,s_t$\;
+                    }\Else{
+                        $outTransitionStates[s].\texttt{pushBack}(s_t)$\;
+                    }
+                    $inTransitionStates[s'].\texttt{pushBack}(s_t)$\;
+
+                    \vspace{0.20cm}\\
+                    \If{$t \in Acc$} {
+                        $Acc' = Acc'\,\cup\,s_t$
+                    }
+
+                    \vspace{0.20cm}\\
+
+                    \For{$s'_{t'} \in outTransitionStates[s']$} {
+                        \If{$s'_{t'}\in Acc'$} {
+                            $R'=R'\,\cup\, \texttt{markItAsAccepting}(\{s'_{t'},s_{t}\})$\;\label{alg:markItAsAccepting1}
+                        }\Else {
+                            $R'=R'\,\cup\, (\{s'_{t'},s_{t}\})$
+                        }
+                    }
+                }
+            }
+
+            \For{$s'_{t'} \in inTransitionStates[s]$} {
+                \For{$s_{t} \in outTransitionStates[s]$} {
+                    \If{$s_{t} \in Acc'$} {
+                        $R'=R'\,\cup\, \texttt{markItAsAccepting}(\{s_{t},s'_{t'}\})$\;\label{alg:markItAsAccepting2}
+                    }\Else{
+                        $R'=R'\,\cup\, (\{s_{t},s'_{t'}\})$\;
+                    }
+                }
+            }
+        }
+        \Return $\mathcal{A}'$
+    \end{algorithm}
+
+    \newpage
+
+    L'Algoritmo~\ref{alg:backwardsnba} prende in input un TNFA $\mathcal{A}$ risultato della traduzione di una formula
+    LTL in un automa e lo converte in un SNBA $\mathcal{A'}$ trasposto.
+    L'implementazione esegue la conversione visitando l'automa $\mathcal{A}$ una sola volta.
+    \vspace{0.15cm}\\
+    Chiamiamo uno stato $s_t \in S'$ dell'automa SNBA $\mathcal{A'}$ \textit{transition state} in quanto viene creato a partire da una
+    transizione appartenente all'automa $\mathcal{A}$.
+    Siccome la libreria Spot associa agli archi dell'automa delle condizioni, l'Algoritmo~\ref{alg:backwardsnba} interpreta una transizione $(s, t, s') \in R$
+    come un insieme di transizioni.
+    Tale insieme di transizioni deve essere estrapolato da $t$. Da $t$ vengono estrapolati i mintermini associati alla sua
+    guardia $t.\texttt{cond}$, e per ognuno di essi viene creato un nuovo transition state $s_t$.
+    Questo lavoro viene fatto dalla funzione \texttt{extractStateDenotations} in Linea~\ref{alg:extractStateDenotations}.
+    Nella implementazione C++ viene calcolato anche l'interpretazione dello stato.
+    \vspace{0.15cm}\\
+    L'algoritmo mantiene traccia di alcune informazioni:
+    \begin{itemize}
+        \item i transition states $s_t \in S'$ in uscita da uno stato $s\in S$ (cioè quelli creati a partire dagli archi uscenti di $s$). Tale informazione viene mantenuta in una mappa associativa \textit{outTransitionStates}.
+        \item i transition states $s'_{t'} \in S'$ in entrata in uno stato $s\in S$ (cioè quelli creati a partire dagli archi entranti di $s$). Tale informazione viene mantenuta in una mappa associativa \textit{inTransitionStates}.
+    \end{itemize}
+    \vspace{0.15cm}\\
+    Inoltre, la libreria Spot, indipendentemente dal fatto che l'automa usi una accettazione basata sugli stati o sulle transizioni, l'appartenenza
+    di uno stato a un insieme di accettazione viene sempre memorizzato sulle transizioni (come un bit vector).
+    La convenzione di Spot per implementare la state-base acceptance è quella di marcare ogni arco uscente da uno stato come accettante.
+    Per questo motivo, a Linea~\ref{alg:markItAsAccepting1} e a Linea~\ref{alg:markItAsAccepting2}, se un transition state $s_t$ è accettante,
+    tutte le sue transizioni in uscita devono essere marcate come accettanti.
+    \vspace{0.15cm}\\
+    Infine, si noti che a Linea~\ref{alg:markItAsAccepting1} e a Linea~\ref{alg:markItAsAccepting2} gli archi vengono creati in ordine inverso in quanto vogliamo il trasposto di $\mathcal{A'}$.
+    \newpage
+    Di seguito vengono riportati due esempi di output.
+    Le formule subiscono le solite trasformazioni (discretizzazione e LTL).
+    \begin{itemize}
+        \item Formula: $\texttt{G}(i) \land\, t_0 \,\land\, \texttt{G}(t_1)\, \land\, \texttt{F}(p \,\land\, \texttt{F}\,q)$\\
+        Total states: 52\\
+        Total final states: 8\\
+        Total transitions: 416
+        \item Formula: $p_1 \,\land\, q_1 \,\land\, \texttt{X}(p_1) \,\land\, \texttt{X}(q_1) \,\land\, (v_1\, \texttt{U}\, (r_1\, \texttt{R}\, z_1)) \,\land\, \texttt{G}(x_1) \,\land\, \texttt{F}(u_1 \,\land\, \texttt{F}(p2 \,\land\, (\texttt{F} p_3\,\lor\,(u_2\,\texttt{W}\, p_4)))) \,\land\, (t\, \lor\, \texttt{G}(\texttt{X}(w)))$\\
+        Total states: 69857\\
+        Total final states: 0\\
+        Total transitions: \color{red}{141222368}\\
+    \end{itemize}
+\end{document}
