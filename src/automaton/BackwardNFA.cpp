@@ -12,6 +12,8 @@
 
 using namespace SpotUtils;
 
+static constexpr int BUCHI_ACCEPTACE = 0;
+
 BackwardNFA::BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap)
     : BackwardNFA(DiscreteLtlFormula { discreteLtlFormula }, std::move(polyhedralSystemLabelDenotationMap))
 {}
@@ -33,11 +35,9 @@ void BackwardNFA::buildAutomaton(const spot::twa_graph_ptr& nfa)
     m_backwardNfa = std::make_shared<spot::twa_graph>(backwardNfaDict);
     m_backwardNfa->prop_state_acc(spot::trival { true });
     m_backwardNfa->set_acceptance(nfa->get_acceptance());
-    const spot::acc_cond::mark_t allAcceptanceSets { m_backwardNfa->acc().all_sets() };
 
     std::unordered_map<int, std::vector<int>> outTransitionStates {};
     std::unordered_map<int, std::vector<int>> inTransitionStates {};
-    std::set<int> acceptingTransitionStates {};
     for (int nfaState { 0 }; nfaState < static_cast<int>(nfa->num_states()); ++nfaState)
     {
         const bool isInitial { static_cast<int>(nfa->get_init_state_number()) == nfaState };
@@ -47,20 +47,19 @@ void BackwardNFA::buildAutomaton(const spot::twa_graph_ptr& nfa)
             for (auto& stateDenotation: stateDenotations)
             {
                 unsigned transitionState { m_backwardNfa->new_state() };
-
                 m_stateDenotationById.emplace(transitionState, std::move(stateDenotation));
 
                 if (isInitial) m_backwardNfa->set_init_state(transitionState);
-                if (!isInitial) outTransitionStates[nfaState].push_back(transitionState);
-
+                else outTransitionStates[nfaState].push_back(transitionState);
                 inTransitionStates[nfaEdge.dst].push_back(transitionState);
 
-                if (allAcceptanceSets == nfaEdge.acc)
-                    acceptingTransitionStates.insert(transitionState);
+                if (nfaEdge.acc.has(BUCHI_ACCEPTACE))
+                    m_finalStates.insert(transitionState);
+
 
                 for (int outTransitionState: outTransitionStates[nfaEdge.dst])
                 {
-                    const bool isOutAccepting { acceptingTransitionStates.count(outTransitionState) == 1 };
+                    const bool isOutAccepting { m_finalStates.count(outTransitionState) == 1 };
                     m_backwardNfa->new_acc_edge(outTransitionState, transitionState, bdd_true(), isOutAccepting);
                 }
             }
@@ -70,7 +69,7 @@ void BackwardNFA::buildAutomaton(const spot::twa_graph_ptr& nfa)
         {
             for (int outTransitionState: outTransitionStates[nfaState])
             {
-                const bool isOutAccepting { acceptingTransitionStates.count(outTransitionState) == 1 };
+                const bool isOutAccepting { m_finalStates.count(outTransitionState) == 1 };
                 m_backwardNfa->new_acc_edge(outTransitionState, inTransitionState, bdd_true(), isOutAccepting);
             }
         }
@@ -144,7 +143,7 @@ int BackwardNFA::totalEdges() const
     return static_cast<int>(m_backwardNfa->num_edges());
 }
 
-const std::vector<int>& BackwardNFA::finalStates() const
+const std::unordered_set<int>& BackwardNFA::finalStates() const
 {
     return m_finalStates;
 }

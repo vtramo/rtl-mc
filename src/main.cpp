@@ -30,10 +30,14 @@ int main()
     std::cout << *polyhedralSystem << '\n';
 
     PolyhedralSystemLabelDenotationMap polyhedralSystemLabelDenotationMap { polyhedralSystem };
-    DiscreteLtlFormula discreteLtlFormula { discretizeToLtl(spot::parse_infix_psl("G(i) & t0 & G(t1) & F(p & F(q))").f) };
+    DiscreteLtlFormula discreteLtlFormula { discretizeToLtl(spot::parse_infix_psl("p1 & q1 & X(p1) & X(q1) & (v1 U (r1 R z1)) & G(x1) & F(u1 & F(p2 & (F p3 | u2 W p4))) & (t | G(X(w)))").f) };
+    // DiscreteLtlFormula discreteLtlFormula { discretizeToLtl(spot::parse_infix_psl("G(i) & t0 & G(t1) & F(p & F(q))").f) };
     BackwardNFA backwardNfa { std::move(discreteLtlFormula), std::move(polyhedralSystemLabelDenotationMap) };
-    std::cout << backwardNfa << '\n';
-    std::cout << polyhedralSystemLabelDenotationMap << '\n';
+    // std::cout << backwardNfa << '\n';
+    // std::cout << polyhedralSystemLabelDenotationMap << '\n';
+    std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
+    std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
+    std::cout << "Total transitions: " << backwardNfa.totalEdges() << '\n';
 
-    backwardNfa.printDotFormat(std::cout);
+    // backwardNfa.printDotFormat(std::cout);
 }
