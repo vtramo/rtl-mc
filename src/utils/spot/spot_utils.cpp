@@ -295,4 +295,19 @@ namespace SpotUtils
     {
         return spot::constants::g_sing == formula;
     }
+
+    void transpose(const spot::twa_graph_ptr& twaGraph)
+    {
+        const unsigned totalStates { twaGraph->num_states() };
+
+        for (unsigned srcStateId { 0 }; srcStateId < totalStates; ++srcStateId)
+        {
+            for (auto& nfaEdge: twaGraph->out(srcStateId))
+            {
+                unsigned nfaEdgeDst = nfaEdge.dst;
+                nfaEdge.dst = srcStateId;
+                nfaEdge.src = nfaEdgeDst;
+            }
+        }
+    }
 }

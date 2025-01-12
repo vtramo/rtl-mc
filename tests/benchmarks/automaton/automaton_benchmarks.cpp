@@ -15,12 +15,13 @@ TEST_CASE("Automaton construction benchmarks", "[benchmark][automaton]")
     REQUIRE(parsedFormula.errors.empty());
 
     std::istringstream polyhedralSystemInput { readTestFileAsString("automaton-polyhedral-system-benchmark-1.txt") };
-    PolyhedralSystemSharedPtr polyhedralSystem {};
-    polyhedralSystemInput >> *polyhedralSystem;
+    PolyhedralSystem polyhedralSystem {};
+    polyhedralSystemInput >> polyhedralSystem;
+    PolyhedralSystemSharedPtr polyhedralSystemPtr { std::make_shared<PolyhedralSystem>(std::move(polyhedralSystem)) };
 
     BENCHMARK("Automaton construction benchmark 1")
     {
-        PolyhedralSystemLabelDenotationMap PolyhedralSystemLabelDenotationMap { polyhedralSystem };
+        PolyhedralSystemLabelDenotationMap PolyhedralSystemLabelDenotationMap { polyhedralSystemPtr };
         BackwardNFA backwardNfa { discretizedLtlFormula, std::move(PolyhedralSystemLabelDenotationMap) };
     };
 }
