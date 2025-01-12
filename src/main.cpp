@@ -30,7 +30,7 @@ int main()
     std::cout << *polyhedralSystem << '\n';
 
     PolyhedralSystemLabelDenotationMap polyhedralSystemLabelDenotationMap { polyhedralSystem };
-    DiscreteLtlFormula discreteLtlFormula { discretizeToLtl(spot::parse_infix_psl("G(a & b) & t & G(t1) & F(ab & F(ba))").f) };
+    DiscreteLtlFormula discreteLtlFormula { discretizeToLtl(spot::parse_infix_psl("G(i) & t0 & G(t1) & F(p & F(q))").f) };
     BackwardNFA backwardNfa { std::move(discreteLtlFormula), std::move(polyhedralSystemLabelDenotationMap) };
     std::cout << backwardNfa << '\n';
     std::cout << polyhedralSystemLabelDenotationMap << '\n';

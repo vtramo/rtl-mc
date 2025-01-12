@@ -10,6 +10,10 @@
 
 using Atom = std::string;
 
+class PolyhedralSystem;
+
+using PolyhedralSystemSharedPtr = std::shared_ptr<PolyhedralSystem>;
+
 class PolyhedralSystem {
 public:
     PolyhedralSystem() = default;
@@ -61,7 +65,5 @@ private:
 
     void computePreFlow();
 };
-
-using PolyhedralSystemSharedPtr = std::shared_ptr<PolyhedralSystem>;
 
 std::ostream& operator<< (std::ostream&, const PolyhedralSystem&);

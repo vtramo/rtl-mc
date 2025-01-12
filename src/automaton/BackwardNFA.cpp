@@ -22,37 +22,82 @@ BackwardNFA::BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSyst
 {
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
-    ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
-    m_backwardNfa = { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
-    transposeNfa();
+    ltlToNbaTranslator.set_pref(spot::postprocessor::Buchi | spot::postprocessor::Small);
+    spot::twa_graph_ptr nfa { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
+    buildAutomaton(nfa);
 }
 
-void BackwardNFA::transposeNfa()
+void BackwardNFA::buildAutomaton(const spot::twa_graph_ptr& nfa)
 {
-    const unsigned totalStates { m_backwardNfa->num_states() };
-    m_stateDenotationById.reserve(totalStates);
+    const spot::bdd_dict_ptr backwardNfaDict { std::make_shared<spot::bdd_dict>() };
+    m_backwardNfa = std::make_shared<spot::twa_graph>(backwardNfaDict);
+    m_backwardNfa->prop_state_acc(spot::trival { true });
+    m_backwardNfa->set_acceptance(nfa->get_acceptance());
+    const spot::acc_cond::mark_t allAcceptanceSets { m_backwardNfa->acc().all_sets() };
 
-    for (unsigned srcStateId { 0 }; srcStateId < totalStates; ++srcStateId)
+    std::unordered_map<int, std::vector<int>> outTransitionStates {};
+    std::unordered_map<int, std::vector<int>> inTransitionStates {};
+    std::set<int> acceptingTransitionStates {};
+    for (int nfaState { 0 }; nfaState < static_cast<int>(nfa->num_states()); ++nfaState)
     {
-        bdd outgoingGuardsAnd { bdd_true() };
-        for (auto& nfaEdge: m_backwardNfa->out(srcStateId))
+        const bool isInitial { static_cast<int>(nfa->get_init_state_number()) == nfaState };
+        for (auto& nfaEdge: nfa->out(nfaState))
         {
-            if (m_backwardNfa->get_init_state_number() != nfaEdge.dst)
+            std::vector stateDenotations { extractStateDenotationsFromEdgeGuard(nfa, nfaEdge.cond) };
+            for (auto& stateDenotation: stateDenotations)
             {
-                unsigned nfaEdgeDst = nfaEdge.dst;
-                nfaEdge.dst = srcStateId;
-                nfaEdge.src = nfaEdgeDst;
-            }
+                unsigned transitionState { m_backwardNfa->new_state() };
 
-            outgoingGuardsAnd &= nfaEdge.cond;
+                m_stateDenotationById.emplace(transitionState, std::move(stateDenotation));
+
+                if (isInitial) m_backwardNfa->set_init_state(transitionState);
+                if (!isInitial) outTransitionStates[nfaState].push_back(transitionState);
+
+                inTransitionStates[nfaEdge.dst].push_back(transitionState);
+
+                if (allAcceptanceSets == nfaEdge.acc)
+                    acceptingTransitionStates.insert(transitionState);
+
+                for (int outTransitionState: outTransitionStates[nfaEdge.dst])
+                {
+                    const bool isOutAccepting { acceptingTransitionStates.count(outTransitionState) == 1 };
+                    m_backwardNfa->new_acc_edge(outTransitionState, transitionState, bdd_true(), isOutAccepting);
+                }
+            }
         }
 
-        spot::atomic_prop_set stateLabels { collectPositiveLiterals(spot::bdd_to_formula(outgoingGuardsAnd, m_backwardNfa->get_dict())) };
-        AtomSet stateLabelsAtomSet { std::move(stateLabels) };
-        PowersetUniquePtr powerset { m_labelDenotationMap.getDenotation(stateLabelsAtomSet) };
-        StateDenotation stateDenotation { std::move(stateLabelsAtomSet), std::move(*powerset) };
-        m_stateDenotationById.emplace(std::make_pair(srcStateId, std::move(stateDenotation)));
+        for (int inTransitionState: inTransitionStates[nfaState])
+        {
+            for (int outTransitionState: outTransitionStates[nfaState])
+            {
+                const bool isOutAccepting { acceptingTransitionStates.count(outTransitionState) == 1 };
+                m_backwardNfa->new_acc_edge(outTransitionState, inTransitionState, bdd_true(), isOutAccepting);
+            }
+        }
     }
+}
+
+std::vector<StateDenotation> BackwardNFA::extractStateDenotationsFromEdgeGuard(const spot::twa_graph_ptr& nfa, const bdd& guard)
+{
+    spot::formula formula { spot::bdd_to_formula(guard, nfa->get_dict()) };
+    minterms_of minterms { guard, nfa->ap_vars() };
+
+    std::vector<StateDenotation> stateDenotations {};
+    for (const bdd& minterm: minterms)
+    {
+        spot::atomic_prop_set atoms {};
+        spot::formula mintermFormula { spot::bdd_to_formula(minterm, nfa->get_dict()) };
+        for (const spot::formula& label: collectPositiveLiterals(std::move(mintermFormula)))
+        {
+            atoms.insert(std::move(label));
+        }
+
+        AtomSet stateLabels { std::move(atoms) };
+        PowersetUniquePtr powerset { m_labelDenotationMap.getDenotation(stateLabels) };
+        stateDenotations.emplace_back(std::move(stateLabels), std::move(*powerset));
+    }
+
+    return stateDenotations;
 }
 
 bool BackwardNFA::isInitialState(const int state) const
@@ -151,7 +196,7 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
         bool first = true;
         for (const auto& edge: backwardNfa.predecessors(state))
         {
-            out << (first ? "" : ", ") << edge.src;
+            out << (first ? "" : ", ") << edge.dst;
             first = false;
         }
         out << "]\n\n";
