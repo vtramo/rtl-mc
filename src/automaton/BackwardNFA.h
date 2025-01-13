@@ -34,6 +34,6 @@ private:
     DiscreteLtlFormula m_discreteLtlFormula {};
     PolyhedralSystemLabelDenotationMap m_labelDenotationMap {};
 
-    void buildAutomaton(const spot::twa_graph_ptr& nfa);
-    std::vector<StateDenotation> extractStateDenotationsFromEdgeGuard(const spot::twa_graph_ptr& nfa, const bdd& guard);
+    void buildAutomaton(const spot::const_twa_graph_ptr& nfa);
+    std::vector<StateDenotation> extractStateDenotationsFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
 };

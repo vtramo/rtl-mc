@@ -1,4 +1,7 @@
 #include "PolyhedralSystemLabelDenotationMap.h"
+
+#include <memory>
+
 #include "ppl_output.h"
 
 using Parma_Polyhedra_Library::IO_Operators::operator<<;
@@ -11,7 +14,7 @@ PolyhedralSystemLabelDenotationMap::PolyhedralSystemLabelDenotationMap(
 
 PolyhedralSystemLabelDenotationMap::PolyhedralSystemLabelDenotationMap(PolyhedralSystemLabelDenotationMap&& other) noexcept
     : m_polyhedralSystem { std::move(other.m_polyhedralSystem) }
-    , m_powersetByLabelsHash { std::move(other.m_powersetByLabelsHash) }
+    , m_powersetByAtomSet { std::move(other.m_powersetByAtomSet) }
 {
 }
 
@@ -22,47 +25,35 @@ const PolyhedralSystem& PolyhedralSystemLabelDenotationMap::getPolyhedralSystem(
 
 bool PolyhedralSystemLabelDenotationMap::containsDenotation(const AtomSet& labels) const
 {
-    return m_powersetByLabelsHash.count(labels.hash());
+    return m_powersetByAtomSet.count(labels.hash()) == 1;
 }
 
-PowersetUniquePtr PolyhedralSystemLabelDenotationMap::getOrComputeDenotation(const AtomSet& labels)
+PowersetConstSharedPtr PolyhedralSystemLabelDenotationMap::getOrComputeDenotation(const AtomSet& labels)
 {
     if (containsDenotation(labels))
     {
-        return std::make_unique<Powerset>(*m_powersetByLabelsHash.at(labels.hash()));
+        const auto& [powerset, _] = m_powersetByAtomSet.at(labels.hash());
+        return powerset;
     }
 
-    return std::make_unique<Powerset>(*computeLabelDenotation(labels));
+    return computeLabelDenotation(labels);
 }
 
-PowersetSharedPtr PolyhedralSystemLabelDenotationMap::computeLabelDenotation(const AtomSet& labels)
+PowersetConstSharedPtr PolyhedralSystemLabelDenotationMap::computeLabelDenotation(const AtomSet& labels)
 {
     PowersetSharedPtr powerset { std::make_shared<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::UNIVERSE) };
     const PolyhedralSystemSymbolTable& symbolTable { m_polyhedralSystem->getSymbolTable() };
 
-    const bool containsSing { labels.containsAtom(SpotUtils::sing()) };
-    const LabelsHash labelsHash { labels.hash() };
-    std::string labelsHashWithoutSing { };
-    for (const auto& atom : symbolTable.atoms())
+    for (const auto& atom: symbolTable.atoms())
     {
-
         const AtomInterpretation* const atomInterpretation { getAtomInterpretation(atom) };
         if (labels.containsAtom(atom))
-        {
-            if (containsSing) labelsHashWithoutSing += atom.ap_name();
-
             powerset->intersection_assign(atomInterpretation->interpretation());
-        }
         else
-        {
             powerset->intersection_assign(atomInterpretation->notInterpretation());
-        }
     }
 
-    if (containsSing)
-        insertLabelDenotation(labelsHash, std::hash<std::string>{}(labelsHashWithoutSing), powerset);
-    else
-        insertLabelDenotation(labelsHash, powerset);
+    insertLabelDenotation(labels, powerset);
 
     return powerset;
 }
@@ -70,50 +61,34 @@ PowersetSharedPtr PolyhedralSystemLabelDenotationMap::computeLabelDenotation(con
 const AtomInterpretation* PolyhedralSystemLabelDenotationMap::getAtomInterpretation(const spot::formula& atom) const
 {
     const std::optional atomInterpretation { m_polyhedralSystem->getInterpretation(atom) };
+
     if (!atomInterpretation)
-    {
         throw std::invalid_argument("The atom " + atom.ap_name() + " has no interpretation!");
-    }
 
     return *atomInterpretation;
 }
 
-void PolyhedralSystemLabelDenotationMap::insertLabelDenotation(LabelsHash labelsHash, LabelsHash labelsHashWithoutSing,
-                                                               PowersetSharedPtr denotation)
+void PolyhedralSystemLabelDenotationMap::insertLabelDenotation(const AtomSet& labels, PowersetConstSharedPtr denotation)
 {
-    m_powersetByLabelsHash.insert(
+    m_powersetByAtomSet.insert(
         std::make_pair(
-            labelsHashWithoutSing,
-            denotation
+            labels.hash(),
+            std::move(std::make_tuple(denotation, labels.toString()))
         )
     );
-
-    m_powersetByLabelsHash.insert(
-        std::make_pair(
-            labelsHash,
-            denotation
-        )
-    );
+    std::cout << "Insert size " << m_powersetByAtomSet.size() << std::endl;
 }
 
-void PolyhedralSystemLabelDenotationMap::insertLabelDenotation(LabelsHash labelsHash, PowersetSharedPtr denotation)
-{
-    m_powersetByLabelsHash.insert(
-        std::make_pair(
-            labelsHash,
-            denotation
-        )
-    );
-}
-
-std::ostream& operator<< (std::ostream& out, PolyhedralSystemLabelDenotationMap& PolyhedralSystemLabelDenotationMap)
+std::ostream& operator<< (std::ostream& out, PolyhedralSystemLabelDenotationMap& polyhedralSystemLabelDenotationMap)
 {
     out << "LABEL DENOTATION MAP\n";
+    out << "Total mappings " << polyhedralSystemLabelDenotationMap.m_powersetByAtomSet.size() << "\n\n";
 
-    for (const auto& [labels, powerset] : PolyhedralSystemLabelDenotationMap.m_powersetByLabelsHash)
+    for (const auto& [labels, powersetAndAtomSetToString]: polyhedralSystemLabelDenotationMap.m_powersetByAtomSet)
     {
-        out << "Labels hash code: " << labels << '\n';
-        out << "Denotation: " << PPLOutput::toString(*powerset, PolyhedralSystemLabelDenotationMap.m_polyhedralSystem->getSymbolTable())
+        const auto& [powerset, labelsToString] = powersetAndAtomSetToString;
+        out << "Labels: " << labelsToString << '\n'
+            << "Denotation: " << PPLOutput::toString(*powerset, polyhedralSystemLabelDenotationMap.m_polyhedralSystem->getSymbolTable())
             << "\n\n";
     }
 

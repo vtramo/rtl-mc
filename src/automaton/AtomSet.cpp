@@ -36,6 +36,25 @@ bool AtomSet::isEmpty() const
     return m_atoms.empty();
 }
 
+std::string AtomSet::toString() const
+{
+    if (m_atoms.size() == 0)
+        return "{}";
+
+    std::string result {};
+    result.reserve(m_atoms.size() + 5);
+
+    result += "{ ";
+    bool first = true;
+    for (const auto& atom: m_atoms)
+    {
+        result += (first ? "" : ", ") + atom.ap_name();
+        first = false;
+    }
+
+    return result += " }";
+}
+
 size_t AtomSet::hash() const
 {
     return std::hash<AtomSet>::hashCode(this);
@@ -53,14 +72,5 @@ bool operator!= (const AtomSet& atomSet1, const AtomSet& atomSet2)
 
 std::ostream& operator<< (std::ostream& out, const AtomSet& atomSet)
 {
-    if (atomSet.isEmpty()) return out << "{}";
-
-    out << "{ ";
-    bool first = true;
-    for (const auto& atom: atomSet)
-    {
-        out << (first ? "" : ", ") + atom.ap_name();
-        first = false;
-    }
-    return out << " }";
+    return out << atomSet.toString();
 }

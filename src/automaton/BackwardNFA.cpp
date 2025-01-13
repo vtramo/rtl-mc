@@ -29,7 +29,7 @@ BackwardNFA::BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSyst
     buildAutomaton(nfa);
 }
 
-void BackwardNFA::buildAutomaton(const spot::twa_graph_ptr& nfa)
+void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
 {
     const spot::bdd_dict_ptr backwardNfaDict { std::make_shared<spot::bdd_dict>() };
     m_backwardNfa = std::make_shared<spot::twa_graph>(backwardNfaDict);
@@ -76,7 +76,7 @@ void BackwardNFA::buildAutomaton(const spot::twa_graph_ptr& nfa)
     }
 }
 
-std::vector<StateDenotation> BackwardNFA::extractStateDenotationsFromEdgeGuard(const spot::twa_graph_ptr& nfa, const bdd& guard)
+std::vector<StateDenotation> BackwardNFA::extractStateDenotationsFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard)
 {
     spot::formula formula { spot::bdd_to_formula(guard, nfa->get_dict()) };
     minterms_of minterms { guard, nfa->ap_vars() };
@@ -84,16 +84,20 @@ std::vector<StateDenotation> BackwardNFA::extractStateDenotationsFromEdgeGuard(c
     std::vector<StateDenotation> stateDenotations {};
     for (const bdd& minterm: minterms)
     {
+        bool containsSing {};
         spot::atomic_prop_set atoms {};
         spot::formula mintermFormula { spot::bdd_to_formula(minterm, nfa->get_dict()) };
         for (const spot::formula& label: collectPositiveLiterals(std::move(mintermFormula)))
         {
-            atoms.insert(std::move(label));
+            if (!SpotUtils::isSing(label))
+                atoms.insert(std::move(label));
+            else
+                containsSing = true;
         }
 
         AtomSet stateLabels { std::move(atoms) };
-        PowersetUniquePtr powerset { m_labelDenotationMap.getDenotation(stateLabels) };
-        stateDenotations.emplace_back(std::move(stateLabels), std::move(*powerset));
+        PowersetConstSharedPtr powerset { m_labelDenotationMap.getOrComputeDenotation(stateLabels) };
+        stateDenotations.emplace_back(std::move(stateLabels), powerset, containsSing);
     }
 
     return stateDenotations;
@@ -186,7 +190,7 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
         out << "State " << state << '\n';
         out << "Labels: " << stateDenotation.labels() << std::boolalpha << '\n';
         const PolyhedralSystem& polyhedralSystem { backwardNfa.m_labelDenotationMap.getPolyhedralSystem() };
-        out << "Denotation: " << PPLOutput::toString(stateDenotation.denotation(), polyhedralSystem.getSymbolTable()) << '\n';
+        out << "Denotation: " << PPLOutput::toString(*stateDenotation.denotation(), polyhedralSystem.getSymbolTable()) << '\n';
         out << "IsSing: " << stateDenotation.isSingular() << '\n';
         out << "IsInitial: " << backwardNfa.isInitialState(state) << '\n';
         out << "IsFinal: " << backwardNfa.isFinalState(state) << '\n';

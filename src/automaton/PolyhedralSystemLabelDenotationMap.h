@@ -10,23 +10,22 @@ public:
     explicit PolyhedralSystemLabelDenotationMap(const PolyhedralSystemSharedPtr& polyhedralSystem);
     PolyhedralSystemLabelDenotationMap(PolyhedralSystemLabelDenotationMap&& other) noexcept;
 
-    PowersetUniquePtr getOrComputeDenotation(const AtomSet& labels);
+    PowersetConstSharedPtr getOrComputeDenotation(const AtomSet& labels);
     [[nodiscard]] const PolyhedralSystem& getPolyhedralSystem() const;
     [[nodiscard]] bool containsDenotation(const AtomSet& labels) const;
 
-    friend std::ostream& operator<< (std::ostream& out, PolyhedralSystemLabelDenotationMap& PolyhedralSystemLabelDenotationMap);
+    friend std::ostream& operator<< (std::ostream& out, PolyhedralSystemLabelDenotationMap& polyhedralSystemLabelDenotationMap);
 
 private:
-    using LabelsHash = std::size_t;
+    using AtomSetToString = std::string;
 
     PolyhedralSystemSharedPtr m_polyhedralSystem {};
-    std::unordered_map<LabelsHash, PowersetSharedPtr> m_powersetByLabelsHash {};
+    std::unordered_map<AtomSetHash, std::tuple<PowersetConstSharedPtr, AtomSetToString>> m_powersetByAtomSet {};
 
     friend class BackwardNFA;
     PolyhedralSystemLabelDenotationMap() = default;
 
-    PowersetSharedPtr computeLabelDenotation(const AtomSet& labels);
-    void insertLabelDenotation(LabelsHash labelsHash, LabelsHash labelsHashWithoutSing, PowersetSharedPtr denotation);
-    void insertLabelDenotation(LabelsHash labelsHash, PowersetSharedPtr denotation);
+    PowersetConstSharedPtr computeLabelDenotation(const AtomSet& labels);
+    void insertLabelDenotation(const AtomSet& labels, PowersetConstSharedPtr denotation);
     const AtomInterpretation* getAtomInterpretation(const spot::formula& atom) const;
 };
