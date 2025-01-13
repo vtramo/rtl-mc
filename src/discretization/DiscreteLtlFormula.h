@@ -1,12 +1,16 @@
 #pragma once
 
 #include <spot/tl/formula.hh>
-
-class DiscreteFiniteLtlFormula;
+#include "discretization.h"
 
 class DiscreteLtlFormula
 {
 public:
+    static DiscreteLtlFormula discretizeToLtl(spot::formula&& formula)
+    {
+        spot::formula discretizedLtlFormula { toDiscretizedLtlFormula(std::move(formula)) };
+        return DiscreteLtlFormula { imposeSingOpenLastFiniteProperty(std::move(discretizedLtlFormula)) };
+    }
     const spot::formula& formula() const { return m_discreteLtlFormula; }
 private:
     spot::formula m_discreteLtlFormula{};
@@ -30,5 +34,5 @@ inline bool operator== (const DiscreteLtlFormula& discreteLtlFormula, const spot
 
 inline std::ostream& operator<< (std::ostream& os, const DiscreteLtlFormula& formula)
 {
-    return os << formula.formula();;
+    return os << formula.formula();
 }

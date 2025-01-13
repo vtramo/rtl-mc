@@ -5,7 +5,6 @@ using namespace SpotUtils;
 
 namespace
 {
-    spot::formula toDiscretizedLtlFormula(spot::formula&& formula);
     spot::formula dsctF(spot::formula&& formula);
     spot::formula dsctG(spot::formula&& formula);
     spot::formula dsctX(spot::formula&& formula);
@@ -14,7 +13,6 @@ namespace
     spot::formula dsctM(spot::formula&& formula);
     spot::formula dsctW(spot::formula&& formula);
 
-    spot::formula toDiscretizedFormula(spot::formula&& formula);
     spot::formula dscF(spot::formula&& formula);
     spot::formula dscG(spot::formula&& formula);
     spot::formula dscX(spot::formula&& formula);
@@ -22,53 +20,81 @@ namespace
     spot::formula dscR(spot::formula&& formula);
     spot::formula dscM(spot::formula&& formula);
     spot::formula dscW(spot::formula&& formula);
-
-    spot::formula imposeSingOpenLastFiniteProperty(spot::formula&& formula);
-    spot::formula imposeSingOpenLastProperty(spot::formula&& formula);
 }
 
-
-DiscreteLtlFormula discretizeToLtl(spot::formula&& formula)
+spot::formula imposeSingOpenLastFiniteProperty(spot::formula&& formula)
 {
-    spot::formula discretizedLtlFormula { toDiscretizedLtlFormula(std::move(formula)) };
-    return DiscreteLtlFormula { imposeSingOpenLastFiniteProperty(std::move(discretizedLtlFormula)) };
+    return And({
+                std::move(formula),
+                singOpenLastPropertyFinite(),
+                alive(),
+                aliveUntilGNotAlive(),
+            });
+
 }
 
-DiscreteFiniteLtlFormula discretize(spot::formula&& formula)
+spot::formula imposeSingOpenLastProperty(spot::formula&& formula)
 {
-    spot::formula discreteLtlFormula { toDiscretizedFormula(std::move(formula)) };
-    return DiscreteFiniteLtlFormula { imposeSingOpenLastProperty(std::move(discreteLtlFormula)) };
+    return And({
+                std::move(formula),
+                singOpenLastProperty(),
+             });
 }
 
+spot::formula toDiscretizedLtlFormula(spot::formula&& formula)
+{
+    switch (formula.kind())
+    {
+    case spot::op::X:
+        return dsctX(std::move(formula));
+    case spot::op::F:
+        return dsctF(std::move(formula));
+    case spot::op::G:
+        return dsctG(std::move(formula));
+    case spot::op::U:
+        return dsctU(std::move(formula));
+    case spot::op::W:
+        return dsctW(std::move(formula));
+    case spot::op::M:
+        return dsctM(std::move(formula));
+    case spot::op::R:
+        return dsctR(std::move(formula));
+    default:
+        return formula.map([] (spot::formula child)
+        {
+            return toDiscretizedLtlFormula(std::move(child));
+        });
+    }
+}
+
+spot::formula toDiscretizedFormula(spot::formula&& formula)
+{
+    switch (formula.kind())
+    {
+    case spot::op::X:
+        return dscX(std::move(formula));
+    case spot::op::F:
+        return dscF(std::move(formula));
+    case spot::op::G:
+        return dscG(std::move(formula));
+    case spot::op::U:
+        return dscU(std::move(formula));
+    case spot::op::W:
+        return dscW(std::move(formula));
+    case spot::op::M:
+        return dscM(std::move(formula));
+    case spot::op::R:
+        return dscR(std::move(formula));
+    default:
+        return formula.map([] (spot::formula child)
+        {
+            return toDiscretizedFormula(std::move(child));
+        });
+    }
+}
 
 namespace
 {
-    spot::formula toDiscretizedLtlFormula(spot::formula&& formula)
-    {
-        switch (formula.kind())
-        {
-        case spot::op::X:
-            return dsctX(std::move(formula));
-        case spot::op::F:
-            return dsctF(std::move(formula));
-        case spot::op::G:
-            return dsctG(std::move(formula));
-        case spot::op::U:
-            return dsctU(std::move(formula));
-        case spot::op::W:
-            return dsctW(std::move(formula));
-        case spot::op::M:
-            return dsctM(std::move(formula));
-        case spot::op::R:
-            return dsctR(std::move(formula));
-        default:
-            return formula.map([] (spot::formula child)
-            {
-                return toDiscretizedLtlFormula(std::move(child));
-            });
-        }
-    }
-
     spot::formula dsctX(spot::formula&& formula)
     {
         spot::formula childDsct { toDiscretizedLtlFormula(formula[0]) };
@@ -137,31 +163,6 @@ namespace
     }
 
 
-    spot::formula toDiscretizedFormula(spot::formula&& formula)
-    {
-        switch (formula.kind())
-        {
-        case spot::op::X:
-            return dscX(std::move(formula));
-        case spot::op::F:
-            return dscF(std::move(formula));
-        case spot::op::G:
-            return dscG(std::move(formula));
-        case spot::op::U:
-            return dscU(std::move(formula));
-        case spot::op::W:
-            return dscW(std::move(formula));
-        case spot::op::M:
-            return dscM(std::move(formula));
-        case spot::op::R:
-            return dscR(std::move(formula));
-        default:
-            return formula.map([] (spot::formula child)
-            {
-                return toDiscretizedFormula(std::move(child));
-            });
-        }
-    }
 
     spot::formula dscX(spot::formula&& formula)
     {
@@ -221,25 +222,5 @@ namespace
         spot::formula eventually { dscF(F(And({ child1, child2 }))) };
         spot::formula release { dscR(R(std::move(child1), std::move(child2))) };
         return And({ std::move(eventually), std::move(release) });
-    }
-
-
-    spot::formula imposeSingOpenLastFiniteProperty(spot::formula&& formula)
-    {
-        return And({
-                    std::move(formula),
-                    singOpenLastPropertyFinite(),
-                    alive(),
-                    aliveUntilGNotAlive(),
-                });
-
-    }
-
-    spot::formula imposeSingOpenLastProperty(spot::formula&& formula)
-    {
-        return And({
-                    std::move(formula),
-                    singOpenLastProperty(),
-                 });
     }
 }

@@ -1,11 +1,15 @@
 #pragma once
 
-#include "DiscreteLtlFormula.h"
 #include <spot/tl/formula.hh>
 #include <spot/tl/ltlf.hh>
+#include "discretization.h"
 
 class DiscreteFiniteLtlFormula {
 public:
+    static DiscreteFiniteLtlFormula discretize(spot::formula&& formula) {
+        spot::formula discreteLtlFormula { toDiscretizedFormula(std::move(formula)) };
+        return DiscreteFiniteLtlFormula { imposeSingOpenLastProperty(std::move(discreteLtlFormula)) };
+    }
     const spot::formula& formula() const { return m_discreteFiniteLtlFormula; }
     DiscreteLtlFormula toLtl() const { return DiscreteLtlFormula { spot::from_ltlf(m_discreteFiniteLtlFormula) }; }
 

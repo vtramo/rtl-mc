@@ -32,8 +32,7 @@ PowersetUniquePtr PolyhedralSystemLabelDenotationMap::getDenotation(const AtomSe
         return std::make_unique<Powerset>(*m_powersetByLabelsHash.at(labels.hash()));
     }
 
-    Powerset copy { *computeLabelDenotation(labels) };
-    return std::make_unique<Powerset>(copy);
+    return std::make_unique<Powerset>(*computeLabelDenotation(labels));
 }
 
 PowersetSharedPtr PolyhedralSystemLabelDenotationMap::computeLabelDenotation(const AtomSet& labels)

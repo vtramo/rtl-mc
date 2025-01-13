@@ -2,10 +2,11 @@
 #define DISCRETIZATION_H
 
 #include <spot/tl/formula.hh>
-#include "DiscreteLtlFormula.h"
-#include "DiscreteFiniteLtlFormula.h"
 
-DiscreteLtlFormula discretizeToLtl(spot::formula&& formula);
-DiscreteFiniteLtlFormula discretize(spot::formula&& formula);
+spot::formula toDiscretizedLtlFormula(spot::formula&& formula);
+spot::formula imposeSingOpenLastFiniteProperty(spot::formula&& formula);
+
+spot::formula toDiscretizedFormula(spot::formula&& formula);
+spot::formula imposeSingOpenLastProperty(spot::formula&& formula);
 
 #endif //DISCRETIZATION_H

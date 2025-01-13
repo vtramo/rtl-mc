@@ -1,5 +1,7 @@
 #include "discretization.h"
 #include "test_utils.h"
+#include "DiscreteLtlFormula.h"
+#include "DiscreteFiniteLtlFormula.h"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <spot/tl/parse.hh>
@@ -13,14 +15,14 @@ TEST_CASE("Discretization benchmarks", "[benchmark][discretization]")
     {
         spot::formula formula { parsedFormula.f };
         REQUIRE(parsedFormula.errors.empty());
-        discretizeToLtl(std::move(formula));
+        DiscreteLtlFormula::discretizeToLtl(std::move(formula));
     };
 
     BENCHMARK("RTLf to LTL (spot)")
     {
         spot::formula formula { parsedFormula.f };
         REQUIRE(parsedFormula.errors.empty());
-        DiscreteFiniteLtlFormula discreteFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discreteFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
         DiscreteLtlFormula __ { discreteFormula.toLtl() };
     };
 }

@@ -3,8 +3,9 @@
 #include <spot/tl/ltlf.hh>
 #include <spot/tl/parse.hh>
 
-#include "discretization.h"
 #include "spot_utils.h"
+#include "DiscreteLtlFormula.h"
+#include "DiscreteFiniteLtlFormula.h"
 
 using namespace SpotUtils;
 
@@ -22,7 +23,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("X p0").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -39,7 +40,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("F p0").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -57,7 +58,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("F p0 & F p1").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -74,7 +75,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G p0").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -92,7 +93,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G p0 & F p1").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -111,7 +112,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G(p0 & p1) & p2 & G p3 & F(p4 & F p5)").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -128,7 +129,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 U p1").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -145,7 +146,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 R p1").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -163,7 +164,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 M p1").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -180,7 +181,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 W p1").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -203,7 +204,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("(p0 W p1) & (p2 M p3) & (p4 R p5) & (p6 U p7) & G(p8) & F(p9) & X(p10)").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -220,7 +221,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G(a & b) & t & G(t1) & F(ab & F(ba))").f };
-        DiscreteLtlFormula discretizedFormula { discretizeToLtl(std::move(formula)) };
+        DiscreteLtlFormula discretizedFormula { DiscreteLtlFormula::discretizeToLtl(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -231,7 +232,7 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         spot::parsed_formula parsedFormula { spot::parse_infix_psl(formulaStr) };
         REQUIRE(parsedFormula.errors.empty());
 
-        discretizeToLtl(std::move(parsedFormula.f));
+        DiscreteLtlFormula::discretizeToLtl(std::move(parsedFormula.f));
     }
 }
 
@@ -249,7 +250,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("X p0").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -266,7 +267,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("F p0 & F p1").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -283,7 +284,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G p0").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -300,7 +301,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 U p1").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -317,7 +318,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 R p1").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -335,7 +336,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 M p1").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -352,7 +353,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("p0 W p1").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -375,7 +376,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("(p0 W p1) & (p2 M p3) & (p4 R p5) & (p6 U p7) & G(p8) & F(p9) & X(p10)").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -392,7 +393,7 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         };
 
         spot::formula formula { spot::parse_infix_psl("G(a & b) & t & G(t1) & F(ab & F(ba))").f };
-        DiscreteFiniteLtlFormula discretizedFormula { discretize(std::move(formula)) };
+        DiscreteFiniteLtlFormula discretizedFormula { DiscreteFiniteLtlFormula::discretize(std::move(formula)) };
 
         REQUIRE(discretizedFormula == expectedFormula);
     }
@@ -403,6 +404,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         spot::parsed_formula parsedFormula { spot::parse_infix_psl(formulaStr) };
         REQUIRE(parsedFormula.errors.empty());
 
-        discretize(std::move(parsedFormula.f));
+        DiscreteFiniteLtlFormula::discretize(std::move(parsedFormula.f));
     }
 }
