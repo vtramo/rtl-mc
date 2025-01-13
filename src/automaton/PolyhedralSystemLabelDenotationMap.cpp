@@ -25,7 +25,7 @@ bool PolyhedralSystemLabelDenotationMap::containsDenotation(const AtomSet& label
     return m_powersetByLabelsHash.count(labels.hash());
 }
 
-PowersetUniquePtr PolyhedralSystemLabelDenotationMap::getDenotation(const AtomSet& labels)
+PowersetUniquePtr PolyhedralSystemLabelDenotationMap::getOrComputeDenotation(const AtomSet& labels)
 {
     if (containsDenotation(labels))
     {

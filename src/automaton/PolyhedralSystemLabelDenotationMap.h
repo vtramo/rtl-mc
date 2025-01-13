@@ -10,8 +10,8 @@ public:
     explicit PolyhedralSystemLabelDenotationMap(const PolyhedralSystemSharedPtr& polyhedralSystem);
     PolyhedralSystemLabelDenotationMap(PolyhedralSystemLabelDenotationMap&& other) noexcept;
 
+    PowersetUniquePtr getOrComputeDenotation(const AtomSet& labels);
     [[nodiscard]] const PolyhedralSystem& getPolyhedralSystem() const;
-    [[nodiscard]] PowersetUniquePtr getDenotation(const AtomSet& labels);
     [[nodiscard]] bool containsDenotation(const AtomSet& labels) const;
 
     friend std::ostream& operator<< (std::ostream& out, PolyhedralSystemLabelDenotationMap& PolyhedralSystemLabelDenotationMap);
