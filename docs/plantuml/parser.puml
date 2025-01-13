@@ -1,0 +1,51 @@
+@startuml
+
+package parser {
+    !include parser-rtlf.puml
+    !include parser-system.puml
+
+    class ParserError {
+        --data members--
+        -m_startPosition : PositionError
+        -m_endPosition : std::optional<PositionError>
+        -m_errorMessage : std::string
+        -m_type : Type
+        --constructors--
+        +ParserError(const PositionError& startPosition, const std::string_view errorMessage, Type type)
+        +ParserError(const std::string_view errorMessage, const std::size_t line, const std::size_t charPositionInLine, Type type)
+        +ParserError(const PositionError& startPosition, const PositionError& endPosition, const std::string_view errorMessage, Type type)
+        +ParserError(spot::one_parse_error&& spotParserError)
+        --member functions--
+        +startLocation() : PositionError
+        +endLocation() : std::optional<PositionError>
+        +type() : Type
+        +errorMessage() : std::string_view
+    }
+
+    class PositionError {
+        --data members--
+        -m_charPositionInLine : std::size_t
+        -m_line : std::size_t
+        --constructors--
+        +PositionError(const std::size_t m_line, const std::size_t m_charPositionInLine)
+        +PositionError(const spot::position& position)
+        +PositionError()
+        --function members--
+        +charPositionInLine() : std::size_t
+        +line() : std::size_t
+    }
+
+
+    enum ParserError::Type {
+        lexical
+        syntax
+        unknown
+    }
+
+    ParserError *--> "1..2" PositionError
+    ParserError +-- ParserError::Type
+    PolyhedralSystemParsingResult --> "0..*" ParserError
+    RtlfParsingResult --> "0..*" ParserError
+    PolyhedralSystemErrorListener --> "0..*" ParserError
+}
+@enduml

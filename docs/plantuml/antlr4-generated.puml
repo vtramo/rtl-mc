@@ -1,0 +1,611 @@
+@startuml
+
+/' Objects '/
+package generated {
+class PolyhedralSystemBaseListener {
+	+enterAtomEmpty(PolyhedralSystemParser::AtomEmptyContext*) : void
+	+enterAtomError(PolyhedralSystemParser::AtomErrorContext*) : void
+	+enterAtomPoly(PolyhedralSystemParser::AtomPolyContext*) : void
+	+enterAtomPowerset(PolyhedralSystemParser::AtomPowersetContext*) : void
+	+enterConstr(PolyhedralSystemParser::ConstrContext*) : void
+	+enterEveryRule(antlr4::ParserRuleContext*) : void
+	+enterFlow(PolyhedralSystemParser::FlowContext*) : void
+	+enterInt(PolyhedralSystemParser::IntContext*) : void
+	+enterIntTimesVar(PolyhedralSystemParser::IntTimesVarContext*) : void
+	+enterInv(PolyhedralSystemParser::InvContext*) : void
+	+enterLinearExpr(PolyhedralSystemParser::LinearExprContext*) : void
+	+enterPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext*) : void
+	+enterPolyError(PolyhedralSystemParser::PolyErrorContext*) : void
+	+enterPolyTrue(PolyhedralSystemParser::PolyTrueContext*) : void
+	+enterPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext*) : void
+	+enterPowersetError(PolyhedralSystemParser::PowersetErrorContext*) : void
+	+enterPowersetTrue(PolyhedralSystemParser::PowersetTrueContext*) : void
+	+enterSignTerm(PolyhedralSystemParser::SignTermContext*) : void
+	+enterSystem(PolyhedralSystemParser::SystemContext*) : void
+	+enterTermError(PolyhedralSystemParser::TermErrorContext*) : void
+	+enterVar(PolyhedralSystemParser::VarContext*) : void
+	+exitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext*) : void
+	+exitAtomError(PolyhedralSystemParser::AtomErrorContext*) : void
+	+exitAtomPoly(PolyhedralSystemParser::AtomPolyContext*) : void
+	+exitAtomPowerset(PolyhedralSystemParser::AtomPowersetContext*) : void
+	+exitConstr(PolyhedralSystemParser::ConstrContext*) : void
+	+exitEveryRule(antlr4::ParserRuleContext*) : void
+	+exitFlow(PolyhedralSystemParser::FlowContext*) : void
+	+exitInt(PolyhedralSystemParser::IntContext*) : void
+	+exitIntTimesVar(PolyhedralSystemParser::IntTimesVarContext*) : void
+	+exitInv(PolyhedralSystemParser::InvContext*) : void
+	+exitLinearExpr(PolyhedralSystemParser::LinearExprContext*) : void
+	+exitPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext*) : void
+	+exitPolyError(PolyhedralSystemParser::PolyErrorContext*) : void
+	+exitPolyTrue(PolyhedralSystemParser::PolyTrueContext*) : void
+	+exitPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext*) : void
+	+exitPowersetError(PolyhedralSystemParser::PowersetErrorContext*) : void
+	+exitPowersetTrue(PolyhedralSystemParser::PowersetTrueContext*) : void
+	+exitSignTerm(PolyhedralSystemParser::SignTermContext*) : void
+	+exitSystem(PolyhedralSystemParser::SystemContext*) : void
+	+exitTermError(PolyhedralSystemParser::TermErrorContext*) : void
+	+exitVar(PolyhedralSystemParser::VarContext*) : void
+	+visitErrorNode(antlr4::tree::ErrorNode*) : void
+	+visitTerminal(antlr4::tree::TerminalNode*) : void
+}
+
+
+class PolyhedralSystemBaseVisitor {
+	+visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx) : std::any
+	+visitAtomError(PolyhedralSystemParser::AtomErrorContext* ctx) : std::any
+	+visitAtomPoly(PolyhedralSystemParser::AtomPolyContext* ctx) : std::any
+	+visitAtomPowerset(PolyhedralSystemParser::AtomPowersetContext* ctx) : std::any
+	+visitConstr(PolyhedralSystemParser::ConstrContext* ctx) : std::any
+	+visitFlow(PolyhedralSystemParser::FlowContext* ctx) : std::any
+	+visitInt(PolyhedralSystemParser::IntContext* ctx) : std::any
+	+visitIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* ctx) : std::any
+	+visitInv(PolyhedralSystemParser::InvContext* ctx) : std::any
+	+visitLinearExpr(PolyhedralSystemParser::LinearExprContext* ctx) : std::any
+	+visitPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext* ctx) : std::any
+	+visitPolyError(PolyhedralSystemParser::PolyErrorContext* ctx) : std::any
+	+visitPolyTrue(PolyhedralSystemParser::PolyTrueContext* ctx) : std::any
+	+visitPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext* ctx) : std::any
+	+visitPowersetError(PolyhedralSystemParser::PowersetErrorContext* ctx) : std::any
+	+visitPowersetTrue(PolyhedralSystemParser::PowersetTrueContext* ctx) : std::any
+	+visitSignTerm(PolyhedralSystemParser::SignTermContext* ctx) : std::any
+	+visitSystem(PolyhedralSystemParser::SystemContext* ctx) : std::any
+	+visitTermError(PolyhedralSystemParser::TermErrorContext* ctx) : std::any
+	+visitVar(PolyhedralSystemParser::VarContext* ctx) : std::any
+}
+
+
+class PolyhedralSystemLexer {
+	+PolyhedralSystemLexer(antlr4::CharStream* input)
+	+~PolyhedralSystemLexer()
+	+getATN() : antlr4::atn::ATN& {query}
+	+getSerializedATN() : antlr4::atn::SerializedATNView {query}
+	+getVocabulary() : antlr4::dfa::Vocabulary& {query}
+	+getGrammarFileName() : std::string {query}
+	+getChannelNames() : std::vector<std::string>& {query}
+	+getModeNames() : std::vector<std::string>& {query}
+	+getRuleNames() : std::vector<std::string>& {query}
+	+{static} initialize() : void
+}
+
+
+abstract class PolyhedralSystemListener {
+	+{abstract} enterAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx) : void
+	+{abstract} enterAtomError(PolyhedralSystemParser::AtomErrorContext* ctx) : void
+	+{abstract} enterAtomPoly(PolyhedralSystemParser::AtomPolyContext* ctx) : void
+	+{abstract} enterAtomPowerset(PolyhedralSystemParser::AtomPowersetContext* ctx) : void
+	+{abstract} enterConstr(PolyhedralSystemParser::ConstrContext* ctx) : void
+	+{abstract} enterFlow(PolyhedralSystemParser::FlowContext* ctx) : void
+	+{abstract} enterInt(PolyhedralSystemParser::IntContext* ctx) : void
+	+{abstract} enterIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* ctx) : void
+	+{abstract} enterInv(PolyhedralSystemParser::InvContext* ctx) : void
+	+{abstract} enterLinearExpr(PolyhedralSystemParser::LinearExprContext* ctx) : void
+	+{abstract} enterPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext* ctx) : void
+	+{abstract} enterPolyError(PolyhedralSystemParser::PolyErrorContext* ctx) : void
+	+{abstract} enterPolyTrue(PolyhedralSystemParser::PolyTrueContext* ctx) : void
+	+{abstract} enterPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext* ctx) : void
+	+{abstract} enterPowersetError(PolyhedralSystemParser::PowersetErrorContext* ctx) : void
+	+{abstract} enterPowersetTrue(PolyhedralSystemParser::PowersetTrueContext* ctx) : void
+	+{abstract} enterSignTerm(PolyhedralSystemParser::SignTermContext* ctx) : void
+	+{abstract} enterSystem(PolyhedralSystemParser::SystemContext* ctx) : void
+	+{abstract} enterTermError(PolyhedralSystemParser::TermErrorContext* ctx) : void
+	+{abstract} enterVar(PolyhedralSystemParser::VarContext* ctx) : void
+	+{abstract} exitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx) : void
+	+{abstract} exitAtomError(PolyhedralSystemParser::AtomErrorContext* ctx) : void
+	+{abstract} exitAtomPoly(PolyhedralSystemParser::AtomPolyContext* ctx) : void
+	+{abstract} exitAtomPowerset(PolyhedralSystemParser::AtomPowersetContext* ctx) : void
+	+{abstract} exitConstr(PolyhedralSystemParser::ConstrContext* ctx) : void
+	+{abstract} exitFlow(PolyhedralSystemParser::FlowContext* ctx) : void
+	+{abstract} exitInt(PolyhedralSystemParser::IntContext* ctx) : void
+	+{abstract} exitIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* ctx) : void
+	+{abstract} exitInv(PolyhedralSystemParser::InvContext* ctx) : void
+	+{abstract} exitLinearExpr(PolyhedralSystemParser::LinearExprContext* ctx) : void
+	+{abstract} exitPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext* ctx) : void
+	+{abstract} exitPolyError(PolyhedralSystemParser::PolyErrorContext* ctx) : void
+	+{abstract} exitPolyTrue(PolyhedralSystemParser::PolyTrueContext* ctx) : void
+	+{abstract} exitPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext* ctx) : void
+	+{abstract} exitPowersetError(PolyhedralSystemParser::PowersetErrorContext* ctx) : void
+	+{abstract} exitPowersetTrue(PolyhedralSystemParser::PowersetTrueContext* ctx) : void
+	+{abstract} exitSignTerm(PolyhedralSystemParser::SignTermContext* ctx) : void
+	+{abstract} exitSystem(PolyhedralSystemParser::SystemContext* ctx) : void
+	+{abstract} exitTermError(PolyhedralSystemParser::TermErrorContext* ctx) : void
+	+{abstract} exitVar(PolyhedralSystemParser::VarContext* ctx) : void
+}
+
+
+class PolyhedralSystemParser {
+	+PolyhedralSystemParser(antlr4::TokenStream* input)
+	+PolyhedralSystemParser(antlr4::TokenStream* input, const antlr4::atn::ParserATNSimulatorOptions& options)
+	+~PolyhedralSystemParser()
+	+atom() : AtomContext*
+	+constr() : ConstrContext*
+	+flow() : FlowContext*
+	+inv() : InvContext*
+	+linearExpr() : LinearExprContext*
+	+poly() : PolyContext*
+	+powerset() : PowersetContext*
+	+signTerm() : SignTermContext*
+	+system() : SystemContext*
+	+term() : TermContext*
+	+getATN() : antlr4::atn::ATN& {query}
+	+getSerializedATN() : antlr4::atn::SerializedATNView {query}
+	+getVocabulary() : antlr4::dfa::Vocabulary& {query}
+	+getGrammarFileName() : std::string {query}
+	+getRuleNames() : std::vector<std::string>& {query}
+	+{static} initialize() : void
+}
+
+
+class PolyhedralSystemParser::AtomContext {
+	+AtomContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+AtomContext()
+	+getRuleIndex() : size_t {query}
+	+copyFrom(AtomContext context) : void
+}
+
+
+class PolyhedralSystemParser::AtomEmptyContext {
+	+AtomEmptyContext(AtomContext ctx)
+	+VARID() : antlr4::tree::TerminalNode*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::AtomErrorContext {
+	+AtomErrorContext(AtomContext ctx)
+	+poly(size_t i) : PolyContext*
+	+VARID() : antlr4::tree::TerminalNode*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+poly() : std::vector<PolyContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::AtomPolyContext {
+	+AtomPolyContext(AtomContext ctx)
+	+poly() : PolyContext*
+	+VARID() : antlr4::tree::TerminalNode*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::AtomPowersetContext {
+	+AtomPowersetContext(AtomContext ctx)
+	+powerset() : PowersetContext*
+	+VARID() : antlr4::tree::TerminalNode*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::ConstrContext {
+	+ConstrContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+linearExpr(size_t i) : LinearExprContext*
+	+op : antlr4::Token*
+	+EQ() : antlr4::tree::TerminalNode*
+	+GE() : antlr4::tree::TerminalNode*
+	+GT() : antlr4::tree::TerminalNode*
+	+LE() : antlr4::tree::TerminalNode*
+	+LT() : antlr4::tree::TerminalNode*
+	+getRuleIndex() : size_t {query}
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+linearExpr() : std::vector<LinearExprContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::FlowContext {
+	+FlowContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+poly(size_t i) : PolyContext*
+	+powerset() : PowersetContext*
+	+FLOW() : antlr4::tree::TerminalNode*
+	+getRuleIndex() : size_t {query}
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+poly() : std::vector<PolyContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::IntContext {
+	+IntContext(TermContext ctx)
+	+UNSIGNED_INT() : antlr4::tree::TerminalNode*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::IntTimesVarContext {
+	+IntTimesVarContext(TermContext ctx)
+	+TIMES() : antlr4::tree::TerminalNode*
+	+UNSIGNED_INT() : antlr4::tree::TerminalNode*
+	+VARID() : antlr4::tree::TerminalNode*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::InvContext {
+	+InvContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+poly(size_t i) : PolyContext*
+	+powerset() : PowersetContext*
+	+INV() : antlr4::tree::TerminalNode*
+	+getRuleIndex() : size_t {query}
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+poly() : std::vector<PolyContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::LinearExprContext {
+	+LinearExprContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+signTerm(size_t i) : SignTermContext*
+	+term() : TermContext*
+	+op : antlr4::Token*
+	+MINUS() : antlr4::tree::TerminalNode*
+	+PLUS() : antlr4::tree::TerminalNode*
+	+getRuleIndex() : size_t {query}
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+signTerm() : std::vector<SignTermContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::PolyAtLeastOneConstrContext {
+	+PolyAtLeastOneConstrContext(PolyContext ctx)
+	+constr(size_t i) : ConstrContext*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+constr() : std::vector<ConstrContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::PolyContext {
+	+PolyContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+PolyContext()
+	+getRuleIndex() : size_t {query}
+	+copyFrom(PolyContext context) : void
+}
+
+
+class PolyhedralSystemParser::PolyErrorContext {
+	+PolyErrorContext(PolyContext ctx)
+	+constr(size_t i) : ConstrContext*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+constr() : std::vector<ConstrContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::PolyTrueContext {
+	+PolyTrueContext(PolyContext ctx)
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::PowersetContext {
+	+PowersetContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+PowersetContext()
+	+getRuleIndex() : size_t {query}
+	+copyFrom(PowersetContext context) : void
+}
+
+
+class PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext {
+	+PowersetEmptyOrNotEmptyContext(PowersetContext ctx)
+	+poly(size_t i) : PolyContext*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+poly() : std::vector<PolyContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::PowersetErrorContext {
+	+PowersetErrorContext(PowersetContext ctx)
+	+poly(size_t i) : PolyContext*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+poly() : std::vector<PolyContext*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::PowersetTrueContext {
+	+PowersetTrueContext(PowersetContext ctx)
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::SignTermContext {
+	+SignTermContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+term() : TermContext*
+	+op : antlr4::Token*
+	+MINUS() : antlr4::tree::TerminalNode*
+	+PLUS() : antlr4::tree::TerminalNode*
+	+getRuleIndex() : size_t {query}
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::SystemContext {
+	+SystemContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+atom(size_t i) : AtomContext*
+	+flow() : FlowContext*
+	+inv() : InvContext*
+	+WS(size_t i) : antlr4::tree::TerminalNode*
+	+getRuleIndex() : size_t {query}
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+atom() : std::vector<AtomContext*>
+	+WS() : std::vector<antlr4::tree::TerminalNode*>
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::TermContext {
+	+TermContext(antlr4::ParserRuleContext* parent, size_t invokingState)
+	+TermContext()
+	+getRuleIndex() : size_t {query}
+	+copyFrom(TermContext context) : void
+}
+
+
+class PolyhedralSystemParser::TermErrorContext {
+	+TermErrorContext(TermContext ctx)
+	+op : antlr4::Token*
+	+FLOAT() : antlr4::tree::TerminalNode*
+	+TIMES() : antlr4::tree::TerminalNode*
+	+UNSIGNED_INT() : antlr4::tree::TerminalNode*
+	+VARID() : antlr4::tree::TerminalNode*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+class PolyhedralSystemParser::VarContext {
+	+VarContext(TermContext ctx)
+	+VARID() : antlr4::tree::TerminalNode*
+	+accept(antlr4::tree::ParseTreeVisitor* visitor) : std::any
+	+enterRule(antlr4::tree::ParseTreeListener* listener) : void
+	+exitRule(antlr4::tree::ParseTreeListener* listener) : void
+}
+
+
+abstract class PolyhedralSystemVisitor {
+	+{abstract} visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* context) : std::any
+	+{abstract} visitAtomError(PolyhedralSystemParser::AtomErrorContext* context) : std::any
+	+{abstract} visitAtomPoly(PolyhedralSystemParser::AtomPolyContext* context) : std::any
+	+{abstract} visitAtomPowerset(PolyhedralSystemParser::AtomPowersetContext* context) : std::any
+	+{abstract} visitConstr(PolyhedralSystemParser::ConstrContext* context) : std::any
+	+{abstract} visitFlow(PolyhedralSystemParser::FlowContext* context) : std::any
+	+{abstract} visitInt(PolyhedralSystemParser::IntContext* context) : std::any
+	+{abstract} visitIntTimesVar(PolyhedralSystemParser::IntTimesVarContext* context) : std::any
+	+{abstract} visitInv(PolyhedralSystemParser::InvContext* context) : std::any
+	+{abstract} visitLinearExpr(PolyhedralSystemParser::LinearExprContext* context) : std::any
+	+{abstract} visitPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext* context) : std::any
+	+{abstract} visitPolyError(PolyhedralSystemParser::PolyErrorContext* context) : std::any
+	+{abstract} visitPolyTrue(PolyhedralSystemParser::PolyTrueContext* context) : std::any
+	+{abstract} visitPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext* context) : std::any
+	+{abstract} visitPowersetError(PolyhedralSystemParser::PowersetErrorContext* context) : std::any
+	+{abstract} visitPowersetTrue(PolyhedralSystemParser::PowersetTrueContext* context) : std::any
+	+{abstract} visitSignTerm(PolyhedralSystemParser::SignTermContext* context) : std::any
+	+{abstract} visitSystem(PolyhedralSystemParser::SystemContext* context) : std::any
+	+{abstract} visitTermError(PolyhedralSystemParser::TermErrorContext* context) : std::any
+	+{abstract} visitVar(PolyhedralSystemParser::VarContext* context) : std::any
+}
+
+
+enum PolyhedralSystemLexer::empty {
+	COMMENT
+	EQ
+	FLOAT
+	FLOW
+	GE
+	GT
+	INV
+	LE
+	LINE_COMMENT
+	LT
+	MINUS
+	NEWLINE
+	PLUS
+	TIMES
+	T__0
+	T__1
+	T__2
+	T__3
+	T__4
+	T__5
+	UNSIGNED_INT
+	VARID
+	WS
+}
+
+
+enum PolyhedralSystemParser::empty {
+	COMMENT
+	EQ
+	FLOAT
+	FLOW
+	GE
+	GT
+	INV
+	LE
+	LINE_COMMENT
+	LT
+	MINUS
+	NEWLINE
+	PLUS
+	TIMES
+	T__0
+	T__1
+	T__2
+	T__3
+	T__4
+	T__5
+	UNSIGNED_INT
+	VARID
+	WS
+}
+
+
+enum PolyhedralSystemParser::empty {
+	RuleAtom
+	RuleConstr
+	RuleFlow
+	RuleInv
+	RuleLinearExpr
+	RulePoly
+	RulePowerset
+	RuleSignTerm
+	RuleSystem
+	RuleTerm
+}
+}
+
+
+
+
+/' Inheritance relationships '/
+
+PolyhedralSystemListener <|-- PolyhedralSystemBaseListener
+
+
+PolyhedralSystemVisitor <|-- PolyhedralSystemBaseVisitor
+
+
+
+
+
+/' Aggregation relationships '/
+
+
+
+
+
+/' Nested objects '/
+
+PolyhedralSystemLexer +-- PolyhedralSystemLexer::empty
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::AtomContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::AtomEmptyContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::AtomErrorContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::AtomPolyContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::AtomPowersetContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::ConstrContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::FlowContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::IntContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::IntTimesVarContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::InvContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::LinearExprContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::PolyAtLeastOneConstrContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::PolyContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::PolyErrorContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::PolyTrueContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::PowersetContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::PowersetErrorContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::PowersetTrueContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::SignTermContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::SystemContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::TermContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::TermErrorContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::VarContext
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::empty
+
+
+PolyhedralSystemParser +-- PolyhedralSystemParser::empty
+
+
+
+
+@enduml

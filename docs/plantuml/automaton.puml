@@ -1,0 +1,118 @@
+@startuml
+
+/' Objects '/
+package automaton {
+    class AtomSet {
+        --type aliases--
+        +using AtomSetHash = std::size_t
+        +using AtomSetIterator = std::set<spot::formula>::iterator
+        --data members--
+        -m_atoms : spot::atomic_prop_set
+        -m_hashcode : AtomSetHash
+        --constructors--
+        +AtomSet()
+        +AtomSet(spot::atomic_prop_set&& atomSet)
+        +AtomSet(AtomSet&&)
+        --member functions--
+        +atoms() : spot::atomic_prop_set&
+        +containsAtom(const spot::formula& atom) : bool
+        +hash() : AtomSetHash
+        +size() : int
+        +isEmpty() : bool
+        +begin() : AtomSetIterator
+        +end() : AtomSetIterator
+        +toString() : std::string
+        --friends--
+        +friend struct std::hash<AtomSet>
+        --operators--
+        +operator!= (const AtomSet& atomSet1, const AtomSet& atomSet2) : bool
+        +operator== (const AtomSet& atomSet1, const AtomSet& atomSet2) : bool
+        +operator<< (std::ostream& out, const AtomSet& atomSet) : std::ostream&
+    }
+
+    class BackwardNFA {
+        --type aliases--
+        +using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
+        --data members--
+        -m_discreteLtlFormula : DiscreteLtlFormula
+        -m_labelDenotationMap : PolyhedralSystemLabelDenotationMap
+        -m_backwardNfa : spot::twa_graph_ptr
+        -m_stateDenotationById : std::unordered_map<int, StateDenotation>
+        -m_finalStates : std::unordered_set<int>
+        --constructors--
+        +BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap)
+        +BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap)
+        --member functions--
+        +formula() : const DiscreteLtlFormula&
+        +predecessors(int state) : EdgeIterator
+        +stateDenotation(int state) : const StateDenotation&
+        +hasPredecessors(int state) : bool
+        +isFinalState(int state) : bool
+        +isInitialState(int state) : bool
+        +totalEdges() : int
+        +totalFinalStates() : int
+        +totalStates() : int
+        +finalStates() : const std::unordered_set<int>&
+        +printDotFormat(std::ostream& os) : void
+        +printHoaFormat(std::ostream& os) : void
+        --operators--
+        +operator<< (std::ostream& out, const BackwardNFA& backwardNfa) : std::ostream&
+        --private functions--
+        -buildAutomaton(const spot::const_twa_graph_ptr& nfa) : void
+        -extractStateDenotationsFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : std::vector<StateDenotation>
+    }
+
+    class PolyhedralSystemLabelDenotationMap {
+        --type aliases--
+        +using AtomSetToString = std::string
+        --data members--
+        -m_polyhedralSystem : PolyhedralSystemSharedPtr
+        -m_powersetByLabelsHash : std::unordered_map<AtomSetHash, std::tuple<PowersetConstSharedPtr, AtomSetToString>>
+        --constructors--
+        +PolyhedralSystemLabelDenotationMap(const PolyhedralSystemSharedPtr& polyhedralSystem)
+        +PolyhedralSystemLabelDenotationMap(PolyhedralSystemLabelDenotationMap&& other)
+        -PolyhedralSystemLabelDenotationMap() = default
+        --member functions--
+        +getPolyhedralSystem() : const PolyhedralSystem&
+        +getOrComputeDenotation(const AtomSet& labels) : PowersetConstSharedPtr
+        +containsDenotation(const AtomSet& labels) : bool
+        -computeLabelDenotation(const AtomSet& labels) : PowersetConstSharedPtr
+        -getAtomInterpretation(const spot::formula& atom) : const AtomInterpretation*
+        -insertLabelDenotation(const AtomSet& labels, PowersetConstSharedPtr denotation) : void
+        --operators--
+        +operator<< (std::ostream& out, PolyhedralSystemLabelDenotationMap& polyhedralSystemLabelDenotationMap) : std::ostream&
+    }
+
+    class StateDenotation {
+        --data members--
+        -m_labels : AtomSet
+        -m_powerset : PowersetConstSharedPtr
+        -m_isSing : bool
+        --constructors--
+        +StateDenotation(AtomSet&& labels, PowersetConstSharedPtr powerset, bool isSing)
+        +StateDenotation(StateDenotation&& other)
+        --member functions--
+        +labels() : const AtomSet&
+        +denotation() : PowersetConstSharedPtr
+        +isSingular() : bool
+    }
+
+    struct std::hash<AtomSet> {
+        --operators--
+        +operator() (const AtomSet* const atomSet) : AtomSetHash
+        +operator() (const AtomSet& atomSet) : AtomSetHash
+        --static functions--
+        +{static} hashCode(const AtomSet* const atomSet) : AtomSetHash
+    }
+}
+
+class spot::twa_graph_ptr {}
+class spot::formula {}
+
+BackwardNFA *--> "1" spot::twa_graph_ptr
+BackwardNFA *--> "1" PolyhedralSystemLabelDenotationMap
+BackwardNFA *--> "*" StateDenotation
+StateDenotation *--> "1" AtomSet
+AtomSet *--> "*" spot::formula
+std::hash <...> AtomSet
+@enduml

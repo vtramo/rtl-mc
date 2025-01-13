@@ -1,0 +1,116 @@
+@startuml
+package system {
+    class AtomInterpretation {
+        --data members--
+        -m_interpretation : Powerset
+        -m_notInterpretation : Powerset
+        --constructors--
+        +AtomInterpretation(const Powerset& interpretation)
+        +AtomInterpretation(Powerset&& interpretation)
+        +AtomInterpretation(const Powerset& interpretation, const Powerset& invariant)
+        +AtomInterpretation(Powerset&& interpretation, Powerset&& invariant)
+        +AtomInterpretation(Powerset&& interpretation, const Powerset& invariant)
+        +AtomInterpretation(const AtomInterpretation& interpretation)
+        +AtomInterpretation(AtomInterpretation&& interpretation)
+        +AtomInterpretation(const Powerset& interpretation, Powerset&& invariant)
+        --member functions--
+        +interpretation() : Powerset&
+        +notInterpretation() : Powerset&
+        --operators--
+        -operator!= (const AtomInterpretation& interpretation1, const AtomInterpretation& interpretation2) : bool
+        -operator== (const AtomInterpretation& interpretation1, const AtomInterpretation& interpretation2) : bool
+        -operator<< (std::ostream& out, const AtomInterpretation& interpretation) : std :: ostream&
+    }
+
+    class PolyhedralSystem {
+        --data members--
+        -m_flow : Poly
+        -m_preFlow : Poly
+        -m_symbolTable : PolyhedralSystemSymbolTable
+        -m_invariant : Powerset
+        -m_minimizeConstraintsOutput : bool
+        -m_denotation : std::unordered_map<Atom, AtomInterpretation>
+        --constructors--
+        +PolyhedralSystem()
+        +PolyhedralSystem(PolyhedralSystem&&)
+        -PolyhedralSystem(const Powerset& invariant, const Poly& flow, const std::unordered_map<Atom, AtomInterpretation>& denotation, const PolyhedralSystemSymbolTable& symbolTable)
+        -PolyhedralSystem(Powerset&& invariant, Poly&& flow, std::unordered_map<Atom, AtomInterpretation>&& denotation, PolyhedralSystemSymbolTable&& symbolTable)
+        --member functions--
+        +getSpaceDimension() : PPL::dimension_type
+        +getFlow() : Poly&
+        +getPreFlow() : Poly&
+        +getSymbolTable() : PolyhedralSystemSymbolTable&
+        +getInvariant() : Powerset&
+        +getTotalAtoms() : int
+        +getInterpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
+        +getInterpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
+        +setConstraintOutputMinimized(bool) : void
+        -computePreFlow() : void
+        --static functions--
+        +{static} builder() : PolyhedralSystemBuilder
+        --operators--
+        -operator= (PolyhedralSystem& &) : PolyhedralSystem&
+        +operator== (const PolyhedralSystem &, const PolyhedralSystem &) : bool
+        +operator>> (std::istream &, PolyhedralSystem &) : std :: istream&
+        -operator<< (std::ostream &, const PolyhedralSystem &) : std :: ostream&
+        -operator<< (std::ostream &, const PolyhedralSystem &) : std :: ostream&
+    }
+
+    class PolyhedralSystemBuilder {
+        --data members--
+        -m_flow : std::unique_ptr<Poly>
+        -m_symbolTable : std::unique_ptr<PolyhedralSystemSymbolTable>
+        -m_invariant : std::unique_ptr<Powerset>
+        -m_denotation : std::unique_ptr<std::unordered_map<Atom, Powerset>>
+        --constructors--
+        +PolyhedralSystemBuilder()
+        +~PolyhedralSystemBuilder()
+        --member functions--
+        +build() : PolyhedralSystem
+        +denotation(const std::unordered_map<std::string, Powerset>& denotation) : PolyhedralSystemBuilder&
+        +denotation(std::unordered_map<std::string, Powerset>&& denotation) : PolyhedralSystemBuilder&
+        +flow(const Poly& flow) : PolyhedralSystemBuilder&
+        +flow(Poly&& flow) : PolyhedralSystemBuilder&
+        +invariant(const Powerset& invariant) : PolyhedralSystemBuilder&
+        +invariant(Powerset&& invariant) : PolyhedralSystemBuilder&
+        +symbolTable(const PolyhedralSystemSymbolTable& polyhedralSystemSymbolTable) : PolyhedralSystemBuilder&
+        +symbolTable(PolyhedralSystemSymbolTable&& polyhedralSystemSymbolTable) : PolyhedralSystemBuilder&
+        -buildPolyhedralSystem() : PolyhedralSystem
+        -buildDenotation() : std::unordered_map<Atom , AtomInterpretation>
+        -assertDenotationIsNotNull() : void
+        -assertFlowIsNotNull() : void
+        -assertInvariantIsNotNull() : void
+        -assertSymbolTableIsNotNull() : void
+        -assertThatAllDimensionsAreEqual() : void
+    }
+
+    class PolyhedralSystemSymbolTable {
+        --data members--
+        -m_dimensions : PPL::dimension_type
+        -m_atoms : spot::atomic_prop_set
+        -m_idBySpaceDimension : std::unordered_map<PPL::dimension_type, std::string>
+        -m_variableById : std::unordered_map<std::string, PPL::Variable>
+        --constructors--
+        +PolyhedralSystemSymbolTable()
+        --member functions--
+        +addAtom(std::string_view atom) : PolyhedralSystemSymbolTable&
+        +addAtoms(std::initializer_list<std::string_view> atoms) : PolyhedralSystemSymbolTable&
+        +addVariable(std::string_view id) : PolyhedralSystemSymbolTable&
+        +addVariables(std::initializer_list<std::string_view> ids) : PolyhedralSystemSymbolTable&
+        +getSpaceDimension() : PPL::dimension_type
+        +containsAtom(std::string_view atom) : bool
+        +containsVariable(std::string_view id) : bool
+        +getTotalAtoms() : int
+        +atoms() : spot::atomic_prop_set
+        +getVariable(std::string_view id) : std::optional<PPL::Variable>
+        +getVariableName(const PPL::Variable& variable) : std::optional<std::string>
+        --operators--
+        +operator!= (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2) : bool
+        +operator== (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2) : bool
+    }
+
+    PolyhedralSystem *-->"*" AtomInterpretation
+    PolyhedralSystem *-->"1" PolyhedralSystemSymbolTable
+    PolyhedralSystemBuilder o-->"0..1" PolyhedralSystemSymbolTable
+}
+@enduml
