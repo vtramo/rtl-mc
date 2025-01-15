@@ -16,7 +16,7 @@ static constexpr int BUCHI_ACCEPTACE = 0;
 BackwardNFA::BackwardNFA(
     const DiscreteLtlFormula& discreteLtlFormula,
     PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap,
-    spot::postprocessor::optimization_level optimizationLevel,
+    const spot::postprocessor::optimization_level optimizationLevel,
     const bool anyOption
 ) : BackwardNFA(DiscreteLtlFormula { discreteLtlFormula }, std::move(polyhedralSystemLabelDenotationMap), optimizationLevel, anyOption)
 {}
@@ -24,22 +24,20 @@ BackwardNFA::BackwardNFA(
 BackwardNFA::BackwardNFA(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap,
-    spot::postprocessor::optimization_level optimizationLevel,
+    const spot::postprocessor::optimization_level optimizationLevel,
     const bool anyOption
 ) : m_discreteLtlFormula { std::move(discreteLtlFormula) }
   , m_labelDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
 {
     spot::translator ltlToNbaTranslator {};
 
-    ltlToNbaTranslator.set_type(spot::postprocessor::TGBA); // Oppure BA?
+    ltlToNbaTranslator.set_type(spot::postprocessor::TGBA);
     if (anyOption) ltlToNbaTranslator.set_pref(spot::postprocessor::Any);
+    else ltlToNbaTranslator.set_pref(spot::postprocessor::Small);
     ltlToNbaTranslator.set_level(optimizationLevel);
 
     spot::twa_graph_ptr nfa { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
     nfa = spot::split_edges(nfa);
-    std::cout << "nfa states: " << nfa->num_states() << '\n';
-    std::cout << "nfa transitions: " << spot::count_all_transitions(nfa) << '\n';
-    std::cout << "nfa edges: " << nfa->num_edges() << '\n';
 
     buildAutomatonAlreadySplitted(nfa);
 }
