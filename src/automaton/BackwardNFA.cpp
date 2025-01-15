@@ -24,7 +24,9 @@ BackwardNFA::BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSyst
 {
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
-    ltlToNbaTranslator.set_pref(spot::postprocessor::Buchi | spot::postprocessor::Small);
+    ltlToNbaTranslator.set_pref(spot::postprocessor::Small);
+    // ltlToNbaTranslator.set_pref(spot::postprocessor::Any);
+    // ltlToNbaTranslator.set_level(spot::postprocessor::optimization_level::Low);
     spot::twa_graph_ptr nfa { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
     buildAutomaton(nfa);
 }

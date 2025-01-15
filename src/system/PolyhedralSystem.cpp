@@ -1,9 +1,6 @@
-#include "PolyhedralSystem.h"
-
-#include <ppl_output.h>
-
-#include "spot_utils.h"
 #include <utility>
+#include "PolyhedralSystem.h"
+#include "ppl_output.h"
 #include "ppl_utils.h"
 #include "systemparser.h"
 
@@ -25,6 +22,11 @@ const Powerset& PolyhedralSystem::getInvariant() const
 const PolyhedralSystemSymbolTable& PolyhedralSystem::getSymbolTable() const
 {
     return m_symbolTable;
+}
+
+const spot::atomic_prop_set& PolyhedralSystem::getAtoms() const
+{
+    return m_symbolTable.atoms();
 }
 
 std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const std::string_view ap) const

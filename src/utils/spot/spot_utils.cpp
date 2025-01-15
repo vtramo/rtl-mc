@@ -225,7 +225,7 @@ namespace SpotUtils
         return atomicPropVector;
     }
 
-    spot::atomic_prop_vector collectAtomsNotIn(spot::atomic_prop_set&& forbiddenAtoms, spot::formula& formula)
+    spot::atomic_prop_vector collectAtomsNotIn(const spot::atomic_prop_set& forbiddenAtoms, spot::formula& formula)
     {
         spot::atomic_prop_vector result {};
         result.reserve(forbiddenAtoms.size());

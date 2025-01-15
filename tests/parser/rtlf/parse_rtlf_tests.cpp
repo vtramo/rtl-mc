@@ -70,8 +70,9 @@ TEST_CASE("Correctly report syntax errors when parsing a RTLf formula", "[bad]")
 
     SECTION("Given AP={p0,p1,p2} then GF p0 & F!p1 & FGFG(p2 U !p3) should be illegal")
     {
-        std::string rtlf { "GF p0 & F!p1 & FGFG(p2 U !p3)" };
-        RtlfParsingResult rtlfParsingResult { parseRtlf(rtlf, { "p0", "p1", "p2" }) };
+        std::string rtlf { "G(F(p0)) & F(!p1) & F(G(F(G(p2 U !p3))))" };
+        spot::atomic_prop_set allowedAtomicProp { SpotUtils::AP({ "p0", "p1", "p2" }) };
+        RtlfParsingResult rtlfParsingResult { parseRtlf(rtlf, allowedAtomicProp) };
 
         REQUIRE(!rtlfParsingResult);
         REQUIRE(!rtlfParsingResult.hasParserErrors());

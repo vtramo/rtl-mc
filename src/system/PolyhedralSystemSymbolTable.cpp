@@ -62,7 +62,7 @@ bool PolyhedralSystemSymbolTable::containsAtom(const std::string_view atom) cons
     return m_atoms.count(SpotUtils::ap(atom));
 }
 
-spot::atomic_prop_set PolyhedralSystemSymbolTable::atoms() const
+const spot::atomic_prop_set& PolyhedralSystemSymbolTable::atoms() const
 {
     return m_atoms;
 }

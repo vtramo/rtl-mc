@@ -25,7 +25,7 @@ RtlfParsingResult parseRtlf(const std::string_view rtlf)
     return RtlfParsingResult::ok(std::move(rtlfFormula));
 }
 
-RtlfParsingResult parseRtlf(const std::string_view rtlf, std::set<std::string>&& allowedAtomicPropositions)
+RtlfParsingResult parseRtlf(const std::string_view rtlf, const spot::atomic_prop_set& allowedAtomicPropositions)
 {
     RtlfParsingResult rtlfParsingResult { parseRtlf(rtlf) };
     if (!rtlfParsingResult)
@@ -34,8 +34,7 @@ RtlfParsingResult parseRtlf(const std::string_view rtlf, std::set<std::string>&&
     }
 
     spot::formula& rtlfFormula { *rtlfParsingResult };
-    spot::atomic_prop_set forbiddenAtoms { AP(std::move(allowedAtomicPropositions)) };
-    spot::atomic_prop_vector illegalAtoms { collectAtomsNotIn(std::move(forbiddenAtoms), rtlfFormula) };
+    spot::atomic_prop_vector illegalAtoms { collectAtomsNotIn(allowedAtomicPropositions, rtlfFormula) };
 
     if (!illegalAtoms.empty())
     {

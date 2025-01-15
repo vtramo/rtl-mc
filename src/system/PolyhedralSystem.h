@@ -1,5 +1,6 @@
 #pragma once
 
+#include <AtomSet.h>
 #include <optional>
 #include <spot/tl/formula.hh>
 
@@ -22,10 +23,11 @@ public:
     [[nodiscard]] const Poly& getPreFlow() const;
     [[nodiscard]] const Powerset& getInvariant() const;
     [[nodiscard]] const PolyhedralSystemSymbolTable& getSymbolTable() const;
+    [[nodiscard]] const spot::atomic_prop_set& getAtoms() const;
+    [[nodiscard]] int getTotalAtoms() const;
     [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(std::string_view atom) const;
     [[nodiscard]] std::optional<const AtomInterpretation* const> getInterpretation(const spot::formula& atom) const;
     [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
-    [[nodiscard]] int getTotalAtoms() const;
     void setConstraintOutputMinimized(bool);
 
     [[nodiscard]] static PolyhedralSystemBuilder builder();

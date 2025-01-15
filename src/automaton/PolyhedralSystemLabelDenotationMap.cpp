@@ -76,7 +76,6 @@ void PolyhedralSystemLabelDenotationMap::insertLabelDenotation(const AtomSet& la
             std::move(std::make_tuple(denotation, labels.toString()))
         )
     );
-    std::cout << "Insert size " << m_powersetByAtomSet.size() << std::endl;
 }
 
 std::ostream& operator<< (std::ostream& out, PolyhedralSystemLabelDenotationMap& polyhedralSystemLabelDenotationMap)

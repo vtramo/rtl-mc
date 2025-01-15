@@ -45,6 +45,7 @@ package system {
         +getInterpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
         +getInterpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
         +setConstraintOutputMinimized(bool) : void
+        +getAtoms() : const spot::atomic_prop_set&
         -computePreFlow() : void
         --static functions--
         +{static} builder() : PolyhedralSystemBuilder
@@ -101,7 +102,7 @@ package system {
         +containsAtom(std::string_view atom) : bool
         +containsVariable(std::string_view id) : bool
         +getTotalAtoms() : int
-        +atoms() : spot::atomic_prop_set
+        +atoms() : const spot::atomic_prop_set&
         +getVariable(std::string_view id) : std::optional<PPL::Variable>
         +getVariableName(const PPL::Variable& variable) : std::optional<std::string>
         --operators--

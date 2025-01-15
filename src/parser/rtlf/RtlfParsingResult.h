@@ -45,7 +45,7 @@ private:
     std::vector<spot::formula> m_illegalAtoms {};
     const bool m_isLtl { false };
 
-    friend RtlfParsingResult parseRtlf(std::string_view rtlf, std::set<std::string>&& allowedAtomicPropositions);
+    friend RtlfParsingResult parseRtlf(std::string_view rtlf, const spot::atomic_prop_set& allowedAtomicPropositions);
 
     RtlfParsingResult(
       std::optional<spot::formula>&& rtlf,
