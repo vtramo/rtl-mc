@@ -2,6 +2,8 @@
 
 #include <PolyhedralSystemLabelDenotationMap.h>
 #include <spot/twa/twagraph.hh>
+#include <spot/twaalgos/postproc.hh>
+
 #include "DiscreteLtlFormula.h"
 #include "StateDenotation.h"
 
@@ -9,12 +11,23 @@ class BackwardNFA {
 public:
     using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>;
 
-    BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap);
-    BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap);
+    BackwardNFA(
+        const DiscreteLtlFormula& discreteLtlFormula,
+        PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap,
+        spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High,
+        bool anyOption = false
+    );
+
+    BackwardNFA(
+        DiscreteLtlFormula&& discreteLtlFormula,
+        PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap,
+        spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High,
+        bool anyOption = false
+    );
 
     [[nodiscard]] int totalStates() const;
     [[nodiscard]] int totalFinalStates() const;
-    [[nodiscard]] int totalEdges() const;
+    [[nodiscard]] int totalTransitions() const;
     [[nodiscard]] bool isInitialState(int state) const;
     [[nodiscard]] bool isFinalState(int state) const;
     [[nodiscard]] bool hasPredecessors(int state) const;

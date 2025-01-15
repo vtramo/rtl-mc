@@ -49,7 +49,7 @@ package automaton {
         +hasPredecessors(int state) : bool
         +isFinalState(int state) : bool
         +isInitialState(int state) : bool
-        +totalEdges() : int
+        +totalTransitions() : int
         +totalFinalStates() : int
         +totalStates() : int
         +finalStates() : const std::unordered_set<int>&

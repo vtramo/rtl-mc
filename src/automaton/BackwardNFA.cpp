@@ -15,27 +15,32 @@ static constexpr int BUCHI_ACCEPTACE = 0;
 
 BackwardNFA::BackwardNFA(
     const DiscreteLtlFormula& discreteLtlFormula,
-    PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap
-) : BackwardNFA(DiscreteLtlFormula { discreteLtlFormula }, std::move(polyhedralSystemLabelDenotationMap))
+    PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap,
+    spot::postprocessor::optimization_level optimizationLevel,
+    const bool anyOption
+) : BackwardNFA(DiscreteLtlFormula { discreteLtlFormula }, std::move(polyhedralSystemLabelDenotationMap), optimizationLevel, anyOption)
 {}
 
 BackwardNFA::BackwardNFA(
     DiscreteLtlFormula&& discreteLtlFormula,
-    PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap
+    PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap,
+    spot::postprocessor::optimization_level optimizationLevel,
+    const bool anyOption
 ) : m_discreteLtlFormula { std::move(discreteLtlFormula) }
   , m_labelDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
 {
     spot::translator ltlToNbaTranslator {};
-    ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
-    ltlToNbaTranslator.set_pref(spot::postprocessor::Small);
-    // ltlToNbaTranslator.set_pref(spot::postprocessor::Any);
-    // ltlToNbaTranslator.set_level(spot::postprocessor::Low);
+
+    ltlToNbaTranslator.set_type(spot::postprocessor::TGBA); // Oppure BA?
+    if (anyOption) ltlToNbaTranslator.set_pref(spot::postprocessor::Any);
+    ltlToNbaTranslator.set_level(optimizationLevel);
+
     spot::twa_graph_ptr nfa { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
     nfa = spot::split_edges(nfa);
-    std::cout << "nfa states: " << nfa->num_states() << std::endl;
-    std::cout << "nfa transitions: " << spot::count_all_transitions(nfa) << std::endl;
-    std::cout << "nfa edges: " << nfa->num_edges() << std::endl;
-    std::cerr << "exit\n";
+    std::cout << "nfa states: " << nfa->num_states() << '\n';
+    std::cout << "nfa transitions: " << spot::count_all_transitions(nfa) << '\n';
+    std::cout << "nfa edges: " << nfa->num_edges() << '\n';
+
     buildAutomatonAlreadySplitted(nfa);
 }
 
@@ -223,7 +228,7 @@ BackwardNFA::EdgeIterator BackwardNFA::predecessors(const int state) const
     return m_backwardNfa->out(state);
 }
 
-int BackwardNFA::totalEdges() const
+int BackwardNFA::totalTransitions() const
 {
     return static_cast<int>(m_backwardNfa->num_edges());
 }
@@ -261,7 +266,7 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
 
     out << "BACKWARD NFA\n";
     out << "Total states: " << totalStates << '\n';
-    out << "Total edges: " << backwardNfa.totalEdges() << '\n';
+    out << "Total edges: " << backwardNfa.totalTransitions() << '\n';
     out << "Discrete LTL Formula: " << backwardNfa.formula() << "\n\n";
 
     for (int state = 0; state < totalStates; ++state)

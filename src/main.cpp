@@ -29,6 +29,29 @@ int main(const int argc, char *argv[])
         .help("RTLf file")
         .store_into(rtlfFilename);
 
+    auto& automatonOptimizationGroup { rtlMcProgram.add_mutually_exclusive_group() };
+    bool low {};
+    bool medium {};
+    bool high {};
+    automatonOptimizationGroup.add_argument("--low")
+        .help("minimal optimizations (fast)")
+        .store_into(low);
+    automatonOptimizationGroup.add_argument("--medium")
+        .help("moderate optimizations")
+        .store_into(medium);
+    automatonOptimizationGroup.add_argument("--high")
+        .help("all available optimizations (slow, default)")
+        .store_into(high);
+
+    bool anyOption {};
+    rtlMcProgram.add_argument("--any")
+        .help("tells the translator that it should attempt to "
+              "reduce or produce a deterministic result: any automaton denoting the "
+              "given formula is OK.  This effectively disables post-processings and "
+              "speeds up the translation")
+        .flag()
+        .store_into(anyOption);
+
     try
     {
         rtlMcProgram.parse_args(argc, argv);
@@ -65,33 +88,30 @@ int main(const int argc, char *argv[])
         std::cerr << "Failed to parse rtlf file.\n";
         exit(1);
     }
-        //
-        // const PolyhedralSystemParsingResult polyhedralSystemParsingResult {
-        //     parsePolyhedralSystem(
-        //         "Inv ( { a >= 0 & b >= 0 } )\n"
-        //         "i ( { a >= 0 & b >= 0 } )\n"
-        //         "Flow { X + Z <= 4 }\n"
-        //         "p { a >= b + 1 }\n"
-        //         "q { b >= a + 1 }\n"
-        //         "t0 { t = 0 }\n"
-        //         "t1 { t <= 10 }\n"
-        //     )
-        // };
-    DiscreteLtlFormula discreteLtlFormula { DiscreteLtlFormula::discretizeToLtl(std::move(*rtlfParsingResult)) };
 
-    // DiscreteLtlFormula discreteLtlFormula { DiscreteLtlFormula::discretizeToLtl(spot::parse_infix_psl("p1 & q1 & X(p1) & X(q1) & (v1 U (r1 R z1)) & G(x1) & F(u1 & F(p2 & (F p3 | u2 W p4))) & (t | G(X(w)))").f) };
-    // DiscreteLtlFormula discreteLtlFormula { DiscreteLtlFormula::discretizeToLtl(spot::parse_infix_psl("G(i) & t0 & G(t1) & F(p & F(q))").f) };
+    DiscreteLtlFormula discreteLtlFormula { DiscreteLtlFormula::discretizeToLtl(std::move(*rtlfParsingResult)) };
     try
     {
-        BackwardNFA backwardNfa { std::move(discreteLtlFormula), std::move(polyhedralSystemLabelDenotationMap) };
+        spot::postprocessor::optimization_level optimizationLevel {};
+        if (low) optimizationLevel = spot::postprocessor::optimization_level::Low;
+        if (medium) optimizationLevel = spot::postprocessor::optimization_level::Medium;
+        if (high) optimizationLevel = spot::postprocessor::optimization_level::High;
+        BackwardNFA backwardNfa {
+            std::move(discreteLtlFormula),
+            std::move(polyhedralSystemLabelDenotationMap),
+            optimizationLevel,
+            anyOption
+        };
+
         std::cout << backwardNfa << '\n';
+        std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
+        std::cout << "Total transitions: " << backwardNfa.totalTransitions() << '\n';
+        std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
+        // backwardNfa.printDotFormat(std::cout);
     } catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
-
-    // backwardNfa.printDotFormat(std::cout);
-    // reachZero();
 }
 
 void reachZero()
