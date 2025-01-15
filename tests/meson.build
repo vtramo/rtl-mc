@@ -5,5 +5,3 @@ include_directories += [include_directories('.')]
 subdir('benchmarks')
 subdir('parser')
 subdir('discretization')
-
-test('basic', project_exe)

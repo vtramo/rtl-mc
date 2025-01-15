@@ -3,6 +3,7 @@ gmp_dep = dependency('gmp', version: '>=6.3.0')
 gmpxx_dep = dependency('gmpxx', version: '>=6.3.0')
 antlr4_runtime_dep = dependency('antlr4-runtime', version: '>=4.13.0')
 spot_dep = dependency('libspot', version: '>=2.12.1')
+argparse_dep = dependency('argparse', fallback : ['argparse'], version: '>=3.1')
 
 add_project_arguments('-DSPOT_WANT_STRONG_X', language: 'cpp')
 
@@ -11,7 +12,8 @@ project_dependencies = [
     gmp_dep,
     gmpxx_dep,
     antlr4_runtime_dep,
-    spot_dep
+    spot_dep,
+    argparse_dep
 ]
 
 project_source_files = ['main.cpp']
