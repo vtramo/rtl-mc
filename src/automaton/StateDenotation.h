@@ -9,6 +9,8 @@ public:
     [[nodiscard]] PowersetConstSharedPtr denotation() const { return m_powerset; }
     [[nodiscard]] const AtomSet& labels() const { return m_labels; }
     [[nodiscard]] bool isSingular() const { return m_isSing; }
+    [[nodiscard]] bool isUniverse() const { return m_powerset->is_top(); }
+    [[nodiscard]] bool isEmpty() const { return m_powerset->is_empty(); }
 
     StateDenotation(AtomSet&& labels, PowersetConstSharedPtr powerset, const bool isSing = false)
         : m_labels { std::move(labels) }

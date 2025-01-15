@@ -95,6 +95,8 @@ package automaton {
         +labels() : const AtomSet&
         +denotation() : PowersetConstSharedPtr
         +isSingular() : bool
+        +isUniverse() : bool
+        +isEmpty() : bool
     }
 
     struct std::hash<AtomSet> {
