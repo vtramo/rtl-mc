@@ -11,10 +11,10 @@ class AtomInterpretation {
 public:
     explicit AtomInterpretation(const Powerset& interpretation);
     explicit AtomInterpretation(Powerset&& interpretation);
-
     explicit AtomInterpretation(const Powerset& interpretation, const Powerset& invariant);
     explicit AtomInterpretation(Powerset&& interpretation, Powerset&& invariant);
     explicit AtomInterpretation(Powerset&& interpretation, const Powerset& invariant);
+    explicit AtomInterpretation(const Powerset& interpretation, Powerset&& invariant);
 
     AtomInterpretation(const AtomInterpretation& interpretation) = default;
     AtomInterpretation& operator= (const AtomInterpretation& interpretation) = delete;
@@ -27,8 +27,6 @@ public:
 private:
     Powerset m_interpretation {};
     Powerset m_notInterpretation {};
-
-    explicit AtomInterpretation(const Powerset& interpretation, Powerset&& invariant);
 };
 
 bool operator== (const AtomInterpretation& interpretation1, const AtomInterpretation& interpretation2);

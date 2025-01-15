@@ -48,20 +48,20 @@ private:
 
     private:
         int m_visitKey {};
-        std::unordered_map<int, std::unique_ptr<Powerset>> m_powersets {};
-        std::unordered_map<int, std::unique_ptr<Poly>> m_polyhedra {};
-        std::unordered_map<int, std::unique_ptr<PPL::Linear_Expression>> m_linearExpressions {};
+        std::unordered_map<int, PowersetUniquePtr> m_powersets {};
+        std::unordered_map<int, PolyUniquePtr> m_polyhedra {};
         std::unordered_map<int, std::unique_ptr<PPL::Constraint>> m_constraints {};
+        std::unordered_map<int, std::unique_ptr<PPL::Linear_Expression>> m_linearExpressions {};
 
         std::reference_wrapper<PolyhedralSystemSymbolTable> m_symbolTable;
         std::unordered_map<std::string, Powerset> m_denotation {};
         Powerset m_invariant {};
         Poly m_flow {};
 
+        PolyUniquePtr popPoly(int visitKey);
+        PowersetUniquePtr popPowerset(int visitKey);
         std::unique_ptr<PPL::Constraint> popConstraint(int visitKey);
         std::unique_ptr<PPL::Linear_Expression> popLinearExpression(int visitKey);
-        std::unique_ptr<Poly> popPoly(int visitKey);
-        std::unique_ptr<Powerset> popPowerset(int visitKey);
     };
 
     PolyhedralSystemVisitor m_visitor;

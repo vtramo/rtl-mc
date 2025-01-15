@@ -265,7 +265,7 @@ std::unique_ptr<PPL::Linear_Expression> PolyhedralSystemBuilderVisitor::Polyhedr
     return linearExpression;
 }
 
-std::unique_ptr<Poly> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::popPoly(const int visitKey)
+PolyUniquePtr PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::popPoly(const int visitKey)
 {
     const auto pair { m_polyhedra.find(visitKey) };
     assert(pair != m_polyhedra.end());
@@ -274,7 +274,7 @@ std::unique_ptr<Poly> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::p
     return poly;
 }
 
-std::unique_ptr<Powerset> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::popPowerset(const int visitKey)
+PowersetUniquePtr PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::popPowerset(const int visitKey)
 {
     const auto pair { m_powersets.find(visitKey) };
     assert(pair != m_powersets.end());
