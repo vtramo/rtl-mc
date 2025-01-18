@@ -14,6 +14,7 @@ using Atom = std::string;
 class PolyhedralSystem;
 
 using PolyhedralSystemSharedPtr = std::shared_ptr<PolyhedralSystem>;
+using PolyhedralSystemConstSharedPtr = std::shared_ptr<const PolyhedralSystem>;
 
 class PolyhedralSystem {
 public:
@@ -39,9 +40,9 @@ public:
     friend bool operator== (const PolyhedralSystem&, const PolyhedralSystem&);
     friend std::istream& operator>> (std::istream&, PolyhedralSystem&);
 private:
-    Powerset m_invariant {};
-    Poly m_flow {};
-    Poly m_preFlow {};
+    Powerset m_invariant { PPL::EMPTY };
+    Poly m_flow { PPL::EMPTY };
+    Poly m_preFlow { PPL::EMPTY };
     std::unordered_map<Atom, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
     bool m_minimizeConstraintsOutput { false };

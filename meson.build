@@ -25,6 +25,7 @@ include_directories = [
   include_directories(src_dir / parser_dir),
   include_directories(src_dir / parser_dir / 'rtlf'),
   include_directories(src_dir / parser_dir / system_dir),
+  include_directories(src_dir / 'core'),
 ]
 
 subdir(src_dir)

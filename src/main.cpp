@@ -1,9 +1,11 @@
+#include <ppl_output.h>
+#include <ppl_utils.h>
 #include <spot/tl/parse.hh>
 #include <spot/tl/print.hh>
 #include <spot/twaalgos/hoa.hh>
 #include "RtlfParsingResult.h"
 #include "BackwardNFA.h"
-#include "PolyhedralSystemLabelDenotationMap.h"
+#include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
@@ -11,9 +13,11 @@
 #include "PolyhedralSystem.h"
 #include "discretization.h"
 #include "ppl_aliases.h"
+#include "reach.h"
+#include "Denot.h"
 #include <argparse/argparse.hpp>
 
-void reachZero();
+using PPL::IO_Operators::operator<<;
 
 int main(const int argc, char *argv[])
 {
@@ -73,7 +77,7 @@ int main(const int argc, char *argv[])
     PolyhedralSystemSharedPtr polyhedralSystem { std::make_shared<PolyhedralSystem>(std::move(*polyhedralSystemParsingResult)) };
     polyhedralSystemFile.close();
     polyhedralSystem->setConstraintOutputMinimized(false);
-    PolyhedralSystemLabelDenotationMap polyhedralSystemLabelDenotationMap { polyhedralSystem };
+    PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
     std::cout << *polyhedralSystem << '\n';
 
     std::ifstream rtlfFile { rtlfFilename };
@@ -89,6 +93,7 @@ int main(const int argc, char *argv[])
         exit(1);
     }
 
+    std::cout << "Formula: " << *rtlfParsingResult << '\n';
     DiscreteLtlFormula discreteLtlFormula { DiscreteLtlFormula::discretizeToLtl(std::move(*rtlfParsingResult)) };
     try
     {
@@ -98,36 +103,23 @@ int main(const int argc, char *argv[])
         if (high) optimizationLevel = spot::postprocessor::optimization_level::High;
         BackwardNFA backwardNfa {
             std::move(discreteLtlFormula),
-            std::move(polyhedralSystemLabelDenotationMap),
+            std::move(polyhedralSystemFormulaDenotationMap),
             optimizationLevel,
             anyOption
         };
 
-        std::cout << backwardNfa << '\n';
+        // std::cout << backwardNfa << '\n';
         std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
-        std::cout << "Total transitions: " << backwardNfa.totalTransitions() << '\n';
+        std::cout << "Total edges: " << backwardNfa.totalEdges() << '\n';
         std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
         // backwardNfa.printDotFormat(std::cout);
+
+        assert(polyhedralSystem->getSpaceDimension() == polyhedralSystem->getPreFlow().space_dimension());
+        Denot denot { polyhedralSystem, backwardNfa };
+        Powerset result { denot.run() };
+        std::cout << "RESULT " << PPLOutput::toString(result, polyhedralSystem->getSymbolTable()) << '\n';
     } catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
-}
-
-void reachZero()
-{
-    Poly preFlow {};
-
-    Powerset powersetA {};
-
-    Poly polyB {};
-    polyB.topological_closure_assign();
-    Powerset powersetPolyB { polyB };
-
-    Poly positivePreFlowB { polyB };
-    positivePreFlowB.positive_time_elapse_assign(preFlow);
-    Powerset powersetPositivePreFlowB { positivePreFlowB };
-
-    powersetA.intersection_assign(powersetPolyB);
-    powersetA.intersection_assign(powersetPositivePreFlowB);
 }

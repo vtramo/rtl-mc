@@ -1,10 +1,8 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #include "ppl_utils.h"
 
 #include <numeric>
+
+using PPL::IO_Operators::operator<<;
 
 namespace PPLUtils
 {
@@ -17,6 +15,8 @@ namespace PPLUtils
             const PPL::Variable variable { dim };
             polyhedron.affine_image(variable, -variable);
         }
+
+        assert(polyhedron.space_dimension() == spaceDimension);
 
         return polyhedron;
     }
@@ -62,8 +62,36 @@ namespace PPLUtils
         return powerset;
     }
 
+    PowersetUniquePtr fusion(const Powerset &a, const Powerset &b)
+    {
+        assert(a.space_dimension() == b.space_dimension());
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(a.space_dimension(), PPL::EMPTY) };
+
+        for (Powerset::const_iterator it { a.begin() }; it != a.end(); ++it)
+            if (!it->pointset().is_empty())
+                result->add_disjunct(it->pointset());
+
+        for (Powerset::const_iterator it { b.begin() }; it != b.end(); ++it)
+            if (!it->pointset().is_empty())
+                result->add_disjunct(it->pointset());
+
+        return result;
+    }
+
+    void fusion(Powerset &a, const Powerset &b)
+    {
+        assert(a.space_dimension() == b.space_dimension());
+
+        for (Powerset::const_iterator it { b.begin() }; it != b.end(); ++it)
+            if (!it->pointset().is_empty())
+                a.add_disjunct(it->pointset());
+    }
+
     std::unique_ptr<Powerset> intersect(const Powerset& a, const Powerset& b)
     {
+        assert(a.space_dimension() == b.space_dimension());
+
         if (b.is_universe())
         {
             return std::make_unique<Powerset>(a);
@@ -81,6 +109,8 @@ namespace PPLUtils
 
     std::unique_ptr<Powerset> intersect(const Powerset& a, Powerset&& b)
     {
+        assert(a.space_dimension() == b.space_dimension());
+
         std::unique_ptr<Powerset> result { nullptr };
 
         if (b.is_universe())
@@ -103,6 +133,8 @@ namespace PPLUtils
 
     std::unique_ptr<Powerset> intersect(Powerset&& a, Powerset&& b)
     {
+        assert(a.space_dimension() == b.space_dimension());
+
         auto result { std::make_unique<Powerset>() };
 
         if (b.is_universe())
@@ -132,6 +164,8 @@ namespace PPLUtils
 
     std::unique_ptr<Powerset> minus(const Powerset& a, const Powerset& b)
     {
+        assert(a.space_dimension() == b.space_dimension());
+
         auto result { std::make_unique<Powerset>(a) };
         result->difference_assign(b);
         return result;
@@ -139,6 +173,8 @@ namespace PPLUtils
 
     std::unique_ptr<Powerset> minus(Powerset&& a, Powerset&& b)
     {
+        assert(a.space_dimension() == b.space_dimension());
+
         auto result { std::make_unique<Powerset>() };
         result->m_swap(a);
         result->difference_assign(b);
@@ -147,6 +183,8 @@ namespace PPLUtils
 
     std::unique_ptr<Powerset> minus(Powerset&& a, const Powerset& b)
     {
+        assert(a.space_dimension() == b.space_dimension());
+
         auto result { std::make_unique<Powerset>() };
         result->m_swap(a);
         result->difference_assign(b);
@@ -157,6 +195,4 @@ namespace PPLUtils
     {
         return x.space_dimension() == y.space_dimension();
     }
-
-
 }

@@ -12,6 +12,7 @@ namespace spot
 namespace SpotUtils
 {
     spot::formula top();
+    spot::formula bottom();
     spot::atomic_prop_set AP(std::set<std::string>&& atoms);
     spot::formula ap(std::string_view ap);
     spot::formula F(spot::formula&& formula);
@@ -43,7 +44,11 @@ namespace SpotUtils
     spot::formula singOpenLastPropertyFinite();
     spot::formula singOpenLastProperty();
 
+    std::string toFormulaString(const spot::formula& formula);
     bool isSing(const spot::formula& formula);
+    bool isNotSing(const spot::formula& formula);
+    bool isSingOrNotSing(const spot::formula& formula);
+    std::tuple<spot::formula, bool> removeSing(spot::formula&& formula);
     bool isXFree(spot::formula& formula);
     bool containsSing(const spot::atomic_prop_set& labels);
     spot::formula generateRtlf(int atomicPropSetSize, int formulaSize, spot::op replaceXWith = spot::op::F);

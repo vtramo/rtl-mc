@@ -4,7 +4,7 @@
 #include <spot/tl/parse.hh>
 #include "discretization.h"
 #include "PolyhedralSystem.h"
-#include "PolyhedralSystemLabelDenotationMap.h"
+#include "PolyhedralSystemFormulaDenotationMap.h"
 #include "BackwardNFA.h"
 
 TEST_CASE("Automaton construction benchmarks", "[benchmark][automaton]")
@@ -21,7 +21,7 @@ TEST_CASE("Automaton construction benchmarks", "[benchmark][automaton]")
 
     BENCHMARK("Automaton construction benchmark 1")
     {
-        PolyhedralSystemLabelDenotationMap PolyhedralSystemLabelDenotationMap { polyhedralSystemPtr };
+        PolyhedralSystemFormulaDenotationMap PolyhedralSystemLabelDenotationMap { polyhedralSystemPtr };
         BackwardNFA backwardNfa { discretizedLtlFormula, std::move(PolyhedralSystemLabelDenotationMap) };
     };
 }

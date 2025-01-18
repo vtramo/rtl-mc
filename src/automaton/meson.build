@@ -5,8 +5,8 @@ automaton_source_files = [
     current_source_dir / 'BackwardNFA.h',
     current_source_dir / 'AtomSet.h',
     current_source_dir / 'AtomSet.cpp',
-    current_source_dir / 'PolyhedralSystemLabelDenotationMap.h',
-    current_source_dir / 'PolyhedralSystemLabelDenotationMap.cpp',
+    current_source_dir / 'PolyhedralSystemFormulaDenotationMap.h',
+    current_source_dir / 'PolyhedralSystemFormulaDenotationMap.cpp',
     current_source_dir / 'StateDenotation.h',
 ]
 

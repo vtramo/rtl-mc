@@ -1,7 +1,3 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
 #include "ppl_utils.h"
 #include "AtomInterpretation.h"
 #include "ppl_aliases.h"
@@ -24,30 +20,35 @@ AtomInterpretation::AtomInterpretation(const Powerset& interpretation, const Pow
 {
     m_interpretation.m_swap(*PPLUtils::intersect(interpretation, invariant));
     m_notInterpretation.m_swap(*PPLUtils::minus(invariant, m_interpretation));
+    assert(m_interpretation.space_dimension() == m_notInterpretation.space_dimension());
 }
 
 AtomInterpretation::AtomInterpretation(const Powerset& interpretation, Powerset&& invariant)
 {
     m_interpretation.m_swap(*PPLUtils::intersect(interpretation, invariant));
     m_notInterpretation.m_swap(*PPLUtils::minus(std::move(invariant), m_interpretation));
+    assert(m_interpretation.space_dimension() == m_notInterpretation.space_dimension());
 }
 
 AtomInterpretation::AtomInterpretation(Powerset&& interpretation, Powerset&& invariant)
 {
     m_interpretation.m_swap(*PPLUtils::intersect(invariant, std::move(interpretation)));
     m_notInterpretation.m_swap(*PPLUtils::minus(std::move(invariant), m_interpretation));
+    assert(m_interpretation.space_dimension() == m_notInterpretation.space_dimension());
 }
 
 AtomInterpretation::AtomInterpretation(Powerset&& interpretation, const Powerset& invariant)
 {
     m_interpretation.m_swap(*PPLUtils::intersect(invariant, std::move(interpretation)));
     m_notInterpretation.m_swap(*PPLUtils::minus(invariant, m_interpretation));
+    assert(m_interpretation.space_dimension() == m_notInterpretation.space_dimension());
 }
 
 AtomInterpretation::AtomInterpretation(AtomInterpretation&& interpretation) noexcept
 {
     m_interpretation.m_swap(interpretation.m_interpretation);
     m_notInterpretation.m_swap(interpretation.m_notInterpretation);
+    assert(m_interpretation.space_dimension() == m_notInterpretation.space_dimension());
 }
 
 const Powerset& AtomInterpretation::interpretation() const

@@ -35,13 +35,13 @@ package automaton {
         +using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
         --data members--
         -m_discreteLtlFormula : DiscreteLtlFormula
-        -m_labelDenotationMap : PolyhedralSystemLabelDenotationMap
+        -m_formulaDenotationMap : PolyhedralSystemFormulaDenotationMap
         -m_backwardNfa : spot::twa_graph_ptr
         -m_stateDenotationById : std::unordered_map<int, StateDenotation>
         -m_finalStates : std::unordered_set<int>
         --constructors--
-        +BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap)
-        +BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap)
+        +BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap, spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High, bool anyOption = false)
+        +BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemFormulaDenotationMap, spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High, bool anyOption = false)
         --member functions--
         +formula() : const DiscreteLtlFormula&
         +predecessors(int state) : EdgeIterator
@@ -49,50 +49,50 @@ package automaton {
         +hasPredecessors(int state) : bool
         +isFinalState(int state) : bool
         +isInitialState(int state) : bool
-        +totalTransitions() : int
+        +totalEdges() : int
         +totalFinalStates() : int
         +totalStates() : int
         +finalStates() : const std::unordered_set<int>&
         +printDotFormat(std::ostream& os) : void
         +printHoaFormat(std::ostream& os) : void
+        -buildAutomaton(const spot::const_twa_graph_ptr& nfa) : void
+        -extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
         --operators--
         +operator<< (std::ostream& out, const BackwardNFA& backwardNfa) : std::ostream&
-        --private functions--
-        -buildAutomaton(const spot::const_twa_graph_ptr& nfa) : void
-        -extractStateDenotationsFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : std::vector<StateDenotation>
     }
 
-    class PolyhedralSystemLabelDenotationMap {
+    class PolyhedralSystemFormulaDenotationMap {
         --type aliases--
-        +using AtomSetToString = std::string
+        -using FormulaToString = std::string;
+        -using FormulaId = size_t;
         --data members--
         -m_polyhedralSystem : PolyhedralSystemSharedPtr
-        -m_powersetByLabelsHash : std::unordered_map<AtomSetHash, std::tuple<PowersetConstSharedPtr, AtomSetToString>>
+        -m_powersetByFormula : std::unordered_map<FormulaId, std::tuple<PowersetConstSharedPtr, FormulaToString>>
         --constructors--
-        +PolyhedralSystemLabelDenotationMap(const PolyhedralSystemSharedPtr& polyhedralSystem)
-        +PolyhedralSystemLabelDenotationMap(PolyhedralSystemLabelDenotationMap&& other)
-        -PolyhedralSystemLabelDenotationMap() = default
+        +PolyhedralSystemFormulaDenotationMap(const PolyhedralSystemSharedPtr& polyhedralSystem)
+        +PolyhedralSystemFormulaDenotationMap(PolyhedralSystemFormulaDenotationMap&& other)
+        -PolyhedralSystemFormulaDenotationMap() = default
         --member functions--
         +getPolyhedralSystem() : const PolyhedralSystem&
-        +getOrComputeDenotation(const AtomSet& labels) : PowersetConstSharedPtr
-        +containsDenotation(const AtomSet& labels) : bool
-        -computeLabelDenotation(const AtomSet& labels) : PowersetConstSharedPtr
-        -getAtomInterpretation(const spot::formula& atom) : const AtomInterpretation*
-        -insertLabelDenotation(const AtomSet& labels, PowersetConstSharedPtr denotation) : void
+        +getOrComputeDenotation(const spot::formula& formula) : PowersetConstSharedPtr
+        +containsDenotation(const spot::formula& formula) : bool
+        -computeFormulaDenotation(const spot::formula& formula) : PowersetConstSharedPtr
+        -getAtomInterpretation(const spot::formula& formula) : const AtomInterpretation*
+        -void saveFormulaDenotation(const spot::formula& formula, PowersetConstSharedPtr denotation) : void
         --operators--
-        +operator<< (std::ostream& out, PolyhedralSystemLabelDenotationMap& polyhedralSystemLabelDenotationMap) : std::ostream&
+        +operator<< (std::ostream& out, PolyhedralSystemFormulaDenotationMap& polyhedralSystemFormulaDenotationMap) : std::ostream&
     }
 
     class StateDenotation {
         --data members--
-        -m_labels : AtomSet
+        -m_formula : spot::formula
         -m_powerset : PowersetConstSharedPtr
         -m_isSing : bool
         --constructors--
-        +StateDenotation(AtomSet&& labels, PowersetConstSharedPtr powerset, bool isSing)
+        +StateDenotation(spot::formula&& formula, PowersetConstSharedPtr powerset, const bool isSing = false)
         +StateDenotation(StateDenotation&& other)
         --member functions--
-        +labels() : const AtomSet&
+        +formula() : const spot::formula&
         +denotation() : PowersetConstSharedPtr
         +isSingular() : bool
         +isUniverse() : bool
@@ -112,7 +112,7 @@ class spot::twa_graph_ptr {}
 class spot::formula {}
 
 BackwardNFA *--> "1" spot::twa_graph_ptr
-BackwardNFA *--> "1" PolyhedralSystemLabelDenotationMap
+BackwardNFA *--> "1" PolyhedralSystemFormulaDenotationMap
 BackwardNFA *--> "*" StateDenotation
 StateDenotation *--> "1" AtomSet
 AtomSet *--> "*" spot::formula

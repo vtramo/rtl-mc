@@ -1,9 +1,4 @@
-//
-// Created by vincenzo on 16/12/24.
-//
-
-#ifndef ATOMINTERPRETATION_H
-#define ATOMINTERPRETATION_H
+#pragma once
 
 #include "ppl_aliases.h"
 
@@ -25,12 +20,10 @@ public:
     [[nodiscard]] const Powerset& interpretation() const;
     [[nodiscard]] const Powerset& notInterpretation() const;
 private:
-    Powerset m_interpretation {};
-    Powerset m_notInterpretation {};
+    Powerset m_interpretation { PPL::EMPTY };
+    Powerset m_notInterpretation { PPL::EMPTY };
 };
 
 bool operator== (const AtomInterpretation& interpretation1, const AtomInterpretation& interpretation2);
 bool operator!= (const AtomInterpretation& interpretation1, const AtomInterpretation& interpretation2);
 std::ostream& operator<< (std::ostream& out, const AtomInterpretation& interpretation);
-
-#endif //ATOMINTERPRETATION_H

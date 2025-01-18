@@ -13,6 +13,11 @@ namespace SpotUtils
         return spot::formula::tt();
     }
 
+    spot::formula bottom()
+    {
+        return spot::formula::ff();
+    }
+
     spot::formula ap(const std::string_view ap)
     {
         return spot::formula::ap(std::string { ap });
@@ -244,6 +249,71 @@ namespace SpotUtils
         });
 
         return result;
+    }
+
+    std::string toFormulaString(const spot::formula& formula)
+    {
+        std::ostringstream oss {};
+        oss << formula;
+        return { oss.str() };
+    }
+
+    std::tuple<spot::formula, bool> removeSing(spot::formula&& formula)
+    {
+        assert(formula.is_sugar_free_boolean());
+        assert(formula.is_in_nenoform());
+
+        if (isSing(formula))
+            return std::make_tuple(
+                spot::formula::ff(),
+                true
+            );
+
+        if (formula.is_literal() || formula.is_tt() || formula.is_ff())
+            return std::make_tuple(
+                spot::formula::ff(),
+                false
+            );
+
+        bool removedAtLeastOneSing {};
+        auto removeAllSingAtoms = [&](spot::formula&& child, auto&& self) -> spot::formula
+        {
+            const bool isAnd { child.is(spot::op::And) };
+            std::vector<spot::formula> children {};
+            children.resize(child.size());
+
+            for (auto&& childChild: child)
+            {
+                if (isSing(childChild) || isNotSing(childChild))
+                {
+                    if (isSing(childChild)) removedAtLeastOneSing = true;
+                    children.push_back(isAnd ? top() : bottom());
+                } else if (childChild.is_literal())
+                {
+                    children.push_back(childChild);
+                } else
+                {
+                    children.push_back(self(std::move(childChild), self));
+                }
+            }
+
+            return isAnd ? spot::formula::And(std::move(children)) : spot::formula::Or(std::move(children));
+        };
+
+        return std::make_tuple(
+            removeAllSingAtoms(std::move(formula), removeAllSingAtoms),
+            removedAtLeastOneSing
+        );
+    }
+
+    bool isSingOrNotSing(const spot::formula& formula)
+    {
+        return isSing(formula) || (formula.is(spot::op::Not) && isSing(formula[0]));
+    }
+
+    bool isNotSing(const spot::formula& formula)
+    {
+        return formula.is(spot::op::Not) && isSing(formula[0]);
     }
 
     spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula)

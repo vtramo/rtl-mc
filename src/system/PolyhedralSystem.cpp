@@ -88,6 +88,7 @@ PolyhedralSystem::PolyhedralSystem(
   , m_symbolTable { symbolTable }
 {
     computePreFlow();
+    assert(m_invariant.space_dimension() == m_flow.space_dimension() == m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
 PolyhedralSystem::PolyhedralSystem(
@@ -101,6 +102,9 @@ PolyhedralSystem::PolyhedralSystem(
     m_invariant.m_swap(invariant);
     m_flow.m_swap(flow);
     computePreFlow();
+    assert(m_preFlow.space_dimension() == m_flow.space_dimension());
+    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
 PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
@@ -110,6 +114,9 @@ PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
     m_flow.m_swap(polyhedralSystem.m_flow);
     m_invariant.m_swap(polyhedralSystem.m_invariant);
     m_preFlow.m_swap(polyhedralSystem.m_preFlow);
+    assert(m_preFlow.space_dimension() == m_flow.space_dimension());
+    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
 PolyhedralSystem& PolyhedralSystem::operator=(PolyhedralSystem&& polyhedralSystem) noexcept
@@ -119,14 +126,18 @@ PolyhedralSystem& PolyhedralSystem::operator=(PolyhedralSystem&& polyhedralSyste
     m_invariant.m_swap(polyhedralSystem.m_invariant);
     m_preFlow.m_swap(polyhedralSystem.m_preFlow);
     m_symbolTable = std::move(polyhedralSystem.m_symbolTable);
+    assert(m_preFlow.space_dimension() == m_flow.space_dimension());
+    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
     return *this;
 }
-
 
 void PolyhedralSystem::computePreFlow()
 {
     Poly preFlow { m_flow };
     m_preFlow.m_swap(PPLUtils::reflectionAffineImage(preFlow));
+    assert(m_preFlow.space_dimension() == m_flow.space_dimension());
+    assert(m_preFlow.space_dimension() == getSpaceDimension());
 }
 
 std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSystem)

@@ -3,6 +3,7 @@
 !include system.puml
 !include automaton.puml
 !include discretization.puml
+!include core.puml
 
 
 BackwardNFA ---> "1" DiscreteLtlFormula
@@ -13,4 +14,6 @@ PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor --> "1" PolyhedralSystem
 
 RtlfParsingResult --> "0..1" spot::formula
 PolyhedralSystemParsingResult --> "0..1" PolyhedralSystem
+Denot --> "1" PolyhedralSystem
+Denot --> "1" BackwardNFA
 @enduml

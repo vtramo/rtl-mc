@@ -1,9 +1,9 @@
 #pragma once
 
-#include <PolyhedralSystemLabelDenotationMap.h>
 #include <spot/twa/twagraph.hh>
 #include <spot/twaalgos/postproc.hh>
 
+#include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
 #include "StateDenotation.h"
 
@@ -11,23 +11,24 @@ class BackwardNFA {
 public:
     using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>;
 
+    BackwardNFA() = default;
     BackwardNFA(
         const DiscreteLtlFormula& discreteLtlFormula,
-        PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap,
+        PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
         spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High,
         bool anyOption = false
     );
 
     BackwardNFA(
         DiscreteLtlFormula&& discreteLtlFormula,
-        PolyhedralSystemLabelDenotationMap&& polyhedralSystemLabelDenotationMap,
+        PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
         spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High,
         bool anyOption = false
     );
 
     [[nodiscard]] int totalStates() const;
     [[nodiscard]] int totalFinalStates() const;
-    [[nodiscard]] int totalTransitions() const;
+    [[nodiscard]] int totalEdges() const;
     [[nodiscard]] bool isInitialState(int state) const;
     [[nodiscard]] bool isFinalState(int state) const;
     [[nodiscard]] bool hasPredecessors(int state) const;
@@ -45,10 +46,8 @@ private:
     std::unordered_set<int> m_finalStates {};
     std::unordered_map<int, StateDenotation> m_stateDenotationById {};
     DiscreteLtlFormula m_discreteLtlFormula {};
-    PolyhedralSystemLabelDenotationMap m_labelDenotationMap {};
+    PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
 
     void buildAutomaton(const spot::const_twa_graph_ptr& nfa);
-    void buildAutomatonAlreadySplitted(const spot::const_twa_graph_ptr& nfa);
-    std::vector<StateDenotation> extractStateDenotationsFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
-    StateDenotation extractStateDenotationFromTransition(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
+    StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
 };
