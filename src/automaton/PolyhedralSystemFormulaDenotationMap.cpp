@@ -7,7 +7,7 @@
 
 using Parma_Polyhedra_Library::IO_Operators::operator<<;
 
-PolyhedralSystemFormulaDenotationMap::PolyhedralSystemFormulaDenotationMap(const std::shared_ptr<PolyhedralSystem>& polyhedralSystem)
+PolyhedralSystemFormulaDenotationMap::PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem)
     : m_polyhedralSystem{polyhedralSystem}
 {
 }

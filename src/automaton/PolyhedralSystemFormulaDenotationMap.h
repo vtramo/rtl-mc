@@ -6,7 +6,7 @@
 class PolyhedralSystemFormulaDenotationMap
 {
 public:
-    explicit PolyhedralSystemFormulaDenotationMap(const PolyhedralSystemSharedPtr& polyhedralSystem);
+    explicit PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem);
     PolyhedralSystemFormulaDenotationMap(PolyhedralSystemFormulaDenotationMap&& other) noexcept;
 
     PowersetConstSharedPtr getOrComputeDenotation(const spot::formula& formula);
@@ -19,7 +19,7 @@ private:
     using FormulaToString = std::string;
     using FormulaId = size_t;
 
-    PolyhedralSystemSharedPtr m_polyhedralSystem {};
+    PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
     std::unordered_map<FormulaId, std::tuple<PowersetConstSharedPtr, FormulaToString>> m_powersetByFormula {};
 
     friend class BackwardNFA;

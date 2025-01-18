@@ -88,7 +88,9 @@ PolyhedralSystem::PolyhedralSystem(
   , m_symbolTable { symbolTable }
 {
     computePreFlow();
-    assert(m_invariant.space_dimension() == m_flow.space_dimension() == m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_flow.space_dimension());
+    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
 PolyhedralSystem::PolyhedralSystem(

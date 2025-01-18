@@ -9,18 +9,25 @@ namespace PPLUtils {
     Poly& reflectionAffineImage(Poly& polyhedron);
     Poly poly(std::vector<PPL::Constraint>&& constraints);
     Powerset powerset(std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra);
+    Powerset powerset(std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra, PPL::dimension_type powersetDimension);
+    Poly poly(std::vector<PPL::Constraint>&& constraints, PPL::dimension_type polyDimension);
 
     PowersetUniquePtr intersect(const Powerset& a, const Powerset& b);
     PowersetUniquePtr intersect(const Powerset& a, Powerset&& b);
     PowersetUniquePtr intersect(Powerset&& a, Powerset&& b);
+    PowersetUniquePtr intersect(std::vector<Powerset>& powersets);
+    PowersetUniquePtr intersect(const std::vector<PowersetConstSharedPtr>& powersets);
 
     PowersetUniquePtr minus(const Powerset& a, const Powerset& b);
     PowersetUniquePtr minus(const Powerset& a, Powerset&& b);
     PowersetUniquePtr minus(Powerset&& a, const Powerset& b);
     PowersetUniquePtr minus(Powerset&& a, Powerset&& b);
 
-    PowersetUniquePtr fusion(const Powerset &a, const Powerset &b);
-    void fusion(Powerset &a, const Powerset &b);
+    PowersetUniquePtr fusion(const std::vector<PowersetConstSharedPtr>& powersets);
+    PowersetUniquePtr fusion(const PowersetConstUniquePtr& a, const PowersetConstUniquePtr& b);
+    PowersetUniquePtr fusion(const Powerset& a, const Powerset& b);
+    PowersetUniquePtr fusion(const std::vector<PowersetConstSharedPtr>& powersets);
+    void fusion(Powerset& a, const Powerset& b);
 
     bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y);
 }

@@ -35,6 +35,22 @@ namespace PPLUtils
         return Poly { constraintSystem, PPL::Recycle_Input {} };
     }
 
+    Poly poly(std::vector<PPL::Constraint>&& constraints, const PPL::dimension_type polyDimension)
+    {
+        PPL::Constraint_System constraintSystem {};
+
+        for (PPL::Constraint& constraint: constraints)
+        {
+            PPL::Constraint con {};
+            con.m_swap(constraint);
+            constraintSystem.insert(con);
+        }
+
+        Poly poly { polyDimension, PPL::EMPTY };
+        poly.add_constraints(constraintSystem);
+        return poly;
+    }
+
     Powerset powerset(const std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra)
     {
         const size_t totalPolyhedra { polyhedra.size() };
@@ -62,6 +78,25 @@ namespace PPLUtils
         return powerset;
     }
 
+    Powerset powerset(const std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra, const PPL::dimension_type powersetDimension)
+    {
+        const size_t totalPolyhedra { polyhedra.size() };
+        std::vector<Poly> polyhedraVector;
+        polyhedraVector.reserve(totalPolyhedra);
+
+        for (const auto& constraints: polyhedra)
+        {
+            Poly polyhedron { poly(constraints, powersetDimension) };
+            polyhedraVector.push_back(std::move(polyhedron));
+        }
+
+        Powerset powerset { powersetDimension, PPL::EMPTY };
+        std::for_each(polyhedraVector.begin(), polyhedraVector.end(),
+            [&](const auto& poly) { powerset.add_disjunct(poly); });
+
+        return powerset;
+    }
+
     PowersetUniquePtr fusion(const Powerset &a, const Powerset &b)
     {
         assert(a.space_dimension() == b.space_dimension());
@@ -76,6 +111,34 @@ namespace PPLUtils
             if (!it->pointset().is_empty())
                 result->add_disjunct(it->pointset());
 
+        return result;
+    }
+
+    PowersetUniquePtr fusion(const PowersetConstUniquePtr& a, const PowersetConstUniquePtr& b)
+    {
+        assert(a->space_dimension() == b->space_dimension());
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(a->space_dimension(), PPL::EMPTY) };
+
+        for (Powerset::const_iterator it { a->begin() }; it != a->end(); ++it)
+            if (!it->pointset().is_empty())
+                result->add_disjunct(it->pointset());
+
+        for (Powerset::const_iterator it { b->begin() }; it != b->end(); ++it)
+            if (!it->pointset().is_empty())
+                result->add_disjunct(it->pointset());
+
+        return result;
+    }
+
+    PowersetUniquePtr fusion(const std::vector<PowersetConstSharedPtr>& powersets)
+    {
+        if (powersets.empty())
+            return std::make_unique<Powerset>(Powerset { PPL::EMPTY });
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(*powersets[0]) };
+        for (int i = 1; i < static_cast<int>(powersets.size()); ++i)
+            fusion(*result, *powersets[i]);
         return result;
     }
 
@@ -159,6 +222,28 @@ namespace PPLUtils
             result->intersection_assign(a);
         }
 
+        return result;
+    }
+
+    PowersetUniquePtr intersect(const std::vector<PowersetConstSharedPtr>& powersets)
+    {
+        if (powersets.empty())
+            return std::make_unique<Powerset>(Powerset { PPL::EMPTY });
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(*powersets[0]) };
+        for (int i = 1; i < static_cast<int>(powersets.size()); ++i)
+            result->intersection_assign(*powersets[i]);
+        return result;
+    }
+
+    PowersetUniquePtr intersect(std::vector<Powerset>& powersets)
+    {
+        if (powersets.empty())
+            return std::make_unique<Powerset>(Powerset { PPL::EMPTY });
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(powersets[0]) };
+        for (int i = 1; i < static_cast<int>(powersets.size()); ++i)
+            result->intersection_assign(powersets[i]);
         return result;
     }
 
