@@ -24,8 +24,8 @@ subdir('system')
 subdir('discretization')
 subdir('utils')
 subdir('automaton')
-
 subdir('core')
+subdir('cli')
 
 project_exe = executable(
     meson.project_name(),

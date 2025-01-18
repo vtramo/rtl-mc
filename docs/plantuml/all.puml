@@ -4,10 +4,11 @@
 !include automaton.puml
 !include discretization.puml
 !include core.puml
+!include cli.puml
 
 
 BackwardNFA ---> "1" DiscreteLtlFormula
-PolyhedralSystemLabelDenotationMap --> "1" PolyhedralSystem
+PolyhedralSystemFormulaDenotationMap --> "1" PolyhedralSystem
 
 PolyhedralSystemSymbolTableListener --> "1" PolyhedralSystemSymbolTable
 PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor --> "1" PolyhedralSystemSymbolTable
@@ -16,4 +17,7 @@ RtlfParsingResult --> "0..1" spot::formula
 PolyhedralSystemParsingResult --> "0..1" PolyhedralSystem
 Denot --> "1" PolyhedralSystem
 Denot --> "1" BackwardNFA
+
+RtlMcProgram --> "1" PolyhedralSystem
+RtlMcProgram --> "1" spot::formula
 @enduml

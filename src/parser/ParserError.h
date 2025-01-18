@@ -1,10 +1,8 @@
-#ifndef PARSERERROR_H
-#define PARSERERROR_H
+#pragma once
 
 #include <optional>
 #include <string>
 #include "PositionError.h"
-
 
 class ParserError {
 public:
@@ -70,4 +68,23 @@ private:
       Type m_type {};
 };
 
-#endif //PARSERERROR_H
+inline std::ostream& operator<< (std::ostream& os, const std::vector<ParserError>& errors)
+{
+    for (const auto& parserError : errors)
+    {
+        auto startPositionError { parserError.startLocation() };
+        os << "Error at line " << startPositionError.line()
+           << ", position " << startPositionError.charPositionInLine();
+
+        if (parserError.endLocation())
+        {
+            PositionError endPositionError { parserError.endLocation().value() };
+            os << " to line " << endPositionError.line()
+               << ", position " << endPositionError.charPositionInLine();
+        }
+
+        os << "\n  Error message: " << parserError.errorMessage() << '\n';
+    }
+
+    return os;
+}

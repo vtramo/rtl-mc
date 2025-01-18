@@ -91,3 +91,11 @@ inline bool isUnknownError(const ParserError& error)
 {
     return error.type() == ParserError::Type::unknown;
 }
+
+inline std::ostream& operator<< (std::ostream& os, const PolyhedralSystemParsingResult& result)
+{
+    if (result.ok())
+        return os << *result;
+
+    return os << result.errors();
+}

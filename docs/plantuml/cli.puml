@@ -1,0 +1,35 @@
+@startuml
+
+package cli {
+    class RtlMcProgram {
+        --data members--
+        -m_programName: std::string
+        -m_automatonOptimizationFlags: AutomatonOptimizationFlags
+        -m_polyhedralSystemFilename: std::string
+        -m_rtlFilename: std::string
+        -m_rtlMcProgram: argparse::ArgumentParser
+        -m_polyhedralSystem: PolyhedralSystemSharedPtr
+        -m_rtlFormula: spot::formula
+        --constructors--
+        +RtlMcProgram(const std::string_view programName, const int argc, char *argv[])
+        --member functions--
+        +polyhedralSystem(): PolyhedralSystemSharedPtr
+        +rtlFormula(): const spot::formula&
+        +automatonOptimizationFlags(): const AutomatonOptimizationFlags&
+        -buildRtlMcProgram(): void
+        -parseArgs(int argc, char *argv[]): void
+        -readAndParsePolyhedralSystemFile(): void
+        -readAndParseRtlFile(): void
+    }
+
+    struct AutomatonOptimizationFlags {
+        low: bool
+        medium: bool
+        high: bool
+        any: bool
+    }
+}
+
+RtlMcProgram +--> "1" AutomatonOptimizationFlags
+
+@enduml
