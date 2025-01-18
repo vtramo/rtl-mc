@@ -67,12 +67,15 @@ PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::computeFormulaDenot
     }
     else
     {
-        PowersetConstSharedPtr powersetLeft { getOrComputeDenotation(formula[0]) };
-        PowersetConstSharedPtr powersetRight { getOrComputeDenotation(formula[1]) };
+        std::vector<PowersetConstSharedPtr> powersets {};
+        powersets.reserve(formula.size());
+        for (const auto& child: formula)
+            powersets.push_back(getOrComputeDenotation(child));
+
         if (formula.is(spot::op::And))
-            powersetResult = PPLUtils::intersect(*powersetLeft, *powersetRight);
+            powersetResult = PPLUtils::intersect(powersets);
         else
-            powersetResult = PPLUtils::fusion(*powersetLeft, *powersetRight);
+            powersetResult = PPLUtils::fusion(powersets);
     }
 
     assert(powersetResult->space_dimension() == m_polyhedralSystem->getSpaceDimension());
@@ -104,7 +107,7 @@ void PolyhedralSystemFormulaDenotationMap::saveFormulaDenotation(const spot::for
 
 std::ostream& operator<< (std::ostream& out, PolyhedralSystemFormulaDenotationMap& polyhedralSystemFormulaDenotationMap)
 {
-    out << "LABEL DENOTATION MAP\n";
+    out << "FORMULA DENOTATION MAP\n";
     out << "Total mappings " << polyhedralSystemFormulaDenotationMap.m_powersetByFormula.size() << "\n\n";
 
     for (const auto& [labels, powersetAndAtomSetToString]: polyhedralSystemFormulaDenotationMap.m_powersetByFormula)
