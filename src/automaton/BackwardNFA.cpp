@@ -83,6 +83,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
         {
             for (const int outTransitionState: outTransitionStates[nfaState])
             {
+                if (outTransitionState == inTransitionState) continue;
                 const bool isOutAccepting { m_finalStates.count(outTransitionState) == 1 };
                 m_backwardNfa->new_acc_edge(outTransitionState, inTransitionState, bdd_true(), isOutAccepting);
             }
