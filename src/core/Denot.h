@@ -15,6 +15,8 @@ public:
 
     Powerset run()
     {
+        m_iterations = 0;
+
         Powerset result { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY };
         std::unordered_map<int, Powerset> V {};
 
@@ -29,8 +31,10 @@ public:
         return result;
     }
 
+    [[nodiscard]] int totalIterations() const { return m_iterations; }
+
 private:
-    int m_iterations { 1 };
+    int m_iterations { };
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
     const BackwardNFA& m_backwardNfa {};
     
@@ -41,8 +45,7 @@ private:
         std::unordered_map<int, Powerset>&& V
     )
     {
-        std::cerr << "Denot iteration: " << m_iterations++ << '\n';
-
+        m_iterations++;
         assert(P.space_dimension() == m_polyhedralSystem->getSpaceDimension());
         assert(P.space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
         assert(X.space_dimension() == m_polyhedralSystem->getSpaceDimension());

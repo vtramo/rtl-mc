@@ -9,6 +9,7 @@ package core {
         +Denot(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
         --member functions--
         +run(): Powerset
+        +totalIterations(): int
         -denot(const int state, const Poly& P, const Poly& X, std::unordered_map<int, Powerset>&& V): Powerset
         -addDisjunct(std::unordered_map<int, Powerset>& V, const int state, const Poly& P): void
         -getDisjunct(std::unordered_map<int, Powerset>& V, const int state): const Powerset&

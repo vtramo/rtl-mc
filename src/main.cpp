@@ -47,6 +47,7 @@ int main(const int argc, char *argv[])
 
         Denot denot { polyhedralSystem, backwardNfa };
         Powerset result { denot.run() };
+        std::cout << "Denot total iterations: " << denot.totalIterations() << '\n';
         std::cout << "RESULT " << PPLOutput::toString(result, polyhedralSystem->getSymbolTable()) << '\n';
     } catch (const std::exception& e)
     {
