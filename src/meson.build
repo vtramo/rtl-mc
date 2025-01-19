@@ -6,7 +6,9 @@ spot_dep = dependency('libspot', version: '>=2.12.1')
 argparse_dep = dependency('argparse', fallback : ['argparse'], version: '>=3.1')
 
 add_project_arguments('-DSPOT_WANT_STRONG_X', language: 'cpp')
-#add_project_arguments('-DNDEBUG', language: 'cpp')
+if get_option('debug') == false
+    add_project_arguments('-DNDEBUG', language: 'cpp')
+endif
 
 project_dependencies = [
     ppl_dep,
@@ -26,6 +28,7 @@ subdir('utils')
 subdir('automaton')
 subdir('core')
 subdir('cli')
+
 
 project_exe = executable(
     meson.project_name(),

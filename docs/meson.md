@@ -80,6 +80,8 @@ Attualmente sono state definite due opzioni:
 ```meson
 option('enable_tests', type : 'boolean', value : true) # abilita/disabilita i tests 
 option('generate_parser', type : 'boolean', value : true)  # genera il parser
+option('debug', type: 'boolean', value: true, description: 'Enable debug mode') # se false, disabilita gli assert, debug logging, ecc...
+
 ```
 
 Per modificare una opzione qualsiasi, eseguire questo comando:
