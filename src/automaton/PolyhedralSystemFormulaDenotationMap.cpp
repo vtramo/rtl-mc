@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <ppl_utils.h>
+#include <spot_utils.h>
 
 #include "ppl_output.h"
 
@@ -110,9 +111,9 @@ std::ostream& operator<< (std::ostream& out, PolyhedralSystemFormulaDenotationMa
     out << "FORMULA DENOTATION MAP\n";
     out << "Total mappings " << polyhedralSystemFormulaDenotationMap.m_powersetByFormula.size() << "\n\n";
 
-    for (const auto& [labels, powersetAndAtomSetToString]: polyhedralSystemFormulaDenotationMap.m_powersetByFormula)
+    for (const auto& [labels, powersetAndFormulaToString]: polyhedralSystemFormulaDenotationMap.m_powersetByFormula)
     {
-        const auto& [powerset, formulaToString] = powersetAndAtomSetToString;
+        const auto& [powerset, formulaToString] = powersetAndFormulaToString;
         out << "Formula: " << formulaToString << '\n'
             << "Denotation: " << PPLOutput::toString(*powerset, polyhedralSystemFormulaDenotationMap.m_polyhedralSystem->getSymbolTable())
             << "\n\n";

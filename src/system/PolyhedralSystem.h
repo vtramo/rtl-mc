@@ -1,6 +1,5 @@
 #pragma once
 
-#include <AtomSet.h>
 #include <optional>
 #include <spot/tl/formula.hh>
 
