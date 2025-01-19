@@ -21,6 +21,21 @@ namespace PPLUtils
         return polyhedron;
     }
 
+    Powerset& reflectionAffineImage(Powerset& powerset)
+    {
+        const PPL::dimension_type spaceDimension { powerset.space_dimension() };
+
+        for (PPL::dimension_type dim {}; dim < spaceDimension; ++dim)
+        {
+            const PPL::Variable variable { dim };
+            powerset.affine_image(variable, -variable);
+        }
+
+        assert(powerset.space_dimension() == spaceDimension);
+
+        return powerset;
+    }
+
     Poly poly(std::vector<PPL::Constraint>&& constraints)
     {
         PPL::Constraint_System constraintSystem {};

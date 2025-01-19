@@ -7,6 +7,7 @@ namespace PPLUtils {
     typedef std::vector<std::pair<Poly, Poly>> ReachPairs;
 
     Poly& reflectionAffineImage(Poly& polyhedron);
+    Powerset& reflectionAffineImage(Powerset& polyhedron);
     Poly poly(std::vector<PPL::Constraint>&& constraints);
     Powerset powerset(std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra);
     Powerset powerset(std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra, PPL::dimension_type powersetDimension);
