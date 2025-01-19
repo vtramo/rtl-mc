@@ -10,8 +10,6 @@
 #include <spot/twaalgos/dot.hh>
 #include <spot/twaalgos/stats.hh>
 
-static constexpr int BUCHI_ACCEPTACE = 0;
-
 BackwardNFA::BackwardNFA(
     const DiscreteLtlFormula& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
@@ -36,10 +34,6 @@ BackwardNFA::BackwardNFA(
     ltlToNbaTranslator.set_level(optimizationLevel);
 
     spot::twa_graph_ptr nfa { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
-    // spot::print_dot(std::cout, nfa);
-    // std::cout << "\n\nBefore: \n";
-    // std::cout << "Num edges: " << nfa->num_edges() << '\n';
-    // std::cout << "Num states: " << nfa->num_states() << '\n';
     buildAutomaton(nfa);
 }
 
@@ -55,6 +49,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
     for (int nfaState { 0 }; nfaState < static_cast<int>(nfa->num_states()); ++nfaState)
     {
         const bool isInitial { static_cast<int>(nfa->get_init_state_number()) == nfaState };
+
         for (const auto& nfaEdge: nfa->out(nfaState))
         {
             int nfaEdgeDst { static_cast<int>(nfaEdge.dst) };
@@ -64,21 +59,14 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
             m_stateDenotationById.emplace(edgeState, std::move(stateDenotation));
 
             if (isInitial)
-            {
                 m_initialStates.insert(edgeState);
-                m_backwardNfa->set_init_state(edgeState);
-            }
             else
-            {
                 outEdgeStates[nfaState].push_back(edgeState);
-            }
 
             inEdgeStates[nfaEdgeDst].push_back(edgeState);
 
             if (nfa->state_is_accepting(nfaEdgeDst))
                 m_finalStates.insert(edgeState);
-            // if (nfaEdge.acc.has(BUCHI_ACCEPTACE))
-            //     m_finalStates.insert(edgeState);
 
             for (int outEdgeState: outEdgeStates[nfaEdgeDst])
             {
@@ -178,12 +166,19 @@ void BackwardNFA::printDotFormat(std::ostream& os) const
     spot::print_dot(os, m_backwardNfa);
 }
 
+int BackwardNFA::totalInitialStates() const
+{
+    return m_initialStates.size();
+}
+
 std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
 {
     int totalStates { backwardNfa.totalStates() };
 
     out << "BACKWARD NFA\n";
     out << "Total states: " << totalStates << '\n';
+    out << "Total initial states: " << backwardNfa.totalInitialStates() << '\n';
+    out << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
     out << "Total edges: " << backwardNfa.totalEdges() << '\n';
     out << "Discrete LTL Formula: " << backwardNfa.formula() << "\n\n";
 
@@ -210,4 +205,9 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
     }
 
     return out << std::noboolalpha;
+}
+
+const std::unordered_set<int>& BackwardNFA::initialStates() const
+{
+    return m_initialStates;
 }

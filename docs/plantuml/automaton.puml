@@ -51,6 +51,7 @@ package automaton {
         +isFinalState(int state) : bool
         +isInitialState(int state) : bool
         +totalEdges() : int
+        +totalInitialStates() : int
         +totalFinalStates() : int
         +totalStates() : int
         +initialStates() : const std::unordered_set<int>&

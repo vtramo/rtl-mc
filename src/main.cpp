@@ -48,6 +48,7 @@ int main(const int argc, char *argv[])
 
         std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
         std::cout << "Total edges: " << backwardNfa.totalEdges() << '\n';
+        std::cout << "Initial initial states: " << backwardNfa.totalInitialStates() << '\n';
         std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
 
         Denot denot { polyhedralSystem, backwardNfa };

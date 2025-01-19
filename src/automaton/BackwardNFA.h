@@ -27,14 +27,15 @@ public:
     );
 
     [[nodiscard]] int totalStates() const;
+    [[nodiscard]] int totalInitialStates() const;
     [[nodiscard]] int totalFinalStates() const;
     [[nodiscard]] int totalEdges() const;
     [[nodiscard]] bool isInitialState(int state) const;
     [[nodiscard]] bool isFinalState(int state) const;
-    [[nodiscard]] bool hasPredecessors(int state) const;
-    [[nodiscard]] EdgeIterator predecessors(int state) const;
     [[nodiscard]] const std::unordered_set<int>& initialStates() const;
     [[nodiscard]] const std::unordered_set<int>& finalStates() const;
+    [[nodiscard]] bool hasPredecessors(int state) const;
+    [[nodiscard]] EdgeIterator predecessors(int state) const;
     [[nodiscard]] const DiscreteLtlFormula& formula() const;
     [[nodiscard]] const StateDenotation& stateDenotation(int state) const;
 
