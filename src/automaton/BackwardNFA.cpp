@@ -50,8 +50,8 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
     m_backwardNfa->prop_state_acc(spot::trival { true });
     m_backwardNfa->set_acceptance(nfa->get_acceptance());
 
-    std::unordered_map<int, std::vector<int>> outTransitionStates {};
-    std::unordered_map<int, std::vector<int>> inTransitionStates {};
+    std::unordered_map<int, std::vector<int>> outEdgeStates {};
+    std::unordered_map<int, std::vector<int>> inEdgeStates {};
     for (int nfaState { 0 }; nfaState < static_cast<int>(nfa->num_states()); ++nfaState)
     {
         const bool isInitial { static_cast<int>(nfa->get_init_state_number()) == nfaState };
@@ -60,40 +60,40 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
             int nfaEdgeDst { static_cast<int>(nfaEdge.dst) };
 
             StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdge.cond) };
-            int transitionState { static_cast<int>(m_backwardNfa->new_state()) };
-            m_stateDenotationById.emplace(transitionState, std::move(stateDenotation));
+            int edgeState { static_cast<int>(m_backwardNfa->new_state()) };
+            m_stateDenotationById.emplace(edgeState, std::move(stateDenotation));
 
             if (isInitial)
             {
-                m_initialStates.insert(transitionState);
-                m_backwardNfa->set_init_state(transitionState);
+                m_initialStates.insert(edgeState);
+                m_backwardNfa->set_init_state(edgeState);
             }
             else
             {
-                outTransitionStates[nfaState].push_back(transitionState);
+                outEdgeStates[nfaState].push_back(edgeState);
             }
 
-            inTransitionStates[nfaEdgeDst].push_back(transitionState);
+            inEdgeStates[nfaEdgeDst].push_back(edgeState);
 
             if (nfa->state_is_accepting(nfaEdgeDst))
-                m_finalStates.insert(transitionState);
+                m_finalStates.insert(edgeState);
             // if (nfaEdge.acc.has(BUCHI_ACCEPTACE))
-            //     m_finalStates.insert(transitionState);
+            //     m_finalStates.insert(edgeState);
 
-            for (int outTransitionState: outTransitionStates[nfaEdgeDst])
+            for (int outEdgeState: outEdgeStates[nfaEdgeDst])
             {
-                const bool isOutAccepting { m_finalStates.count(outTransitionState) == 1 };
-                m_backwardNfa->new_acc_edge(outTransitionState, transitionState, bdd_true(), isOutAccepting);
+                const bool isOutAccepting { m_finalStates.count(outEdgeState) == 1 };
+                m_backwardNfa->new_acc_edge(outEdgeState, edgeState, bdd_true(), isOutAccepting);
             }
         }
 
-        for (const int inTransitionState: inTransitionStates[nfaState])
+        for (const int inEdgeState: inEdgeStates[nfaState])
         {
-            for (const int outTransitionState: outTransitionStates[nfaState])
+            for (const int outEdgeState: outEdgeStates[nfaState])
             {
-                if (outTransitionState == inTransitionState) continue;
-                const bool isOutAccepting { m_finalStates.count(outTransitionState) == 1 };
-                m_backwardNfa->new_acc_edge(outTransitionState, inTransitionState, bdd_true(), isOutAccepting);
+                if (outEdgeState == inEdgeState) continue;
+                const bool isOutAccepting { m_finalStates.count(outEdgeState) == 1 };
+                m_backwardNfa->new_acc_edge(outEdgeState, inEdgeState, bdd_true(), isOutAccepting);
             }
         }
     }
