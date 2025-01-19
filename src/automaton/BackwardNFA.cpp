@@ -63,8 +63,16 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
             int transitionState { static_cast<int>(m_backwardNfa->new_state()) };
             m_stateDenotationById.emplace(transitionState, std::move(stateDenotation));
 
-            if (isInitial) m_backwardNfa->set_init_state(transitionState);
-            else outTransitionStates[nfaState].push_back(transitionState);
+            if (isInitial)
+            {
+                m_initialStates.insert(transitionState);
+                m_backwardNfa->set_init_state(transitionState);
+            }
+            else
+            {
+                outTransitionStates[nfaState].push_back(transitionState);
+            }
+
             inTransitionStates[nfaEdgeDst].push_back(transitionState);
 
             if (nfa->state_is_accepting(nfaEdgeDst))

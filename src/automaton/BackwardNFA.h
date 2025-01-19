@@ -33,6 +33,7 @@ public:
     [[nodiscard]] bool isFinalState(int state) const;
     [[nodiscard]] bool hasPredecessors(int state) const;
     [[nodiscard]] EdgeIterator predecessors(int state) const;
+    [[nodiscard]] const std::unordered_set<int>& initialStates() const;
     [[nodiscard]] const std::unordered_set<int>& finalStates() const;
     [[nodiscard]] const DiscreteLtlFormula& formula() const;
     [[nodiscard]] const StateDenotation& stateDenotation(int state) const;
@@ -41,8 +42,10 @@ public:
     void printDotFormat(std::ostream& os) const;
 
     friend std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
+
 private:
     spot::twa_graph_ptr m_backwardNfa {};
+    std::unordered_set<int> m_initialStates {};
     std::unordered_set<int> m_finalStates {};
     std::unordered_map<int, StateDenotation> m_stateDenotationById {};
     DiscreteLtlFormula m_discreteLtlFormula {};

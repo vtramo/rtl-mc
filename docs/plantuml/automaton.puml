@@ -38,6 +38,7 @@ package automaton {
         -m_formulaDenotationMap : PolyhedralSystemFormulaDenotationMap
         -m_backwardNfa : spot::twa_graph_ptr
         -m_stateDenotationById : std::unordered_map<int, StateDenotation>
+        -m_initialStates : std::unordered_set<int>
         -m_finalStates : std::unordered_set<int>
         --constructors--
         +BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap, spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High, bool anyOption = false)
@@ -52,6 +53,7 @@ package automaton {
         +totalEdges() : int
         +totalFinalStates() : int
         +totalStates() : int
+        +initialStates() : const std::unordered_set<int>&
         +finalStates() : const std::unordered_set<int>&
         +printDotFormat(std::ostream& os) : void
         +printHoaFormat(std::ostream& os) : void
@@ -66,10 +68,10 @@ package automaton {
         -using FormulaToString = std::string;
         -using FormulaId = size_t;
         --data members--
-        -m_polyhedralSystem : PolyhedralSystemSharedPtr
+        -m_polyhedralSystem : PolyhedralSystemConstSharedPtr
         -m_powersetByFormula : std::unordered_map<FormulaId, std::tuple<PowersetConstSharedPtr, FormulaToString>>
         --constructors--
-        +PolyhedralSystemFormulaDenotationMap(const PolyhedralSystemSharedPtr& polyhedralSystem)
+        +PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem)
         +PolyhedralSystemFormulaDenotationMap(PolyhedralSystemFormulaDenotationMap&& other)
         -PolyhedralSystemFormulaDenotationMap() = default
         --member functions--
