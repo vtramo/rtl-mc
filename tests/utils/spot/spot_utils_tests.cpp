@@ -112,4 +112,28 @@ TEST_CASE("Remove sing from formula util function")
         REQUIRE(formulaWithoutSing == expectedFormula);
         REQUIRE(!removedAtLeastOneSing);
     }
+
+    SECTION("p0")
+    {
+        spot::formula formula { spot::parse_infix_psl("p0").f };
+        spot::formula expectedFormula { formula };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { SpotUtils::removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(!removedAtLeastOneSing);
+
+    }
+
+    SECTION("!p0")
+    {
+        spot::formula formula { spot::parse_infix_psl("!p0").f };
+        spot::formula expectedFormula { formula };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { SpotUtils::removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(!removedAtLeastOneSing);
+
+    }
 }

@@ -271,7 +271,7 @@ namespace SpotUtils
 
         if (formula.is_literal() || formula.is_tt() || formula.is_ff())
             return std::make_tuple(
-                spot::formula::ff(),
+                formula,
                 false
             );
 
