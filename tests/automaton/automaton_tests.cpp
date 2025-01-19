@@ -1,7 +1,7 @@
-#include <BackwardNFA.h>
-#include <DiscreteFiniteLtlFormula.h>
-#include <PolyhedralSystemFormulaDenotationMap.h>
 #include <catch2/catch_test_macros.hpp>
+#include "BackwardNFA.h"
+#include "DiscreteFiniteLtlFormula.h"
+#include "PolyhedralSystemFormulaDenotationMap.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "ppl_utils.h"
 #include "PolyhedralSystem.h"
