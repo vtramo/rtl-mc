@@ -99,14 +99,14 @@ bool BackwardNFA::isInitialState(const int state) const
 {
     assert(state >= 0 && state < totalStates() && "State is out of range!");
 
-    return static_cast<int>(m_backwardNfa->get_init_state_number()) == state;
+    return m_initialStates.count(state) == 1;
 }
 
 bool BackwardNFA::isFinalState(const int state) const
 {
     assert(state >= 0 && state < totalStates() && "State is out of range!");
 
-    return m_backwardNfa->state_is_accepting(state);
+    return m_finalStates.count(state) == 1;
 }
 
 bool BackwardNFA::hasPredecessors(const int state) const
