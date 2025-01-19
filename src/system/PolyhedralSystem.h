@@ -40,9 +40,9 @@ public:
     friend bool operator== (const PolyhedralSystem&, const PolyhedralSystem&);
     friend std::istream& operator>> (std::istream&, PolyhedralSystem&);
 private:
-    Powerset m_invariant { PPL::EMPTY };
-    Poly m_flow { PPL::EMPTY };
-    Poly m_preFlow { PPL::EMPTY };
+    Powerset m_invariant { 0, PPL::EMPTY };
+    Poly m_flow { 0, PPL::EMPTY };
+    Poly m_preFlow { 0, PPL::EMPTY };
     std::unordered_map<Atom, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
     bool m_minimizeConstraintsOutput { false };

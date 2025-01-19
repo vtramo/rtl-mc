@@ -314,9 +314,9 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         input >> polyhedralSystem;
 
         REQUIRE(input.fail());
-        REQUIRE(polyhedralSystem.getFlow().is_universe());
-        REQUIRE(polyhedralSystem.getInvariant().is_universe());
-        REQUIRE(polyhedralSystem.getPreFlow().is_universe());
+        REQUIRE(polyhedralSystem.getFlow().is_empty());
+        REQUIRE(polyhedralSystem.getInvariant().is_empty());
+        REQUIRE(polyhedralSystem.getPreFlow().is_empty());
         REQUIRE(polyhedralSystem.getSpaceDimension() == 0);
         REQUIRE(polyhedralSystem.getTotalAtoms() == 0);
     }
