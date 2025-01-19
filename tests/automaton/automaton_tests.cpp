@@ -1,4 +1,5 @@
 #include <BackwardNFA.h>
+#include <DiscreteFiniteLtlFormula.h>
 #include <PolyhedralSystemFormulaDenotationMap.h>
 #include <catch2/catch_test_macros.hpp>
 #include "PolyhedralSystemParsingResult.h"
@@ -174,4 +175,81 @@ TEST_CASE("BackwardNFA invariant")
             }
         }
     }
+}
+
+std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, const int state);
+
+TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
+{
+    PolyhedralSystemConstSharedPtr polyhedralSystem {
+        std::make_shared<PolyhedralSystem>(
+            std::move(
+                *parsePolyhedralSystem(
+                    "Inv ( { a >= 0 & b >= 0 } )"
+                    "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
+                    "p { a >= b + 1 }"
+                    "q { b >= a + 1 }"
+                    "t0 { t = 0 }"
+                    "t1 { t <= 10 }"
+                )
+            )
+        )
+    };
+
+    DiscreteFiniteLtlFormula discreteFiniteLtlFormula { DiscreteFiniteLtlFormula::discretize(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f) };
+    DiscreteLtlFormula discreteLtlFormula { discreteFiniteLtlFormula.toLtl() };
+    PolyhedralSystemFormulaDenotationMap formulaDenotationMap { polyhedralSystem };
+
+    BackwardNFA backwardNfa { discreteLtlFormula, std::move(formulaDenotationMap), spot::postprocessor::High };
+    REQUIRE(backwardNfa.totalStates() == 15);
+    REQUIRE(backwardNfa.totalInitialStates() == 3);
+    REQUIRE(backwardNfa.totalFinalStates() == 4);
+    REQUIRE(backwardNfa.finalStates() == std::unordered_set<int>{ 2, 4, 7, 13 });
+    REQUIRE(backwardNfa.initialStates() == std::unordered_set<int>{ 0, 1, 2 });
+    REQUIRE(backwardNfa.totalEdges() == 26);
+
+    constexpr int stateZero = 0;
+    const StateDenotation& zeroStateDenotation { backwardNfa.stateDenotation(0) };
+    REQUIRE(zeroStateDenotation.isSingular());
+    REQUIRE(zeroStateDenotation.formula() == spot::parse_infix_psl("p & !q & t0 & t1").f);
+    REQUIRE(backwardNfa.isInitialState(stateZero));
+    REQUIRE(!backwardNfa.isFinalState(stateZero));
+    REQUIRE(!backwardNfa.hasPredecessors(stateZero));
+    REQUIRE(predecessors(backwardNfa, stateZero) == std::unordered_set<int>{});
+
+    constexpr int stateOne = 1;
+    const StateDenotation& oneStateDenotation { backwardNfa.stateDenotation(stateOne) };
+    REQUIRE(oneStateDenotation.isSingular());
+    REQUIRE(oneStateDenotation.formula() == spot::parse_infix_psl("!p & t0 & t1").f);
+    REQUIRE(backwardNfa.isInitialState(stateOne));
+    REQUIRE(!backwardNfa.isFinalState(stateOne));
+    REQUIRE(!backwardNfa.hasPredecessors(stateOne));
+    REQUIRE(predecessors(backwardNfa, stateOne) == std::unordered_set<int>{});
+
+    constexpr int stateTwo = 2;
+    const StateDenotation& twoStateDenotation { backwardNfa.stateDenotation(stateTwo) };
+    REQUIRE(twoStateDenotation.isSingular());
+    REQUIRE(twoStateDenotation.formula() == spot::parse_infix_psl("p & q & t0 & t1").f);
+    REQUIRE(backwardNfa.isInitialState(stateTwo));
+    REQUIRE(backwardNfa.isFinalState(stateTwo));
+    REQUIRE(!backwardNfa.hasPredecessors(stateTwo));
+    REQUIRE(predecessors(backwardNfa, stateTwo) == std::unordered_set<int>{});
+
+    constexpr int stateThree = 3;
+    const StateDenotation& threeStateDenotation { backwardNfa.stateDenotation(stateThree) };
+    REQUIRE(threeStateDenotation.isSingular());
+    REQUIRE(threeStateDenotation.formula() == spot::parse_infix_psl("!q & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateThree));
+    REQUIRE(!backwardNfa.isFinalState(stateThree));
+    REQUIRE(backwardNfa.hasPredecessors(stateThree));
+    REQUIRE(predecessors(backwardNfa, stateThree) == std::unordered_set<int>{ 8, 10 });
+}
+
+std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, const int state)
+{
+    REQUIRE(state < backwardNfa.totalStates());
+    std::unordered_set<int> predecessors {};
+    for (const auto& predecessorEdge: backwardNfa.predecessors(state))
+        predecessors.insert(predecessorEdge.dst);
+    return predecessors;
 }
