@@ -15,7 +15,8 @@ e ricompilare (altrimenti i risultati non saranno "precisi").
 - `meson test --benchmark -C buildDir -v discretization`
 - `meson test --benchmark -C buildDir -v system-parser`
 - `meson test --benchmark -C buildDir -v rtlf-parser`
-- `meson test --benchmark -C buildDir -t 2 -v automaton-construction` (`-t 2` per incrementare il timeout!!)
+- `meson test --benchmark -C buildDir -t 0 -v automaton-construction` (`-t 0` per disabilitare il timeout)
+- `meson test --benchmark -C buildDir -t 0 -v denot` (`-t 0` per disabilitare il timeout)
 
 ### Risultati attuali
 Eseguiti su una macchina con processore 13th Gen Intel(R) Core(TM) i9-13900KF e 64GB di RAM
@@ -89,6 +90,24 @@ benchmark name                       samples       iterations    est run time
 Automaton construction benchmark 1             100             1    370.971 ms 
                                         3.56679 ms    3.55703 ms    3.58146 ms 
                                         60.1448 us    44.7601 us    87.6618 us 
+                                                                               
+
+===============================================================================
+
+
+-------------------------------------------------------------------------------
+Denot benchmark GAP
+-------------------------------------------------------------------------------
+../tests/benchmarks/denot/denot_benchmarks.cpp:14
+...............................................................................
+
+benchmark name                       samples       iterations    est run time
+                                     mean          low mean      high mean
+                                     std dev       low std dev   high std dev
+-------------------------------------------------------------------------------
+k=50                                           100             1     2.26753 m 
+                                          1.3522 s     1.34968 s     1.35522 s 
+                                        14.0225 ms    11.9017 ms     16.699 ms 
                                                                                
 
 ===============================================================================
