@@ -44,7 +44,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -66,7 +66,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -88,7 +88,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -110,7 +110,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -132,7 +132,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -154,7 +154,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -176,7 +176,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -198,7 +198,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -220,7 +220,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -242,7 +242,7 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 }
@@ -283,7 +283,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -305,7 +305,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -327,7 +327,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -349,7 +349,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -371,7 +371,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -393,7 +393,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -415,7 +415,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -437,7 +437,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -459,7 +459,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 
@@ -481,7 +481,7 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         REQUIRE(result == expectedResult);
     }
 }

@@ -5,7 +5,6 @@
 #include "BackwardNFA.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
-#include "DiscreteFiniteLtlFormula.h"
 #include "PolyhedralSystem.h"
 #include "ppl_aliases.h"
 #include "Denot.h"
@@ -52,7 +51,7 @@ int main(const int argc, char *argv[])
         std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
 
         Denot denot { polyhedralSystem, backwardNfa };
-        Powerset result { denot.run() };
+        Powerset result { denot() };
         std::cout << "Denot total iterations: " << denot.totalIterations() << '\n';
         std::cout << "RESULT " << PPLOutput::toString(result, polyhedralSystem->getSymbolTable()) << '\n';
     } catch (const std::exception& e)

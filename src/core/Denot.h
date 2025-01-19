@@ -13,6 +13,7 @@ public:
       , m_backwardNfa { backwardNfa }
     {}
 
+    Powerset operator() () { return run(); }
     Powerset run()
     {
         m_iterations = 0;
