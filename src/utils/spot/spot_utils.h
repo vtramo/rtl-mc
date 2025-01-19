@@ -16,6 +16,7 @@ namespace SpotUtils
     spot::atomic_prop_set AP(std::set<std::string>&& atoms);
     spot::formula ap(std::string_view ap);
     spot::formula F(spot::formula&& formula);
+    spot::formula F(const spot::formula& formula);
     spot::formula X(spot::formula&& formula);
     spot::formula strongX(spot::formula&& formula);
     spot::formula strongX(const spot::formula& formula);
@@ -44,6 +45,7 @@ namespace SpotUtils
     spot::formula singOpenLastPropertyFinite();
     spot::formula singOpenLastProperty();
 
+    spot::formula generateAlternatingFormula(int k, spot::formula p = ap("p"), spot::formula q = ap("q"));
     std::string toFormulaString(const spot::formula& formula);
     bool isSing(const spot::formula& formula);
     bool isNotSing(const spot::formula& formula);

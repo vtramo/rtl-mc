@@ -23,6 +23,11 @@ namespace SpotUtils
         return spot::formula::ap(std::string { ap });
     }
 
+    spot::formula F(const spot::formula& formula)
+    {
+        return spot::formula::F(formula);
+    }
+
     spot::formula F(spot::formula&& formula)
     {
         return spot::formula::F(std::move(formula));
@@ -91,6 +96,24 @@ namespace SpotUtils
     spot::formula And(std::vector<spot::formula>&& formulas)
     {
         return spot::formula::And(std::move(formulas));
+    }
+
+    spot::formula generateAlternatingFormula(int k, spot::formula p, spot::formula q)
+    {
+        assert(k > 0);
+
+        spot::formula result { F(And({ p, F(q) })) };
+        if (k == 1)
+            return result;
+
+        bool pTurn = false;
+        while (--k > 0)
+        {
+            result = pTurn ? F(And({ p, result })) : F(And({ q  , result }));
+            pTurn = !pTurn;
+        }
+
+        return result;
     }
 
     spot::formula Or(std::vector<spot::formula>&& formulas)
