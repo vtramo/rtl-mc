@@ -1,9 +1,11 @@
+#include <DiscreteFiniteLtlFormula.h>
 #include <argparse/argparse.hpp>
 #include <ppl_output.h>
 #include <spot/tl/parse.hh>
 #include "BackwardNFA.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
+#include "DiscreteFiniteLtlFormula.h"
 #include "PolyhedralSystem.h"
 #include "ppl_aliases.h"
 #include "Denot.h"
@@ -26,10 +28,13 @@ int main(const int argc, char *argv[])
     std::cout << "POLYHEDRAL SYSTEM: \n";
     polyhedralSystem->setConstraintOutputMinimized(false);
     std::cout << *polyhedralSystem << "\n\n";
-    std::cout << "RTLf Formula: " << rtlFormula << "\n\n";
+    std::cout << "RTLf Formula: " << rtlFormula << '\n';
 
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-    DiscreteLtlFormula discreteLtlFormula { DiscreteLtlFormula::discretizeToLtl(std::move(rtlFormula)) };
+    DiscreteFiniteLtlFormula discreteFiniteLtlFormula { DiscreteFiniteLtlFormula::discretize(std::move(rtlFormula)) };
+    DiscreteLtlFormula discreteLtlFormula { discreteFiniteLtlFormula.toLtl() };
+
+    std::cout << "DiscreteLtlFormula: " << discreteLtlFormula << "\n\n";
 
     try
     {

@@ -2,7 +2,7 @@
 
 #include <spot/tl/formula.hh>
 #include <spot/tl/ltlf.hh>
-#include "discretization.h"
+#include "DiscreteLtlFormula.h"
 
 class DiscreteFiniteLtlFormula {
 public:

@@ -51,13 +51,13 @@ private:
 
         auto& automatonOptimizationGroup { m_rtlMcProgram.add_mutually_exclusive_group() };
         automatonOptimizationGroup.add_argument("--low")
-            .help("minimal optimizations (fast)")
+            .help("minimal optimizations (fast, default)")
             .store_into(m_automatonOptimizationFlags.low);
         automatonOptimizationGroup.add_argument("--medium")
             .help("moderate optimizations")
             .store_into(m_automatonOptimizationFlags.medium);
         automatonOptimizationGroup.add_argument("--high")
-            .help("all available optimizations (slow, default)")
+            .help("all available optimizations (slow)")
             .store_into(m_automatonOptimizationFlags.high);
         m_rtlMcProgram.add_argument("--any")
             .help("tells the translator that it should attempt to "

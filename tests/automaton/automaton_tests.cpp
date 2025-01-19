@@ -1,3 +1,4 @@
+#include <BackwardNFA.h>
 #include <PolyhedralSystemFormulaDenotationMap.h>
 #include <catch2/catch_test_macros.hpp>
 #include "PolyhedralSystemParsingResult.h"
@@ -128,5 +129,49 @@ TEST_CASE("Formula denotation map TEST 1")
         PowersetConstSharedPtr denotation { polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formula) };
 
         REQUIRE(*expectedPowerset == *denotation);
+    }
+}
+
+TEST_CASE("BackwardNFA invariant")
+{
+    PolyhedralSystemConstSharedPtr polyhedralSystem {
+        std::make_shared<PolyhedralSystem>(
+            std::move(
+                *parsePolyhedralSystem(
+                    "Inv ( { a >= 0 & b >= 0 } )"
+                    "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
+                    "p { a >= b + 1 }"
+                    "q { b >= a + 1 }"
+                    "t0 { t = 0 }"
+                    "t1 { t <= 10 }"
+                )
+            )
+        )
+    };
+
+    SECTION("t0 & G(t1) & F(p & F(q))")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteLtlFormula::discretizeToLtl(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f) };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        for (int state = 0; state < backwardNfa.totalStates(); state++)
+        {
+            const StateDenotation& stateDenotation { backwardNfa.stateDenotation(state) };
+            if (backwardNfa.isInitialState(state))
+            {
+                BackwardNFA::EdgeIterator edgeIterator { backwardNfa.predecessors(state) };
+                REQUIRE(edgeIterator.begin() == edgeIterator.end());
+                REQUIRE(stateDenotation.isSingular());
+                continue;
+            }
+
+            bool currentStateIsSingular { stateDenotation.isSingular() };
+            for (const auto& edgePredecessor: backwardNfa.predecessors(state))
+            {
+                const int predecessor { static_cast<int>(edgePredecessor.dst) };
+                const StateDenotation& predecessorStateDenotation { backwardNfa.stateDenotation(predecessor) };
+                REQUIRE(predecessorStateDenotation.isSingular() != currentStateIsSingular);
+            }
+        }
     }
 }

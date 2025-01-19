@@ -4,7 +4,8 @@ automaton_tests_src_files = [
     polyhedral_system_source_files,
     polyhedral_system_parser_source_files,
     spot_utils_source_files,
-    ppl_utils_source_files
+    ppl_utils_source_files,
+    discretization_source_files
 ]
 
 automaton_tests_exe = executable(
