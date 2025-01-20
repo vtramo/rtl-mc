@@ -177,7 +177,7 @@ TEST_CASE("BackwardNFA invariant")
     }
 }
 
-std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, const int state);
+std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, int state);
 
 TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
 {
@@ -243,6 +243,105 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     REQUIRE(!backwardNfa.isFinalState(stateThree));
     REQUIRE(backwardNfa.hasPredecessors(stateThree));
     REQUIRE(predecessors(backwardNfa, stateThree) == std::unordered_set<int>{ 8, 10 });
+
+    constexpr int stateFour = 4;
+    const StateDenotation& fourStateDenotation { backwardNfa.stateDenotation(stateFour) };
+    REQUIRE(fourStateDenotation.isSingular());
+    REQUIRE(fourStateDenotation.formula() == spot::parse_infix_psl("q & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateFour));
+    REQUIRE(backwardNfa.isFinalState(stateFour));
+    REQUIRE(backwardNfa.hasPredecessors(stateFour));
+    REQUIRE(predecessors(backwardNfa, stateFour) == std::unordered_set<int>{ 8, 10 });
+
+    constexpr int stateFive = 5;
+    const StateDenotation& fiveStateDenotation { backwardNfa.stateDenotation(stateFive) };
+    REQUIRE(fiveStateDenotation.isSingular());
+    REQUIRE(fiveStateDenotation.formula() == spot::parse_infix_psl("p & !q & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateFive));
+    REQUIRE(!backwardNfa.isFinalState(stateFive));
+    REQUIRE(backwardNfa.hasPredecessors(stateFive));
+    REQUIRE(predecessors(backwardNfa, stateFive) == std::unordered_set<int>{ 11 });
+
+    constexpr int stateSix = 6;
+    const StateDenotation& sixStateDenotation { backwardNfa.stateDenotation(stateSix) };
+    REQUIRE(sixStateDenotation.isSingular());
+    REQUIRE(sixStateDenotation.formula() == spot::parse_infix_psl("!p & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateSix));
+    REQUIRE(!backwardNfa.isFinalState(stateSix));
+    REQUIRE(backwardNfa.hasPredecessors(stateSix));
+    REQUIRE(predecessors(backwardNfa, stateSix) == std::unordered_set<int>{ 11 });
+
+    constexpr int stateSeven = 7;
+    const StateDenotation& sevenStateDenotation { backwardNfa.stateDenotation(stateSeven) };
+    REQUIRE(sevenStateDenotation.isSingular());
+    REQUIRE(sevenStateDenotation.formula() == spot::parse_infix_psl("p & q & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateSeven));
+    REQUIRE(backwardNfa.isFinalState(stateSeven));
+    REQUIRE(backwardNfa.hasPredecessors(stateSeven));
+    REQUIRE(predecessors(backwardNfa, stateSeven) == std::unordered_set<int>{ 11 });
+
+    constexpr int stateEight = 8;
+    const StateDenotation& eightStateDenotation { backwardNfa.stateDenotation(stateEight) };
+    REQUIRE(!eightStateDenotation.isSingular());
+    REQUIRE(eightStateDenotation.formula() == spot::parse_infix_psl("!q & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateEight));
+    REQUIRE(!backwardNfa.isFinalState(stateEight));
+    REQUIRE(backwardNfa.hasPredecessors(stateEight));
+    REQUIRE(predecessors(backwardNfa, stateEight) == std::unordered_set<int>{ 0, 3, 5 });
+
+    constexpr int stateNine = 9;
+    const StateDenotation& nineStateDenotation { backwardNfa.stateDenotation(stateNine) };
+    REQUIRE(!nineStateDenotation.isSingular());
+    REQUIRE(nineStateDenotation.formula() == spot::parse_infix_psl("q & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateNine));
+    REQUIRE(!backwardNfa.isFinalState(stateNine));
+    REQUIRE(backwardNfa.hasPredecessors(stateNine));
+    REQUIRE(predecessors(backwardNfa, stateNine) == std::unordered_set<int>{ 0, 3, 5 });
+
+    constexpr int stateTen = 10;
+    const StateDenotation& tenStateDenotation { backwardNfa.stateDenotation(stateTen) };
+    REQUIRE(!tenStateDenotation.isSingular());
+    REQUIRE(tenStateDenotation.formula() == spot::parse_infix_psl("p & !q & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateTen));
+    REQUIRE(!backwardNfa.isFinalState(stateTen));
+    REQUIRE(backwardNfa.hasPredecessors(stateTen));
+    REQUIRE(predecessors(backwardNfa, stateTen) == std::unordered_set<int>{ 1, 6 });
+
+    constexpr int stateEleven = 11;
+    const StateDenotation& elevenStateDenotation { backwardNfa.stateDenotation(stateEleven) };
+    REQUIRE(!elevenStateDenotation.isSingular());
+    REQUIRE(elevenStateDenotation.formula() == spot::parse_infix_psl("!p & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateEleven));
+    REQUIRE(!backwardNfa.isFinalState(stateEleven));
+    REQUIRE(backwardNfa.hasPredecessors(stateEleven));
+    REQUIRE(predecessors(backwardNfa, stateEleven) == std::unordered_set<int>{ 1, 6 });
+
+    constexpr int stateTwelve = 12;
+    const StateDenotation& twelveStateDenotation { backwardNfa.stateDenotation(stateTwelve) };
+    REQUIRE(!twelveStateDenotation.isSingular());
+    REQUIRE(twelveStateDenotation.formula() == spot::parse_infix_psl("p & q & t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateTwelve));
+    REQUIRE(!backwardNfa.isFinalState(stateTwelve));
+    REQUIRE(backwardNfa.hasPredecessors(stateTwelve));
+    REQUIRE(predecessors(backwardNfa, stateTwelve) == std::unordered_set<int>{ 1, 6 });
+
+    constexpr int stateThirteen = 13;
+    const StateDenotation& thirteenStateDenotation { backwardNfa.stateDenotation(stateThirteen) };
+    REQUIRE(thirteenStateDenotation.isSingular());
+    REQUIRE(thirteenStateDenotation.formula() == spot::parse_infix_psl("t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateThirteen));
+    REQUIRE(backwardNfa.isFinalState(stateThirteen));
+    REQUIRE(backwardNfa.hasPredecessors(stateThirteen));
+    REQUIRE(predecessors(backwardNfa, stateThirteen) == std::unordered_set<int>{ 9, 12, 14 });
+
+    constexpr int stateFourteen = 14;
+    const StateDenotation& fourteenStateDenotation { backwardNfa.stateDenotation(stateFourteen) };
+    REQUIRE(!fourteenStateDenotation.isSingular());
+    REQUIRE(fourteenStateDenotation.formula() == spot::parse_infix_psl("t1").f);
+    REQUIRE(!backwardNfa.isInitialState(stateFourteen));
+    REQUIRE(!backwardNfa.isFinalState(stateFourteen));
+    REQUIRE(backwardNfa.hasPredecessors(stateFourteen));
+    REQUIRE(predecessors(backwardNfa, stateFourteen) == std::unordered_set<int>{ 2, 4, 7, 13 });
 }
 
 std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, const int state)
