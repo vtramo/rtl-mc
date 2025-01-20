@@ -8,8 +8,6 @@ project('rtl-mc', 'cpp',
     'b_sanitize=none' # https://github.com/google/sanitizers
   ])
 
-catch2_dep = dependency('catch2', fallback : ['catch2', 'catch2_with_main_dep'], version: '>=3.7.1')
-
 src_dir = 'src'
 parser_dir = 'parser'
 system_dir = 'system'
@@ -31,6 +29,7 @@ include_directories = [
 
 subdir(src_dir)
 
-if get_option('enable_tests')
+if get_option('enable_tests') == true
+  catch2_dep = dependency('catch2', fallback : ['catch2', 'catch2_with_main_dep'], version: '>=3.7.1')
   subdir('tests')
 endif
