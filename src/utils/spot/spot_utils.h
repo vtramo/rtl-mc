@@ -27,7 +27,6 @@ namespace SpotUtils
     spot::formula U(spot::formula&& formula1, spot::formula&& formula2);
     spot::formula U(const spot::formula& formula1, spot::formula&& formula2);
     spot::formula R(spot::formula&& formula1, spot::formula&& formula2);
-    spot::formula S(spot::formula&& formula1, spot::formula&& formula2);
     spot::formula Equiv(const spot::formula& formula1, const spot::formula& formula2);
     spot::formula And(std::vector<spot::formula>&& formulas);
     spot::formula Or(std::vector<spot::formula>&& formulas);

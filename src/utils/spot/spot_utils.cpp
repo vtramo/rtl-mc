@@ -83,11 +83,6 @@ namespace SpotUtils
         return spot::formula::R(std::move(formula1), std::move(formula2));
     }
 
-    spot::formula S(spot::formula&& formula1, spot::formula&& formula2)
-    {
-        return spot::formula::S(std::move(formula1), std::move(formula2));
-    }
-
     spot::formula Equiv(const spot::formula& formula1, const spot::formula& formula2)
     {
         return spot::formula::Equiv(formula1, formula2);
