@@ -48,9 +48,16 @@ questo pkg config file verrà letto da meson per individuare la dipendenza sul s
 ```bash
 sudo apt install -y antlr4
 ```
-oppure
+
+oppure:
+
+Necessita di una JDK >= 11:
 ```bash
-pip3 install antlr4-tools
+sudo apt-get install -y openjdk-11-jdk
+```
+```bash
+sudo apt-get install -y python3-pip
+python3 -m pip install --break-system-packages antlr4-tools # preferibile
 ```
 
 ### 7. Installare ANTLR4 Runtime
@@ -66,10 +73,13 @@ mkdir build && mkdir run && cd build
 sudo cmake .. 
 sudo make && sudo make install
 ```
-Nella cartella `build` si troverà il risultato della compilazione. Successivamente, creare un pkg config file nella stessa
-directory dove si è installato PPL con il nome `antlr4-runtime.pc`:
+Successivamente, eseguire:
+```bash
+cd /usr/local/include/antlr4-runtime && mv * .. && cd .. && rm -rf antlr4-runtime
+```
+Infine, creare un pkg config file `antlr4-runtime.pc` in `/usr/local/lib/pkgconfig`:
 ```text
-prefix=/usr/local/antlr4-runtime
+prefix=/usr/local
 includedir=${prefix}/include
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
