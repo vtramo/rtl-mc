@@ -26,8 +26,9 @@ inline namespace V1
             {
                 const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
                 PowersetConstSharedPtr powersetFinalState { finalStateDenotation.denotation() };
+
                 for (Powerset::const_iterator patchesIt { powersetFinalState->begin() }; patchesIt != powersetFinalState->end(); ++patchesIt)
-                    PPLUtils::fusion(result, denot(finalState, patchesIt->pointset(), patchesIt->pointset(), std::move(V)));
+                    PPLUtils::fusion(result, denot(finalState, patchesIt->pointset(), patchesIt->pointset(), std::move(V), true));
             }
 
             return result;
@@ -44,7 +45,8 @@ inline namespace V1
             const int state,
             const Poly& P,
             const Poly& X,
-            std::unordered_map<int, Powerset>&& V
+            std::unordered_map<int, Powerset>&& V,
+            const bool isSing
         )
         {
             m_iterations++;
@@ -53,10 +55,12 @@ inline namespace V1
             assert(X.space_dimension() == m_polyhedralSystem->getSpaceDimension());
             assert(X.space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
 
+            const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
+            assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
+
             if (m_backwardNfa.isInitialState(state))
                 return Powerset { X };
 
-            const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
             if (!stateDenotation.isSingular())
                 addDisjunct(V, state, P);
 
@@ -83,7 +87,7 @@ inline namespace V1
                     assert(Q.space_dimension() == m_polyhedralSystem->getSpaceDimension());
                     assert(Y.space_dimension() == m_polyhedralSystem->getSpaceDimension());
 
-                    const Powerset& powerset { denot(predecessor, Q, Y, std::move(V)) };
+                    const Powerset& powerset { denot(predecessor, Q, Y, std::move(V), !isSing) };
                     PPLUtils::fusion(result, powerset);
                 }
             }
@@ -126,7 +130,7 @@ namespace V2
                 const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
                 PowersetConstSharedPtr powersetFinalState { finalStateDenotation.denotation() };
                 for (Powerset::const_iterator patchesIt { powersetFinalState->begin() }; patchesIt != powersetFinalState->end(); ++patchesIt)
-                    PPLUtils::fusion(result, denot(finalState, patchesIt->pointset(), patchesIt->pointset(), {}));
+                    PPLUtils::fusion(result, denot(finalState, patchesIt->pointset(), patchesIt->pointset(), {}, true));
             }
 
             return result;
@@ -143,7 +147,8 @@ namespace V2
             const int state,
             const Poly& P,
             const Poly& X,
-            std::unordered_map<int, PowersetSharedPtr> V
+            std::unordered_map<int, PowersetSharedPtr> V,
+            const bool isSing
         )
         {
             m_iterations++;
@@ -152,10 +157,12 @@ namespace V2
             assert(X.space_dimension() == m_polyhedralSystem->getSpaceDimension());
             assert(X.space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
 
+            const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
+            assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
+
             if (m_backwardNfa.isInitialState(state))
                 return Powerset { X };
 
-            const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
             if (!stateDenotation.isSingular())
                 addDisjunct(V, state, P);
 
@@ -182,7 +189,7 @@ namespace V2
                     assert(Q.space_dimension() == m_polyhedralSystem->getSpaceDimension());
                     assert(Y.space_dimension() == m_polyhedralSystem->getSpaceDimension());
 
-                    const Powerset& powerset { denot(predecessor, Q, Y, V) };
+                    const Powerset& powerset { denot(predecessor, Q, Y, V, !isSing) };
                     PPLUtils::fusion(result, powerset);
                 }
             }
