@@ -1,10 +1,14 @@
 @startuml
 package system <<Frame>> {
     class PolyhedralSystemBuilderVisitor {
+        --data members--
+        -m_visitor: PolyhedralSystemVisitor
         --constructors--
         +PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable& symbolTable)
         --member functions--
         +buildPolyhedralSystem(PolyhedralSystemParser::SystemContext* parseTree) : PolyhedralSystem
+        +hasErrors() : bool
+        +errors() : const std::vector<ParserError>&
     }
 
     class PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor {
@@ -19,6 +23,7 @@ package system <<Frame>> {
         -m_polyhedra : std::unordered_map<int, std::unique_ptr<Poly>>
         -m_powersets : std::unordered_map<int, std::unique_ptr<Powerset>>
         -m_denotation : std::unordered_map<std::string, Powerset>
+        -m_errors : std::vector<ParserError>
         --constructors--
         +PolyhedralSystemVisitor(PolyhedralSystemSymbolTable& symbolTable)
         --getters--
@@ -44,10 +49,14 @@ package system <<Frame>> {
         +visitSystem(PolyhedralSystemParser::SystemContext* ctx) : std::any
         +visitVar(PolyhedralSystemParser::VarContext* context) : std::any
         --private member functions--
+        -containsAtom(std::string_view atom) : bool
+        -addDuplicateAtomParserError(antlr4::tree::TerminalNode*) : void
         -popConstraint(int visitKey) : std::unique_ptr<PPL::Constraint>
         -popLinearExpression(int visitKey) : std::unique_ptr<PPL::Linear_Expression>
         -popPoly(int visitKey) : std::unique_ptr<Poly>
         -popPowerset(int visitKey) : std::unique_ptr<Powerset>
+        --friends--
+        class PolyhedralSystemBuilderVisitor
     }
 
     class PolyhedralSystemErrorListener {
@@ -55,7 +64,7 @@ package system <<Frame>> {
         -m_errors : std::vector<ParserError>
         --member functions--
         +hasErrors() : bool
-        +getErrors() : std::vector<ParserError>
+        +errors() : std::vector<ParserError>
         +syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e) : void
         -addError(ParserError&& error) : void
     }
@@ -64,25 +73,25 @@ package system <<Frame>> {
         --data members--
         -m_lexicalErrorCount : int
         -m_syntaxErrorCount : int
-        -m_unknownErrorCount : int
+        -m_semanticErrorCount : int
         -m_polyhedralSystem : std::unique_ptr<PolyhedralSystem>
-        -m_syntaxErrors : std::vector<ParserError>
+        -m_errors : std::vector<ParserError>
         --constructors--
-        +PolyhedralSystemParsingResult(std::vector<ParserError> syntaxErrors)
+        +PolyhedralSystemParsingResult(std::vector<ParserError> errors)
         +PolyhedralSystemParsingResult(PolyhedralSystem&& polyhedralSystem)
         --member functions--
         +ok() : bool
         +errorCount() : int
         +lexicalErrorCount() : int
         +syntaxErrorCount() : int
-        +unknownErrorCount() : int
+        +semanticErrorCount() : int
         +errors() : std::vector<ParserError>
         +lexicalErrors() : std::vector<ParserError>
         +syntaxErrors() : std::vector<ParserError>
-        +unknownErrors() : std::vector<ParserError>
+        +semanticErrors() : std::vector<ParserError>
         -isLexicalError(const ParserError& error) : bool
         -isSyntaxError(const ParserError& error) : bool
-        -isUnknownError(const ParserError& error) : bool
+        -isSemanticError(const ParserError& error) : bool
         --operators--
         +operator*() : PolyhedralSystem&
         +operator!() : bool

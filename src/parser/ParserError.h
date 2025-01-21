@@ -56,7 +56,7 @@ public:
           PositionError { spotParserError.first.begin },
           PositionError { spotParserError.first.end },
           std::move(spotParserError.second),
-          Type::semantic
+          Type::syntax
         )
     {
     }

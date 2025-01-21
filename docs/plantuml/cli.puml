@@ -5,6 +5,7 @@ package cli {
         --data members--
         -m_programName: std::string
         -m_automatonOptimizationFlags: AutomatonOptimizationFlags
+        -m_directLtl: bool
         -m_polyhedralSystemFilename: std::string
         -m_rtlFilename: std::string
         -m_rtlMcProgram: argparse::ArgumentParser
@@ -16,6 +17,7 @@ package cli {
         +polyhedralSystem(): PolyhedralSystemSharedPtr
         +rtlFormula(): const spot::formula&
         +automatonOptimizationFlags(): const AutomatonOptimizationFlags&
+        +directLtl(): bool
         -buildRtlMcProgram(): void
         -parseArgs(int argc, char *argv[]): void
         -readAndParsePolyhedralSystemFile(): void
