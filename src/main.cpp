@@ -9,6 +9,7 @@
 #include "ppl_aliases.h"
 #include "Denot.h"
 #include "RtlMcProgram.h"
+#include "discretization/DiscreteLtlFormula.h"
 
 using PPL::IO_Operators::operator<<;
 
@@ -30,8 +31,11 @@ int main(const int argc, char *argv[])
     std::cout << "RTLf Formula: " << rtlFormula << '\n';
 
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-    DiscreteFiniteLtlFormula discreteFiniteLtlFormula { DiscreteFiniteLtlFormula::discretize(std::move(rtlFormula)) };
-    DiscreteLtlFormula discreteLtlFormula { discreteFiniteLtlFormula.toLtl() };
+    DiscreteLtlFormula discreteLtlFormula {
+        rtlMcProgram.directLtl()
+            ? DiscreteLtlFormula::discretizeToLtl(std::move(rtlFormula))
+            : DiscreteFiniteLtlFormula::discretize(std::move(rtlFormula)).toLtl()
+    };
 
     std::cout << "DiscreteLtlFormula: " << discreteLtlFormula << "\n\n";
 

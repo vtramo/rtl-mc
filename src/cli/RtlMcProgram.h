@@ -28,10 +28,12 @@ public:
     [[nodiscard]] PolyhedralSystemSharedPtr polyhedralSystem() const { return m_polyhedralSystem; }
     [[nodiscard]] const spot::formula& rtlFormula() const { return m_rtlFormula; }
     [[nodiscard]] const AutomatonOptimizationFlags& automatonOptimizationFlags() const { return m_automatonOptimizationFlags; }
+    [[nodiscard]] bool directLtl() const { return m_directLtl; }
 
 private:
     std::string m_programName {};
     AutomatonOptimizationFlags m_automatonOptimizationFlags {};
+    bool m_directLtl {};
     std::string m_polyhedralSystemFilename {};
     std::string m_rtlFilename {};
     argparse::ArgumentParser m_rtlMcProgram {};
@@ -51,13 +53,13 @@ private:
 
         auto& automatonOptimizationGroup { m_rtlMcProgram.add_mutually_exclusive_group() };
         automatonOptimizationGroup.add_argument("--low")
-            .help("minimal optimizations (fast, default)")
+            .help("minimal optimizations during automaton construction (fast, default)")
             .store_into(m_automatonOptimizationFlags.low);
         automatonOptimizationGroup.add_argument("--medium")
-            .help("moderate optimizations")
+            .help("moderate optimizations during automaton construction")
             .store_into(m_automatonOptimizationFlags.medium);
         automatonOptimizationGroup.add_argument("--high")
-            .help("all available optimizations (slow)")
+            .help("all available optimizations during automaton construction (slow)")
             .store_into(m_automatonOptimizationFlags.high);
         m_rtlMcProgram.add_argument("--any")
             .help("tells the translator that it should attempt to "
@@ -66,6 +68,11 @@ private:
                   "speeds up the translation")
             .flag()
             .store_into(m_automatonOptimizationFlags.any);
+
+        m_rtlMcProgram.add_argument("--direct-ltl")
+            .help("discretize the RTLf formula directly into LTL in a single step, without using spot::from_ltlf.")
+            .flag()
+            .store_into(m_directLtl);
     }
 
     void parseArgs(const int argc, char *argv[])
