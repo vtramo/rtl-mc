@@ -52,9 +52,12 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
 
         for (const auto& nfaEdge: nfa->out(nfaState))
         {
-            int nfaEdgeDst { static_cast<int>(nfaEdge.dst) };
+            const bdd nfaEdgeCond { nfaEdge.cond }; // If an accepting state has no outgoing edges, Spot creates a dummy edge labeled F. We don't need this edge!
+            if (nfaEdgeCond == bdd_false())
+                continue;
 
-            StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdge.cond) };
+            int nfaEdgeDst { static_cast<int>(nfaEdge.dst) };
+            StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdgeCond) };
             int edgeState { static_cast<int>(m_backwardNfa->new_state()) };
             m_stateDenotationById.emplace(edgeState, std::move(stateDenotation));
 
