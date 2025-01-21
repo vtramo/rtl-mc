@@ -16,7 +16,7 @@ public:
       std::exception_ptr e) override;
 
     [[nodiscard]] bool hasErrors() const;
-    [[nodiscard]] std::vector<ParserError> getErrors() const;
+    [[nodiscard]] std::vector<ParserError> errors() const;
 private:
     std::vector<ParserError> m_errors {};
 

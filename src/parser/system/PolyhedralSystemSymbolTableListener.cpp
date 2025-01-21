@@ -45,7 +45,6 @@ void PolyhedralSystemSymbolTableListener::addAtom(const std::string_view atomId)
 {
     if (m_symbolTable.containsAtom(atomId))
     {
-        // TODO: gestire duplicati
         return;
     }
 

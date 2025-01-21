@@ -1,6 +1,8 @@
 #ifndef POLYHEDRALSYSTEMBUILDERVISITOR_H
 #define POLYHEDRALSYSTEMBUILDERVISITOR_H
 
+#include <ParserError.h>
+
 #include "PolyhedralSystem.h"
 #include "PolyhedralSystemSymbolTable.h"
 #include "PolyhedralSystemParser.h"
@@ -11,6 +13,9 @@ class PolyhedralSystemBuilderVisitor final
 public:
     explicit PolyhedralSystemBuilderVisitor(PolyhedralSystemSymbolTable& symbolTable);
     PolyhedralSystem buildPolyhedralSystem(PolyhedralSystemParser::SystemContext* parseTree);
+
+    [[nodiscard]] bool hasErrors() const;
+    [[nodiscard]] const std::vector<ParserError>& errors() const;
 
 private:
     class PolyhedralSystemVisitor final : public PolyhedralSystemBaseVisitor
@@ -45,6 +50,7 @@ private:
         [[nodiscard]] Powerset getInvariant() const;
         [[nodiscard]] Poly getFlow() const;
         [[nodiscard]] PolyhedralSystemSymbolTable getSymbolTable() const;
+        friend class PolyhedralSystemBuilderVisitor;
 
     private:
         int m_visitKey {};
@@ -58,6 +64,10 @@ private:
         Powerset m_invariant {};
         Poly m_flow {};
 
+        std::vector<ParserError> m_errors {};
+
+        bool containsAtom(std::string_view atom) const;
+        void addDuplicateAtomParserError(antlr4::tree::TerminalNode*);
         PolyUniquePtr popPoly(int visitKey);
         PowersetUniquePtr popPowerset(int visitKey);
         std::unique_ptr<PPL::Constraint> popConstraint(int visitKey);

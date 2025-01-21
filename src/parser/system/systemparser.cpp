@@ -31,9 +31,9 @@ PolyhedralSystemParsingResult parsePolyhedralSystem(antlr4::ANTLRInputStream* in
     PolyhedralSystemParser::SystemContext* parseTree = parser.system();
     if (errorListener->hasErrors())
     {
-        std::vector errors { errorListener->getErrors() };
+        std::vector errors { errorListener->errors() };
         delete errorListener;
-        return PolyhedralSystemParsingResult { errors };
+        return PolyhedralSystemParsingResult { std::move(errors) };
     }
 
     delete errorListener;
@@ -42,5 +42,11 @@ PolyhedralSystemParsingResult parsePolyhedralSystem(antlr4::ANTLRInputStream* in
     walker.walk(&symbolTableListener, parseTree);
     PolyhedralSystemSymbolTable symbolTable { symbolTableListener.getSymbolTable() };
     PolyhedralSystemBuilderVisitor polyhedralSystemBuilderVisitor { symbolTable };
-    return PolyhedralSystemParsingResult { polyhedralSystemBuilderVisitor.buildPolyhedralSystem(parseTree) };
+    PolyhedralSystem polyhedralSystem { polyhedralSystemBuilderVisitor.buildPolyhedralSystem(parseTree) };
+    if (polyhedralSystemBuilderVisitor.hasErrors())
+    {
+        std::vector errors { polyhedralSystemBuilderVisitor.errors() };
+        return PolyhedralSystemParsingResult { std::move(errors) };
+    }
+    return PolyhedralSystemParsingResult { std::move(polyhedralSystem) };
 }

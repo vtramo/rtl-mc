@@ -8,7 +8,7 @@ class ParserError {
 public:
     enum class Type
     {
-      unknown,
+      semantic,
       lexical,
       syntax
     };
@@ -56,7 +56,7 @@ public:
           PositionError { spotParserError.first.begin },
           PositionError { spotParserError.first.end },
           std::move(spotParserError.second),
-          Type::unknown
+          Type::semantic
         )
     {
     }

@@ -19,7 +19,7 @@ void PolyhedralSystemErrorListener::syntaxError(
         errorType = ParserError::Type::syntax;
     } else
     {
-        errorType = ParserError::Type::unknown;
+        errorType = ParserError::Type::semantic;
     }
 
     addError({ msg, line, charPositionInLine, errorType });
@@ -35,7 +35,7 @@ bool PolyhedralSystemErrorListener::hasErrors() const
     return !m_errors.empty();
 }
 
-std::vector<ParserError> PolyhedralSystemErrorListener::getErrors() const
+std::vector<ParserError> PolyhedralSystemErrorListener::errors() const
 {
     return m_errors;
 }

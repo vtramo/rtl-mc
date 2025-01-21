@@ -64,6 +64,9 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPower
     const int key { std::any_cast<int>(visit(ctx->powerset())) };
     auto powerset { popPowerset(key) };
     const std::string atomId { ctx->VARID()->getText() };
+    if (containsAtom(atomId))
+        addDuplicateAtomParserError(ctx->VARID());
+
     m_denotation[atomId] = *powerset;
     m_powersets[m_visitKey] = std::move(powerset);
     return m_visitKey++;
@@ -74,6 +77,8 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPoly(
     const int key { std::any_cast<int>(visit(ctx->poly())) };
     const auto poly { popPoly(key) };
     const std::string atomId { ctx->VARID()->getText() };
+    if (containsAtom(atomId))
+        addDuplicateAtomParserError(ctx->VARID());
     auto powerset { std::make_unique<Powerset>(*poly) };
     m_denotation[atomId] = *powerset;
     m_powersets[m_visitKey] = std::move(powerset);
@@ -83,10 +88,23 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPoly(
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx)
 {
     const std::string atomId { ctx->VARID()->getText() };
+    if (containsAtom(atomId)){}
+        addDuplicateAtomParserError(ctx->VARID());
+
     auto bottomPowerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
     m_denotation[atomId] = *bottomPowerset;
     m_powersets[m_visitKey] = std::move(bottomPowerset);
     return m_visitKey++;
+}
+
+void PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::addDuplicateAtomParserError(antlr4::tree::TerminalNode* ctx)
+{
+    antlr4::Token* start { ctx->getSymbol() };
+    PositionError startPositionError { start->getLine(), start->getCharPositionInLine() };
+    std::string duplicatedAtom { ctx->getText() };
+    PositionError endPositionError { start->getLine(), start->getCharPositionInLine() + duplicatedAtom.length() };
+    std::string errorMessage { "The atomic proposition " + duplicatedAtom + " is already defined!" };
+    m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext* ctx)
@@ -234,6 +252,21 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitInt(Polyh
     auto linearExpression { std::make_unique<PPL::Linear_Expression>(coefficient) };
     m_linearExpressions.insert(std::make_pair(m_visitKey, std::move(linearExpression)));
     return m_visitKey++;
+}
+
+bool PolyhedralSystemBuilderVisitor::hasErrors() const
+{
+    return m_visitor.m_errors.size() != 0;
+}
+
+const std::vector<ParserError>& PolyhedralSystemBuilderVisitor::errors() const
+{
+    return m_visitor.m_errors;
+}
+
+bool PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::containsAtom(const std::string_view atom) const
+{
+    return m_denotation.count(std::string { atom }) == 1;
 }
 
 Poly PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getFlow() const
