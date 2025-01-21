@@ -32,8 +32,8 @@ You need to provide a polyhedral system file and an rtlf file. You can do this b
 ```shell
 docker run \
   --rm \
-  -v ./examples/GAP_k=1/system.txt:/system.txt \
-  -v ./examples/GAP_k=1/rtlf.txt:/rtlf.txt \
+  -v ./examples/GAP/system.txt:/system.txt \
+  -v ./examples/GAP/rtlf_k=1.txt:/rtlf.txt \
   rtl-mc system.txt rtlf.txt
 ```
 ```
