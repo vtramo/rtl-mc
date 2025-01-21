@@ -29,11 +29,13 @@ public:
     [[nodiscard]] const spot::formula& rtlFormula() const { return m_rtlFormula; }
     [[nodiscard]] const AutomatonOptimizationFlags& automatonOptimizationFlags() const { return m_automatonOptimizationFlags; }
     [[nodiscard]] bool directLtl() const { return m_directLtl; }
+    [[nodiscard]] bool verbose() const { return m_verbose; }
 
 private:
     std::string m_programName {};
     AutomatonOptimizationFlags m_automatonOptimizationFlags {};
     bool m_directLtl {};
+    bool m_verbose {};
     std::string m_polyhedralSystemFilename {};
     std::string m_rtlFilename {};
     argparse::ArgumentParser m_rtlMcProgram {};
@@ -72,7 +74,12 @@ private:
         m_rtlMcProgram.add_argument("--direct-ltl")
             .help("discretize the RTLf formula directly into LTL in a single step, without using spot::from_ltlf.")
             .flag()
-            .store_into(m_directLtl);
+        .store_into(m_directLtl);
+
+        m_rtlMcProgram.add_argument("-v", "--verbose")
+            .help("show more output")
+            .flag()
+            .store_into(m_verbose);
     }
 
     void parseArgs(const int argc, char *argv[])

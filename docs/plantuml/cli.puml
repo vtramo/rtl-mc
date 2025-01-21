@@ -11,6 +11,7 @@ package cli {
         -m_rtlMcProgram: argparse::ArgumentParser
         -m_polyhedralSystem: PolyhedralSystemSharedPtr
         -m_rtlFormula: spot::formula
+        -m_verbose: bool
         --constructors--
         +RtlMcProgram(const std::string_view programName, const int argc, char *argv[])
         --member functions--
@@ -18,6 +19,7 @@ package cli {
         +rtlFormula(): const spot::formula&
         +automatonOptimizationFlags(): const AutomatonOptimizationFlags&
         +directLtl(): bool
+        +verbose(): bool
         -buildRtlMcProgram(): void
         -parseArgs(int argc, char *argv[]): void
         -readAndParsePolyhedralSystemFile(): void

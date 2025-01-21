@@ -25,10 +25,15 @@ int main(const int argc, char *argv[])
     PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
     spot::formula rtlFormula { rtlMcProgram.rtlFormula() };
 
-    std::cout << "POLYHEDRAL SYSTEM: \n";
-    polyhedralSystem->setConstraintOutputMinimized(false);
-    std::cout << *polyhedralSystem << "\n\n";
-    std::cout << "RTLf Formula: " << rtlFormula << '\n';
+    const bool verbose { rtlMcProgram.verbose() };
+
+    if (verbose)
+    {
+        std::cout << "POLYHEDRAL SYSTEM: \n";
+        polyhedralSystem->setConstraintOutputMinimized(false);
+        std::cout << *polyhedralSystem << "\n\n";
+        std::cout << "RTLf Formula: " << rtlFormula << '\n';
+    }
 
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
     DiscreteLtlFormula discreteLtlFormula {
@@ -37,7 +42,7 @@ int main(const int argc, char *argv[])
             : DiscreteFiniteLtlFormula::discretize(std::move(rtlFormula)).toLtl()
     };
 
-    std::cout << "DiscreteLtlFormula: " << discreteLtlFormula << "\n\n";
+    if (verbose) std::cout << "DiscreteLtlFormula: " << discreteLtlFormula << "\n\n";
 
     try
     {
@@ -49,15 +54,24 @@ int main(const int argc, char *argv[])
             )
         };
 
-        std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
-        std::cout << "Total edges: " << backwardNfa.totalEdges() << '\n';
-        std::cout << "Initial initial states: " << backwardNfa.totalInitialStates() << '\n';
-        std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
+        if (verbose)
+        {
+            std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
+            std::cout << "Total edges: " << backwardNfa.totalEdges() << '\n';
+            std::cout << "Initial initial states: " << backwardNfa.totalInitialStates() << '\n';
+            std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
+        }
 
         Denot denot { polyhedralSystem, backwardNfa };
         Powerset result { denot() };
-        std::cout << "Denot total iterations: " << denot.totalIterations() << '\n';
-        std::cout << "RESULT " << PPLOutput::toString(result, polyhedralSystem->getSymbolTable()) << '\n';
+
+        if (verbose)
+        {
+            std::cout << "Denot total iterations: " << denot.totalIterations() << '\n';
+            std::cout << "RESULT ";
+        }
+
+        std::cout << PPLOutput::toString(result, polyhedralSystem->getSymbolTable()) << '\n';
     } catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
