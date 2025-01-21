@@ -409,6 +409,7 @@ void testBackwardNfaInvariant(const BackwardNFA& backwardNfa)
 {
     for (int state = 0; state < backwardNfa.totalStates(); state++)
     {
+        INFO("State is " << state);
         const StateDenotation& stateDenotation { backwardNfa.stateDenotation(state) };
         if (backwardNfa.isInitialState(state))
         {
@@ -418,16 +419,16 @@ void testBackwardNfaInvariant(const BackwardNFA& backwardNfa)
             continue;
         }
 
+        if (backwardNfa.isFinalState(state))
+            REQUIRE(stateDenotation.isSingular()); // Final state => is singular
 
         bool currentStateIsSingular { stateDenotation.isSingular() };
         for (const auto& edgePredecessor: backwardNfa.predecessors(state))
         {
-            INFO("State is " << state);
-            REQUIRE(state != edgePredecessor.dst); // No self-loop
-
             const int predecessor { static_cast<int>(edgePredecessor.dst) };
-            const StateDenotation& predecessorStateDenotation { backwardNfa.stateDenotation(predecessor) };
+            REQUIRE(state != predecessor); // No self-loop
 
+            const StateDenotation& predecessorStateDenotation { backwardNfa.stateDenotation(predecessor) };
             REQUIRE(predecessorStateDenotation.isSingular() != currentStateIsSingular);
         }
     }
