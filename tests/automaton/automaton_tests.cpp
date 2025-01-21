@@ -1,3 +1,4 @@
+#include <spot_utils.h>
 #include <catch2/catch_test_macros.hpp>
 #include "BackwardNFA.h"
 #include "DiscreteFiniteLtlFormula.h"
@@ -8,6 +9,7 @@
 #include "systemparser.h"
 
 using PPL::IO_Operators::operator<<;
+using namespace SpotUtils;
 
 TEST_CASE("Formula denotation map TEST 1")
 {
@@ -133,49 +135,6 @@ TEST_CASE("Formula denotation map TEST 1")
     }
 }
 
-TEST_CASE("BackwardNFA invariant")
-{
-    PolyhedralSystemConstSharedPtr polyhedralSystem {
-        std::make_shared<PolyhedralSystem>(
-            std::move(
-                *parsePolyhedralSystem(
-                    "Inv ( { a >= 0 & b >= 0 } )"
-                    "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
-                    "p { a >= b + 1 }"
-                    "q { b >= a + 1 }"
-                    "t0 { t = 0 }"
-                    "t1 { t <= 10 }"
-                )
-            )
-        )
-    };
-
-    SECTION("t0 & G(t1) & F(p & F(q))")
-    {
-        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteLtlFormula::discretizeToLtl(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f) };
-        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
-        for (int state = 0; state < backwardNfa.totalStates(); state++)
-        {
-            const StateDenotation& stateDenotation { backwardNfa.stateDenotation(state) };
-            if (backwardNfa.isInitialState(state))
-            {
-                BackwardNFA::EdgeIterator edgeIterator { backwardNfa.predecessors(state) };
-                REQUIRE(edgeIterator.begin() == edgeIterator.end());
-                REQUIRE(stateDenotation.isSingular());
-                continue;
-            }
-
-            bool currentStateIsSingular { stateDenotation.isSingular() };
-            for (const auto& edgePredecessor: backwardNfa.predecessors(state))
-            {
-                const int predecessor { static_cast<int>(edgePredecessor.dst) };
-                const StateDenotation& predecessorStateDenotation { backwardNfa.stateDenotation(predecessor) };
-                REQUIRE(predecessorStateDenotation.isSingular() != currentStateIsSingular);
-            }
-        }
-    }
-}
 
 std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, int state);
 
@@ -351,4 +310,125 @@ std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, const int s
     for (const auto& predecessorEdge: backwardNfa.predecessors(state))
         predecessors.insert(predecessorEdge.dst);
     return predecessors;
+}
+
+
+void testBackwardNfaInvariant(const BackwardNFA& backwardNfa);
+
+TEST_CASE("BackwardNFA invariant")
+{
+    PolyhedralSystemConstSharedPtr polyhedralSystem {
+        std::make_shared<PolyhedralSystem>(
+            std::move(
+                *parsePolyhedralSystem(
+                    "Inv ( { a >= 0 & b >= 0 } )"
+                    "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
+                    "p { a >= b + 1 }"
+                    "q { b >= a + 1 }"
+                    "t0 { t = 0 }"
+                    "t1 { t <= 10 }"
+                )
+            )
+        )
+    };
+
+    SECTION("t0 & G(t1) & F(p & F(q))")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=20")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=50")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=55")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(55) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=58")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(58) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=59")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(59) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=60")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(60) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=100")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(100) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=500")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(500) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+}
+
+void testBackwardNfaInvariant(const BackwardNFA& backwardNfa)
+{
+    for (int state = 0; state < backwardNfa.totalStates(); state++)
+    {
+        const StateDenotation& stateDenotation { backwardNfa.stateDenotation(state) };
+        if (backwardNfa.isInitialState(state))
+        {
+            BackwardNFA::EdgeIterator edgeIterator { backwardNfa.predecessors(state) };
+            REQUIRE(edgeIterator.begin() == edgeIterator.end()); // Initial state => no predecessors
+            REQUIRE(stateDenotation.isSingular()); // Initial state => is singular
+            continue;
+        }
+
+
+        bool currentStateIsSingular { stateDenotation.isSingular() };
+        for (const auto& edgePredecessor: backwardNfa.predecessors(state))
+        {
+            INFO("State is " << state);
+            REQUIRE(state != edgePredecessor.dst); // No self-loop
+
+            const int predecessor { static_cast<int>(edgePredecessor.dst) };
+            const StateDenotation& predecessorStateDenotation { backwardNfa.stateDenotation(predecessor) };
+
+            REQUIRE(predecessorStateDenotation.isSingular() != currentStateIsSingular);
+        }
+    }
 }
