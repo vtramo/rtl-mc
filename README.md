@@ -13,20 +13,23 @@ If you have Docker installed...
     docker run --rm rtl-mc
     ```
    ```
-    formula: 1 argument(s) expected. 0 provided.
-    Usage: rtl-mc [--help] [--version] [[--low]|[--medium]|[--high]] [--any] system formula
-    
-    Positional arguments:
-    system         Polyhedral System file
-    formula        RTLf file
-    
-    Optional arguments:
-    -h, --help     shows help message and exits
-    -v, --version  prints version information and exits
-    --low          minimal optimizations (fast, default)
-    --medium       moderate optimizations
-    --high         all available optimizations (slow)
-    --any          tells the translator that it should attempt to reduce or produce a deterministic result: any automaton denoting the given formula is OK.  This effectively disables post-processings and speeds up the translation
+   One of the arguments '-f/--from-files VAR...' or '--gap VAR...' or '--nogap VAR...' is required
+   Usage: rtl-mc [--help] [--version] [[--from-files VAR...]|[--gap VAR...]|[--nogap VAR...]] [[--low]|[--medium]|[--high]] [--any] [--direct-ltl] [--verbose]
+   
+   Model Checking Linear Temporal Properties on Polyhedral Systems
+   
+   Optional arguments:
+   -h, --help        shows help message and exits
+   -v, --version     prints version information and exits
+   -f, --from-files  Polyhedral System file and RTLf file [nargs: 2]
+   --gap             GAP experiment with k alternating steps and max time t. Example: `--gap 3 15`. [nargs: 2]
+   --nogap           NO GAP experiment with k alternating steps and max time t. Example: `--nogap 2 20`. [nargs: 2]
+   --low             minimal optimizations during automaton construction (fast, default)
+   --medium          moderate optimizations during automaton construction
+   --high            all available optimizations during automaton construction (slow)
+   --any             tells the translator that it should attempt to reduce or produce a deterministic result: any automaton denoting the given formula is OK.  This effectively disables post-processings and speeds up the translation
+   --direct-ltl      discretize the RTLf formula directly into LTL in a single step, without using spot::from_ltlf.
+   --verbose         show more output
    ```
 You need to provide a polyhedral system file and an rtlf file. You can do this by creating bind mounts:
 ```shell
@@ -34,7 +37,7 @@ docker run \
   --rm \
   -v ./examples/GAP/system.txt:/system.txt \
   -v ./examples/GAP/rtlf_k=1.txt:/rtlf.txt \
-  rtl-mc system.txt rtlf.txt
+  rtl-mc -f system.txt rtlf.txt --verbose
 ```
 ```
 POLYHEDRAL SYSTEM: 
