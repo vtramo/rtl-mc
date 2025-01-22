@@ -25,16 +25,22 @@ BackwardNFA::BackwardNFA(
     const bool anyOption
 ) : m_discreteLtlFormula { std::move(discreteLtlFormula) }
   , m_formulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
+  , m_optimizationLevel { optimizationLevel }
 {
     spot::translator ltlToNbaTranslator {};
 
     ltlToNbaTranslator.set_type(spot::postprocessor::TGBA);
     if (anyOption) ltlToNbaTranslator.set_pref(spot::postprocessor::Any);
     else ltlToNbaTranslator.set_pref(spot::postprocessor::Small);
-    ltlToNbaTranslator.set_level(optimizationLevel);
+    ltlToNbaTranslator.set_level(m_optimizationLevel);
 
     spot::twa_graph_ptr nfa { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
     buildAutomaton(nfa);
+}
+
+spot::postprocessor::optimization_level BackwardNFA::optimizationLevel() const
+{
+    return m_optimizationLevel;
 }
 
 void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
@@ -180,6 +186,7 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
     int totalStates { backwardNfa.totalStates() };
 
     out << "BACKWARD NFA\n";
+    out << "Optimization level: " << SpotUtils::toOptimizationLevelString(backwardNfa.optimizationLevel()) << '\n';
     out << "Total states: " << totalStates << '\n';
     out << "Total initial states: " << backwardNfa.totalInitialStates() << '\n';
     out << "Total final states: " << backwardNfa.totalFinalStates() << '\n';

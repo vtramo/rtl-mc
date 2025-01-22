@@ -3,6 +3,7 @@
 
 #include <spot/tl/apcollect.hh>
 #include <spot/tl/formula.hh>
+#include <spot/twaalgos/postproc.hh>
 
 namespace spot
 {
@@ -46,6 +47,7 @@ namespace SpotUtils
 
     spot::formula generateAlternatingFormula(int k, spot::formula p = ap("p"), spot::formula q = ap("q"));
     std::string toFormulaString(const spot::formula& formula);
+    std::string toOptimizationLevelString(const spot::postprocessor::optimization_level optimizationLevel);
     bool isSing(const spot::formula& formula);
     bool isNotSing(const spot::formula& formula);
     bool isSingOrNotSing(const spot::formula& formula);

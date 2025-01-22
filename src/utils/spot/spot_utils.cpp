@@ -111,6 +111,21 @@ namespace SpotUtils
         return result;
     }
 
+    std::string toOptimizationLevelString(const spot::postprocessor::optimization_level optimizationLevel)
+    {
+        switch (optimizationLevel)
+        {
+        case spot::postprocessor::Low:
+            return "Low";
+        case spot::postprocessor::Medium:
+            return "Medium";
+        case spot::postprocessor::High:
+            return "High";
+        }
+
+        return "Unknown";
+    }
+
     spot::formula Or(std::vector<spot::formula>&& formulas)
     {
         return spot::formula::Or(std::move(formulas));

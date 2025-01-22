@@ -32,7 +32,7 @@ int main(const int argc, char *argv[])
         std::cout << "POLYHEDRAL SYSTEM: \n";
         polyhedralSystem->setConstraintOutputMinimized(false);
         std::cout << *polyhedralSystem << "\n\n";
-        std::cout << "RTLf Formula: " << rtlFormula << '\n';
+        std::cout << "RTLf Formula: " << rtlFormula << "\n\n";
     }
 
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
@@ -56,6 +56,8 @@ int main(const int argc, char *argv[])
 
         if (verbose)
         {
+            std::cout << "BACKWARD NFA\n";
+            std::cout << "Optimization level: " << SpotUtils::toOptimizationLevelString(backwardNfa.optimizationLevel()) << '\n';
             std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
             std::cout << "Total edges: " << backwardNfa.totalEdges() << '\n';
             std::cout << "Initial initial states: " << backwardNfa.totalInitialStates() << '\n';

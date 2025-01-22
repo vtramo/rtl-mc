@@ -38,6 +38,7 @@ public:
     [[nodiscard]] EdgeIterator predecessors(int state) const;
     [[nodiscard]] const DiscreteLtlFormula& formula() const;
     [[nodiscard]] const StateDenotation& stateDenotation(int state) const;
+    [[nodiscard]] spot::postprocessor::optimization_level optimizationLevel() const;
 
     void printHoaFormat(std::ostream& os) const;
     void printDotFormat(std::ostream& os) const;
@@ -51,6 +52,7 @@ private:
     std::unordered_map<int, StateDenotation> m_stateDenotationById {};
     DiscreteLtlFormula m_discreteLtlFormula {};
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
+    spot::postprocessor::optimization_level m_optimizationLevel {};
 
     void buildAutomaton(const spot::const_twa_graph_ptr& nfa);
     StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
