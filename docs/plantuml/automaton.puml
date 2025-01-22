@@ -61,10 +61,10 @@ package automaton {
     class StateDenotation {
         --data members--
         -m_formula : spot::formula
-        -m_powerset : PowersetConstSharedPtr
+        -m_denotation : PowersetConstSharedPtr
         -m_isSing : bool
         --constructors--
-        +StateDenotation(spot::formula&& formula, PowersetConstSharedPtr powerset, const bool isSing = false)
+        +StateDenotation(spot::formula&& formula, PowersetConstSharedPtr denotation, const bool isSing = false)
         +StateDenotation(StateDenotation&& other)
         --member functions--
         +formula() : const spot::formula&
@@ -72,6 +72,7 @@ package automaton {
         +isSingular() : bool
         +isUniverse() : bool
         +isEmpty() : bool
+        +print(std::ostream& ostream, const PolyhedralSystemSymbolTable& symbolTable) : void
     }
 }
 
