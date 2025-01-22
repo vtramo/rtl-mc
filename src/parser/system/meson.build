@@ -10,6 +10,8 @@ if get_option('generate_parser')
                 '-listener',
                 '-visitor',
                 '-Dlanguage=Cpp',
+                '-v',
+                '4.13.2',
                 grammar_relative_path,
                 '-o', generated_dir_relative_path,  check: true)
     message('Parser generation complete! (Location: ' + generated_dir + ')')
