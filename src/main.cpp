@@ -62,6 +62,7 @@ int main(const int argc, char *argv[])
             std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
         }
 
+        if (verbose) std::cout << "\n\nStarting Denot algorithm..." << '\n';
         Denot denot { polyhedralSystem, backwardNfa };
         Powerset result { denot() };
 
