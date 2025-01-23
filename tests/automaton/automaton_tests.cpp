@@ -288,7 +288,7 @@ std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, const int s
 
 void testBackwardNfaInvariant(const BackwardNFA& backwardNfa);
 
-TEST_CASE("BackwardNFA invariant")
+TEST_CASE("BackwardNFA invariant GAP Experiment")
 {
     PolyhedralSystemConstSharedPtr polyhedralSystem {
         std::make_shared<PolyhedralSystem>(
@@ -378,6 +378,113 @@ TEST_CASE("BackwardNFA invariant")
     }
 
     SECTION("GAP k=1000")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1000) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+}
+
+
+TEST_CASE("BackwardNFA invariant NOGAP Experiment")
+{
+    PolyhedralSystemConstSharedPtr polyhedralSystem {
+        std::make_shared<PolyhedralSystem>(
+            std::move(
+                *parsePolyhedralSystem(
+                  "Inv ( { a >= 0 & b >= 0 } )"
+                  "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
+                  "p { a > b }"
+                  "q { b > a }"
+                  "t0 { t = 0 }"
+                  "t1 { t <= 10 }"
+              )
+            )
+        )
+    };
+
+    SECTION("NO GAP k=1")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=10")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(10) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=20")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=50")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=55")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(55) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=58")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(58) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=59")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(59) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=60")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(60) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=100")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(100) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=500")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(500) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("NO GAP k=1000")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1000) })).toLtl() };
