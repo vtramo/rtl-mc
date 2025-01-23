@@ -1,7 +1,6 @@
 #include "BackwardNFA.h"
 #include "spot_utils.h"
 
-#include <ppl_output.h>
 #include <spot/tl/formula.hh>
 #include <spot/twa/formula2bdd.hh>
 #include <spot/twaalgos/hoa.hh>
@@ -214,10 +213,8 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
         const StateDenotation& stateDenotation { backwardNfa.stateDenotation(state) };
 
         out << "State " << state << '\n';
-        out << "Formula: " << stateDenotation.formula() << std::boolalpha << '\n';
         const PolyhedralSystem& polyhedralSystem { backwardNfa.m_formulaDenotationMap.getPolyhedralSystem() };
-        out << "Denotation: " << PPLOutput::toString(*stateDenotation.denotation(), polyhedralSystem.getSymbolTable()) << '\n';
-        out << "Singular state: " << stateDenotation.isSingular() << '\n';
+        stateDenotation.print(out, polyhedralSystem.getSymbolTable());
         out << "Initial state: " << backwardNfa.isInitialState(state) << '\n';
         out << "Final state: " << backwardNfa.isFinalState(state) << '\n';
 
