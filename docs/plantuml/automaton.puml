@@ -12,6 +12,7 @@ package automaton {
         -m_stateDenotationById : std::unordered_map<int, StateDenotation>
         -m_initialStates : std::unordered_set<int>
         -m_finalStates : std::unordered_set<int>
+        -m_optimizationLevel : spot::postprocessor::optimization_level
         --constructors--
         +BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap, spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High, bool anyOption = false)
         +BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemFormulaDenotationMap, spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High, bool anyOption = false)
@@ -28,10 +29,13 @@ package automaton {
         +totalStates() : int
         +initialStates() : const std::unordered_set<int>&
         +finalStates() : const std::unordered_set<int>&
+        +optimizationLevel() : spot::postprocessor::optimization_level
         +printDotFormat(std::ostream& os) : void
         +printHoaFormat(std::ostream& os) : void
-        -buildAutomaton(const spot::const_twa_graph_ptr& nfa) : void
+        -buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates) : void
         -extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
+        --static functions--
+        - {static} killAcceptingStates(const spot::twa_graph_ptr& nfa) : std::unordered_set<int>
         --operators--
         +operator<< (std::ostream& out, const BackwardNFA& backwardNfa) : std::ostream&
     }

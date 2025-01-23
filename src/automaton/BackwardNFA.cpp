@@ -35,7 +35,21 @@ BackwardNFA::BackwardNFA(
     ltlToNbaTranslator.set_level(m_optimizationLevel);
 
     spot::twa_graph_ptr nfa { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
-    buildAutomaton(nfa);
+    std::unordered_set nfaAcceptingStates { killAcceptingStates(nfa) };
+    nfa->purge_unreachable_states();
+    buildAutomaton(nfa, nfaAcceptingStates);
+}
+
+std::unordered_set<int> BackwardNFA::killAcceptingStates(const spot::twa_graph_ptr& nfa)
+{
+    std::unordered_set<int> acceptingStates {};
+    for (int nfaState { 0 }; nfaState < static_cast<int>(nfa->num_states()); ++nfaState)
+        if (nfa->state_is_accepting(nfaState))
+        {
+            acceptingStates.insert(nfaState);
+            nfa->kill_state(nfaState);
+        }
+    return acceptingStates;
 }
 
 spot::postprocessor::optimization_level BackwardNFA::optimizationLevel() const
@@ -43,7 +57,7 @@ spot::postprocessor::optimization_level BackwardNFA::optimizationLevel() const
     return m_optimizationLevel;
 }
 
-void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
+void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates)
 {
     const spot::bdd_dict_ptr backwardNfaDict { std::make_shared<spot::bdd_dict>() };
     m_backwardNfa = std::make_shared<spot::twa_graph>(backwardNfaDict);
@@ -58,24 +72,19 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
 
         for (const auto& nfaEdge: nfa->out(nfaState))
         {
-            const bdd nfaEdgeCond { nfaEdge.cond }; // If an accepting state has no outgoing edges, Spot creates a dummy edge labeled F. We don't need this edge!
-            if (nfaEdgeCond == bdd_false())
-                continue;
-
             int nfaEdgeDst { static_cast<int>(nfaEdge.dst) };
-            StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdgeCond) };
+            const bool isAccepting { nfaAcceptingStates.count(nfaEdgeDst) == 1 };
+
+            StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdge.cond) };
+            if (isAccepting && stateDenotation.isEmpty()) continue;
+
             int edgeState { static_cast<int>(m_backwardNfa->new_state()) };
+            if (isAccepting) m_finalStates.insert(edgeState);
             m_stateDenotationById.emplace(edgeState, std::move(stateDenotation));
 
-            if (isInitial)
-                m_initialStates.insert(edgeState);
-            else
-                outEdgeStates[nfaState].push_back(edgeState);
-
+            if (isInitial) m_initialStates.insert(edgeState);
+            else outEdgeStates[nfaState].push_back(edgeState);
             inEdgeStates[nfaEdgeDst].push_back(edgeState);
-
-            if (nfa->state_is_accepting(nfaEdgeDst))
-                m_finalStates.insert(edgeState);
 
             for (int outEdgeState: outEdgeStates[nfaEdgeDst])
             {
@@ -95,6 +104,13 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa)
             }
         }
     }
+
+    unsigned temporaryInitialState { m_backwardNfa->new_state() };
+    m_backwardNfa->set_init_state(temporaryInitialState);
+    for (const int finalState: m_finalStates)
+        m_backwardNfa->new_edge(temporaryInitialState, finalState, bdd_true());
+    m_backwardNfa->purge_unreachable_states();
+    m_backwardNfa->kill_state(temporaryInitialState); // It still remains.
 }
 
 StateDenotation BackwardNFA::extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard)
@@ -129,7 +145,7 @@ bool BackwardNFA::hasPredecessors(const int state) const
 
 int BackwardNFA::totalStates() const
 {
-    return static_cast<int>(m_backwardNfa->num_states());
+    return static_cast<int>(m_backwardNfa->num_states() - 1); // -1 for the dummy initial state
 }
 
 int BackwardNFA::totalFinalStates() const

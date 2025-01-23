@@ -54,6 +54,7 @@ private:
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
     spot::postprocessor::optimization_level m_optimizationLevel {};
 
-    void buildAutomaton(const spot::const_twa_graph_ptr& nfa);
+    static std::unordered_set<int> killAcceptingStates(const spot::twa_graph_ptr& nfa);
+    void buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates);
     StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
 };
