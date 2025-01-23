@@ -34,9 +34,13 @@ BackwardNFA::BackwardNFA(
     ltlToNbaTranslator.set_level(m_optimizationLevel);
 
     spot::twa_graph_ptr nfa { spot::to_finite(ltlToNbaTranslator.run(m_discreteLtlFormula.formula())) };
-    std::unordered_set nfaAcceptingStates { killAcceptingStates(nfa) };
-    nfa->purge_unreachable_states();
-    buildAutomaton(nfa, nfaAcceptingStates);
+    std::unordered_set nfaFinalStates { killAcceptingStates(nfa) };
+
+    spot::twa_graph::shift_action renumberNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
+    RenumberingContext renumberingContext { &nfaFinalStates };
+    nfa->purge_unreachable_states(&renumberNfaFinalStates, &renumberingContext);
+
+    buildAutomaton(nfa, nfaFinalStates);
 }
 
 std::unordered_set<int> BackwardNFA::killAcceptingStates(const spot::twa_graph_ptr& nfa)
@@ -51,9 +55,42 @@ std::unordered_set<int> BackwardNFA::killAcceptingStates(const spot::twa_graph_p
     return acceptingStates;
 }
 
-spot::postprocessor::optimization_level BackwardNFA::optimizationLevel() const
+void BackwardNFA::renumberOrRemoveStatesAfterPurge(
+    const std::vector<unsigned>& newst,
+    const RenumberingContextVoidPtr renumberingContextVoidPtr
+)
 {
-    return m_optimizationLevel;
+    static constexpr unsigned DELETED { -1U };
+
+    assert(renumberingContextVoidPtr != nullptr && "RenumberingContextVoidPtr is null!");
+
+    RenumberingContext* renumberingContext { static_cast<RenumberingContext*>(renumberingContextVoidPtr) };
+
+    if (renumberingContext->finalStates != nullptr)
+    {
+        std::unordered_set<int>* finalStates { renumberingContext->finalStates };
+        std::unordered_set<int> updatedFinalStates {};
+        updatedFinalStates.reserve(finalStates->size());
+
+        for (unsigned finalState: *finalStates)
+            if (newst[finalState] != DELETED)
+                updatedFinalStates.insert(newst[finalState]);
+
+        *finalStates = std::move(updatedFinalStates);
+    }
+
+    if (renumberingContext->initialStates != nullptr)
+    {
+        std::unordered_set<int>* initialStates { renumberingContext->initialStates };
+        std::unordered_set<int> updatedInitialStates {};
+        updatedInitialStates.reserve(initialStates->size());
+
+        for (unsigned initialState: *initialStates)
+            if (newst[initialState] != DELETED)
+                updatedInitialStates.insert(newst[initialState]);
+
+        *initialStates = std::move(updatedInitialStates);
+    }
 }
 
 void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates)
@@ -104,12 +141,10 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
         }
     }
 
-    unsigned temporaryInitialState { m_backwardNfa->new_state() };
-    m_backwardNfa->set_init_state(temporaryInitialState);
-    for (const int finalState: m_finalStates)
-        m_backwardNfa->new_edge(temporaryInitialState, finalState, bdd_true());
-    m_backwardNfa->purge_unreachable_states();
-    m_backwardNfa->kill_state(temporaryInitialState); // It still remains.
+    createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors();
+    spot::twa_graph::shift_action renumberBackwardNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
+    RenumberingContext renumberingContext { &m_initialStates, &m_finalStates };
+    m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
 }
 
 StateDenotation BackwardNFA::extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard)
@@ -118,6 +153,20 @@ StateDenotation BackwardNFA::extractStateDenotationFromEdgeGuard(const spot::con
     auto [formulaWithoutSing, containsSing] { SpotUtils::removeSing(std::move(formula)) };
     const PowersetConstSharedPtr powerset { m_formulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
     return StateDenotation { std::move(formulaWithoutSing), powerset, containsSing };
+}
+
+void BackwardNFA::createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors()
+{
+    unsigned dummyInitialState { m_backwardNfa->new_state() };
+    m_backwardNfa->set_init_state(dummyInitialState);
+    for (const int finalState: m_finalStates)
+    {
+        if (hasPredecessors(finalState))
+        {
+            m_backwardNfa->new_edge(dummyInitialState, finalState, bdd_true());
+            m_dummyInitialEdges++;
+        }
+    }
 }
 
 bool BackwardNFA::isInitialState(const int state) const
@@ -144,12 +193,18 @@ bool BackwardNFA::hasPredecessors(const int state) const
 
 int BackwardNFA::totalStates() const
 {
-    return static_cast<int>(m_backwardNfa->num_states() - 1); // -1 for the dummy initial state
+    static constexpr int DUMMY_INITIAL_STATE { 1 };
+    return static_cast<int>(m_backwardNfa->num_states() - DUMMY_INITIAL_STATE);
 }
 
 int BackwardNFA::totalFinalStates() const
 {
     return static_cast<int>(m_finalStates.size());
+}
+
+spot::postprocessor::optimization_level BackwardNFA::optimizationLevel() const
+{
+    return m_optimizationLevel;
 }
 
 BackwardNFA::EdgeIterator BackwardNFA::predecessors(const int state) const
@@ -161,7 +216,7 @@ BackwardNFA::EdgeIterator BackwardNFA::predecessors(const int state) const
 
 int BackwardNFA::totalEdges() const
 {
-    return static_cast<int>(m_backwardNfa->num_edges());
+    return static_cast<int>(m_backwardNfa->num_edges() - m_dummyInitialEdges);
 }
 
 const std::unordered_set<int>& BackwardNFA::finalStates() const
@@ -206,7 +261,16 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
     out << "Total initial states: " << backwardNfa.totalInitialStates() << '\n';
     out << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
     out << "Total edges: " << backwardNfa.totalEdges() << '\n';
-    out << "Discrete LTL Formula: " << backwardNfa.formula() << "\n\n";
+    out << "Discrete LTL Formula: " << backwardNfa.formula() << '\n';
+
+    bool first = true;
+    out << "Final states: [";
+    for (const int finalState: backwardNfa.finalStates())
+    {
+        out << (first ? "" : ", ") << finalState;
+        first = false;
+    }
+    out << "]\n\n";
 
     for (int state = 0; state < totalStates; ++state)
     {
@@ -215,11 +279,13 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
         out << "State " << state << '\n';
         const PolyhedralSystem& polyhedralSystem { backwardNfa.m_formulaDenotationMap.getPolyhedralSystem() };
         stateDenotation.print(out, polyhedralSystem.getSymbolTable());
+        out << std::boolalpha;
         out << "Initial state: " << backwardNfa.isInitialState(state) << '\n';
         out << "Final state: " << backwardNfa.isFinalState(state) << '\n';
+        out << std::noboolalpha;
 
         out << "Predecessors: [";
-        bool first = true;
+        first = true;
         for (const auto& edge: backwardNfa.predecessors(state))
         {
             out << (first ? "" : ", ") << edge.dst;

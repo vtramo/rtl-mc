@@ -49,12 +49,31 @@ private:
     spot::twa_graph_ptr m_backwardNfa {};
     std::unordered_set<int> m_initialStates {};
     std::unordered_set<int> m_finalStates {};
+    int m_dummyInitialEdges {};
     std::unordered_map<int, StateDenotation> m_stateDenotationById {};
     DiscreteLtlFormula m_discreteLtlFormula {};
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
     spot::postprocessor::optimization_level m_optimizationLevel {};
 
+    using RenumberingContextVoidPtr = void*;
+    struct RenumberingContext
+    {
+        RenumberingContext(std::unordered_set<int>* initialStates, std::unordered_set<int>* finalStates)
+            : initialStates { initialStates }
+            , finalStates { finalStates }
+        {}
+
+        explicit RenumberingContext(std::unordered_set<int>* finalStates)
+            : finalStates { finalStates }
+        {}
+
+        std::unordered_set<int>* initialStates {};
+        std::unordered_set<int>* finalStates {};
+    };
+    static void renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr);
     static std::unordered_set<int> killAcceptingStates(const spot::twa_graph_ptr& nfa);
+
     void buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates);
     StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
+    void createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors();
 };
