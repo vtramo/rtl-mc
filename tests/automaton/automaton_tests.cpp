@@ -394,11 +394,13 @@ void testBackwardNfaInvariant(const BackwardNFA& backwardNfa)
         const StateDenotation& stateDenotation { backwardNfa.stateDenotation(state) };
         if (backwardNfa.isInitialState(state))
         {
-            BackwardNFA::EdgeIterator edgeIterator { backwardNfa.predecessors(state) };
-            REQUIRE(edgeIterator.begin() == edgeIterator.end()); // Initial state => no predecessors
+            REQUIRE(!backwardNfa.hasPredecessors(state)); // Initial state => no predecessors
             REQUIRE(stateDenotation.isSingular()); // Initial state => is singular
             continue;
         }
+
+        if (!backwardNfa.hasPredecessors(state))
+            REQUIRE(backwardNfa.isInitialState(state)); // no predecessors => Initial state
 
         if (backwardNfa.isFinalState(state))
         {
