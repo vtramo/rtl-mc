@@ -27,7 +27,7 @@ TEST_CASE("Remove sing from formula util function")
 
     SECTION("!sing")
     {
-        spot::formula formula { spot::parse_infix_psl("sing").f };
+        spot::formula formula { spot::parse_infix_psl("!sing").f };
         spot::formula expectedFormula { spot::formula::ff() };
 
         const auto& [formulaWithoutSing, removedAtLeastOneSing] { SpotUtils::removeSing(std::move(formula)) };

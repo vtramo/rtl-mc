@@ -296,7 +296,7 @@ namespace SpotUtils
         assert(formula.is_sugar_free_boolean());
         assert(formula.is_in_nenoform());
 
-        if (isSing(formula))
+        if (isSingOrNotSing(formula))
             return std::make_tuple(
                 spot::formula::ff(),
                 true
