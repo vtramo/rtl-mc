@@ -160,12 +160,12 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     PolyhedralSystemFormulaDenotationMap formulaDenotationMap { polyhedralSystem };
 
     BackwardNFA backwardNfa { discreteLtlFormula, std::move(formulaDenotationMap), spot::postprocessor::High };
-    REQUIRE(backwardNfa.totalStates() == 12);
+    REQUIRE(backwardNfa.totalStates() == 11);
     REQUIRE(backwardNfa.totalInitialStates() == 2);
     REQUIRE(backwardNfa.totalFinalStates() == 2);
-    REQUIRE(backwardNfa.finalStates() == std::unordered_set<int>{ 3, 11 });
+    REQUIRE(backwardNfa.finalStates() == std::unordered_set<int>{ 3, 10 });
     REQUIRE(backwardNfa.initialStates() == std::unordered_set<int>{ 0, 1 });
-    REQUIRE(backwardNfa.totalEdges() == 20);
+    REQUIRE(backwardNfa.totalEdges() == 17);
 
     constexpr int stateZero = 0;
     const StateDenotation& zeroStateDenotation { backwardNfa.stateDenotation(0) };
@@ -259,21 +259,12 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
 
     constexpr int stateTen = 10;
     const StateDenotation& tenStateDenotation { backwardNfa.stateDenotation(stateTen) };
-    REQUIRE(!tenStateDenotation.isSingular());
-    REQUIRE(tenStateDenotation.formula() == spot::parse_infix_psl("p & q & t1").f);
+    REQUIRE(tenStateDenotation.isSingular());
+    REQUIRE(tenStateDenotation.formula() == spot::parse_infix_psl("t1").f);
     REQUIRE(!backwardNfa.isInitialState(stateTen));
-    REQUIRE(!backwardNfa.isFinalState(stateTen));
+    REQUIRE(backwardNfa.isFinalState(stateTen));
     REQUIRE(backwardNfa.hasPredecessors(stateTen));
-    REQUIRE(predecessors(backwardNfa, stateTen) == std::unordered_set<int>{ 1, 5 });
-
-    constexpr int stateEleven = 11;
-    const StateDenotation& elevenStateDenotation { backwardNfa.stateDenotation(stateEleven) };
-    REQUIRE(elevenStateDenotation.isSingular());
-    REQUIRE(elevenStateDenotation.formula() == spot::parse_infix_psl("t1").f);
-    REQUIRE(!backwardNfa.isInitialState(stateEleven));
-    REQUIRE(backwardNfa.isFinalState(stateEleven));
-    REQUIRE(backwardNfa.hasPredecessors(stateEleven));
-    REQUIRE(predecessors(backwardNfa, stateEleven) == std::unordered_set<int>{ 7, 10 });
+    REQUIRE(predecessors(backwardNfa, stateTen) == std::unordered_set<int>{ 7 });
 }
 
 std::unordered_set<int> predecessors(const BackwardNFA& backwardNfa, const int state)
@@ -381,6 +372,30 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1000) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("not GAP k=1")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(Not(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1) }))).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("not GAP k=10")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(Not(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(10) }))).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("not GAP k=20")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(Not(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) }))).toLtl() };
         BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
         testBackwardNfaInvariant(backwardNfa);
     }

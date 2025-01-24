@@ -128,7 +128,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
             const bool isAccepting { nfaAcceptingStates.count(nfaEdgeDst) == 1 };
 
             StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdge.cond) };
-            if (isAccepting && stateDenotation.isEmpty()) continue;
+            if (stateDenotation.isEmpty()) continue;
 
             int edgeState { static_cast<int>(m_backwardNfa->new_state()) };
             if (isAccepting) m_finalStates.insert(edgeState);
