@@ -66,9 +66,13 @@ void BackwardNFA::renumberOrRemoveStatesAfterPurge(
 
     RenumberingContext* renumberingContext { static_cast<RenumberingContext*>(renumberingContextVoidPtr) };
 
-    if (renumberingContext->finalStates != nullptr)
+    const bool updateFinalStates { renumberingContext->m_finalStates != nullptr };
+    const bool updateInitialStates { renumberingContext->m_initialStates != nullptr };
+    const bool updateStateDenotationById { renumberingContext->m_stateDenotationById != nullptr };
+
+    if (updateFinalStates)
     {
-        std::unordered_set<int>* finalStates { renumberingContext->finalStates };
+        std::unordered_set<int>* finalStates { renumberingContext->m_finalStates };
         std::unordered_set<int> updatedFinalStates {};
         updatedFinalStates.reserve(finalStates->size());
 
@@ -79,9 +83,9 @@ void BackwardNFA::renumberOrRemoveStatesAfterPurge(
         *finalStates = std::move(updatedFinalStates);
     }
 
-    if (renumberingContext->initialStates != nullptr)
+    if (updateInitialStates)
     {
-        std::unordered_set<int>* initialStates { renumberingContext->initialStates };
+        std::unordered_set<int>* initialStates { renumberingContext->m_initialStates };
         std::unordered_set<int> updatedInitialStates {};
         updatedInitialStates.reserve(initialStates->size());
 
@@ -90,6 +94,18 @@ void BackwardNFA::renumberOrRemoveStatesAfterPurge(
                 updatedInitialStates.insert(newst[initialState]);
 
         *initialStates = std::move(updatedInitialStates);
+    }
+
+    if (updateStateDenotationById)
+    {
+        std::unordered_map<int, StateDenotation> updatedStateDenotationById {};
+        updatedStateDenotationById.reserve(renumberingContext->m_stateDenotationById->size());
+
+        for (auto&& [state, stateDenotation]: *renumberingContext->m_stateDenotationById)
+            if (newst[state] != DELETED)
+                updatedStateDenotationById.emplace(newst[state], std::move(stateDenotation));
+
+        *renumberingContext->m_stateDenotationById = std::move(updatedStateDenotationById);
     }
 }
 
@@ -143,7 +159,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
 
     createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors();
     spot::twa_graph::shift_action renumberBackwardNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
-    RenumberingContext renumberingContext { &m_initialStates, &m_finalStates };
+    RenumberingContext renumberingContext { &m_initialStates, &m_finalStates, &m_stateDenotationById };
     m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
 }
 

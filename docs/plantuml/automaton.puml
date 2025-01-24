@@ -46,10 +46,11 @@ package automaton {
 
     struct RenumberingContext {
         --data members--
-        initialStates : std::unordered_set<int>*
-        finalStates : std::unordered_set<int>*
+        m_initialStates : std::unordered_set<int>*
+        m_finalStates : std::unordered_set<int>*
+        m_stateDenotationById : std::unordered_map<int, StateDenotation>*
         --constructors--
-        RenumberingContext(std::unordered_set<int>* initialStates, std::unordered_set<int>* finalStates)
+        RenumberingContext(std::unordered_set<int>* initialStates, std::unordered_set<int>* finalStates, std::unordered_map<int, StateDenotation>*)
         explicit RenumberingContext(std::unordered_set<int>* finalStates)
     }
 

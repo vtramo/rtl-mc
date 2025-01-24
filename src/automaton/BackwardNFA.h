@@ -58,17 +58,23 @@ private:
     using RenumberingContextVoidPtr = void*;
     struct RenumberingContext
     {
-        RenumberingContext(std::unordered_set<int>* initialStates, std::unordered_set<int>* finalStates)
-            : initialStates { initialStates }
-            , finalStates { finalStates }
+        RenumberingContext(
+            std::unordered_set<int>* initialStates,
+            std::unordered_set<int>* finalStates,
+            std::unordered_map<int, StateDenotation>* stateDenotationById
+        )
+            : m_initialStates { initialStates }
+            , m_finalStates { finalStates }
+            , m_stateDenotationById { stateDenotationById }
         {}
 
         explicit RenumberingContext(std::unordered_set<int>* finalStates)
-            : finalStates { finalStates }
+            : m_finalStates { finalStates }
         {}
 
-        std::unordered_set<int>* initialStates {};
-        std::unordered_set<int>* finalStates {};
+        std::unordered_set<int>* m_initialStates {};
+        std::unordered_set<int>* m_finalStates {};
+        std::unordered_map<int, StateDenotation>* m_stateDenotationById {};
     };
     static void renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr);
     static std::unordered_set<int> killAcceptingStates(const spot::twa_graph_ptr& nfa);
