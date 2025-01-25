@@ -105,21 +105,9 @@ namespace PPLUtils {
         return result;
     }
 
-    struct NNC_PolyhedronTraits_loc
-    {
-        size_t operator()(const Poly* that) const
-        {
-            return reinterpret_cast<size_t>(that);
-        }
 
-        bool operator()(const Poly* that1, const Poly* that2) const
-        {
-            return that1 == that2;
-        }
-    };
-
-    typedef std::list<Poly*> list_nnc_type;
-    typedef std::unordered_map<Poly*, list_nnc_type, NNC_PolyhedronTraits_loc, NNC_PolyhedronTraits_loc> hash_map_type;
+    typedef std::list<PolySharedPtr> list_nnc_type;
+    typedef std::unordered_map<PolySharedPtr, list_nnc_type> hash_map_type;
 
     static void init_maps(
         Powerset& risky_ps,
@@ -180,14 +168,17 @@ namespace PPLUtils {
         PPL::dimension_type dim=risky_ps.space_dimension();
         hash_map_type::iterator it1_intadj, it2_intadj;
         Powerset::iterator it_risky, it_notover;
-        Poly *p1_point, *p2_point, p1close_nnc(dim), pprime_nnc(dim), b_nnc(dim), *b_point, elapse_nnc(dim);
-        list_nnc_type list_nnc;
+        PolySharedPtr p1_point {};
+        PolySharedPtr p2_point {};
+        PolySharedPtr b_point {};
+        Poly p1close_nnc(dim), pprime_nnc(dim), b_nnc(dim), elapse_nnc(dim);
+        list_nnc_type list_nnc {};
         bool first_ext;
 
         // INSERISCI TUTTI GLI ELEMENTI DI NOT_V NELLA HASH MAP INTADJ
         for (it_risky=risky_ps.begin(); it_risky!=risky_ps.end(); ++it_risky)
         {
-            p1_point = new Poly(it_risky->pointset());
+            p1_point = std::make_shared<Poly>(it_risky->pointset());
             intadj[p1_point]=list_nnc;
         }
 
@@ -233,7 +224,7 @@ namespace PPLUtils {
                         queue.push_back(p1_point);
                         first_ext=false;
                     }
-                    b_point = new Poly(b_nnc);
+                    b_point = std::make_shared<Poly>(b_nnc);
                     extadj[p1_point].push_back(b_point);
                 }
             } // ENDFOR P'
@@ -302,11 +293,11 @@ namespace PPLUtils {
         return output;
     }
 
-    static Powerset cut_polyhedra_with_exit_borders(Poly *p_point, const Poly &flow_nnc, hash_map_type& extadj);
-    static void update_int_first(list_nnc_type &mylist_nnc, Poly *p2_point, hash_map_type &intadj);
-    static void update_external(Powerset &cut_ps, Poly *p2_point, Poly &flow_nnc, hash_map_type &extadj, list_nnc_type &queue);
-    static void update_int_succ(list_nnc_type &mylist_nnc, Poly *p2_point, hash_map_type &intadj);
-    static void update_int_ext(Powerset &pnew_ps, Powerset &cut_ps, Poly *p1_point, Poly &flow_nnc, hash_map_type &intadj, hash_map_type &extadj, list_nnc_type &queue);
+    static Powerset cut_polyhedra_with_exit_borders(PolySharedPtr p_point, const Poly &flow_nnc, hash_map_type& extadj);
+    static void update_int_first(list_nnc_type &mylist_nnc, PolySharedPtr p2_point, hash_map_type &intadj);
+    static void update_external(Powerset &cut_ps, PolySharedPtr p2_point, Poly &flow_nnc, hash_map_type &extadj, list_nnc_type &queue);
+    static void update_int_succ(list_nnc_type &mylist_nnc, PolySharedPtr p2_point, hash_map_type &intadj);
+    static void update_int_ext(Powerset &pnew_ps, Powerset &cut_ps, PolySharedPtr p1_point, Poly &flow_nnc, hash_map_type &intadj, hash_map_type &extadj, list_nnc_type &queue);
     static void update_int(Powerset &pnew_ps, hash_map_type &intadj);
 
     /*
@@ -321,7 +312,8 @@ namespace PPLUtils {
     )
     {
         PPL::dimension_type dim=flow_nnc.space_dimension();
-        Poly *p_point, p_nnc(dim), b_nnc(dim), pprime_nnc(dim), pprime_close_nnc(dim);
+        PolySharedPtr p_point {};
+        Poly p_nnc(dim), b_nnc(dim), pprime_nnc(dim), pprime_close_nnc(dim);
         Powerset cut_ps(dim), totalcut_ps(dim, PPL::EMPTY);
         [[maybe_unused]] Powerset::iterator it_under;
         Powerset W(U_ps);
@@ -359,13 +351,6 @@ namespace PPLUtils {
 
                 // RIMUOVI P DA INTADJ
                 intadj.erase(p_point);
-
-                // FREE MEMORY: Delete all external objects
-                for (it_list=extadj[p_point].begin(); it_list!=extadj[p_point].end(); ++it_list)
-                    delete (*it_list);
-                extadj.erase(p_point);
-                // Delete original P
-                delete p_point;
             } // END IF
         } // END WHILE
 
@@ -379,7 +364,11 @@ namespace PPLUtils {
     }
 
     // P /\ PREFLOW(B) CON B={b | (P,b) app extadj}
-    static Powerset cut_polyhedra_with_exit_borders(Poly *p_point, const Poly &flow_nnc, hash_map_type& extadj)
+    static Powerset cut_polyhedra_with_exit_borders(
+        PolySharedPtr p_point,
+        const Poly &flow_nnc,
+        hash_map_type& extadj
+    )
     {
         // Variabile globale conta_reach commentata, per comodità di compilazione.
         //conta_reach++;
@@ -401,7 +390,15 @@ namespace PPLUtils {
     }
 
     //AGGIORNAMENTO DELLE ADIACENZE INTERNE E ESTERNE
-    static void update_int_ext(Powerset &pnew_ps, Powerset &cut_ps, Poly *p1_point, Poly &flow_nnc, hash_map_type &intadj, hash_map_type &extadj, list_nnc_type &queue)
+    static void update_int_ext(
+        Powerset &pnew_ps,
+        Powerset &cut_ps,
+        PolySharedPtr p1_point,
+        Poly &flow_nnc,
+        hash_map_type &intadj,
+        hash_map_type &extadj,
+        list_nnc_type &queue
+    )
     {
         bool first=true;
         list_nnc_type mylist_nnc, list_nnc;
@@ -409,14 +406,14 @@ namespace PPLUtils {
         //INSERISCE TUTTI I POLIEDRI DI PNEW IN INTADJ E IN MYLIST
         for (Powerset::iterator it_pnew=pnew_ps.begin(); it_pnew!=pnew_ps.end(); ++it_pnew)
         {
-            Poly* q_point = new Poly(it_pnew->pointset());
+            PolySharedPtr q_point { std::make_shared<Poly>(it_pnew->pointset()) };
             intadj[q_point]=list_nnc;
             mylist_nnc.push_back(q_point);
         }
         // PER OGNI P2 ADIACENTE A P1
         for (list_nnc_type::iterator it_list=intadj[p1_point].begin(); it_list!=intadj[p1_point].end(); ++it_list)
         {
-            Poly* p2_point = *it_list;
+            PolySharedPtr p2_point = *it_list;
 
             //RIMUOVI P1 DALLA LISTA DELLE ADIACENZE DI P2(PERCHÈ ADESSO P1 STARA IN W??)
             intadj[p2_point].remove(p1_point);
@@ -434,11 +431,12 @@ namespace PPLUtils {
     }
 
     // PRIMO PASSO DELL'AGGIORNAMENTO DELLE ADIACENZE INTERNE DI P2 (ADIACENTE A P): CONTROLLA LE ADIACENZE TRA(P2, Pnew) E (Pnew, Pnew)
-    static void update_int_first(list_nnc_type &mylist_nnc, Poly *p2_point, hash_map_type &intadj)
+    static void update_int_first(list_nnc_type &mylist_nnc, PolySharedPtr p2_point, hash_map_type &intadj)
     {
         list_nnc_type::iterator it1_list, it2_list;
         list_nnc_type list_nnc;
-        Poly *q1_point, *q2_point;
+        PolySharedPtr q1_point {};
+        PolySharedPtr q2_point {};
         [[maybe_unused]] Powerset:: iterator it_pnew;
 
         // PER OGNI Q1 IN MYLIST (PER OGNI Q1 IN PNEW)
@@ -479,12 +477,12 @@ namespace PPLUtils {
     }
 
     //SECONDO PASSO DELL'AGGIORNAMENTO DELLE ADIACENZE INTERNE DI P2 ( ADIACENTE A P): CONTROLLA LE ADIACENZE SOLO TRA (P2,PNEW) SENZA CONTOLLARE ANCHE QUELLE TRA (PNEW,PNEW)
-    static void update_int_succ(list_nnc_type &mylist_nnc, Poly *p2_point, hash_map_type &intadj)
+    static void update_int_succ(list_nnc_type &mylist_nnc, PolySharedPtr p2_point, hash_map_type &intadj)
     {
         // PER OGNI Q1 IN MYLIST (PER OGNI Q1 IN PNEW)
 	    for (list_nnc_type::iterator it_list = mylist_nnc.begin(); it_list!=mylist_nnc.end(); ++it_list)
         {
-		    Poly* q_point = *it_list;
+		    PolySharedPtr q_point = *it_list;
 		    Poly qclose_nnc(*q_point);
 		    qclose_nnc.topological_closure_assign();
 
@@ -500,10 +498,11 @@ namespace PPLUtils {
     }
 
     //AGGIORNA LE ADIACENZE ESTERNE DI P2 (ADIACENTE ALL'ORIGINALE P) CONTROLLANDO I BNDRY TRA P2 E IL CUT CALCOLATO DA P
-    static void update_external(Powerset &cut_ps, Poly *p2_point, Poly &flow_nnc, hash_map_type &extadj, list_nnc_type &queue)
+    static void update_external(Powerset &cut_ps, PolySharedPtr p2_point, Poly &flow_nnc, hash_map_type &extadj, list_nnc_type &queue)
     {
 	    PPL::dimension_type dim = flow_nnc.space_dimension();
-        Poly q1_nnc(dim), *b_point, p2close_nnc(*p2_point);
+        PolySharedPtr b_point {};
+        Poly q1_nnc(dim), p2close_nnc(*p2_point);
 	    Powerset:: iterator it_cut;
 
 	    p2close_nnc.topological_closure_assign();
@@ -518,7 +517,7 @@ namespace PPLUtils {
 		    if (!b_nnc.is_empty())
 		    {
                 list_nnc_type list_nnc;
-                b_point = new Poly(b_nnc);
+                b_point = std::make_shared<Poly>(b_nnc);
 			    if (extadj.find(p2_point)==extadj.end())
 				    extadj[p2_point]=list_nnc;
 
@@ -548,7 +547,8 @@ namespace PPLUtils {
     {
         list_nnc_type mylist_nnc;
         list_nnc_type::iterator it1_list, it2_list;
-        Poly *q1_point, *q2_point;
+        PolySharedPtr q1_point {};
+        PolySharedPtr q2_point {};
         Powerset::iterator it_pnew;
 
         //INSERISCE TUTTI I POLIEDRI DI PNEW IN INTADJ
@@ -556,7 +556,7 @@ namespace PPLUtils {
         for (it_pnew=pnew_ps.begin(); it_pnew!=pnew_ps.end(); ++it_pnew)
         {
             list_nnc_type list_nnc;
-            q1_point = new Poly(it_pnew->pointset());
+            q1_point = std::make_shared<Poly>(it_pnew->pointset());
             // INIZIALIZZA LA LISTA DI ADIACENZA DI Q1
             intadj[q1_point]=list_nnc;
             mylist_nnc.push_back(q1_point);
