@@ -5,6 +5,7 @@
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
 #include "parsertlf.h"
+#include "Verbosity.h"
 
 using namespace SpotUtils;
 
@@ -48,7 +49,7 @@ public:
     [[nodiscard]] bool universal() const { return m_universal; }
     [[nodiscard]] bool existential() const { return m_existential; }
     [[nodiscard]] bool directLtl() const { return m_directLtl; }
-    [[nodiscard]] bool verbose() const { return m_verbose; }
+    [[nodiscard]] Verbosity verbosityLevel() const { return m_verbosityLevel; }
 
 private:
     argparse::ArgumentParser m_rtlMcProgram {};
@@ -69,12 +70,7 @@ private:
     int m_t {};
     int m_k {};
 
-    std::string m_polyhedralSystemFilename {};
-    std::string m_rtlFilename {};
-    argparse::ArgumentParser m_rtlMcProgram {};
-
-    PolyhedralSystemSharedPtr m_polyhedralSystem {};
-    spot::formula m_rtlFormula {};
+    Verbosity m_verbosityLevel {};
 
     void buildRtlMcProgram()
     {
@@ -128,15 +124,20 @@ private:
             .flag()
             .store_into(m_automatonOptimizationFlags.any);
 
-        m_rtlMcProgram.add_argument("--direct-ltl")
-            .help("discretize the RTLf formula directly into LTL in a single step, without using spot::from_ltlf.")
-            .flag()
-        .store_into(m_directLtl);
-
-        m_rtlMcProgram.add_argument("--verbose")
-            .help("show more output")
-            .flag()
-            .store_into(m_verbose);
+        m_rtlMcProgram.add_argument("-V", "--verbose")
+          .action([&](const auto &)
+          {
+              m_verbosityLevel =
+                  static_cast<Verbosity>(
+                      std::min(
+                          static_cast<int>(m_verbosityLevel) + 1,
+                          static_cast<int>(Verbosity::totVerbosityLevels) - 1
+                      ));
+          })
+          .append()
+          .default_value(false)
+          .implicit_value(true)
+          .nargs(0);
     }
 
     void parseArgs(const int argc, char *argv[])

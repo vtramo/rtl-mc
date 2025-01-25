@@ -1,5 +1,8 @@
 #pragma once
 
+#include <spdlog/spdlog.h>
+
+#include "spot_utils.h"
 #include "ppl_output.h"
 #include "ppl_aliases.h"
 
@@ -11,13 +14,22 @@ public:
     [[nodiscard]] bool isSingular() const { return m_isSing; }
     [[nodiscard]] bool isUniverse() const { return m_denotation->is_top(); }
     [[nodiscard]] bool isEmpty() const { return m_denotation->is_empty(); }
+    [[nodiscard]] std::string toString(const PolyhedralSystemSymbolTable& symbolTable) const
+    {
+        return fmt::format(
+            "Formula: {}\n"
+            "IsSing: {}\n"
+            "Denotation: {}",
+            SpotUtils::toFormulaString(m_formula),
+            m_isSing,
+            PPLOutput::toString(*m_denotation, symbolTable)
+        );
+    }
 
     void print(std::ostream& ostream, const PolyhedralSystemSymbolTable& symbolTable) const
     {
         ostream << std::boolalpha;
-        ostream << "Formula: " << m_formula << '\n';
-        ostream << "IsSing: " << m_isSing << '\n';
-        ostream << "Denotation: " << PPLOutput::toString(*m_denotation, symbolTable) << '\n';
+        ostream << toString(symbolTable);
         ostream << std::noboolalpha;
     }
 

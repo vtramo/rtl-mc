@@ -77,8 +77,11 @@ private:
         std::unordered_map<int, StateDenotation>* m_stateDenotationById {};
     };
     static void renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr);
-    static std::unordered_set<int> killAcceptingStates(const spot::twa_graph_ptr& nfa);
+    static std::unordered_set<int> killFinalStates(const spot::twa_graph_ptr& graph);
+    static spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
+    static void purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates);
 
+    spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption) const;
     void buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates);
     StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
     void createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors();

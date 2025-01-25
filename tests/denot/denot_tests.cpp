@@ -46,10 +46,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=2")
@@ -70,10 +70,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=3")
@@ -94,10 +94,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=4")
@@ -118,10 +118,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=5")
@@ -142,10 +142,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=6")
@@ -166,10 +166,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=7")
@@ -190,10 +190,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=8")
@@ -214,10 +214,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=9")
@@ -238,10 +238,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("GAP k=10")
@@ -262,10 +262,10 @@ TEST_CASE("GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 }
 
@@ -305,10 +305,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=2")
@@ -329,10 +329,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=3")
@@ -353,10 +353,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=4")
@@ -377,10 +377,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=5")
@@ -401,10 +401,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=6")
@@ -425,10 +425,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=7")
@@ -449,10 +449,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=8")
@@ -473,10 +473,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=9")
@@ -497,10 +497,10 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 
     SECTION("NO GAP k=10")
@@ -521,9 +521,9 @@ TEST_CASE("NO GAP Test Cases")
             })
         };
 
-        Powerset result { denot() };
-        INFO("Result: " << PPLOutput::toString(result, symbolTable));
+        PowersetUniquePtr result { denot() };
+        INFO("Result: " << PPLOutput::toString(*result, symbolTable));
         INFO("Expected Result: " << PPLOutput::toString(expectedResult, symbolTable));
-        REQUIRE(result == expectedResult);
+        REQUIRE(*result == expectedResult);
     }
 }

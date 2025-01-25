@@ -29,9 +29,9 @@ const spot::atomic_prop_set& PolyhedralSystem::getAtoms() const
     return m_symbolTable.atoms();
 }
 
-std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const std::string_view ap) const
+std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const std::string_view atom) const
 {
-    if (const auto it { m_denotation.find(std::string { ap }) }; it != m_denotation.end()) {
+    if (const auto it { m_denotation.find(std::string { atom }) }; it != m_denotation.end()) {
         return &it->second;
     }
 
@@ -45,9 +45,8 @@ std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretati
         return {};
     }
 
-    if (const auto it { m_denotation.find(atom.ap_name()) }; it != m_denotation.end()) {
+    if (const auto it { m_denotation.find(atom.ap_name()) }; it != m_denotation.end())
         return &it->second;
-    }
 
      return {};
 }
@@ -163,12 +162,12 @@ void PolyhedralSystem::setConstraintOutputMinimized(const bool minimizeConstrain
     m_minimizeConstraintsOutput = minimizeConstraintsOutput;
 }
 
-std::ostream& operator<<(std::ostream& out, const PolyhedralSystem& polyhedralSystem)
+std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralSystem)
 {
     const bool minimizeConstraints { polyhedralSystem.m_minimizeConstraintsOutput };
     const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem.getSymbolTable() };
     out << "Inv " << PPLOutput::toString(polyhedralSystem.getInvariant(), symbolTable, minimizeConstraints) << '\n';
-    out << "Flow " << PPLOutput::toString(polyhedralSystem.getFlow(), symbolTable, minimizeConstraints) << "\n\n";
+    out << "Flow " << PPLOutput::toString(polyhedralSystem.getFlow(), symbolTable, minimizeConstraints) << '\n';
 
     for (const auto& atom: symbolTable.atoms())
     {
@@ -176,5 +175,17 @@ std::ostream& operator<<(std::ostream& out, const PolyhedralSystem& polyhedralSy
         out << atom << " " << PPLOutput::toString(atomInterpretation->interpretation(), symbolTable, minimizeConstraints) << '\n';
     }
 
+    out << "Total atomic propositions: " << polyhedralSystem.getTotalAtoms() << ".\n";
+    out << "PreFlow: " << PPLOutput::toString(polyhedralSystem.getPreFlow(), polyhedralSystem.getSymbolTable()) << '\n';
+
+    out << "Space dimension: " << polyhedralSystem.getSpaceDimension() << ".\n";
+    bool first { true };
+    out << "Variables: [";
+    for (PPL::dimension_type dim = 0; dim < polyhedralSystem.getSpaceDimension(); ++dim)
+    {
+        out << (first ? "" : ", ") << *polyhedralSystem.getSymbolTable().getVariableName(PPL::Variable { dim });
+        first = false;
+    }
+    out << "]\n";
     return out;
 }

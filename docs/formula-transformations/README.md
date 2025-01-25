@@ -7,8 +7,8 @@ Presumibilmente, queste trasformazioni possono essere eseguite visitando l'alber
 
 Spot fornisce una funzione `spot::from_ltlf` per convertire una formula con semantica LTLf in una formula con semantica LTL.
 Esistono quindi due implementazioni per eseguire i due passi di sopra:
-1. una implementazione che discretizza e trasforma in LTL in un solo colpo (non usa `spot::from_ltlf` ma implementa da zero la conversione)
-2. una implementazione che discretizza, e poi usa `from_ltlf` per trasformare in LTL.
+1. una implementazione che discretizza e trasforma in LTL in un solo colpo (non usa `spot::from_ltlf` ma implementa da zero la conversione, `--direct-ltl`)
+2. una implementazione che discretizza, e poi usa `from_ltlf` per trasformare in LTL (default).
 
 Entrambe le versioni sono state testate. La versione 1 risulta essere più performante:
 ```

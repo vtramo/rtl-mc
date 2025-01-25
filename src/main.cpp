@@ -1,6 +1,5 @@
-#include <DiscreteFiniteLtlFormula.h>
-#include <argparse/argparse.hpp>
-#include <ppl_output.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_sinks.h>
 #include <spot/tl/parse.hh>
 #include <spot/tl/length.hh>
 #include "discretization/DiscreteFiniteLtlFormula.h"
@@ -28,8 +27,9 @@ BackwardNFA buildBackwardNfa(
 
 int main(const int argc, char *argv[])
 {
-    RtlMcProgram rtlMcProgram { "rtl-mc", argc, argv };
     RtlMcProgram rtlMcProgram { argc, argv };
+    configureLogger(rtlMcProgram.verbosityLevel());
+
     PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
     spot::formula rtlFormula {
         rtlMcProgram.universal()
@@ -37,27 +37,31 @@ int main(const int argc, char *argv[])
             : rtlMcProgram.rtlFormula()
     };
 
-    const bool verbose { rtlMcProgram.verbose() };
+    spdlog::info("[Polyhedral System]\n{}", *polyhedralSystem);
+    spdlog::info("[RTLf Formula] Formula: {}.", rtlFormula);
+    spdlog::info("[RTLf Formula] Total atomic propositions: {}.", spot::atomic_prop_collect(rtlFormula)->size());
+    spdlog::info("[RTLf Formula] Length: {}.\n", spot::length(rtlFormula));
 
-    if (verbose)
-    {
-        std::cout << "POLYHEDRAL SYSTEM: \n";
-        polyhedralSystem->setConstraintOutputMinimized(false);
-        std::cout << *polyhedralSystem << "\n\n";
-        std::cout << "RTLf Formula: " << rtlFormula << "\n\n";
-    }
+    spdlog::info(">>> RTLf formula discretization started.");
+    Timer timer {};
 
-    PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
     DiscreteLtlFormula discreteLtlFormula {
         rtlMcProgram.directLtl()
             ? DiscreteLtlFormula::discretizeToLtl(std::move(rtlFormula))
             : DiscreteFiniteLtlFormula::discretize(std::move(rtlFormula)).toLtl()
     };
 
-    if (verbose) std::cout << "DiscreteLtlFormula: " << discreteLtlFormula << "\n\n";
+    spdlog::info("<<< Discretization completed. Elapsed time: {} ms.", timer.elapsed());
+    spdlog::info("[Discrete LTL formula] Formula: {}.", discreteLtlFormula);
+    spdlog::info("[Discrete LTL formula] Total atomic propositions: {}.", spot::atomic_prop_collect(discreteLtlFormula.formula())->size());
+    spdlog::info("[Discrete LTL formula] Length: {}.\n", spot::length(discreteLtlFormula.formula()));
 
     try
     {
+        spdlog::info(">>> BackwardNFA automaton construction started.");
+        timer.reset();
+
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa {
             buildBackwardNfa(
                 std::move(discreteLtlFormula),
@@ -66,17 +70,12 @@ int main(const int argc, char *argv[])
             )
         };
 
-        if (verbose)
-        {
-            std::cout << "BACKWARD NFA\n";
-            std::cout << "Optimization level: " << SpotUtils::toOptimizationLevelString(backwardNfa.optimizationLevel()) << '\n';
-            std::cout << "Total states: " << backwardNfa.totalStates() << '\n';
-            std::cout << "Total edges: " << backwardNfa.totalEdges() << '\n';
-            std::cout << "Initial initial states: " << backwardNfa.totalInitialStates() << '\n';
-            std::cout << "Total final states: " << backwardNfa.totalFinalStates() << '\n';
-        }
+        spdlog::info("<<< BackwardNFA automaton construction completed. Elapsed time: {} ms.\n", timer.elapsed());
+        spdlog::trace("[BackwardNFA]\n{}\n", backwardNfa);
 
-        if (verbose) std::cout << "\n\nStarting Denot algorithm..." << '\n';
+        spdlog::info(">>> Denot algorithm started.");
+        timer.reset();
+
         Denot denot { polyhedralSystem, backwardNfa };
         PowersetUniquePtr denotResult {
             rtlMcProgram.universal()
@@ -84,16 +83,17 @@ int main(const int argc, char *argv[])
                 : denot()
         };
 
-        if (verbose)
-        {
-            std::cout << "Denot total iterations: " << denot.totalIterations() << '\n';
-            std::cout << "RESULT ";
-        }
+        spdlog::info("<<< Denot algorithm terminated. Elapsed time: {} ms.", timer.elapsed());
+        spdlog::info("<<< Denot algorithm total iterations: {}.\n", denot.totalIterations());
 
-        std::cout << PPLOutput::toString(result, polyhedralSystem->getSymbolTable()) << '\n';
-    } catch (const std::exception& e)
+        spdlog::info("[Result] Points: ");
+        std::cout << PPLOutput::toString(*denotResult, polyhedralSystem->getSymbolTable()) << '\n';
+        spdlog::info("[Result] Existential Denotation: {}.", rtlMcProgram.existential());
+        spdlog::info("[Result] Universal Denotation: {}.", rtlMcProgram.universal());
+    }
+    catch (const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        spdlog::error(e.what());
     }
 }
 
