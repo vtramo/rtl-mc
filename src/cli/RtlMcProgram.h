@@ -137,6 +137,9 @@ private:
           .append()
           .default_value(false)
           .implicit_value(true)
+          .help("enable verbose output. Each occurrence of -V increases verbosity level. "
+              "Verbose mode provides additional details during program execution to aid debugging "
+              "and understanding of the internal processes.")
           .nargs(0);
     }
 
