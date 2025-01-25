@@ -166,7 +166,7 @@ namespace PPLUtils
                 a.add_disjunct(it->pointset());
     }
 
-    std::unique_ptr<Powerset> intersect(const Powerset& a, const Powerset& b)
+    PowersetUniquePtr intersect(const Powerset& a, const Powerset& b)
     {
         assert(a.space_dimension() == b.space_dimension());
 
@@ -185,11 +185,11 @@ namespace PPLUtils
         return result;
     }
 
-    std::unique_ptr<Powerset> intersect(const Powerset& a, Powerset&& b)
+    PowersetUniquePtr intersect(const Powerset& a, Powerset&& b)
     {
         assert(a.space_dimension() == b.space_dimension());
 
-        std::unique_ptr<Powerset> result { nullptr };
+        PowersetUniquePtr result { nullptr };
 
         if (b.is_universe())
         {
@@ -209,7 +209,7 @@ namespace PPLUtils
         return result;
     }
 
-    std::unique_ptr<Powerset> intersect(Powerset&& a, Powerset&& b)
+    PowersetUniquePtr intersect(Powerset&& a, Powerset&& b)
     {
         assert(a.space_dimension() == b.space_dimension());
 
@@ -262,7 +262,14 @@ namespace PPLUtils
         return result;
     }
 
-    std::unique_ptr<Powerset> minus(const Powerset& a, const Powerset& b)
+    PowersetUniquePtr complement(const Powerset& a)
+    {
+        PowersetUniquePtr result { std::make_unique<Powerset>(a.space_dimension() , PPL::UNIVERSE) };
+        result->difference_assign(a);
+        return result;
+    }
+
+    PowersetUniquePtr minus(const Powerset& a, const Powerset& b)
     {
         assert(a.space_dimension() == b.space_dimension());
 
@@ -271,7 +278,7 @@ namespace PPLUtils
         return result;
     }
 
-    std::unique_ptr<Powerset> minus(Powerset&& a, Powerset&& b)
+    PowersetUniquePtr minus(Powerset&& a, Powerset&& b)
     {
         assert(a.space_dimension() == b.space_dimension());
 
@@ -281,7 +288,7 @@ namespace PPLUtils
         return result;
     }
 
-    std::unique_ptr<Powerset> minus(Powerset&& a, const Powerset& b)
+    PowersetUniquePtr minus(Powerset&& a, const Powerset& b)
     {
         assert(a.space_dimension() == b.space_dimension());
 

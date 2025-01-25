@@ -2,16 +2,23 @@
 #include <argparse/argparse.hpp>
 #include <ppl_output.h>
 #include <spot/tl/parse.hh>
-#include "BackwardNFA.h"
-#include "PolyhedralSystemFormulaDenotationMap.h"
-#include "DiscreteLtlFormula.h"
-#include "PolyhedralSystem.h"
-#include "ppl_aliases.h"
-#include "Denot.h"
-#include "RtlMcProgram.h"
+#include <spot/tl/length.hh>
+#include "discretization/DiscreteFiniteLtlFormula.h"
+#include "utils/ppl/ppl_output.h"
+#include "automaton/BackwardNFA.h"
+#include "automaton/PolyhedralSystemFormulaDenotationMap.h"
 #include "discretization/DiscreteLtlFormula.h"
+#include "system/PolyhedralSystem.h"
+#include "utils/ppl/ppl_aliases.h"
+#include "utils/ppl/ppl_utils.h"
+#include "core/Denot.h"
+#include "cli/RtlMcProgram.h"
+#include "utils/Timer.h"
+#include "logging/setup.h"
 
+class DiscreteLtlFormula;
 using PPL::IO_Operators::operator<<;
+using namespace SpotUtils;
 
 BackwardNFA buildBackwardNfa(
     DiscreteLtlFormula&& discreteLtlFormula,
@@ -22,8 +29,13 @@ BackwardNFA buildBackwardNfa(
 int main(const int argc, char *argv[])
 {
     RtlMcProgram rtlMcProgram { "rtl-mc", argc, argv };
+    RtlMcProgram rtlMcProgram { argc, argv };
     PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
-    spot::formula rtlFormula { rtlMcProgram.rtlFormula() };
+    spot::formula rtlFormula {
+        rtlMcProgram.universal()
+            ? Not(rtlMcProgram.rtlFormula())
+            : rtlMcProgram.rtlFormula()
+    };
 
     const bool verbose { rtlMcProgram.verbose() };
 
@@ -66,7 +78,11 @@ int main(const int argc, char *argv[])
 
         if (verbose) std::cout << "\n\nStarting Denot algorithm..." << '\n';
         Denot denot { polyhedralSystem, backwardNfa };
-        Powerset result { denot() };
+        PowersetUniquePtr denotResult {
+            rtlMcProgram.universal()
+                ? PPLUtils::complement(*denot())
+                : denot()
+        };
 
         if (verbose)
         {

@@ -19,6 +19,8 @@ namespace PPLUtils {
     PowersetUniquePtr intersect(std::vector<Powerset>& powersets);
     PowersetUniquePtr intersect(const std::vector<PowersetConstSharedPtr>& powersets);
 
+    PowersetUniquePtr complement(const Powerset& a);
+
     PowersetUniquePtr minus(const Powerset& a, const Powerset& b);
     PowersetUniquePtr minus(const Powerset& a, Powerset&& b);
     PowersetUniquePtr minus(Powerset&& a, const Powerset& b);

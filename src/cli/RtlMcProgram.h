@@ -10,9 +10,7 @@ using namespace SpotUtils;
 
 class RtlMcProgram {
 public:
-    RtlMcProgram(const std::string_view programName, const int argc, char *argv[])
-        : m_programName { programName }
-        , m_rtlMcProgram { argparse::ArgumentParser { m_programName } }
+    RtlMcProgram(const int argc, char *argv[])
     {
         buildRtlMcProgram();
         parseArgs(argc, argv);
@@ -47,14 +45,24 @@ public:
     [[nodiscard]] PolyhedralSystemSharedPtr polyhedralSystem() const { return m_polyhedralSystem; }
     [[nodiscard]] const spot::formula& rtlFormula() const { return m_rtlFormula; }
     [[nodiscard]] const AutomatonOptimizationFlags& automatonOptimizationFlags() const { return m_automatonOptimizationFlags; }
+    [[nodiscard]] bool universal() const { return m_universal; }
+    [[nodiscard]] bool existential() const { return m_existential; }
     [[nodiscard]] bool directLtl() const { return m_directLtl; }
     [[nodiscard]] bool verbose() const { return m_verbose; }
 
 private:
-    std::string m_programName {};
+    argparse::ArgumentParser m_rtlMcProgram {};
+
+    std::string m_polyhedralSystemFilename {};
+    std::string m_rtlFilename {};
+    PolyhedralSystemSharedPtr m_polyhedralSystem {};
+    spot::formula m_rtlFormula {};
+
     AutomatonOptimizationFlags m_automatonOptimizationFlags {};
     bool m_directLtl {};
     bool m_verbose {};
+    bool m_universal {};
+    bool m_existential {};
 
     bool m_gap {};
     bool m_nogap {};
@@ -74,18 +82,33 @@ private:
 
         auto& group { m_rtlMcProgram.add_mutually_exclusive_group(true) };
         group.add_argument("-f", "--from-files")
-            .help("Polyhedral System file and RTLf file")
+            .help("Polyhedral System file and RTLf file (formula φ)")
             .nargs(2);
 
         group.add_argument("--gap")
             .nargs(2)
-            .help("GAP experiment with k alternating steps and max time t. Example: `--gap 3 15`.")
+            .help("GAP experiment with k alternating steps and max time t. Example: --gap 3 15.")
             .scan<'i', int>();
 
         group.add_argument("--nogap")
             .nargs(2)
-            .help("NO GAP experiment with k alternating steps and max time t. Example: `--nogap 2 20`.")
+            .help("NO GAP experiment with k alternating steps and max time t. Example: --nogap 2 20.")
             .scan<'i', int>();
+
+        auto& semantic { m_rtlMcProgram.add_mutually_exclusive_group() };
+        semantic.add_argument("--existential")
+            .help("compute the set of points from which there exists a trajectory that satisfies φ (default)")
+            .flag()
+            .store_into(m_existential);
+        semantic.add_argument("--universal")
+            .help("compute the set of points from which every trajectory satisfies φ")
+            .flag()
+            .store_into(m_universal);
+
+        m_rtlMcProgram.add_argument("--direct-ltl")
+            .help("discretize the RTLf formula directly into LTL in a single step.")
+            .flag()
+            .store_into(m_directLtl);
 
         auto& automatonOptimizationGroup { m_rtlMcProgram.add_mutually_exclusive_group() };
         automatonOptimizationGroup.add_argument("--low")
@@ -122,22 +145,29 @@ private:
         {
             m_rtlMcProgram.parse_args(argc, argv);
             std::vector<std::string> filenames { m_rtlMcProgram.get<std::vector<std::string>>("--from-files") };
-            if (!filenames.empty()) {
-                 m_polyhedralSystemFilename = filenames.at(0);
-                 m_rtlFilename = filenames.at(1);
+            if (!filenames.empty())
+            {
+                m_polyhedralSystemFilename = filenames.at(0);
+                m_rtlFilename = filenames.at(1);
             }
 
             std::vector<int> gap { m_rtlMcProgram.get<std::vector<int>>("--gap") };
-            if (!gap.empty()) {
-                  m_gap = true;
-                  setGapNoGapParameters(gap[0], gap[1]);
+            if (!gap.empty())
+            {
+                assert(filenames.empty());
+                m_gap = true;
+                setGapNoGapParameters(gap[0], gap[1]);
             }
 
             std::vector<int> nogap { m_rtlMcProgram.get<std::vector<int>>("--nogap") };
-            if (!nogap.empty()) {
-                  m_nogap = true;
-                  setGapNoGapParameters(nogap[0], nogap[1]);
+            if (!nogap.empty())
+            {
+                assert(filenames.empty() && gap.empty());
+                m_nogap = true;
+                setGapNoGapParameters(nogap[0], nogap[1]);
             }
+
+            if (!m_existential && !m_universal) m_existential = true;
         }
         catch (const std::exception &e)
         {
