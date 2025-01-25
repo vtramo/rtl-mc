@@ -6,20 +6,24 @@ package cli {
         -m_programName: std::string
         -m_automatonOptimizationFlags: AutomatonOptimizationFlags
         -m_directLtl: bool
+        -m_existential: bool
+        -m_universal: bool
         -m_polyhedralSystemFilename: std::string
         -m_rtlFilename: std::string
         -m_rtlMcProgram: argparse::ArgumentParser
         -m_polyhedralSystem: PolyhedralSystemSharedPtr
         -m_rtlFormula: spot::formula
-        -m_verbose: bool
+        -m_verbosityLevel: Verbosity
         --constructors--
-        +RtlMcProgram(const std::string_view programName, const int argc, char *argv[])
+        +RtlMcProgram(const int argc, char *argv[])
         --member functions--
         +polyhedralSystem(): PolyhedralSystemSharedPtr
         +rtlFormula(): const spot::formula&
         +automatonOptimizationFlags(): const AutomatonOptimizationFlags&
         +directLtl(): bool
-        +verbose(): bool
+        +universal(): bool
+        +existential(): bool
+        +verbosityLevel(): Verbosity
         -buildRtlMcProgram(): void
         -parseArgs(int argc, char *argv[]): void
         -readAndParsePolyhedralSystemFile(): void
@@ -32,8 +36,18 @@ package cli {
         high: bool
         any: bool
     }
+
+    enum Verbosity {
+        silent,
+        verbose,
+        veryVerbose,
+        debug,
+
+        totVerbosityLevels
+    }
 }
 
 RtlMcProgram +--> "1" AutomatonOptimizationFlags
+RtlMcProgram ---> "1" Verbosity
 
 @enduml

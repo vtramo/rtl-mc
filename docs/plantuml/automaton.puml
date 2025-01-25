@@ -34,12 +34,15 @@ package automaton {
         +optimizationLevel() : spot::postprocessor::optimization_level
         +printDotFormat(std::ostream& os) : void
         +printHoaFormat(std::ostream& os) : void
+        -translateDiscreteLtlFormulaIntoTgba(bool anyOption) const : spot::twa_graph_ptr
         -buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates) : void
         -extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
         -createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors() : void
         --static functions--
         -{static} renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr) : void
-        -{static} killAcceptingStates(const spot::twa_graph_ptr& nfa) : std::unordered_set<int>
+        -{static} killFinalStates(const spot::twa_graph_ptr& graph) : std::unordered_set<int>
+        -{static} convertToNfa(spot::twa_graph_ptr tgba) : spot::twa_graph_ptr
+        -{static} purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates) : void
         --operators--
         +operator<< (std::ostream& out, const BackwardNFA& backwardNfa) : std::ostream&
     }
@@ -90,6 +93,7 @@ package automaton {
         +isSingular() : bool
         +isUniverse() : bool
         +isEmpty() : bool
+        +toString(const PolyhedralSystemSymbolTable& symbolTable) : std::string
         +print(std::ostream& ostream, const PolyhedralSystemSymbolTable& symbolTable) : void
     }
 }
