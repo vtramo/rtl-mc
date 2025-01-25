@@ -14,22 +14,24 @@ If you have Docker installed...
     ```
    ```
    One of the arguments '-f/--from-files VAR...' or '--gap VAR...' or '--nogap VAR...' is required
-   Usage: rtl-mc [--help] [--version] [[--from-files VAR...]|[--gap VAR...]|[--nogap VAR...]] [[--low]|[--medium]|[--high]] [--any] [--direct-ltl] [--verbose]
+   Usage: rtl-mc [--help] [--version] [[--from-files VAR...]|[--gap VAR...]|[--nogap VAR...]] [[--existential]|[--universal]] [--direct-ltl] [[--low]|[--medium]|[--high]] [--any] [--verbose]...
    
    Model Checking Linear Temporal Properties on Polyhedral Systems
    
    Optional arguments:
    -h, --help        shows help message and exits
    -v, --version     prints version information and exits
-   -f, --from-files  Polyhedral System file and RTLf file [nargs: 2]
-   --gap             GAP experiment with k alternating steps and max time t. Example: `--gap 3 15`. [nargs: 2]
-   --nogap           NO GAP experiment with k alternating steps and max time t. Example: `--nogap 2 20`. [nargs: 2]
+   -f, --from-files  Polyhedral System file and RTLf file (formula φ) [nargs: 2]
+   --gap             GAP experiment with k alternating steps and max time t. Example: --gap 3 15. [nargs: 2]
+   --nogap           NO GAP experiment with k alternating steps and max time t. Example: --nogap 2 20. [nargs: 2]
+   --existential     compute the set of points from which there exists a trajectory that satisfies φ (default)
+   --universal       compute the set of points from which every trajectory satisfies φ
+   --direct-ltl      discretize the RTLf formula directly into LTL in a single step.
    --low             minimal optimizations during automaton construction (fast, default)
    --medium          moderate optimizations during automaton construction
    --high            all available optimizations during automaton construction (slow)
    --any             tells the translator that it should attempt to reduce or produce a deterministic result: any automaton denoting the given formula is OK.  This effectively disables post-processings and speeds up the translation
-   --direct-ltl      discretize the RTLf formula directly into LTL in a single step, without using spot::from_ltlf.
-   --verbose         show more output
+   -V, --verbose     enable verbose output. Each occurrence of -V increases verbosity level. Verbose mode provides additional details during program execution to aid debugging and understanding of the internal processes. [may be repeated]
    ```
 You need to provide a polyhedral system file and an rtlf file. You can do this by creating bind mounts:
 ```shell
@@ -37,26 +39,8 @@ docker run \
   --rm \
   -v ./examples/GAP/system.txt:/system.txt \
   -v ./examples/GAP/rtlf_k=1.txt:/rtlf.txt \
-  rtl-mc -f system.txt rtlf.txt --verbose
+  rtl-mc -f system.txt rtlf.txt
 ```
 ```
-POLYHEDRAL SYSTEM: 
-Inv ( { b >= 0 & a >= 0 } )
-Flow { t = 1 & -a - b >= -2 & -a >= -1 & -b >= -2 & b >= -2 & a >= -1 & a + b >= -2 }
-
-p ( { a - b >= 1 & b >= 0 } )
-q ( { -a + b >= 1 & a >= 0 } )
-t0 ( { t = 0 & b >= 0 & a >= 0 } )
-t1 ( { -t >= -10 & b >= 0 & a >= 0 } )
-
-
-RTLf Formula: t0 & Gt1 & F(p & Fq)
-DiscreteLtlFormula: alive & sing & t0 & (alive U G!alive) & G(!alive | !Xalive | (sing <-> X(alive & !sing))) & F(alive & sing & !Xalive) & G(!alive | t1) & F(alive & p & F(alive & q))
-
-Total states: 20
-Total edges: 37
-Initial initial states: 4
-Total final states: 5
-Denot total iterations: 14
-RESULT ( { t = 0 & b >= 0 & a - b >= 1 & -a + b > -29 } { t = 0 & -a + b > -1 & b >= 0 & a >= 0 & a - b > -27 } )
+( { t = 0 & b >= 0 & a - b >= 1 & -a + b > -29 } { t = 0 & -a + b > -1 & b >= 0 & a >= 0 & a - b > -27 } )
 ```
