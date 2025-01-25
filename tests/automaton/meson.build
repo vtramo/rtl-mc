@@ -11,7 +11,7 @@ automaton_tests_src_files = [
 automaton_tests_exe = executable(
     'automaton_tests',
     automaton_tests_src_files,
-    dependencies : [spot_dep, catch2_dep, ppl_dep, gmp_dep, antlr4_runtime_dep],
+    dependencies : [spot_dep, catch2_dep, ppl_dep, gmp_dep, antlr4_runtime_dep, spdlog],
     include_directories : include_directories
 )
 

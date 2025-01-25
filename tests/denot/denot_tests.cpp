@@ -1,6 +1,8 @@
-#include <ppl_output.h>
 #include <catch2/catch_test_macros.hpp>
+#include <spdlog/spdlog.h>
 
+#include "ppl_output.h"
+#include "ppl_utils.h"
 #include "PolyhedralSystem.h"
 #include "systemparser.h"
 #include "BackwardNFA.h"

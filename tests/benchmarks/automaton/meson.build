@@ -12,7 +12,7 @@ automaton_benchmarks_source_files = [
 automaton_benchmarks_exe = executable(
     'automaton_benchmarks',
     automaton_benchmarks_source_files,
-    dependencies : [catch2_dep, spot_dep, ppl_dep, gmp_dep, gmpxx_dep, antlr4_runtime_dep],
+    dependencies : [catch2_dep, spot_dep, ppl_dep, gmp_dep, gmpxx_dep, antlr4_runtime_dep, spdlog],
     include_directories : include_directories
 )
 
