@@ -39,7 +39,8 @@ int main(const int argc, char *argv[])
 
     spdlog::info("[Polyhedral System]\n{}", *polyhedralSystem);
     spdlog::info("[RTLf Formula] Formula: {}.", rtlFormula);
-    spdlog::info("[RTLf Formula] Total atomic propositions: {}.", spot::atomic_prop_collect(rtlFormula)->size());
+    spdlog::info("[RTLf Formula] Total atomic propositions: {}.",
+        std::unique_ptr<spot::atomic_prop_set>(spot::atomic_prop_collect(rtlFormula))->size());
     spdlog::info("[RTLf Formula] Length: {}.\n", spot::length(rtlFormula));
 
     spdlog::info(">>> RTLf formula discretization started.");
@@ -53,7 +54,8 @@ int main(const int argc, char *argv[])
 
     spdlog::info("<<< Discretization completed. Elapsed time: {} ms.", timer.elapsed());
     spdlog::info("[Discrete LTL formula] Formula: {}.", discreteLtlFormula);
-    spdlog::info("[Discrete LTL formula] Total atomic propositions: {}.", spot::atomic_prop_collect(discreteLtlFormula.formula())->size());
+    spdlog::info("[Discrete LTL formula] Total atomic propositions: {}.",
+        std::unique_ptr<spot::atomic_prop_set>(spot::atomic_prop_collect(discreteLtlFormula.formula()))->size());
     spdlog::info("[Discrete LTL formula] Length: {}.\n", spot::length(discreteLtlFormula.formula()));
 
     try
