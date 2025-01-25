@@ -30,7 +30,7 @@ subdir('utils')
 subdir('automaton')
 subdir('core')
 subdir('cli')
-
+subdir('logging')
 
 project_exe = executable(
     meson.project_name(),
