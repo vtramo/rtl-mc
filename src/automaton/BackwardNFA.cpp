@@ -110,6 +110,7 @@ void BackwardNFA::renumberOrRemoveStatesAfterPurge(
     const bool updateFinalStates { renumberingContext->m_finalStates != nullptr };
     const bool updateInitialStates { renumberingContext->m_initialStates != nullptr };
     const bool updateStateDenotationById { renumberingContext->m_stateDenotationById != nullptr };
+    const bool updateDummyInitialState { renumberingContext->m_dummyInitialState != nullptr };
 
     if (updateFinalStates)
     {
@@ -148,6 +149,8 @@ void BackwardNFA::renumberOrRemoveStatesAfterPurge(
 
         *renumberingContext->m_stateDenotationById = std::move(updatedStateDenotationById);
     }
+
+    if (updateDummyInitialState) *renumberingContext->m_dummyInitialState = newst[*renumberingContext->m_dummyInitialState];
 }
 
 void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates)
@@ -204,7 +207,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
     assert(m_stateDenotationById.size() == m_backwardNfa->num_states());
     createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors();
     spot::twa_graph::shift_action renumberBackwardNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
-    RenumberingContext renumberingContext { &m_initialStates, &m_finalStates, &m_stateDenotationById };
+    RenumberingContext renumberingContext { &m_initialStates, &m_finalStates, &m_stateDenotationById, &m_dummyInitialState };
     m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
 
     spdlog::debug("[BackwardNFA - Construction] Backward NFA construction completed. Elapsed time: {} ms.", timer.elapsed());
@@ -226,13 +229,13 @@ StateDenotation BackwardNFA::extractStateDenotationFromEdgeGuard(const spot::con
 
 void BackwardNFA::createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors()
 {
-    unsigned dummyInitialState { m_backwardNfa->new_state() };
-    m_backwardNfa->set_init_state(dummyInitialState);
+    m_dummyInitialState = m_backwardNfa->new_state();
+    m_backwardNfa->set_init_state(m_dummyInitialState);
     for (const int finalState: m_finalStates)
     {
         if (hasPredecessors(finalState))
         {
-            m_backwardNfa->new_edge(dummyInitialState, finalState, bdd_true());
+            m_backwardNfa->new_edge(m_dummyInitialState, finalState, bdd_true());
             m_dummyInitialEdges++;
         }
     }
@@ -256,7 +259,7 @@ bool BackwardNFA::hasPredecessors(const int state) const
 {
     assert(state >= 0 && state < totalStates() && "State is out of range!");
 
-    auto edgeStorages = m_backwardNfa->out(state);
+    auto edgeStorages { m_backwardNfa->out(state) };
     return edgeStorages.begin() != edgeStorages.end();
 }
 

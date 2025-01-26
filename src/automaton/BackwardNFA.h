@@ -49,6 +49,7 @@ private:
     spot::twa_graph_ptr m_backwardNfa {};
     std::unordered_set<int> m_initialStates {};
     std::unordered_set<int> m_finalStates {};
+    int m_dummyInitialState {};
     int m_dummyInitialEdges {};
     std::unordered_map<int, StateDenotation> m_stateDenotationById {};
     DiscreteLtlFormula m_discreteLtlFormula {};
@@ -61,11 +62,13 @@ private:
         RenumberingContext(
             std::unordered_set<int>* initialStates,
             std::unordered_set<int>* finalStates,
-            std::unordered_map<int, StateDenotation>* stateDenotationById
+            std::unordered_map<int, StateDenotation>* stateDenotationById,
+            int* dummyInitialState
         )
             : m_initialStates { initialStates }
             , m_finalStates { finalStates }
             , m_stateDenotationById { stateDenotationById }
+            , m_dummyInitialState { dummyInitialState }
         {}
 
         explicit RenumberingContext(std::unordered_set<int>* finalStates)
@@ -75,6 +78,7 @@ private:
         std::unordered_set<int>* m_initialStates {};
         std::unordered_set<int>* m_finalStates {};
         std::unordered_map<int, StateDenotation>* m_stateDenotationById {};
+        int* m_dummyInitialState {};
     };
     static void renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr);
     static std::unordered_set<int> killFinalStates(const spot::twa_graph_ptr& graph);
