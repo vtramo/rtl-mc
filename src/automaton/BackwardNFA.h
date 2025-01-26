@@ -89,7 +89,7 @@ private:
 
     void buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates);
     StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
-    void createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors();
+    void createDummyInitialStateWithEdgesToReachableFinalStates();
     spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption) const;
     spot::const_twa_ptr twa() const;
 };

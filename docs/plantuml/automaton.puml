@@ -37,7 +37,7 @@ package automaton {
         +printHoaFormat(std::ostream& os) : void
         -buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates) : void
         -extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
-        -createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors() : void
+        -createDummyInitialStateWithEdgesToReachableFinalStates() : void
         -translateDiscreteLtlFormulaIntoTgba(bool anyOption) const : spot::twa_graph_ptr
         -twa() : spot::const_twa_ptr
         --static functions--

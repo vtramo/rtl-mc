@@ -205,7 +205,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
     }
 
     assert(m_stateDenotationById.size() == m_backwardNfa->num_states());
-    createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors();
+    createDummyInitialStateWithEdgesToReachableFinalStates();
     spot::twa_graph::shift_action renumberBackwardNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
     RenumberingContext renumberingContext { &m_initialStates, &m_finalStates, &m_stateDenotationById, &m_dummyInitialState };
     m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
@@ -232,13 +232,13 @@ spot::const_twa_ptr BackwardNFA::twa() const
     return m_backwardNfa;
 }
 
-void BackwardNFA::createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors()
+void BackwardNFA::createDummyInitialStateWithEdgesToReachableFinalStates()
 {
     m_dummyInitialState = m_backwardNfa->new_state();
     m_backwardNfa->set_init_state(m_dummyInitialState);
     for (const int finalState: m_finalStates)
     {
-        if (hasPredecessors(finalState))
+        if (isInitialState(finalState) || hasPredecessors(finalState))
         {
             m_backwardNfa->new_edge(m_dummyInitialState, finalState, bdd_true());
             m_dummyInitialEdges++;
