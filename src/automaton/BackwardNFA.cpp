@@ -227,6 +227,11 @@ StateDenotation BackwardNFA::extractStateDenotationFromEdgeGuard(const spot::con
     return StateDenotation { std::move(formulaWithoutSing), powerset, containsSing };
 }
 
+spot::const_twa_ptr BackwardNFA::twa() const
+{
+    return m_backwardNfa;
+}
+
 void BackwardNFA::createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors()
 {
     m_dummyInitialState = m_backwardNfa->new_state();

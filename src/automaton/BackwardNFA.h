@@ -6,6 +6,7 @@
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
 #include "StateDenotation.h"
+#include "BackwardNFADepthFirstSearch.h"
 
 class BackwardNFA {
 public:
@@ -43,8 +44,6 @@ public:
     void printHoaFormat(std::ostream& os) const;
     void printDotFormat(std::ostream& os) const;
 
-    friend std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
-
 private:
     spot::twa_graph_ptr m_backwardNfa {};
     std::unordered_set<int> m_initialStates {};
@@ -55,6 +54,9 @@ private:
     DiscreteLtlFormula m_discreteLtlFormula {};
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
     spot::postprocessor::optimization_level m_optimizationLevel {};
+
+    friend std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
+    friend class BackwardNFADepthFirstSearch;
 
     using RenumberingContextVoidPtr = void*;
     struct RenumberingContext
@@ -85,8 +87,9 @@ private:
     static spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
     static void purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates);
 
-    spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption) const;
     void buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates);
     StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
     void createDummyInitialStateWithEdgesToFinalStatesHavingPredecessors();
+    spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption) const;
+    spot::const_twa_ptr twa() const;
 };
