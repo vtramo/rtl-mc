@@ -46,7 +46,7 @@ package automaton {
         -{static} convertToNfa(spot::twa_graph_ptr tgba) : spot::twa_graph_ptr
         -{static} purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates) : void
         --friends--
-        -friend class BackwardNFADepthFirst;
+        -friend class BackwardNFADepthFirstSearch;
         --operators--
         +operator<< (std::ostream& out, const BackwardNFA& backwardNfa) : std::ostream&
     }
@@ -101,13 +101,73 @@ package automaton {
         +toString(const PolyhedralSystemSymbolTable& symbolTable) : std::string
         +print(std::ostream& ostream, const PolyhedralSystemSymbolTable& symbolTable) : void
     }
+
+    class BackwardNFADepthFirstSearch {
+        --data members--
+        -m_backwardNfa : const BackwardNFA*
+        --constructors--
+        +explicit BackwardNFADepthFirstSearch(const BackwardNFA& backwardNfa)
+        --virtual member functions--
+        +virtual wantState(int state) const : bool
+        +virtual processState(int state) : void
+        +virtual processEdge(int src, int dst) : void
+        --member functions--
+        +run() final: void
+        -want_state(const spot::state* state) const final : bool
+        -process_state(const spot::state* s, int n, spot::twa_succ_iterator* si) final : void
+        -process_link(
+            const spot::state* in_s,
+            int in,
+            const spot::state* out_s,
+            int out,
+            const spot::twa_succ_iterator* si
+        ) final : void
+        -push(const spot::state* s, int sn) final : void
+        -pop() final : void
+    }
+
+    class twa_reachable_iterator_depth_first << spot >>
+    {
+      --data members--
+      #const_twa_ptr aut_
+      #state_map<int> seen
+      #std::deque<stack_item> todo
+      --constructors--
+      +twa_reachable_iterator_depth_first(const const_twa_ptr& a)
+      --virtual destructors--
+      +virtual ~twa_reachable_iterator_depth_first()
+      --virtual member functions--
+      +virtual run() : void
+      +virtual want_state(const state* s) : bool
+      +virtual start() : void
+      +virtual end() : void
+      +virtual process_state(const state* s, int n, twa_succ_iterator* si) : void
+      +virtual process_link(
+        const state* in_s, int in,
+        const state* out_s, int out,
+        const twa_succ_iterator* si
+      ) : void
+      #virtual push(const state* s, int sn) : void
+      #virtual pop() : void
+    }
+
+    struct stack_item << spot >>
+    {
+      --data members--
+      src : const state*
+      src_n : int
+      it : twa_succ_iterator*
+    }
 }
 
-class spot::twa_graph_ptr {}
-class spot::formula {}
+class twa_graph_ptr << spot >> {}
+class formula << spot >> {}
 
-BackwardNFA *--> "1" spot::twa_graph_ptr
+BackwardNFA *--> "1" twa_graph_ptr
+BackwardNFA *--> "1" formula
 BackwardNFA *--> "1" PolyhedralSystemFormulaDenotationMap
 BackwardNFA *--> "*" StateDenotation
 BackwardNFA #--> RenumberingContext
+twa_reachable_iterator_depth_first #--> "*" stack_item
+BackwardNFADepthFirstSearch --|> twa_reachable_iterator_depth_first
 @enduml
