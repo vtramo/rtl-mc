@@ -575,7 +575,7 @@ void testBackwardNfaInvariant(const BackwardNFA& backwardNfa)
     }
 
     BackwardNFADepthFirstSearchInvariantCheck backwardNfaDfs { backwardNfa };
-    backwardNfaDfs.run();
+    backwardNfaDfs();
     REQUIRE(backwardNfaDfs.totalReachableStates() == backwardNfa.totalStates());
     REQUIRE(backwardNfaDfs.totalVisitedEdges() == backwardNfa.totalEdges());
 }

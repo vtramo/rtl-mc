@@ -7,6 +7,11 @@ BackwardNFADepthFirstSearch::BackwardNFADepthFirstSearch(const BackwardNFA& back
     m_backwardNfa = &backwardNfa;
 }
 
+void BackwardNFADepthFirstSearch::operator() ()
+{
+	run();
+}
+
 void BackwardNFADepthFirstSearch::run()
 {
     spot::twa_reachable_iterator_depth_first::run();

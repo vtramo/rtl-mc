@@ -9,6 +9,7 @@ class BackwardNFADepthFirstSearch: protected spot::twa_reachable_iterator_depth_
 public:
     explicit BackwardNFADepthFirstSearch(const BackwardNFA& backwardNfa);
 
+    void operator() ();
     void run() final;
     virtual bool wantState(int state) const;
     virtual void processState(int state);
