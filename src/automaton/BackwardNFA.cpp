@@ -63,7 +63,6 @@ spot::twa_graph_ptr BackwardNFA::convertToNfa(spot::twa_graph_ptr tgba)
     spdlog::debug("[BackwardNFA - TGBA to NFA] Conversion from TGBA to NFA completed. Elapsed time: {} ms.", timer.elapsed());
     spdlog::debug("[BackwardNFA - TGBA to NFA] Total NFA states: {}.", nfa->num_states());
     spdlog::debug("[BackwardNFA - TGBA to NFA] Total NFA edges {}.", nfa->num_edges());
-    spdlog::debug("[BackwardNFA - TGBA to NFA] Total NFA accepting sets {}.", nfa->num_sets());
     return nfa;
 }
 
