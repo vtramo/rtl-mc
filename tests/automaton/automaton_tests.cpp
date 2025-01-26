@@ -1,5 +1,6 @@
 #include <spot_utils.h>
 #include <catch2/catch_test_macros.hpp>
+#include <spot/twaalgos/reachiter.hh>
 #include "BackwardNFA.h"
 #include "DiscreteFiniteLtlFormula.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
@@ -508,6 +509,37 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     }
 }
 
+class BackwardNFADepthFirstSearchInvariantCheck final : public BackwardNFADepthFirstSearch {
+public:
+    explicit BackwardNFADepthFirstSearchInvariantCheck(const BackwardNFA& backwardNfa)
+        : BackwardNFADepthFirstSearch(backwardNfa)
+    {
+    }
+
+    [[nodiscard]] int totalReachableStates() const { return m_totalReachableStates; }
+    [[nodiscard]] int totalVisitedEdges() const { return m_totalVisitedEdges; }
+private:
+    int m_totalReachableStates {};
+    int m_totalVisitedEdges {};
+
+    void processState(const int state) override
+    {
+        m_totalReachableStates++;
+        INFO("State is " << state);
+        if (!m_backwardNfa->hasPredecessors(state))
+            REQUIRE(m_backwardNfa->isInitialState(state));
+    }
+
+    void processEdge(const int src, const int dst) override
+    {
+        m_totalVisitedEdges++;
+        INFO("Edge (" << src << ", " << dst << ")");
+        const bool srcIsSing { m_backwardNfa->stateDenotation(src).isSingular() };
+        const bool dstIsSing { m_backwardNfa->stateDenotation(dst).isSingular() };
+        REQUIRE(srcIsSing != dstIsSing);
+    }
+};
+
 void testBackwardNfaInvariant(const BackwardNFA& backwardNfa)
 {
     for (int state = 0; state < backwardNfa.totalStates(); state++)
@@ -541,4 +573,9 @@ void testBackwardNfaInvariant(const BackwardNFA& backwardNfa)
             REQUIRE(predecessorStateDenotation.isSingular() != currentStateIsSingular);
         }
     }
+
+    BackwardNFADepthFirstSearchInvariantCheck backwardNfaDfs { backwardNfa };
+    backwardNfaDfs.run();
+    REQUIRE(backwardNfaDfs.totalReachableStates() == backwardNfa.totalStates());
+    REQUIRE(backwardNfaDfs.totalVisitedEdges() == backwardNfa.totalEdges());
 }
