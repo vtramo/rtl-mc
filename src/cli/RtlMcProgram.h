@@ -6,6 +6,8 @@
 #include "systemparser.h"
 #include "parsertlf.h"
 #include "Verbosity.h"
+#include "AutomatonOptimizationFlags.h"
+#include "OutputFormat.h"
 
 using namespace SpotUtils;
 
@@ -36,13 +38,6 @@ public:
         readAndParseRtlFile();
     }
 
-    struct AutomatonOptimizationFlags {
-        bool low {};
-        bool medium {};
-        bool high {};
-        bool any {};
-    };
-
     [[nodiscard]] PolyhedralSystemSharedPtr polyhedralSystem() const { return m_polyhedralSystem; }
     [[nodiscard]] const spot::formula& rtlFormula() const { return m_rtlFormula; }
     [[nodiscard]] const AutomatonOptimizationFlags& automatonOptimizationFlags() const { return m_automatonOptimizationFlags; }
@@ -50,6 +45,8 @@ public:
     [[nodiscard]] bool existential() const { return m_existential; }
     [[nodiscard]] bool directLtl() const { return m_directLtl; }
     [[nodiscard]] Verbosity verbosityLevel() const { return m_verbosityLevel; }
+    [[nodiscard]] OutputFormat outputFormat() const { return m_outputFormat; }
+    [[nodiscard]] std::string statsFormat() const { return m_statsFormat; }
 
 private:
     argparse::ArgumentParser m_rtlMcProgram {};
@@ -71,10 +68,14 @@ private:
     int m_k {};
 
     Verbosity m_verbosityLevel {};
+    OutputFormat m_outputFormat { OutputFormat::normal };
+    std::string m_statsFormat {};
 
     void buildRtlMcProgram()
     {
-        m_rtlMcProgram.add_description("Model Checking Linear Temporal Properties on Polyhedral Systems");
+        m_rtlMcProgram
+            .add_description("Model Checking Linear Temporal Properties on Polyhedral Systems")
+            .set_usage_max_line_width(80);
 
         auto& group { m_rtlMcProgram.add_mutually_exclusive_group(true) };
         group.add_argument("-f", "--from-files")
@@ -124,23 +125,37 @@ private:
             .flag()
             .store_into(m_automatonOptimizationFlags.any);
 
-        m_rtlMcProgram.add_argument("-V", "--verbose")
-          .action([&](const auto &)
-          {
-              m_verbosityLevel =
-                  static_cast<Verbosity>(
-                      std::min(
-                          static_cast<int>(m_verbosityLevel) + 1,
-                          static_cast<int>(Verbosity::totVerbosityLevels) - 1
-                      ));
-          })
-          .append()
-          .default_value(false)
-          .implicit_value(true)
-          .help("enable verbose output. Each occurrence of -V increases verbosity level. "
-              "Verbose mode provides additional details during program execution to aid debugging "
-              "and understanding of the internal processes.")
-          .nargs(0);
+        auto& outputFormat { m_rtlMcProgram.add_mutually_exclusive_group() };
+        outputFormat.add_argument("-V", "--verbose")
+            .action([&](const auto &)
+            {
+                m_verbosityLevel =
+                    static_cast<Verbosity>(
+                        std::min(
+                            static_cast<int>(m_verbosityLevel) + 1,
+                            static_cast<int>(Verbosity::totVerbosityLevels) - 1
+                        ));
+            })
+            .append()
+            .default_value(false)
+            .implicit_value(true)
+            .help("enable verbose output. Each occurrence of -V increases verbosity level")
+            .nargs(0);
+        outputFormat.add_argument("-q", "--quiet")
+            .flag()
+            .help("suppress all normal output")
+            .action([&](const auto &)
+            {
+                m_verbosityLevel = Verbosity::silent;
+                m_outputFormat = OutputFormat::quiet;
+            });
+        outputFormat.add_argument("-s", "--stats")
+            .action([&](const auto& formatStats)
+            {
+                m_statsFormat = formatStats;
+                m_outputFormat = OutputFormat::stats;
+            }).help("formats the execution statistics. Example: --stats \"Tot states: %Ats\". "
+                    "Placeholders (%Ats, %Ate, etc.) are described in the documentation.");
     }
 
     void parseArgs(const int argc, char *argv[])
@@ -148,14 +163,14 @@ private:
         try
         {
             m_rtlMcProgram.parse_args(argc, argv);
-            std::vector<std::string> filenames { m_rtlMcProgram.get<std::vector<std::string>>("--from-files") };
+            std::vector filenames { m_rtlMcProgram.get<std::vector<std::string>>("--from-files") };
             if (!filenames.empty())
             {
                 m_polyhedralSystemFilename = filenames.at(0);
                 m_rtlFilename = filenames.at(1);
             }
 
-            std::vector<int> gap { m_rtlMcProgram.get<std::vector<int>>("--gap") };
+            std::vector gap { m_rtlMcProgram.get<std::vector<int>>("--gap") };
             if (!gap.empty())
             {
                 assert(filenames.empty());
@@ -163,7 +178,7 @@ private:
                 setGapNoGapParameters(gap[0], gap[1]);
             }
 
-            std::vector<int> nogap { m_rtlMcProgram.get<std::vector<int>>("--nogap") };
+            std::vector nogap { m_rtlMcProgram.get<std::vector<int>>("--nogap") };
             if (!nogap.empty())
             {
                 assert(filenames.empty() && gap.empty());
@@ -181,7 +196,7 @@ private:
         }
     }
 
-    void setGapNoGapParameters(int k, int t)
+    void setGapNoGapParameters(const int k, const int t)
     {
         if (k <= 0)
         {

@@ -5,6 +5,7 @@
 !include discretization.puml
 !include core.puml
 !include cli.puml
+!include stats.puml
 
 
 BackwardNFA ---> "1" DiscreteLtlFormula

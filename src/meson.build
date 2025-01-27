@@ -31,6 +31,7 @@ subdir('automaton')
 subdir('core')
 subdir('cli')
 subdir('logging')
+subdir('stats')
 
 project_exe = executable(
     meson.project_name(),

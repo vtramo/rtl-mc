@@ -14,6 +14,8 @@
 #include "cli/RtlMcProgram.h"
 #include "utils/Timer.h"
 #include "logging/setup.h"
+#include "stats/collectors.h"
+#include "stats/StatsFormatter.h"
 
 class DiscreteLtlFormula;
 using PPL::IO_Operators::operator<<;
@@ -22,7 +24,7 @@ using namespace SpotUtils;
 BackwardNFA buildBackwardNfa(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemFormulaDenotationMap,
-    RtlMcProgram::AutomatonOptimizationFlags optimizationFlags
+    AutomatonOptimizationFlags optimizationFlags
 );
 
 int main(const int argc, char *argv[])
@@ -38,10 +40,12 @@ int main(const int argc, char *argv[])
     };
 
     spdlog::info("[Polyhedral System]\n{}", *polyhedralSystem);
+    PolyhedralSystemStats polyhedralSystemStats { collectPolyhedralSystemStats(*polyhedralSystem) };
+
     spdlog::info("[RTLf Formula] Formula: {}.", rtlFormula);
-    spdlog::info("[RTLf Formula] Total atomic propositions: {}.",
-        std::unique_ptr<spot::atomic_prop_set>(spot::atomic_prop_collect(rtlFormula))->size());
-    spdlog::info("[RTLf Formula] Length: {}.\n", spot::length(rtlFormula));
+    RtlFormulaStats rtlfFormulaStats { collectRtlfStats(rtlFormula) };
+    spdlog::info("[RTLf Formula] Total atomic propositions: {}.", rtlfFormulaStats.totalAtomicPropositions);
+    spdlog::info("[RTLf Formula] Length: {}.\n", rtlfFormulaStats.length);
 
     spdlog::info(">>> RTLf formula discretization started.");
     Timer timer {};
@@ -52,7 +56,9 @@ int main(const int argc, char *argv[])
             : DiscreteFiniteLtlFormula::discretize(std::move(rtlFormula)).toLtl()
     };
 
-    spdlog::info("<<< Discretization completed. Elapsed time: {} ms.", timer.elapsed());
+    const double discretizationExecutionTimeMs { timer.elapsed() };
+    spdlog::info("<<< Discretization completed. Elapsed time: {} ms.", discretizationExecutionTimeMs);
+    DiscretizationStats discretizationStats { collectDiscretizationStats(discreteLtlFormula, discretizationExecutionTimeMs) };
     spdlog::info("[Discrete LTL formula] Formula: {}.", discreteLtlFormula);
     spdlog::info("[Discrete LTL formula] Total atomic propositions: {}.",
         std::unique_ptr<spot::atomic_prop_set>(spot::atomic_prop_collect(discreteLtlFormula.formula()))->size());
@@ -85,24 +91,46 @@ int main(const int argc, char *argv[])
                 : denot()
         };
 
-        spdlog::info("<<< Denot algorithm terminated. Elapsed time: {} ms.", timer.elapsed());
-        spdlog::info("<<< Denot algorithm total iterations: {}.\n", denot.totalIterations());
+        const double denotExecutionTimeMs { timer.elapsed() };
+        DenotStats denotStats { collectDenotStats(denot, denotExecutionTimeMs) };
+        spdlog::info("<<< Denot algorithm terminated. Elapsed time: {} ms.", denotStats.executionTimeMs);
+        spdlog::info("<<< Denot algorithm total iterations: {}.\n", denotStats.totalIterations);
 
         spdlog::info("[Result] Points: ");
-        std::cout << PPLOutput::toString(*denotResult, polyhedralSystem->getSymbolTable()) << '\n';
+
+        switch (rtlMcProgram.outputFormat())
+        {
+        case OutputFormat::normal:
+            std::cout << PPLOutput::toString(*denotResult, polyhedralSystem->getSymbolTable()) << '\n';
+            break;
+        case OutputFormat::quiet:
+            break;
+        case OutputFormat::stats:
+            StatsFormatter statsFormatter {
+                std::move(polyhedralSystemStats),
+                std::move(rtlfFormulaStats),
+                std::move(discretizationStats),
+                AutomatonStats { backwardNfa.stats() },
+                std::move(denotStats)
+            };
+            std::cout << statsFormatter(rtlMcProgram.statsFormat()) << '\n';
+            break;
+        }
+
         spdlog::info("[Result] Existential Denotation: {}.", rtlMcProgram.existential());
         spdlog::info("[Result] Universal Denotation: {}.", rtlMcProgram.universal());
     }
     catch (const std::exception& e)
     {
         spdlog::error(e.what());
+        exit(1);
     }
 }
 
 BackwardNFA buildBackwardNfa(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemFormulaDenotationMap,
-    RtlMcProgram::AutomatonOptimizationFlags optimizationFlags
+    AutomatonOptimizationFlags optimizationFlags
 )
 {
     spot::postprocessor::optimization_level optimizationLevel {};

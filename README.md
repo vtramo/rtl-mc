@@ -14,7 +14,10 @@ If you have Docker installed...
     ```
    ```
    One of the arguments '-f/--from-files VAR...' or '--gap VAR...' or '--nogap VAR...' is required
-   Usage: rtl-mc [--help] [--version] [[--from-files VAR...]|[--gap VAR...]|[--nogap VAR...]] [[--existential]|[--universal]] [--direct-ltl] [[--low]|[--medium]|[--high]] [--any] [--verbose]...
+   Usage: rtl-mc [--help] [--version] [[--from-files VAR...]|[--gap VAR...]|
+   [--nogap VAR...]] [[--existential]|[--universal]] [--direct-ltl]
+   [[--low]|[--medium]|[--high]] [--any] [[--verbose]...|[--quiet]|
+   [--stats VAR]]
    
    Model Checking Linear Temporal Properties on Polyhedral Systems
    
@@ -31,7 +34,9 @@ If you have Docker installed...
    --medium          moderate optimizations during automaton construction
    --high            all available optimizations during automaton construction (slow)
    --any             tells the translator that it should attempt to reduce or produce a deterministic result: any automaton denoting the given formula is OK.  This effectively disables post-processings and speeds up the translation
-   -V, --verbose     enable verbose output. Each occurrence of -V increases verbosity level. Verbose mode provides additional details during program execution to aid debugging and understanding of the internal processes. [may be repeated]
+   -V, --verbose     enable verbose output. Each occurrence of -V increases verbosity level [may be repeated]
+   -q, --quiet       suppress all normal output
+   -s, --stats       formats the execution statistics. Example: --stats "Tot states: %Ats". Placeholders (%Ats, %Ate, etc.) are described in the documentation.
    ```
 You need to provide a polyhedral system file and an rtlf file. You can do this by creating bind mounts:
 ```shell
@@ -42,5 +47,5 @@ docker run \
   rtl-mc -f system.txt rtlf.txt
 ```
 ```
-( { t = 0 & b >= 0 & a - b >= 1 & -a + b > -29 } { t = 0 & -a + b > -1 & b >= 0 & a >= 0 & a - b > -27 } )
+( { t = 0 & b >= 0 & a - b >= 1 & -a + b >= -29 } { t = 0 & -a + b > -1 & b >= 0 & a >= 0 & a - b >= -27 } )
 ```

@@ -2,6 +2,7 @@
 
 #include <spot/twa/twagraph.hh>
 #include <spot/twaalgos/postproc.hh>
+#include "AutomatonStats.h"
 
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
@@ -40,6 +41,7 @@ public:
     [[nodiscard]] const DiscreteLtlFormula& formula() const;
     [[nodiscard]] const StateDenotation& stateDenotation(int state) const;
     [[nodiscard]] spot::postprocessor::optimization_level optimizationLevel() const;
+    [[nodiscard]] const AutomatonStats& stats() const;
 
     void printHoaFormat(std::ostream& os) const;
     void printDotFormat(std::ostream& os) const;
@@ -54,6 +56,7 @@ private:
     DiscreteLtlFormula m_discreteLtlFormula {};
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
     spot::postprocessor::optimization_level m_optimizationLevel {};
+    AutomatonStats m_automatonStats {};
 
     friend std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
     friend class BackwardNFADepthFirstSearch;
@@ -84,12 +87,12 @@ private:
     };
     static void renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr);
     static std::unordered_set<int> killFinalStates(const spot::twa_graph_ptr& graph);
-    static spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
-    static void purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates);
 
     void buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates);
     StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
     void createDummyInitialStateWithEdgesToReachableFinalStates();
-    spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption) const;
+    void purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates);
+    spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption);
+    spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
     spot::const_twa_ptr twa() const;
 };

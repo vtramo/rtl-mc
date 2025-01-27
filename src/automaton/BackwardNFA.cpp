@@ -35,10 +35,11 @@ BackwardNFA::BackwardNFA(
     buildAutomaton(nfa, nfaFinalStates);
 }
 
-spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool anyOption) const
+spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool anyOption)
 {
+    std::string optimizationLevel { SpotUtils::toOptimizationLevelString(m_optimizationLevel) };
     spdlog::debug("[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA automaton started.");
-    spdlog::debug("[BackwardNFA - Translation] Optimization level: {}.", SpotUtils::toOptimizationLevelString(m_optimizationLevel));
+    spdlog::debug("[BackwardNFA - Translation] Optimization level: {}.", optimizationLevel);
 
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::TGBA);
@@ -47,11 +48,22 @@ spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool 
     ltlToNbaTranslator.set_level(m_optimizationLevel);
 
     Timer timer {};
+
     spot::twa_graph_ptr formulaTgba { ltlToNbaTranslator.run(m_discreteLtlFormula.formula()) };
-    spdlog::debug("[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA completed. Elapsed time: {} ms.", timer.elapsed());
+
+    const double executionTimeMs { timer.elapsed() };
+    spdlog::debug("[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA completed. Elapsed time: {} ms.", executionTimeMs);
     spdlog::debug("[BackwardNFA - Translation] Total TGBA states: {}.", formulaTgba->num_states());
     spdlog::debug("[BackwardNFA - Translation] Total TGBA edges {}.", formulaTgba->num_edges());
     spdlog::debug("[BackwardNFA - Translation] Total TGBA accepting sets {}.", formulaTgba->num_sets());
+    m_automatonStats.translationFormulaIntoTgba =
+        AutomatonStats::TranslationFormulaIntoTgbaStats {
+            optimizationLevel,
+            executionTimeMs,
+            static_cast<int>(formulaTgba->num_states()),
+            static_cast<int>(formulaTgba->num_edges()),
+            static_cast<int>(formulaTgba->num_sets())
+        };
     return formulaTgba;
 }
 
@@ -59,10 +71,21 @@ spot::twa_graph_ptr BackwardNFA::convertToNfa(spot::twa_graph_ptr tgba)
 {
     spdlog::debug("[BackwardNFA - TGBA to NFA] Conversion from TGBA to NFA started.");
     Timer timer {};
+
     spot::twa_graph_ptr nfa { spot::to_finite(tgba) };
-    spdlog::debug("[BackwardNFA - TGBA to NFA] Conversion from TGBA to NFA completed. Elapsed time: {} ms.", timer.elapsed());
+
+    const double executionTimeMs { timer.elapsed() };
+    spdlog::debug("[BackwardNFA - TGBA to NFA] Conversion from TGBA to NFA completed. Elapsed time: {} ms.", executionTimeMs);
     spdlog::debug("[BackwardNFA - TGBA to NFA] Total NFA states: {}.", nfa->num_states());
     spdlog::debug("[BackwardNFA - TGBA to NFA] Total NFA edges {}.", nfa->num_edges());
+    m_automatonStats.translationTgbaIntoNfaStats =
+        AutomatonStats::NfaStats {
+            executionTimeMs,
+            static_cast<int>(nfa->num_states()),
+            static_cast<int>(nfa->num_edges()),
+            static_cast<int>(nfa->num_sets())
+        };
+
     return nfa;
 }
 
@@ -86,14 +109,24 @@ void BackwardNFA::purgeUnreachableStatesThenRenumberFinalStates(
 )
 {
     spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Removal of unreachable states from nfa graph started.");
+    Timer timer {};
+
     spot::twa_graph::shift_action renumberNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
     RenumberingContext renumberingContext { &nfaFinalStates };
-    Timer timer {};
     nfa->purge_unreachable_states(&renumberNfaFinalStates, &renumberingContext);
-    spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Removal of unreachable states from nfa graph completed. Elapsed time: {} ms.", timer.elapsed());
+
+    const double executionTimeMs { timer.elapsed() };
+    spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Removal of unreachable states from nfa graph completed. Elapsed time: {} ms.", executionTimeMs);
     spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Total NFA states: {}.", nfa->num_states());
     spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Total NFA edges: {}.", nfa->num_edges());
     spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Final NFA states: [{}].", fmt::join(nfaFinalStates, ", "));
+    m_automatonStats.nfaOptimizations =
+        AutomatonStats::NfaStats {
+            executionTimeMs,
+            static_cast<int>(nfa->num_states()),
+            static_cast<int>(nfa->num_edges()),
+            static_cast<int>(nfaFinalStates.size())
+        };
 }
 
 void BackwardNFA::renumberOrRemoveStatesAfterPurge(
@@ -210,13 +243,27 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
     RenumberingContext renumberingContext { &m_initialStates, &m_finalStates, &m_stateDenotationById, &m_dummyInitialState };
     m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
 
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA construction completed. Elapsed time: {} ms.", timer.elapsed());
+    const double executionTimeMs { timer.elapsed() };
+    spdlog::debug("[BackwardNFA - Construction] Backward NFA construction completed. Elapsed time: {} ms.", executionTimeMs);
     spdlog::debug("[BackwardNFA - Construction] Backward NFA total states: {}.", totalStates());
     spdlog::debug("[BackwardNFA - Construction] Backward NFA total initial states: {}.", totalInitialStates());
     spdlog::debug("[BackwardNFA - Construction] Backward NFA total final states: {}.", totalFinalStates());
     spdlog::debug("[BackwardNFA - Construction] Backward NFA total edges: {}.", totalEdges());
     spdlog::debug("[BackwardNFA - Construction] Backward NFA initial states: [{}].", fmt::join(m_initialStates, ", "));
     spdlog::debug("[BackwardNFA - Construction] Backward NFA final states: [{}].", fmt::join(m_finalStates, ", "));
+    m_automatonStats.backwardNfaConstructionStats =
+        AutomatonStats::BackwardNFAConstructionStats {
+            executionTimeMs,
+            totalInitialStates(),
+            totalStates(),
+            totalEdges(),
+            totalFinalStates()
+        };
+}
+
+const AutomatonStats& BackwardNFA::stats() const
+{
+    return m_automatonStats;
 }
 
 StateDenotation BackwardNFA::extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard)

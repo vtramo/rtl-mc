@@ -26,6 +26,7 @@ include_directories = [
   include_directories(src_dir / 'core'),
   include_directories(src_dir / 'cli'),
   include_directories(src_dir / 'logging'),
+  include_directories(src_dir / 'stats'),
 ]
 
 subdir(src_dir)

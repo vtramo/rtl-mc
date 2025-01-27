@@ -1,0 +1,89 @@
+@startuml
+
+package stats {
+    struct AutomatonStats {
+        --data members--
+        -translationFormulaIntoTgba: TranslationFormulaIntoTgbaStats
+        -translationTgbaIntoNfaStats: NfaStats
+        -nfaOptimizations: NfaStats
+        -backwardNfaConstructionStats: BackwardNFAConstructionStats
+    }
+
+    struct TranslationFormulaIntoTgbaStats {
+        --data members--
+        -optimizationLevel: std::string
+        -executionTimeMs: double
+        -totalStates: int
+        -totalEdges: int
+        -totalAcceptingSets: int
+    }
+
+    struct NfaStats {
+        --data members--
+        -executionTimeMs: double
+        -totalStates: int
+        -totalEdges: int
+        -totalFinalStates: int
+    }
+
+    struct BackwardNFAConstructionStats {
+        --data members--
+        -executionTimeMs: double
+        -totalInitialStates: int
+        -totalStates: int
+        -totalEdges: int
+        -totalFinalStates: int
+    }
+
+    struct DenotStats {
+        --data members--
+        -totalIterations: int
+        -executionTimeMs: double
+    }
+
+    struct DiscretizationStats {
+        --data members--
+        -discreteLtlFormulaTotalAtomicPropositions: int
+        -discreteLtlFormulaLength: int
+        -discretizationExecutionTimeMs: double
+    }
+
+    struct PolyhedralSystemStats {
+        --data members--
+        -totalAtomicPropositions: int
+        -spaceDimension: int
+    }
+
+    struct RtlFormulaStats {
+        --data members--
+        -totalAtomicPropositions: int
+        -length: int
+    }
+
+    class StatsFormatter {
+        --data members--
+        -m_polyhedralSystemStats: PolyhedralSystemStats
+        -m_rtlFormulaStats: RtlFormulaStats
+        -m_discretizationStats: DiscretizationStats
+        -m_automatonStats: AutomatonStats
+        -m_denotStats: DenotStats
+        --constructors--
+        +StatsFormatter(PolyhedralSystemStats&&, RtlFormulaStats&&, DiscretizationStats&&, AutomatonStats&&, DenotStats&&)
+        --member functions--
+        +operator()(std::string&& input): std::string
+        +format(std::string&& input): std::string
+        -replacePlaceholders(input: std::string): void
+        -replace(str: std::string&, from: std::string_view, to: std::string_view): void
+    }
+
+    StatsFormatter --> "1" PolyhedralSystemStats
+    StatsFormatter --> "1" RtlFormulaStats
+    StatsFormatter --> "1" DiscretizationStats
+    StatsFormatter --> "1" AutomatonStats
+    StatsFormatter --> "1" DenotStats
+    AutomatonStats #---> "1" TranslationFormulaIntoTgbaStats
+    AutomatonStats #---> "1" BackwardNFAConstructionStats
+    AutomatonStats #---> "2" NfaStats
+}
+
+@enduml
