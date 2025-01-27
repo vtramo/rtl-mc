@@ -44,27 +44,27 @@ public:
                            m_rtlFormulaStats.length,
                            m_discretizationStats.discreteLtlFormulaTotalAtomicPropositions,
                            m_discretizationStats.discreteLtlFormulaLength,
-                           m_discretizationStats.discretizationExecutionTimeMs,
+                           m_discretizationStats.discretizationExecutionTimeSeconds,
                            m_automatonStats.translationFormulaIntoTgba.totalAcceptingSets,
                            m_automatonStats.translationFormulaIntoTgba.totalStates,
                            m_automatonStats.translationFormulaIntoTgba.totalEdges,
                            m_automatonStats.translationFormulaIntoTgba.optimizationLevel,
-                           m_automatonStats.translationFormulaIntoTgba.executionTimeMs,
-                           m_automatonStats.translationTgbaIntoNfaStats.executionTimeMs,
+                           m_automatonStats.translationFormulaIntoTgba.executionTimeSeconds,
+                           m_automatonStats.translationTgbaIntoNfaStats.executionTimeSeconds,
                            m_automatonStats.translationTgbaIntoNfaStats.totalStates,
                            m_automatonStats.translationTgbaIntoNfaStats.totalEdges,
                            m_automatonStats.translationTgbaIntoNfaStats.totalFinalStates,
-                           m_automatonStats.nfaOptimizations.executionTimeMs,
+                           m_automatonStats.nfaOptimizations.executionTimeSeconds,
                            m_automatonStats.nfaOptimizations.totalStates,
                            m_automatonStats.nfaOptimizations.totalEdges,
                            m_automatonStats.nfaOptimizations.totalFinalStates,
-                           m_automatonStats.backwardNfaConstructionStats.executionTimeMs,
+                           m_automatonStats.backwardNfaConstructionStats.executionTimeSeconds,
                            m_automatonStats.backwardNfaConstructionStats.totalStates,
                            m_automatonStats.backwardNfaConstructionStats.totalEdges,
                            m_automatonStats.backwardNfaConstructionStats.totalFinalStates,
                            m_automatonStats.backwardNfaConstructionStats.totalInitialStates,
                            m_denotStats.totalIterations,
-                           m_denotStats.executionTimeMs);
+                           m_denotStats.executionTimeSeconds);
     }
 
 private:
@@ -76,32 +76,32 @@ private:
 
     static constexpr std::string_view s_dta{ "%dta"sv };  // Discrete LTL formula total atomic propositions
     static constexpr std::string_view s_dl{ "%dl"sv };    // Discrete LTL formula length
-    static constexpr std::string_view s_dx{ "%dx"sv };    // Discretization execution time in ms
+    static constexpr std::string_view s_dx{ "%dx"sv };    // Discretization execution time in s
 
     static constexpr std::string_view s_Ata{ "%Ata"sv };  // Translation Discrete LTL formula into TGBA total accepting sets
     static constexpr std::string_view s_Ats{ "%Ats"sv };  // Translation Discrete LTL formula into TGBA total states
     static constexpr std::string_view s_Ate{ "%Ate"sv };  // Translation Discrete LTL formula into TGBA total edges
     static constexpr std::string_view s_Ato{ "%Ato"sv };  // Translation Discrete LTL formula into TGBA optimization level
-    static constexpr std::string_view s_Atx{ "%Atx"sv };  // Translation Discrete LTL formula into TGBA execution time in ms
+    static constexpr std::string_view s_Atx{ "%Atx"sv };  // Translation Discrete LTL formula into TGBA execution time in s
 
-    static constexpr std::string_view s_Afx{ "%Afx"sv };  // TGBA to NFA execution time in ms
+    static constexpr std::string_view s_Afx{ "%Afx"sv };  // TGBA to NFA execution time in s
     static constexpr std::string_view s_Afs{ "%Afs"sv };  // TGBA to NFA total states
     static constexpr std::string_view s_Afe{ "%Afe"sv };  // TGBA to NFA total edges
     static constexpr std::string_view s_Aff{ "%Aff"sv };  // TGBA to NFA total final states
 
-    static constexpr std::string_view s_Afox{ "%Afox"sv };  // NFA optimizations execution time in ms
+    static constexpr std::string_view s_Afox{ "%Afox"sv };  // NFA optimizations execution time in s
     static constexpr std::string_view s_Afos{ "%Afos"sv };  // NFA after optimizations total states
     static constexpr std::string_view s_Afoe{ "%Afoe"sv };  // NFA after optimizations total edges
     static constexpr std::string_view s_Afof{ "%Afof"sv };  // NFA after optimizations total final states
 
-    static constexpr std::string_view s_Abx{ "%Abx"sv };  // BackwardNFA construction execution time in ms
+    static constexpr std::string_view s_Abx{ "%Abx"sv };  // BackwardNFA construction execution time in s
     static constexpr std::string_view s_Abs{ "%Abs"sv };  // BackwardNFA total states
     static constexpr std::string_view s_Abe{ "%Abe"sv };  // BackwardNFA total edges
     static constexpr std::string_view s_Abf{ "%Abf"sv };  // BackwardNFA total final states
     static constexpr std::string_view s_Abi{ "%Abi"sv };  // BackwardNFA total initial states
 
     static constexpr std::string_view s_Dt{ "%Dt"sv };    // Denot total iterations
-    static constexpr std::string_view s_Dx{ "%Dx"sv }; // Denot execution time in ms
+    static constexpr std::string_view s_Dx{ "%Dx"sv }; // Denot execution time in s
 
 
     PolyhedralSystemStats m_polyhedralSystemStats {};

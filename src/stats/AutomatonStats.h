@@ -8,7 +8,7 @@ struct AutomatonStats
     struct TranslationFormulaIntoTgbaStats
     {
         std::string optimizationLevel { SpotUtils::toOptimizationLevelString(spot::postprocessor::optimization_level::Low) };
-        double executionTimeMs {};
+        double executionTimeSeconds {};
         int totalStates {};
         int totalEdges {};
         int totalAcceptingSets {};
@@ -16,7 +16,7 @@ struct AutomatonStats
 
     struct TranslationTgbaIntoNfaStats
     {
-        double executionTimeMs {};
+        double executionTimeSeconds {};
         int totalStates {};
         int totalEdges {};
         int totalFinalStates {};
@@ -24,7 +24,7 @@ struct AutomatonStats
 
     struct NfaStats
     {
-        double executionTimeMs {};
+        double executionTimeSeconds {};
         int totalStates {};
         int totalEdges {};
         int totalFinalStates {};
@@ -32,7 +32,7 @@ struct AutomatonStats
 
     struct BackwardNFAConstructionStats
     {
-        double executionTimeMs {};
+        double executionTimeSeconds {};
         int totalInitialStates {};
         int totalStates {};
         int totalEdges {};

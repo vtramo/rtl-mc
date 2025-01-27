@@ -139,7 +139,7 @@ inline namespace V1
                     ? PPLUtils::reach0(*A, X, m_polyhedralSystem->getPreFlow())
                     : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->getPreFlow())
             };
-            spdlog::trace("Reach pairs computed (size: {}). Elapsed time: {} ms.", reachPairs.size(), timer.elapsed());
+            spdlog::trace("Reach pairs computed (size: {}). Elapsed time: {} s.", reachPairs.size(), timer.elapsedInSeconds());
 
             int reachPairIndex { 1 };
             for (const auto& [Q, Y]: reachPairs)

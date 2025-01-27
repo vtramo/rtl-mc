@@ -3,5 +3,5 @@
 struct DenotStats
 {
     int totalIterations {};
-    double executionTimeMs {};
+    double executionTimeSeconds {};
 };

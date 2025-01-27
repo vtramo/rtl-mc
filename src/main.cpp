@@ -56,9 +56,9 @@ int main(const int argc, char *argv[])
             : DiscreteFiniteLtlFormula::discretize(std::move(rtlFormula)).toLtl()
     };
 
-    const double discretizationExecutionTimeMs { timer.elapsed() };
-    spdlog::info("<<< Discretization completed. Elapsed time: {} ms.", discretizationExecutionTimeMs);
-    DiscretizationStats discretizationStats { collectDiscretizationStats(discreteLtlFormula, discretizationExecutionTimeMs) };
+    const double discretizationExecutionTimeSeconds { timer.elapsedInSeconds() };
+    spdlog::info("<<< Discretization completed. Elapsed time: {} s.", discretizationExecutionTimeSeconds);
+    DiscretizationStats discretizationStats { collectDiscretizationStats(discreteLtlFormula, discretizationExecutionTimeSeconds) };
     spdlog::info("[Discrete LTL formula] Formula: {}.", discreteLtlFormula);
     spdlog::info("[Discrete LTL formula] Total atomic propositions: {}.",
         std::unique_ptr<spot::atomic_prop_set>(spot::atomic_prop_collect(discreteLtlFormula.formula()))->size());
@@ -78,7 +78,7 @@ int main(const int argc, char *argv[])
             )
         };
 
-        spdlog::info("<<< BackwardNFA automaton construction completed. Elapsed time: {} ms.\n", timer.elapsed());
+        spdlog::info("<<< BackwardNFA automaton construction completed. Elapsed time: {} s.\n", timer.elapsedInSeconds());
         spdlog::trace("[BackwardNFA]\n{}\n", backwardNfa);
 
         spdlog::info(">>> Denot algorithm started.");
@@ -91,9 +91,9 @@ int main(const int argc, char *argv[])
                 : denot()
         };
 
-        const double denotExecutionTimeMs { timer.elapsed() };
-        DenotStats denotStats { collectDenotStats(denot, denotExecutionTimeMs) };
-        spdlog::info("<<< Denot algorithm terminated. Elapsed time: {} ms.", denotStats.executionTimeMs);
+        const double denotExecutionTimeSeconds { timer.elapsedInSeconds() };
+        DenotStats denotStats { collectDenotStats(denot, denotExecutionTimeSeconds) };
+        spdlog::info("<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.executionTimeSeconds);
         spdlog::info("<<< Denot algorithm total iterations: {}.\n", denotStats.totalIterations);
 
         spdlog::info("[Result] Points: ");

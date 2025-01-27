@@ -4,5 +4,5 @@ struct DiscretizationStats
 {
     int discreteLtlFormulaTotalAtomicPropositions {};
     int discreteLtlFormulaLength {};
-    double discretizationExecutionTimeMs {};
+    double discretizationExecutionTimeSeconds {};
 };

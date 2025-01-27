@@ -24,19 +24,19 @@ inline RtlFormulaStats collectRtlfStats(const spot::formula& rtlf)
     };
 }
 
-inline DiscretizationStats collectDiscretizationStats(const DiscreteLtlFormula& discreteLtlFormula, const double executionTimeMs)
+inline DiscretizationStats collectDiscretizationStats(const DiscreteLtlFormula& discreteLtlFormula, const double executionTimeSeconds)
 {
     return {
         static_cast<int>(std::unique_ptr<spot::atomic_prop_set>(spot::atomic_prop_collect(discreteLtlFormula.formula()))->size()),
         spot::length(discreteLtlFormula.formula()),
-        executionTimeMs
+        executionTimeSeconds
     };
 }
 
-inline DenotStats collectDenotStats(const Denot& denot, const double executionTimeMs)
+inline DenotStats collectDenotStats(const Denot& denot, const double executionTimeSeconds)
 {
     return {
         denot.totalIterations(),
-        executionTimeMs
+        executionTimeSeconds
     };
 }

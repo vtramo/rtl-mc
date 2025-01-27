@@ -12,7 +12,7 @@ package stats {
     struct TranslationFormulaIntoTgbaStats {
         --data members--
         -optimizationLevel: std::string
-        -executionTimeMs: double
+        -executionTimeSeconds: double
         -totalStates: int
         -totalEdges: int
         -totalAcceptingSets: int
@@ -20,7 +20,7 @@ package stats {
 
     struct NfaStats {
         --data members--
-        -executionTimeMs: double
+        -executionTimeSeconds: double
         -totalStates: int
         -totalEdges: int
         -totalFinalStates: int
@@ -28,7 +28,7 @@ package stats {
 
     struct BackwardNFAConstructionStats {
         --data members--
-        -executionTimeMs: double
+        -executionTimeSeconds: double
         -totalInitialStates: int
         -totalStates: int
         -totalEdges: int
@@ -38,14 +38,14 @@ package stats {
     struct DenotStats {
         --data members--
         -totalIterations: int
-        -executionTimeMs: double
+        -executionTimeSeconds: double
     }
 
     struct DiscretizationStats {
         --data members--
         -discreteLtlFormulaTotalAtomicPropositions: int
         -discreteLtlFormulaLength: int
-        -discretizationExecutionTimeMs: double
+        -discretizationExecutionTimeSeconds: double
     }
 
     struct PolyhedralSystemStats {
