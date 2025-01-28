@@ -38,7 +38,7 @@ libdir=${exec_prefix}/lib/x86_64-linux-gnu
 Name: PPL - Parma Polyhedra Library
 Description: PPL
 URL: https://www.bugseng.com/content/parma-polyhedra-library
-Version: 14.0.0
+Version: 1.2
 Cflags: -I${includedir}
 Libs: -L${libdir} -L${libdir}/ppl -lppl -lppl_c
 ```

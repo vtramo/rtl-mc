@@ -1,6 +1,6 @@
 ARG UBUNTU_VERSION=24.04
 ARG ANTLR4_VERSION=4.13.2
-ARG PPL_VERSION=14.0.0
+ARG PPL_VERSION=1.2
 ARG GMP_VERSION=6.3.0
 ARG SPOT_VERSION=2.12.2
 
@@ -15,24 +15,33 @@ RUN apt-get install -y cmake=3.28.3-1build7
 RUN apt-get install -y make=4.3-4.1build2
 RUN apt-get install -y wget=1.21.4-1ubuntu4.1
 RUN apt-get install -y pkg-config=1.8.1-2build1
+RUN apt-get install -y libgmpxx4ldbl=2:6.3.0+dfsg-2ubuntu6
+RUN apt-get install -y libgmp-dev=2:6.3.0+dfsg-2ubuntu6
 RUN apt-get install -y libgmp3-dev=2:6.3.0+dfsg-2ubuntu6
-RUN apt-get install -y libppl-dev=1:1.2-8.1build5
-RUN apt-get install -y ppl-dev=1:1.2-8.1build5
+RUN apt-get install -y m4=1.4.19-4build1
 RUN apt-get install -y unzip=6.0-28ubuntu4.1
+RUN apt-get install -y git
+RUN apt-get install -y libtool=2.4.7-7build1
+RUN apt-get install -y autoconf=2.71-3
+RUN apt-get install -y automake=1:1.16.5-1.3ubuntu1
+
+# Install PPL dev (thread-safe, sspeed)
+RUN git clone https://github.com/BUGSENG/PPL.git
+RUN cd /PPL && autoreconf --force --install && \
+    ./configure --enable-optimization=sspeed --enable-thread-safe --disable-documentation && \
+    make && make install
 
 # ppl.pc
-RUN PPL_LIBDIR=$(ppl-config --libdir) && \
-    PPL_INCLUDEDIR=$(ppl-config --include) && \
-    mkdir -p /usr/local/lib/pkgconfig && \
-    echo "includedir=${PPL_LIBDIR}\n\
-libdir=${PPL_INCLUDEDIR}\n\
+RUN mkdir -p /usr/local/lib/pkgconfig && \
+    echo "includedir=/usr/local/include\n\
+libdir=/usr/local/lib\n\
 \n\
 Name: PPL - Parma Polyhedra Library\n\
 Description: PPL\n\
 URL: https://www.bugseng.com/content/parma-polyhedra-library\n\
 Version: ${PPL_VERSION}\n\
 Cflags: -I\${includedir}\n\
-Libs: -L\${libdir} -L\${libdir}/ppl -lppl -lppl_c" > ${PPL_LIBDIR}/pkgconfig/ppl.pc
+Libs: -L\${libdir} -L\${libdir}/ppl -lppl -lppl_c" > /usr/local/lib/pkgconfig/ppl.pc
 
 # ANTLR4 Runtime
 RUN mkdir antlr4-cpp-runtime-${ANTLR4_VERSION}-source && cd antlr4-cpp-runtime-${ANTLR4_VERSION}-source && \
@@ -81,12 +90,13 @@ RUN meson setup  \
     buildDir
 RUN meson compile -C buildDir -v
 
-RUN echo "$(ppl-config --libdir)" > /lib-path-dir.txt
+RUN echo "/usr/lib/$(gcc -dumpmachine)" > /lib-path-dir.txt
 RUN mkdir -p /libs
 RUN find / -regextype posix-extended -regex ".*/lib/.*libppl\.(a|so).*" -exec mv {} /libs/ \;
 RUN find / -regextype posix-extended -regex ".*/lib/.*libspot\.(a|so).*" -exec mv {} /libs/ \;
 RUN find / -regextype posix-extended -regex ".*/lib/.*libantlr4-runtime\.(a|so).*" -exec mv {} /libs/ \;
 RUN find / -regextype posix-extended -regex ".*/lib/.*libgmp.*\.(a|so).*" -exec mv {} /libs/ \;
+RUN find / -regextype posix-extended -regex ".*/lib/.*libgmpxx\.(a|so)\.*" -exec mv {} /libs/ \;
 RUN find / -regextype posix-extended -regex ".*/lib/.*libbddx\.(a|so).*" -exec mv {} /libs/ \;
 
 # Final Stage

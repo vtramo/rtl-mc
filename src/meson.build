@@ -1,4 +1,4 @@
-ppl_dep = dependency('ppl', version: '>=14.0.0')
+ppl_dep = dependency('ppl', version: '==1.2')
 gmp_dep = dependency('gmp', version: '>=6.3.0')
 gmpxx_dep = dependency('gmpxx', version: '>=6.3.0')
 antlr4_runtime_dep = dependency('antlr4-runtime', version: '>=4.13.0')
