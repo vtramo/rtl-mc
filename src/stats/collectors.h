@@ -33,7 +33,8 @@ inline DiscretizationStats collectDiscretizationStats(const DiscreteLtlFormula& 
     };
 }
 
-inline DenotStats collectDenotStats(const Denot& denot, const double executionTimeSeconds)
+template<typename D>
+DenotStats collectDenotStats(const D& denot, const double executionTimeSeconds)
 {
     return {
         denot.totalIterations(),
