@@ -87,7 +87,7 @@ int main(const int argc, char *argv[])
         Denot denot { polyhedralSystem, backwardNfa };
         PowersetUniquePtr denotResult {
             rtlMcProgram.universal()
-                ? PPLUtils::complement(*denot())
+                ? PPLUtils::minus(polyhedralSystem->getInvariant(), *denot())
                 : denot()
         };
 
