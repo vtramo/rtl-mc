@@ -122,7 +122,7 @@ namespace V2Concurrent
     public:
         Denot(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
           : m_polyhedralSystem { polyhedralSystem }
-        , m_backwardNfa { backwardNfa }
+          , m_backwardNfa { backwardNfa }
         {}
 
         PowersetUniquePtr operator() () { return run(); }
@@ -200,9 +200,9 @@ namespace V3Concurrent
           const Poly& X
         ) const;
 
-        void addDisjunctV3(std::unordered_map<int, Powerset>& V, int state, const Poly& P) const;
+        void addDisjunct(std::unordered_map<int, Powerset>& V, int state, const Poly& P) const;
         void insertEmptyPredecessorVisitedPowersetsIfNotExist(std::unordered_map<int, Powerset>& V, int state) const;
-        Powerset& getVisitedPowersetV3(std::unordered_map<int, Powerset>& V, int state);
+        Powerset& getVisitedPowerset(std::unordered_map<int, Powerset>& V, int state);
     };
 }
 
@@ -213,7 +213,7 @@ namespace V4Concurrent
     public:
         Denot(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
           : m_polyhedralSystem { polyhedralSystem }
-        , m_backwardNfa { backwardNfa }
+          , m_backwardNfa { backwardNfa }
         {
             m_spaceDimension = m_polyhedralSystem->getSpaceDimension();
         }
@@ -227,7 +227,6 @@ namespace V4Concurrent
         int m_iterations { };
         PPL::dimension_type m_spaceDimension { };
         PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
-        std::mutex m_mutex {};
         const BackwardNFA& m_backwardNfa {};
 
         PowersetUniquePtr denot(

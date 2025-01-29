@@ -373,6 +373,7 @@ namespace V1Concurrent
         const bool isSing
     )
     {
+        // std::cerr << "Thread " << std::this_thread::get_id() << " State: " << state << std::endl;
         assert(P.space_dimension() == m_polyhedralSystem->getSpaceDimension());
         assert(P.space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
         assert(X.space_dimension() == m_polyhedralSystem->getSpaceDimension());
@@ -399,6 +400,7 @@ namespace V1Concurrent
             assert(A->space_dimension() == m_polyhedralSystem->getSpaceDimension());
             assert(A->space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
 
+            // std::cout << "A: " << PPLOutput::toString(*A, m_polyhedralSystem->getSymbolTable()) << " | X: " << PPLOutput::toString(X, m_polyhedralSystem->getSymbolTable()) << std::endl;
             PPLUtils::ReachPairs reachPairs {
                 predecessorStateDenotation.isSingular()
                     ? PPLUtils::reach0(*A, X, m_polyhedralSystem->getPreFlow())
@@ -516,7 +518,8 @@ namespace V2Concurrent
             {
                 const Poly& Q { reachPairs[i].first };
                 const Poly& Y { reachPairs[i].second };
-                futures.push_back(std::async(&Denot::denot, this, predecessor, Q, Y, V, !isSing));
+                const auto& task { PPL::make_threadable(std::bind(&Denot::denot, this, predecessor, Q, Y, V, !isSing)) };
+                futures.push_back(std::async(task));
             }
 
             const Poly& Q { reachPairs[0].first };
@@ -587,14 +590,10 @@ namespace V3Concurrent
         assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
 
         if (m_backwardNfa.isInitialState(state))
-        {
             return std::make_unique<Powerset>(X);
-        }
 
         if (!stateDenotation.isSingular())
-        {
-            addDisjunctV3(V, state, P);
-        }
+            addDisjunct(V, state, P);
 
         PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
         if (!m_backwardNfa.hasPredecessors(state))
@@ -613,13 +612,19 @@ namespace V3Concurrent
             [&](const auto& edgePredecessor)
             {
                 const int predecessor { static_cast<int>(edgePredecessor.dst) };
-                reachPairFutures.push_back(computeReachPairsAsync(predecessor, getVisitedPowersetV3(V, predecessor), X));
+                reachPairFutures.push_back(
+                    computeReachPairsAsync(
+                        predecessor,
+                        getVisitedPowerset(V, predecessor),
+                        X
+                    )
+                );
             });
         }
 
         std::vector<std::pair<int, PPLUtils::ReachPair>> predecessorReachPairs {};
         predecessorReachPairs.reserve(totalPredecessors);
-        PPLUtils::ReachPairs myReachPairs { computeReachPairs(myPredecessor, getVisitedPowersetV3(V, myPredecessor), X).second };
+        PPLUtils::ReachPairs myReachPairs { computeReachPairs(myPredecessor, getVisitedPowerset(V, myPredecessor), X).second };
         for (auto&& myReachPair: myReachPairs)
             predecessorReachPairs.emplace_back(myPredecessor, std::move(myReachPair));
 
@@ -640,7 +645,18 @@ namespace V3Concurrent
             {
                 const int predecessor { predecessorReachPairs[i].first };
                 const auto& [Q, Y] { predecessorReachPairs[i].second };
-                denotFutures.push_back(std::async(&Denot::denot, this, predecessor, Q, Y, V, !isSing));
+                const auto& task {
+                    PPL::make_threadable(
+                        std::bind(
+                            &Denot::denot, this,
+                            predecessor,
+                            std::ref(Q),
+                            std::ref(Y),
+                            std::ref(V),
+                            !isSing)
+                        )
+                };
+                denotFutures.push_back(std::async(task));
             }
         }
 
@@ -660,7 +676,16 @@ namespace V3Concurrent
         const Poly& X
     )
     {
-        return std::async(&Denot::computeReachPairs, this, predecessor, std::ref(predecessorVisitedRegion), std::ref(X));
+        const auto& task {
+            PPL::make_threadable(
+                std::bind(
+                    &Denot::computeReachPairs, this,
+                    predecessor, std::ref(predecessorVisitedRegion), std::ref(X)
+                )
+            )
+        };
+
+        return std::async(task);
     }
 
     std::pair<int, PPLUtils::ReachPairs> Denot::computeReachPairs(
@@ -695,12 +720,12 @@ namespace V3Concurrent
         }
     }
 
-    void Denot::addDisjunctV3(std::unordered_map<int, Powerset>& V, const int state, const Poly& P) const
+    void Denot::addDisjunct(std::unordered_map<int, Powerset>& V, const int state, const Poly& P) const
     {
         V.try_emplace(state, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY }).first->second.add_disjunct(P);
     }
 
-    Powerset& Denot::getVisitedPowersetV3(std::unordered_map<int, Powerset>& V, const int state)
+    Powerset& Denot::getVisitedPowerset(std::unordered_map<int, Powerset>& V, const int state)
     {
         return V.at(state);
     }
@@ -744,11 +769,9 @@ namespace V4Concurrent
         if (m_backwardNfa.isInitialState(state))
             return std::make_unique<Powerset>(X);
 
-        std::unique_lock lockGuard { m_mutex };
         const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
         if (!stateDenotation.isSingular())
             addDisjunct(V, state, P);
-        lockGuard.unlock();
 
         PowersetUniquePtr result { std::make_unique<Powerset>(m_spaceDimension, PPL::EMPTY) };
         if (!m_backwardNfa.hasPredecessors(state))
@@ -760,30 +783,42 @@ namespace V4Concurrent
         for (auto edgePredecessor: m_backwardNfa.predecessors(state))
         {
             const int predecessor { static_cast<int>(edgePredecessor.dst) };
-            std::cout << ">>> predecessor " << predecessor << " | Thread: " << std::this_thread::get_id() << std::endl;
-            lockGuard.lock();
             const auto& predecessorVisitedPatches { getVisitedPatches(V, predecessor) };
             PPLUtils::ReachPairs reachPairs { computeReachPairs(predecessor, predecessorVisitedPatches, X).second };
             for (auto&& reachPair: reachPairs)
                 predecessorReachPairs.emplace_back(predecessor, std::move(reachPair));
-            lockGuard.unlock();
-            std::cout << "<<< predecessor " << predecessor << " | Thread: " << std::this_thread::get_id() << std::endl;
         }
+
+        if (predecessorReachPairs.empty()) return result;
 
         std::vector<std::future<PowersetUniquePtr>> denotFutures {};
         if (predecessorReachPairs.size() > 1)
         {
-            denotFutures.reserve(predecessorReachPairs.size() - 1);
-            for (int i { 1 }; i < static_cast<int>(predecessorReachPairs.size()); i++)
+            denotFutures.reserve(predecessorReachPairs.size());
+            for (int i { 0 }; i < static_cast<int>(predecessorReachPairs.size() - 1); i++)
             {
+                assert(i < static_cast<int>(predecessorReachPairs.size()));
                 const int predecessor { predecessorReachPairs[i].first };
                 const auto& [Q, Y] { predecessorReachPairs[i].second };
-                denotFutures.push_back(std::async(std::launch::async, &Denot::denot, this, predecessor, Q, Y, V, !isSing));
+                const auto& task {
+                    PPL::make_threadable(
+                        std::bind(
+                            &Denot::denot, this,
+                            predecessor,
+                            std::ref(Q),
+                            std::ref(Y),
+                            std::ref(V),
+                            !isSing
+                        )
+                    )
+                };
+                denotFutures.push_back(std::async(task));
             }
         }
 
-        const int predecessor { predecessorReachPairs[0].first };
-        const auto& [Q, Y] { predecessorReachPairs[0].second };
+        const int myReachPairIndex { static_cast<int>(predecessorReachPairs.size() - 1) };
+        const int predecessor { predecessorReachPairs[myReachPairIndex].first };
+        const auto& [Q, Y] { predecessorReachPairs[myReachPairIndex].second };
         PPLUtils::fusion(*result, *denot(predecessor, Q, Y, V, !isSing));
 
         for (auto& future: denotFutures)
