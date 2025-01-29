@@ -323,10 +323,14 @@ namespace V1Concurrent
         for (int i = 0; i < numThreads - 1; ++i)
         {
             const int end { start + finalStatesPerThread };
-            threads.push_back(std::thread(
-                &Denot::processFinalStates, this,
-                start, end, std::ref(results[i])
-            ));
+            auto pplTask {
+                PPL::make_threadable(
+                    std::bind(
+                        &Denot::processFinalStates, this,
+                        start, end, std::ref(results[i]))
+                    )
+            };
+            threads.push_back(std::thread(pplTask));
             start = end;
         }
 
@@ -395,7 +399,6 @@ namespace V1Concurrent
             assert(A->space_dimension() == m_polyhedralSystem->getSpaceDimension());
             assert(A->space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
 
-            std::cout << "A: " << PPLOutput::toString(*A, m_polyhedralSystem->getSymbolTable()) << " | X: " << PPLOutput::toString(X, m_polyhedralSystem->getSymbolTable()) << std::endl;
             PPLUtils::ReachPairs reachPairs {
                 predecessorStateDenotation.isSingular()
                     ? PPLUtils::reach0(*A, X, m_polyhedralSystem->getPreFlow())
