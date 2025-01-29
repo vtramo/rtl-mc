@@ -82,7 +82,14 @@ int main(const int argc, char *argv[])
         Logger::log(Verbosity::verbose, ">>> Denot algorithm started.");
         timer.reset();
 
-        V4Concurrent::Denot denot { polyhedralSystem, backwardNfa };
+        std::function denot {
+            [&]
+            {
+                if (rtlMcProgram.concurrent()) return V4Concurrent::Denot { polyhedralSystem, backwardNfa }();
+                return V1Recursive::Denot { polyhedralSystem, backwardNfa }();
+            }
+        };
+
         PowersetUniquePtr denotResult {
             rtlMcProgram.universal()
                 ? PPLUtils::minus(polyhedralSystem->getInvariant(), *denot())

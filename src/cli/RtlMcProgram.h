@@ -44,6 +44,7 @@ public:
     [[nodiscard]] bool universal() const { return m_universal; }
     [[nodiscard]] bool existential() const { return m_existential; }
     [[nodiscard]] bool directLtl() const { return m_directLtl; }
+    [[nodiscard]] bool concurrent() const { return m_concurrent; }
     [[nodiscard]] Verbosity verbosityLevel() const { return m_verbosityLevel; }
     [[nodiscard]] OutputFormat outputFormat() const { return m_outputFormat; }
     [[nodiscard]] std::string statsFormat() const { return m_statsFormat; }
@@ -61,6 +62,7 @@ private:
     bool m_verbose {};
     bool m_universal {};
     bool m_existential {};
+    bool m_concurrent {};
 
     bool m_gap {};
     bool m_nogap {};
@@ -156,6 +158,12 @@ private:
                 m_outputFormat = OutputFormat::stats;
             }).help("formats the execution statistics. Example: --stats \"Tot states: %Ats\". "
                     "Placeholders (%Ats, %Ate, etc.) are described in the documentation.");
+
+        m_rtlMcProgram
+            .add_argument("-c", "--concurrent")
+            .help("concurrent execution")
+            .flag()
+            .store_into(m_concurrent);
     }
 
     void parseArgs(const int argc, char *argv[])
