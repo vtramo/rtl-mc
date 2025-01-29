@@ -692,7 +692,7 @@ namespace V3Concurrent
         }
     }
 
-    void Denot::addDisjunctV3(std::unordered_map<int, Powerset>& V, const int state, const Poly& P)
+    void Denot::addDisjunctV3(std::unordered_map<int, Powerset>& V, const int state, const Poly& P) const
     {
         V.try_emplace(state, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY }).first->second.add_disjunct(P);
     }
@@ -700,5 +700,120 @@ namespace V3Concurrent
     Powerset& Denot::getVisitedPowersetV3(std::unordered_map<int, Powerset>& V, const int state)
     {
         return V.at(state);
+    }
+}
+
+namespace V4Concurrent
+{
+    PowersetUniquePtr Denot::run()
+    {
+        m_iterations = 0;
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
+
+        for (const int finalState: m_backwardNfa.finalStates())
+        {
+            const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
+
+            PowersetConstSharedPtr denotationFinalState { finalStateDenotation.denotation() };
+            PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
+
+            for (Powerset::const_iterator patchesIt { denotationFinalState->begin() }; patchesIt != denotationFinalState->end(); ++patchesIt)
+            {
+                PowersetUniquePtr finalStatePatchResult { denot(finalState, patchesIt->pointset(), patchesIt->pointset(), {}, true) };
+                PPLUtils::fusion(*finalStateResult, *finalStatePatchResult);
+            }
+
+            PPLUtils::fusion(*result, *finalStateResult);
+        }
+
+        return result;
+    }
+
+    PowersetUniquePtr Denot::denot(
+        const int state,
+        const Poly& P,
+        const Poly& X,
+        std::unordered_map<int, Powerset> V,
+        const bool isSing
+    )
+    {
+        if (m_backwardNfa.isInitialState(state))
+            return std::make_unique<Powerset>(X);
+
+        std::unique_lock lockGuard { m_mutex };
+        const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
+        if (!stateDenotation.isSingular())
+            addDisjunct(V, state, P);
+        lockGuard.unlock();
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(m_spaceDimension, PPL::EMPTY) };
+        if (!m_backwardNfa.hasPredecessors(state))
+            return result;
+
+        const int totalPredecessors { m_backwardNfa.countPredecessors(state) };
+        std::vector<std::pair<int, PPLUtils::ReachPair>> predecessorReachPairs {};
+        predecessorReachPairs.reserve(totalPredecessors * 2);
+        for (auto edgePredecessor: m_backwardNfa.predecessors(state))
+        {
+            const int predecessor { static_cast<int>(edgePredecessor.dst) };
+            std::cout << ">>> predecessor " << predecessor << " | Thread: " << std::this_thread::get_id() << std::endl;
+            lockGuard.lock();
+            const auto& predecessorVisitedPatches { getVisitedPatches(V, predecessor) };
+            PPLUtils::ReachPairs reachPairs { computeReachPairs(predecessor, predecessorVisitedPatches, X).second };
+            for (auto&& reachPair: reachPairs)
+                predecessorReachPairs.emplace_back(predecessor, std::move(reachPair));
+            lockGuard.unlock();
+            std::cout << "<<< predecessor " << predecessor << " | Thread: " << std::this_thread::get_id() << std::endl;
+        }
+
+        std::vector<std::future<PowersetUniquePtr>> denotFutures {};
+        if (predecessorReachPairs.size() > 1)
+        {
+            denotFutures.reserve(predecessorReachPairs.size() - 1);
+            for (int i { 1 }; i < static_cast<int>(predecessorReachPairs.size()); i++)
+            {
+                const int predecessor { predecessorReachPairs[i].first };
+                const auto& [Q, Y] { predecessorReachPairs[i].second };
+                denotFutures.push_back(std::async(std::launch::async, &Denot::denot, this, predecessor, Q, Y, V, !isSing));
+            }
+        }
+
+        const int predecessor { predecessorReachPairs[0].first };
+        const auto& [Q, Y] { predecessorReachPairs[0].second };
+        PPLUtils::fusion(*result, *denot(predecessor, Q, Y, V, !isSing));
+
+        for (auto& future: denotFutures)
+            PPLUtils::fusion(*result, *future.get());
+
+        return result;
+    }
+
+    std::pair<int, PPLUtils::ReachPairs> Denot::computeReachPairs(
+        int predecessor,
+        const Powerset& predecessorVisitedPatches,
+        const Poly& X
+    ) const
+    {
+        const StateDenotation& predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
+        PowersetUniquePtr A { PPLUtils::minus(*predecessorStateDenotation.denotation(), predecessorVisitedPatches) };
+
+        PPLUtils::ReachPairs reachPairs {
+            predecessorStateDenotation.isSingular()
+                ? PPLUtils::reach0(*A, X, m_polyhedralSystem->getPreFlow())
+                : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->getPreFlow())
+        };
+
+        return { predecessor, std::move(reachPairs) };
+    }
+
+    Powerset& Denot::getVisitedPatches(std::unordered_map<int, Powerset>& V, const int state) const
+    {
+        return V.try_emplace(state, Powerset { m_spaceDimension, PPL::EMPTY }).first->second;
+    }
+
+    void Denot::addDisjunct(std::unordered_map<int, Powerset>& V, const int state, const Poly& P) const
+    {
+        V.try_emplace(state, Powerset { m_spaceDimension, PPL::EMPTY }).first->second.add_disjunct(P);
     }
 }
