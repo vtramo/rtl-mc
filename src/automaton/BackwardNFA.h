@@ -38,6 +38,7 @@ public:
     [[nodiscard]] const std::unordered_set<int>& finalStates() const;
     [[nodiscard]] bool hasPredecessors(int state) const;
     [[nodiscard]] EdgeIterator predecessors(int state) const;
+    [[nodiscard]] int countPredecessors(int state) const;
     [[nodiscard]] const DiscreteLtlFormula& formula() const;
     [[nodiscard]] const StateDenotation& stateDenotation(int state) const;
     [[nodiscard]] spot::postprocessor::optimization_level optimizationLevel() const;

@@ -338,6 +338,12 @@ BackwardNFA::EdgeIterator BackwardNFA::predecessors(const int state) const
     return m_backwardNfa->out(state);
 }
 
+int BackwardNFA::countPredecessors(const int state) const
+{
+    const EdgeIterator& edgeIterator { m_backwardNfa->out(state) };
+    return std::distance(edgeIterator.begin(), edgeIterator.end());
+}
+
 int BackwardNFA::totalEdges() const
 {
     return static_cast<int>(m_backwardNfa->num_edges() - m_dummyInitialEdges);
