@@ -10,6 +10,7 @@
 #include <spot/twaalgos/remprop.hh>
 #include <spot/twaalgos/dot.hh>
 #include <spot/twaalgos/stats.hh>
+#include <spot/twaalgos/sccinfo.hh>
 
 BackwardNFA::BackwardNFA(
     const DiscreteLtlFormula& discreteLtlFormula,
@@ -257,7 +258,8 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
             totalInitialStates(),
             totalStates(),
             totalEdges(),
-            totalFinalStates()
+            totalFinalStates(),
+            spot::scc_info { m_backwardNfa }
         };
 }
 

@@ -60,9 +60,8 @@ int main(const int argc, char *argv[])
     spdlog::info("<<< Discretization completed. Elapsed time: {} s.", discretizationExecutionTimeSeconds);
     DiscretizationStats discretizationStats { collectDiscretizationStats(discreteLtlFormula, discretizationExecutionTimeSeconds) };
     spdlog::info("[Discrete LTL formula] Formula: {}.", discreteLtlFormula);
-    spdlog::info("[Discrete LTL formula] Total atomic propositions: {}.",
-        std::unique_ptr<spot::atomic_prop_set>(spot::atomic_prop_collect(discreteLtlFormula.formula()))->size());
-    spdlog::info("[Discrete LTL formula] Length: {}.\n", spot::length(discreteLtlFormula.formula()));
+    spdlog::info("[Discrete LTL formula] Total atomic propositions: {}.", discretizationStats.discreteLtlFormulaTotalAtomicPropositions);
+    spdlog::info("[Discrete LTL formula] Length: {}.\n", discretizationStats.discreteLtlFormulaLength);
 
     try
     {

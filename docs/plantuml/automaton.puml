@@ -23,6 +23,7 @@ package automaton {
         --member functions--
         +formula() : const DiscreteLtlFormula&
         +predecessors(int state) : EdgeIterator
+        +countPredecessors(int state) : int
         +stateDenotation(int state) : const StateDenotation&
         +hasPredecessors(int state) : bool
         +isFinalState(int state) : bool

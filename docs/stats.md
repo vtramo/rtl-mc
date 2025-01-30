@@ -28,6 +28,7 @@
 | `%Abe`      | BackwardNFA total edges                                         |
 | `%Abf`      | BackwardNFA total final states                                  |
 | `%Abi`      | BackwardNFA total initial states                                |
+| `%Abc`      | BackwardNFA total strongly connected component                  |
 | `%Dt`       | Denot total iterations                                          |
 | `%Dx`       | Denot execution time in s                                       |
 

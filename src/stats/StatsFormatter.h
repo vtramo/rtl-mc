@@ -63,6 +63,7 @@ public:
                            m_automatonStats.backwardNfaConstructionStats.totalEdges,
                            m_automatonStats.backwardNfaConstructionStats.totalFinalStates,
                            m_automatonStats.backwardNfaConstructionStats.totalInitialStates,
+                           m_automatonStats.backwardNfaConstructionStats.sccInfo->scc_count(),
                            m_denotStats.totalIterations,
                            m_denotStats.executionTimeSeconds);
     }
@@ -99,6 +100,7 @@ private:
     static constexpr std::string_view s_Abe{ "%Abe"sv };  // BackwardNFA total edges
     static constexpr std::string_view s_Abf{ "%Abf"sv };  // BackwardNFA total final states
     static constexpr std::string_view s_Abi{ "%Abi"sv };  // BackwardNFA total initial states
+    static constexpr std::string_view s_Abc{ "%Abc"sv };  // BackwardNFA total strongly connected components
 
     static constexpr std::string_view s_Dt{ "%Dt"sv };    // Denot total iterations
     static constexpr std::string_view s_Dx{ "%Dx"sv }; // Denot execution time in s
@@ -137,8 +139,9 @@ private:
         replace(input, s_Abe, "{22}");
         replace(input, s_Abf, "{23}");
         replace(input, s_Abi, "{24}");
-        replace(input, s_Dt, "{25}");
-        replace(input, s_Dx, "{26}");
+        replace(input, s_Abc, "{25}");
+        replace(input, s_Dt, "{26}");
+        replace(input, s_Dx, "{27}");
     }
 
     static void replace(std::string& str, const std::string_view from, const std::string_view to)

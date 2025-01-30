@@ -1,9 +1,6 @@
 #pragma once
 
-#include <spot/twa/twagraph.hh>
-#include <spot/twaalgos/postproc.hh>
 #include "AutomatonStats.h"
-
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
 #include "StateDenotation.h"

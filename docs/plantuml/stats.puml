@@ -24,6 +24,7 @@ package stats {
         -totalStates: int
         -totalEdges: int
         -totalFinalStates: int
+        -sccInfo: std::optional<spot::scc_info>
     }
 
     struct BackwardNFAConstructionStats {

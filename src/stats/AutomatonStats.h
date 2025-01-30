@@ -1,7 +1,10 @@
 #pragma once
 
 #include <string>
+#include <spot/twaalgos/sccinfo.hh>
 #include "spot_utils.h"
+#include <optional>
+
 
 struct AutomatonStats
 {
@@ -37,6 +40,7 @@ struct AutomatonStats
         int totalStates {};
         int totalEdges {};
         int totalFinalStates {};
+        std::optional<spot::scc_info> sccInfo {};
     };
 
     TranslationFormulaIntoTgbaStats translationFormulaIntoTgba {};
