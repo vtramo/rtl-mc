@@ -18,14 +18,3 @@ meson configure -Db_sanitize=none buildDir
 ```
 - https://mesonbuild.com/Unit-tests.html#other-test-options
 - https://stackoverflow.com/questions/57734973/how-to-use-valgrind-with-meson
-
-
-### Come risolvere l'errore `undefined reference to 'main'` (Catch2)
-Quando si eseguono i test, raramente potrebbe apparire un errore del genere relativo a Catch2.
-
-Per risolvere, eseguire i seguenti comandi:
-```shell
-meson compile -C buildDir --clean # pulisci build directory
-meson subprojects purge catch2 --confirm # Elimina il subproject catch2
-meson compile -C buildDir # ricompila l'intero progetto
-```

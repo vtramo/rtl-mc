@@ -8,7 +8,7 @@ rtlf_parser_benchmarks_source_files = [
 rtlf_parser_benchmarks_exe = executable(
     'rtlf_parser_benchmarks',
     rtlf_parser_benchmarks_source_files,
-    dependencies : [catch2_dep, spot_dep],
+    dependencies : [catch2_dep, catch2_with_main_dep, spot_dep],
     include_directories : include_directories
 )
 

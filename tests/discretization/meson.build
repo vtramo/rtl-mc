@@ -7,7 +7,7 @@ discretization_tests_src_files = [
 discretization_tests_exe = executable(
     'discretization_tests',
     discretization_tests_src_files,
-    dependencies : [spot_dep, catch2_dep],
+    dependencies : [spot_dep, catch2_dep, catch2_with_main_dep],
     include_directories : include_directories
 )
 

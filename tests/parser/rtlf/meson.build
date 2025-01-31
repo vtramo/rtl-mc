@@ -7,7 +7,7 @@ parse_rtlf_tests_source_files = [
 parse_rtlf_tests_exe = executable(
     'parse_rtlf_tests',
     parse_rtlf_tests_source_files,
-    dependencies : [catch2_dep, spot_dep],
+    dependencies : [catch2_dep, catch2_with_main_dep, spot_dep],
     include_directories : include_directories
 )
 

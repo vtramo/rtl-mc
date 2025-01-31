@@ -10,7 +10,7 @@ parse_system_benchmarks_source_files = [
 parse_system_benchmarks_exe = executable(
     'system_parser_benchmarks',
     parse_system_benchmarks_source_files,
-    dependencies : [catch2_dep, spot_dep, antlr4_runtime_dep, ppl_dep, gmp_dep, gmpxx_dep],
+    dependencies : [catch2_dep, catch2_with_main_dep, spot_dep, antlr4_runtime_dep, ppl_dep, gmp_dep, gmpxx_dep],
     include_directories : include_directories
 )
 
