@@ -99,6 +99,7 @@ package automaton {
         --member functions--
         +formula() : const spot::formula&
         +denotation() : PowersetConstSharedPtr
+        +totalPatches() : int
         +isSingular() : bool
         +isUniverse() : bool
         +isEmpty() : bool

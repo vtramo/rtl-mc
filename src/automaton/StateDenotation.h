@@ -14,6 +14,7 @@ public:
     [[nodiscard]] bool isSingular() const { return m_isSing; }
     [[nodiscard]] bool isUniverse() const { return m_denotation->is_top(); }
     [[nodiscard]] bool isEmpty() const { return m_denotation->is_empty(); }
+    [[nodiscard]] int totalPatches() const { return m_denotation->size(); }
     [[nodiscard]] std::string toString(const PolyhedralSystemSymbolTable& symbolTable) const
     {
         return fmt::format(
