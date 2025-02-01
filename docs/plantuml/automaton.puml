@@ -46,6 +46,8 @@ package automaton {
         -eraseInitialEdgesWithEmptyDenotation() : void
         -purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates) : void
         -twa() : spot::const_twa_ptr
+        -updateMaxNumberOfPatchesStats(int totPatches) : void
+        -setBackwardNfaStats(double executionTimeSeconds) : void
         --static functions--
         -{static} renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr) : void
         -{static} killFinalStates(const spot::twa_graph_ptr& graph) : std::unordered_set<int>

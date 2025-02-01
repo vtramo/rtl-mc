@@ -40,6 +40,7 @@ struct AutomatonStats
         int totalStates {};
         int totalEdges {};
         int totalFinalStates {};
+        int maxNumberPatches {};
         std::optional<spot::scc_info> sccInfo {};
     };
 

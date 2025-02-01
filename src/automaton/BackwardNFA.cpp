@@ -225,6 +225,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
 
             StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdge.cond) };
             if (stateDenotation.isEmpty()) continue;
+            updateMaxNumberOfPatchesStats(stateDenotation.totalPatches());
 
             int edgeState { static_cast<int>(m_backwardNfa->new_state()) };
             if (isAccepting) m_finalStates.insert(edgeState);
@@ -267,15 +268,27 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total edges: {}.", totalEdges());
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA initial states: [{}].", fmt::join(m_initialStates, ", "));
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA final states: [{}].", fmt::join(m_finalStates, ", "));
-    m_automatonStats.backwardNfaConstructionStats =
-        AutomatonStats::BackwardNFAConstructionStats {
-            executionTimeSeconds,
-            totalInitialStates(),
-            totalStates(),
-            totalEdges(),
-            totalFinalStates(),
-            spot::scc_info { m_backwardNfa }
-        };
+    setBackwardNfaStats(executionTimeSeconds);
+}
+
+void BackwardNFA::updateMaxNumberOfPatchesStats(const int totPatches)
+{
+    m_automatonStats.backwardNfaConstructionStats.maxNumberPatches =
+        std::max(
+            m_automatonStats.backwardNfaConstructionStats.maxNumberPatches,
+            totPatches
+        );
+}
+
+void BackwardNFA::setBackwardNfaStats(const double executionTimeSeconds)
+{
+    auto* backwardNfaStats { &m_automatonStats.backwardNfaConstructionStats };
+    backwardNfaStats->executionTimeSeconds = executionTimeSeconds;
+    backwardNfaStats->totalInitialStates = totalInitialStates();
+    backwardNfaStats->totalStates = totalStates();
+    backwardNfaStats->totalEdges = totalEdges();
+    backwardNfaStats->totalFinalStates = totalFinalStates();
+    backwardNfaStats->sccInfo = spot::scc_info { m_backwardNfa };
 }
 
 const AutomatonStats& BackwardNFA::stats() const

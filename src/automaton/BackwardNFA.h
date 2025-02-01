@@ -94,4 +94,7 @@ private:
     spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption);
     spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
     spot::const_twa_ptr twa() const;
+
+    void updateMaxNumberOfPatchesStats(int totPatches);
+    void setBackwardNfaStats(double executionTimeSeconds);
 };
