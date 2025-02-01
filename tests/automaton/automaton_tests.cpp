@@ -370,6 +370,22 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
         testBackwardNfaInvariant(backwardNfa);
     }
 
+    SECTION("GAP k=253")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(253) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
+    SECTION("GAP k=254")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(254) })).toLtl() };
+        BackwardNFA backwardNfa { formula, std::move(polyhedralSystemFormulaDenotationMap) };
+        testBackwardNfaInvariant(backwardNfa);
+    }
+
     SECTION("GAP k=500")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
@@ -583,6 +599,7 @@ void testBackwardNfaInvariant(const BackwardNFA& backwardNfa)
         {
             REQUIRE(!backwardNfa.hasPredecessors(state)); // Initial state => no predecessors
             REQUIRE(stateDenotation.isSingular()); // Initial state => is singular
+            REQUIRE(!stateDenotation.isEmpty()); // Initial state => state denotation IS NOT empty
             continue;
         }
 
