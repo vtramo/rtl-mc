@@ -29,7 +29,7 @@ PowersetUniquePtr DenotRecursive::run()
                 PPLOutput::toString(patchesIt->pointset(), m_polyhedralSystem->getSymbolTable())
             );
 
-            std::unordered_map<int, Powerset> V {};
+            std::vector V(m_backwardNfa.totalStates(), Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY });
             PowersetUniquePtr finalStatePatchResult { denot(finalState, patchesIt->pointset(), patchesIt->pointset(), V, 0, true) };
 
             Log::log(Verbosity::trace, "Final state {}, patch {} result: {}",
@@ -59,7 +59,7 @@ PowersetUniquePtr DenotRecursive::denot(
     int state,
     const Poly& P,
     const Poly& X,
-    std::unordered_map<int, Powerset> V,
+    std::vector<Powerset> V,
     const int recursionDepth,
     bool isSing
 )
@@ -123,7 +123,7 @@ PowersetUniquePtr DenotRecursive::denot(
             predecessorStateDenotation.toString(m_polyhedralSystem->getSymbolTable())
         );
 
-        Powerset& visitedPowerset { getVisitedPowerset(V, predecessor) };
+        const Powerset& visitedPowerset { getVisitedPowerset(V, predecessor) };
         assert(visitedPowerset.space_dimension() == m_polyhedralSystem->getSpaceDimension());
         Log::log(Verbosity::trace, "Visited region V[{}]: {}",
             predecessor,
@@ -178,12 +178,12 @@ PowersetUniquePtr DenotRecursive::denot(
     return result;
 }
 
-void DenotRecursive::addDisjunct(std::unordered_map<int, Powerset>& V, const int state, const Poly& P) const
+void DenotRecursive::addDisjunct(std::vector<Powerset>& V, const int state, const Poly& P)
 {
-    V.try_emplace(state, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY }).first->second.add_disjunct(P);
+    V[state].add_disjunct(P);
 }
 
-Powerset& DenotRecursive::getVisitedPowerset(std::unordered_map<int, Powerset>& V, const int state) const
+const Powerset& DenotRecursive::getVisitedPowerset(std::vector<Powerset>& V, const int state)
 {
-    return V.try_emplace(state, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY }).first->second;
+    return V[state];
 }

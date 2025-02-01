@@ -1,6 +1,5 @@
 #include <DenotConcurrentV1.h>
 #include <spot/tl/parse.hh>
-#include <spot/tl/length.hh>
 #include <spot/twaalgos/postproc.hh>
 #include <spdlog/spdlog.h>
 
@@ -15,7 +14,6 @@
 #include "core/Denot.h"
 #include "cli/RtlMcProgram.h"
 #include "core/DenotRecursive.h"
-#include "core/concurrent/DenotConcurrentV4.h"
 #include "utils/Timer.h"
 #include "logger/logger.h"
 #include "logger/Verbosity.h"
@@ -165,7 +163,7 @@ std::unique_ptr<Denot> createDenot(
 ) {
     if (rtlMcProgram.concurrent()) {
         return std::make_unique<DenotConcurrentV1>(polyhedralSystem, backwardNfa);
-    } else {
-        return std::make_unique<DenotRecursive>(polyhedralSystem, backwardNfa);
     }
+
+    return std::make_unique<DenotRecursive>(polyhedralSystem, backwardNfa);
 }

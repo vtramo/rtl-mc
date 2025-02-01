@@ -3,7 +3,6 @@
 #include "Denot.h"
 #include "PolyhedralSystem.h"
 #include "BackwardNFA.h"
-#include <future>
 
 class DenotRecursive: public Denot
 {
@@ -32,11 +31,11 @@ private:
         int state,
         const Poly& P,
         const Poly& X,
-        std::unordered_map<int, Powerset> V,
+        std::vector<Powerset> V,
         int recursionDepth,
         bool isSing
     );
 
-    void addDisjunct(std::unordered_map<int, Powerset>& V, int state, const Poly& P) const;
-    Powerset& getVisitedPowerset(std::unordered_map<int, Powerset>& V, int state) const;
+    static void addDisjunct(std::vector<Powerset>& V, int state, const Poly& P);
+    static const Powerset& getVisitedPowerset(std::vector<Powerset>& V, int state);
 };
