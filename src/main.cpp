@@ -1,5 +1,9 @@
+#include <DenotConcurrentV1.h>
 #include <spot/tl/parse.hh>
 #include <spot/tl/length.hh>
+#include <spot/twaalgos/postproc.hh>
+#include <spdlog/spdlog.h>
+
 #include "discretization/DiscreteFiniteLtlFormula.h"
 #include "utils/ppl/ppl_output.h"
 #include "automaton/BackwardNFA.h"
@@ -10,11 +14,14 @@
 #include "utils/ppl/ppl_utils.h"
 #include "core/Denot.h"
 #include "cli/RtlMcProgram.h"
+#include "core/DenotRecursive.h"
+#include "core/concurrent/DenotConcurrentV4.h"
 #include "utils/Timer.h"
 #include "logger/logger.h"
 #include "logger/Verbosity.h"
 #include "stats/collectors.h"
 #include "stats/StatsFormatter.h"
+#include "utils/spot/spot_utils.h"
 
 class DiscreteLtlFormula;
 using PPL::IO_Operators::operator<<;
@@ -26,10 +33,16 @@ BackwardNFA buildBackwardNfa(
     AutomatonOptimizationFlags optimizationFlags
 );
 
+std::unique_ptr<Denot> createDenot(
+    const RtlMcProgram& rtlMcProgram,
+    PolyhedralSystemSharedPtr polyhedralSystem,
+    const BackwardNFA& backwardNfa
+);
+
 int main(const int argc, char *argv[])
 {
     RtlMcProgram rtlMcProgram { argc, argv };
-    Logger::configureLogger(rtlMcProgram.verbosityLevel());
+    Log::configureLogger(rtlMcProgram.verbosityLevel());
 
     PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
     spot::formula rtlFormula {
@@ -38,15 +51,15 @@ int main(const int argc, char *argv[])
             : rtlMcProgram.rtlFormula()
     };
 
-    Logger::log(Verbosity::verbose, "[Polyhedral System]\n{}", *polyhedralSystem);
+    Log::log(Verbosity::verbose, "[Polyhedral System]\n{}", *polyhedralSystem);
     PolyhedralSystemStats polyhedralSystemStats { collectPolyhedralSystemStats(*polyhedralSystem) };
 
-    Logger::log(Verbosity::verbose, "[RTLf Formula] Formula: {}.", rtlFormula);
+    Log::log(Verbosity::verbose, "[RTLf Formula] Formula: {}.", rtlFormula);
     RtlFormulaStats rtlfFormulaStats { collectRtlfStats(rtlFormula) };
-    Logger::log(Verbosity::verbose, "[RTLf Formula] Total atomic propositions: {}.", rtlfFormulaStats.totalAtomicPropositions);
-    Logger::log(Verbosity::verbose, "[RTLf Formula] Length: {}.\n", rtlfFormulaStats.length);
+    Log::log(Verbosity::verbose, "[RTLf Formula] Total atomic propositions: {}.", rtlfFormulaStats.totalAtomicPropositions);
+    Log::log(Verbosity::verbose, "[RTLf Formula] Length: {}.\n", rtlfFormulaStats.length);
 
-    Logger::log(Verbosity::verbose, ">>> RTLf formula discretization started.");
+    Log::log(Verbosity::verbose, ">>> RTLf formula discretization started.");
     Timer timer {};
 
     DiscreteLtlFormula discreteLtlFormula {
@@ -56,15 +69,15 @@ int main(const int argc, char *argv[])
     };
 
     const double discretizationExecutionTimeSeconds { timer.elapsedInSeconds() };
-    Logger::log(Verbosity::verbose, "<<< Discretization completed. Elapsed time: {} s.", discretizationExecutionTimeSeconds);
+    Log::log(Verbosity::verbose, "<<< Discretization completed. Elapsed time: {} s.", discretizationExecutionTimeSeconds);
     DiscretizationStats discretizationStats { collectDiscretizationStats(discreteLtlFormula, discretizationExecutionTimeSeconds) };
-    Logger::log(Verbosity::verbose, "[Discrete LTL formula] Formula: {}.", discreteLtlFormula);
-    Logger::log(Verbosity::verbose, "[Discrete LTL formula] Total atomic propositions: {}.", discretizationStats.discreteLtlFormulaTotalAtomicPropositions);
-    Logger::log(Verbosity::verbose, "[Discrete LTL formula] Length: {}.\n", discretizationStats.discreteLtlFormulaLength);
+    Log::log(Verbosity::verbose, "[Discrete LTL formula] Formula: {}.", discreteLtlFormula);
+    Log::log(Verbosity::verbose, "[Discrete LTL formula] Total atomic propositions: {}.", discretizationStats.discreteLtlFormulaTotalAtomicPropositions);
+    Log::log(Verbosity::verbose, "[Discrete LTL formula] Length: {}.\n", discretizationStats.discreteLtlFormulaLength);
 
     try
     {
-        Logger::log(Verbosity::verbose, ">>> BackwardNFA automaton construction started.");
+        Log::log(Verbosity::verbose, ">>> BackwardNFA automaton construction started.");
         timer.reset();
 
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
@@ -76,19 +89,14 @@ int main(const int argc, char *argv[])
             )
         };
 
-        Logger::log(Verbosity::verbose, "<<< BackwardNFA automaton construction completed. Elapsed time: {} s.\n", timer.elapsedInSeconds());
-        Logger::log(Verbosity::debug, "[BackwardNFA]\n{}\n", backwardNfa);
+        Log::log(Verbosity::verbose, "<<< BackwardNFA automaton construction completed. Elapsed time: {} s.\n", timer.elapsedInSeconds());
+        Log::log(Verbosity::debug, "[BackwardNFA]\n{}\n", backwardNfa);
 
-        Logger::log(Verbosity::verbose, ">>> Denot algorithm started.");
+        Log::log(Verbosity::verbose, ">>> Denot algorithm started.");
         timer.reset();
 
-        std::function denot {
-            [&]
-            {
-                if (rtlMcProgram.concurrent()) return V4Concurrent::Denot { polyhedralSystem, backwardNfa }();
-                return V1Recursive::Denot { polyhedralSystem, backwardNfa }();
-            }
-        };
+        std::unique_ptr denotUniquePtr { createDenot(rtlMcProgram, polyhedralSystem, backwardNfa) };
+        Denot& denot { *denotUniquePtr };
 
         PowersetUniquePtr denotResult {
             rtlMcProgram.universal()
@@ -98,10 +106,10 @@ int main(const int argc, char *argv[])
 
         const double denotExecutionTimeSeconds { timer.elapsedInSeconds() };
         DenotStats denotStats { collectDenotStats(denot, denotExecutionTimeSeconds) };
-        Logger::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.executionTimeSeconds);
-        Logger::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.totalIterations);
+        Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.executionTimeSeconds);
+        Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.totalIterations);
 
-        Logger::log(Verbosity::verbose, "[Result] Points: ");
+        Log::log(Verbosity::verbose, "[Result] Points: ");
 
         switch (rtlMcProgram.outputFormat())
         {
@@ -122,8 +130,8 @@ int main(const int argc, char *argv[])
             break;
         }
 
-        Logger::log(Verbosity::verbose, "[Result] Existential Denotation: {}.", rtlMcProgram.existential());
-        Logger::log(Verbosity::verbose, "[Result] Universal Denotation: {}.", rtlMcProgram.universal());
+        Log::log(Verbosity::verbose, "[Result] Existential Denotation: {}.", rtlMcProgram.existential());
+        Log::log(Verbosity::verbose, "[Result] Universal Denotation: {}.", rtlMcProgram.universal());
     }
     catch (const std::exception& e)
     {
@@ -148,4 +156,16 @@ BackwardNFA buildBackwardNfa(
         optimizationLevel,
         optimizationFlags.any
     };
+}
+
+std::unique_ptr<Denot> createDenot(
+    const RtlMcProgram& rtlMcProgram,
+    PolyhedralSystemSharedPtr polyhedralSystem,
+    const BackwardNFA& backwardNfa
+) {
+    if (rtlMcProgram.concurrent()) {
+        return std::make_unique<DenotConcurrentV1>(polyhedralSystem, backwardNfa);
+    } else {
+        return std::make_unique<DenotRecursive>(polyhedralSystem, backwardNfa);
+    }
 }

@@ -14,7 +14,7 @@ template <> struct fmt::formatter<PolyhedralSystem> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<DiscreteLtlFormula> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<BackwardNFA> : fmt::ostream_formatter {};
 
-namespace Logger
+namespace Log
 {
     inline Verbosity g_loggerVerbosity { Verbosity::silent };
 

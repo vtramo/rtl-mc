@@ -12,6 +12,7 @@ src_dir = 'src'
 parser_dir = 'parser'
 system_dir = 'system'
 utils_dir = 'utils'
+core_dir = 'core'
 include_directories = [
   include_directories('.'),
   include_directories(src_dir / utils_dir),
@@ -23,7 +24,8 @@ include_directories = [
   include_directories(src_dir / parser_dir),
   include_directories(src_dir / parser_dir / 'rtlf'),
   include_directories(src_dir / parser_dir / system_dir),
-  include_directories(src_dir / 'core'),
+  include_directories(src_dir / core_dir),
+  include_directories(src_dir / core_dir / 'concurrent'),
   include_directories(src_dir / 'cli'),
   include_directories(src_dir / 'logger'),
   include_directories(src_dir / 'stats'),
