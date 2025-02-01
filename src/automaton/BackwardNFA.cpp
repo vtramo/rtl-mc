@@ -31,9 +31,24 @@ BackwardNFA::BackwardNFA(
 {
     spot::twa_graph_ptr formulaTgba { translateDiscreteLtlFormulaIntoTgba(anyOption) };
     spot::twa_graph_ptr nfa { convertToNfa(formulaTgba) };
+    eraseInitialEdgesWithEmptyDenotation(nfa);
     std::unordered_set nfaFinalStates { killFinalStates(nfa) };
     purgeUnreachableStatesThenRenumberFinalStates(nfa, nfaFinalStates);
     buildAutomaton(nfa, nfaFinalStates);
+}
+
+void BackwardNFA::eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nfa)
+{
+    unsigned initialState { nfa->get_init_state_number() };
+    auto outIteraser { nfa->out_iteraser(initialState) };
+    while (outIteraser)
+    {
+        spot::formula formula { spot::bdd_to_formula(outIteraser->cond, nfa->get_dict()) };
+        const auto& [formulaWithoutSing, _] { SpotUtils::removeSing(std::move(formula)) };
+        PowersetConstSharedPtr denotation { m_formulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
+        if (denotation->is_empty()) outIteraser.erase();
+        ++outIteraser;
+    }
 }
 
 spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool anyOption)

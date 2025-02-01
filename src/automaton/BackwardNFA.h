@@ -88,6 +88,7 @@ private:
 
     void buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates);
     StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
+    void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nfa);
     void createDummyInitialStateWithEdgesToReachableFinalStates();
     void purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates);
     spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption);
