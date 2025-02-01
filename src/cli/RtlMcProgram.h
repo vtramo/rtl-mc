@@ -67,7 +67,7 @@ private:
     int m_t {};
     int m_k {};
 
-    Verbosity m_verbosityLevel {};
+    Verbosity m_verbosityLevel { Verbosity::silent };
     OutputFormat m_outputFormat { OutputFormat::normal };
     std::string m_statsFormat {};
 
@@ -127,7 +127,7 @@ private:
 
         auto& outputFormat { m_rtlMcProgram.add_mutually_exclusive_group() };
         outputFormat.add_argument("-V", "--verbose")
-            .action([&](const auto &)
+            .action([&](const auto&)
             {
                 m_verbosityLevel =
                     static_cast<Verbosity>(
@@ -144,7 +144,7 @@ private:
         outputFormat.add_argument("-q", "--quiet")
             .flag()
             .help("suppress all normal output")
-            .action([&](const auto &)
+            .action([&](const auto&)
             {
                 m_verbosityLevel = Verbosity::silent;
                 m_outputFormat = OutputFormat::quiet;

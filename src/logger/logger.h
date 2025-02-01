@@ -2,34 +2,33 @@
 
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
+
 #include "Verbosity.h"
 #include "PolyhedralSystem.h"
 #include "DiscreteLtlFormula.h"
 #include "BackwardNFA.h"
+
 
 template <> struct fmt::formatter<spot::formula> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<PolyhedralSystem> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<DiscreteLtlFormula> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<BackwardNFA> : fmt::ostream_formatter {};
 
-inline void configureLogger(const Verbosity loggerVerbosity)
+namespace Logger
 {
-    spdlog::set_pattern("%v");
-    switch (loggerVerbosity)
+    inline Verbosity g_loggerVerbosity { Verbosity::silent };
+
+    inline void configureLogger(const Verbosity loggerVerbosity)
     {
-    case Verbosity::silent:
-        spdlog::set_level(spdlog::level::off);
-        break;
-    case Verbosity::verbose:
+        g_loggerVerbosity = loggerVerbosity;
+        spdlog::set_pattern("%v");
         spdlog::set_level(spdlog::level::info);
-        break;
-    case Verbosity::veryVerbose:
-        spdlog::set_level(spdlog::level::debug);
-        break;
-    case Verbosity::debug:
-        spdlog::set_level(spdlog::level::trace);
-        break;
-    default:
-        spdlog::set_level(spdlog::level::off);
+    }
+
+    template <typename ... Args>
+    void log(const Verbosity verbosity, std::string_view message, Args&& ... args)
+    {
+        if (g_loggerVerbosity < verbosity) return;
+        spdlog::info(message, std::forward<Args>(args)...);
     }
 }

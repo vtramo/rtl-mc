@@ -25,7 +25,7 @@ include_directories = [
   include_directories(src_dir / parser_dir / system_dir),
   include_directories(src_dir / 'core'),
   include_directories(src_dir / 'cli'),
-  include_directories(src_dir / 'logging'),
+  include_directories(src_dir / 'logger'),
   include_directories(src_dir / 'stats'),
 ]
 

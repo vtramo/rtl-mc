@@ -44,6 +44,7 @@ package cli {
         verbose,
         veryVerbose,
         debug,
+        trace
 
         totVerbosityLevels
     }

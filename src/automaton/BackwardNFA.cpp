@@ -1,7 +1,7 @@
 #include "BackwardNFA.h"
+#include "logger.h"
 #include "Timer.h"
 #include "spot_utils.h"
-#include <spdlog/spdlog.h>
 #include <spdlog/fmt/ranges.h>
 #include <spot/tl/formula.hh>
 #include <spot/twa/formula2bdd.hh>
@@ -39,8 +39,8 @@ BackwardNFA::BackwardNFA(
 spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool anyOption)
 {
     std::string optimizationLevel { SpotUtils::toOptimizationLevelString(m_optimizationLevel) };
-    spdlog::debug("[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA automaton started.");
-    spdlog::debug("[BackwardNFA - Translation] Optimization level: {}.", optimizationLevel);
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA automaton started.");
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Optimization level: {}.", optimizationLevel);
 
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::TGBA);
@@ -53,10 +53,10 @@ spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool 
     spot::twa_graph_ptr formulaTgba { ltlToNbaTranslator.run(m_discreteLtlFormula.formula()) };
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
-    spdlog::debug("[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA completed. Elapsed time: {} s.", executionTimeSeconds);
-    spdlog::debug("[BackwardNFA - Translation] Total TGBA states: {}.", formulaTgba->num_states());
-    spdlog::debug("[BackwardNFA - Translation] Total TGBA edges {}.", formulaTgba->num_edges());
-    spdlog::debug("[BackwardNFA - Translation] Total TGBA accepting sets {}.", formulaTgba->num_sets());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA completed. Elapsed time: {} s.", executionTimeSeconds);
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Total TGBA states: {}.", formulaTgba->num_states());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Total TGBA edges {}.", formulaTgba->num_edges());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Total TGBA accepting sets {}.", formulaTgba->num_sets());
     m_automatonStats.translationFormulaIntoTgba =
         AutomatonStats::TranslationFormulaIntoTgbaStats {
             optimizationLevel,
@@ -70,15 +70,15 @@ spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool 
 
 spot::twa_graph_ptr BackwardNFA::convertToNfa(spot::twa_graph_ptr tgba)
 {
-    spdlog::debug("[BackwardNFA - TGBA to NFA] Conversion from TGBA to NFA started.");
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - TGBA to NFA] Conversion from TGBA to NFA started.");
     Timer timer {};
 
     spot::twa_graph_ptr nfa { spot::to_finite(tgba) };
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
-    spdlog::debug("[BackwardNFA - TGBA to NFA] Conversion from TGBA to NFA completed. Elapsed time: {} s.", executionTimeSeconds);
-    spdlog::debug("[BackwardNFA - TGBA to NFA] Total NFA states: {}.", nfa->num_states());
-    spdlog::debug("[BackwardNFA - TGBA to NFA] Total NFA edges {}.", nfa->num_edges());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - TGBA to NFA] Conversion from TGBA to NFA completed. Elapsed time: {} s.", executionTimeSeconds);
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - TGBA to NFA] Total NFA states: {}.", nfa->num_states());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - TGBA to NFA] Total NFA edges {}.", nfa->num_edges());
     m_automatonStats.translationTgbaIntoNfaStats =
         AutomatonStats::NfaStats {
             executionTimeSeconds,
@@ -92,7 +92,7 @@ spot::twa_graph_ptr BackwardNFA::convertToNfa(spot::twa_graph_ptr tgba)
 
 std::unordered_set<int> BackwardNFA::killFinalStates(const spot::twa_graph_ptr& graph)
 {
-    spdlog::debug("[BackwardNFA - Kill Final States] Removal of outgoing edges from final states started.");
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Kill Final States] Removal of outgoing edges from final states started.");
     std::unordered_set<int> acceptingStates {};
     for (int nfaState { 0 }; nfaState < static_cast<int>(graph->num_states()); ++nfaState)
         if (graph->state_is_accepting(nfaState))
@@ -100,7 +100,7 @@ std::unordered_set<int> BackwardNFA::killFinalStates(const spot::twa_graph_ptr& 
             acceptingStates.insert(nfaState);
             graph->kill_state(nfaState);
         }
-    spdlog::debug("[BackwardNFA - Kill Final States] Final states: [{}].", fmt::join(acceptingStates, ", "));
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Kill Final States] Final states: [{}].", fmt::join(acceptingStates, ", "));
     return acceptingStates;
 }
 
@@ -109,7 +109,7 @@ void BackwardNFA::purgeUnreachableStatesThenRenumberFinalStates(
     std::unordered_set<int>& nfaFinalStates
 )
 {
-    spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Removal of unreachable states from nfa graph started.");
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Purge unreachable states (NFA)] Removal of unreachable states from nfa graph started.");
     Timer timer {};
 
     spot::twa_graph::shift_action renumberNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
@@ -117,10 +117,10 @@ void BackwardNFA::purgeUnreachableStatesThenRenumberFinalStates(
     nfa->purge_unreachable_states(&renumberNfaFinalStates, &renumberingContext);
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
-    spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Removal of unreachable states from nfa graph completed. Elapsed time: {} s.", executionTimeSeconds);
-    spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Total NFA states: {}.", nfa->num_states());
-    spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Total NFA edges: {}.", nfa->num_edges());
-    spdlog::debug("[BackwardNFA - Purge unreachable states (NFA)] Final NFA states: [{}].", fmt::join(nfaFinalStates, ", "));
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Purge unreachable states (NFA)] Removal of unreachable states from nfa graph completed. Elapsed time: {} s.", executionTimeSeconds);
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Purge unreachable states (NFA)] Total NFA states: {}.", nfa->num_states());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Purge unreachable states (NFA)] Total NFA edges: {}.", nfa->num_edges());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Purge unreachable states (NFA)] Final NFA states: [{}].", fmt::join(nfaFinalStates, ", "));
     m_automatonStats.nfaOptimizations =
         AutomatonStats::NfaStats {
             executionTimeSeconds,
@@ -189,7 +189,7 @@ void BackwardNFA::renumberOrRemoveStatesAfterPurge(
 
 void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates)
 {
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA construction started.");
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA construction started.");
     Timer timer {};
 
     const spot::bdd_dict_ptr backwardNfaDict { std::make_shared<spot::bdd_dict>() };
@@ -209,7 +209,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
             const bool isAccepting { nfaAcceptingStates.count(nfaEdgeDst) == 1 };
 
             StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdge.cond) };
-            if (!isInitial && stateDenotation.isEmpty()) continue;
+            if (stateDenotation.isEmpty()) continue;
 
             int edgeState { static_cast<int>(m_backwardNfa->new_state()) };
             if (isAccepting) m_finalStates.insert(edgeState);
@@ -245,13 +245,13 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
     m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA construction completed. Elapsed time: {} s.", executionTimeSeconds);
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA total states: {}.", totalStates());
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA total initial states: {}.", totalInitialStates());
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA total final states: {}.", totalFinalStates());
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA total edges: {}.", totalEdges());
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA initial states: [{}].", fmt::join(m_initialStates, ", "));
-    spdlog::debug("[BackwardNFA - Construction] Backward NFA final states: [{}].", fmt::join(m_finalStates, ", "));
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA construction completed. Elapsed time: {} s.", executionTimeSeconds);
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total states: {}.", totalStates());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total initial states: {}.", totalInitialStates());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total final states: {}.", totalFinalStates());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total edges: {}.", totalEdges());
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA initial states: [{}].", fmt::join(m_initialStates, ", "));
+    Logger::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA final states: [{}].", fmt::join(m_finalStates, ", "));
     m_automatonStats.backwardNfaConstructionStats =
         AutomatonStats::BackwardNFAConstructionStats {
             executionTimeSeconds,

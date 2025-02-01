@@ -30,7 +30,7 @@ subdir('utils')
 subdir('automaton')
 subdir('core')
 subdir('cli')
-subdir('logging')
+subdir('logger')
 subdir('stats')
 
 project_exe = executable(

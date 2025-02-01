@@ -1,5 +1,5 @@
-#include <spdlog/spdlog.h>
-#include <reach.h>
+#include "logger.h"
+#include "reach.h"
 #include "Denot.h"
 #include "Timer.h"
 #include "ppl_utils.h"
@@ -14,26 +14,27 @@ inline namespace V1
 
         for (const int finalState: m_backwardNfa.finalStates())
         {
-            spdlog::trace("\n--- Starting from final state: {} ---", finalState);
+            Logger::log(Verbosity::trace, "\n--- Starting from final state: {} ---", finalState);
 
             const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
 
-            spdlog::trace("Final state: {}\n{}", finalState, finalStateDenotation.toString(m_polyhedralSystem->getSymbolTable()));
+            Logger::log(Verbosity::trace, "Final state: {}\n{}", finalState, finalStateDenotation.toString(m_polyhedralSystem->getSymbolTable()));
 
             PowersetConstSharedPtr denotationFinalState { finalStateDenotation.denotation() };
             PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
             int patchIndex { 1 };
             for (Powerset::const_iterator patchesIt { denotationFinalState->begin() }; patchesIt != denotationFinalState->end(); ++patchesIt)
             {
-                spdlog::trace("\n------ Final state {}, processing patch {}: {} ------\n",
+                Logger::log(Verbosity::trace, "\n------ Final state {}, processing patch {}: {} ------\n",
                     finalState,
                     patchIndex,
                     PPLOutput::toString(patchesIt->pointset(), m_polyhedralSystem->getSymbolTable())
                 );
 
-                PowersetUniquePtr finalStatePatchResult { denot(finalState, patchesIt->pointset(), patchesIt->pointset(), {}, true) };
+                std::unordered_map<int, Powerset> V {};
+                PowersetUniquePtr finalStatePatchResult { denot(finalState, patchesIt->pointset(), patchesIt->pointset(), V, true) };
 
-                spdlog::trace("Final state {}, patch {} result: {}",
+                Logger::log(Verbosity::trace, "Final state {}, patch {} result: {}",
                     finalState,
                     patchIndex,
                     PPLOutput::toString(*finalStatePatchResult, m_polyhedralSystem->getSymbolTable())
@@ -41,7 +42,7 @@ inline namespace V1
 
                 PPLUtils::fusion(*finalStateResult, *finalStatePatchResult);
 
-                spdlog::trace("------ Final state {}, result updated: {} ------",
+                Logger::log(Verbosity::trace, "------ Final state {}, result updated: {} ------",
                     finalState,
                     PPLOutput::toString(*finalStateResult, m_polyhedralSystem->getSymbolTable())
                 );
@@ -49,8 +50,8 @@ inline namespace V1
 
             PPLUtils::fusion(*result, *finalStateResult);
 
-            spdlog::trace("Update global result: {}", PPLOutput::toString(*result, m_polyhedralSystem->getSymbolTable()));
-            spdlog::trace("--- Final state {} completed ---\n", finalState);
+            Logger::log(Verbosity::trace, "Update global result: {}", PPLOutput::toString(*result, m_polyhedralSystem->getSymbolTable()));
+            Logger::log(Verbosity::trace, "--- Final state {} completed ---\n", finalState);
         }
 
         return result;
@@ -60,12 +61,12 @@ inline namespace V1
         const int state,
         const Poly& P,
         const Poly& X,
-        std::unordered_map<int, Powerset> V,
+        std::unordered_map<int, Powerset>& V,
         const bool isSing
     )
     {
         m_iterations++;
-        spdlog::trace("--------- Denot iteration {} ---------", m_iterations);
+        Logger::log(Verbosity::trace, "--------- Denot iteration {} ---------", m_iterations);
 
         assert(P.space_dimension() == m_polyhedralSystem->getSpaceDimension());
         assert(P.space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
@@ -75,17 +76,19 @@ inline namespace V1
         const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
         assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
 
-        spdlog::trace("State: {}\n{}", state, stateDenotation.toString(m_polyhedralSystem->getSymbolTable()));
-        spdlog::trace("Visited region V[{}]: {}",
+        Logger::log(Verbosity::trace, "State: {}\n{}", state, stateDenotation.toString(m_polyhedralSystem->getSymbolTable()));
+        Logger::log(Verbosity::trace, "Is initial {}", m_backwardNfa.isInitialState(state));
+        Logger::log(Verbosity::trace, "Is final {}", m_backwardNfa.isFinalState(state));
+        Logger::log(Verbosity::trace, "Visited region V[{}]: {}",
             state,
             PPLOutput::toString(getVisitedPowerset(V, state), m_polyhedralSystem->getSymbolTable())
         );
-        spdlog::trace("P: {}", PPLOutput::toString(P, m_polyhedralSystem->getSymbolTable()));
-        spdlog::trace("X: {}", PPLOutput::toString(X, m_polyhedralSystem->getSymbolTable()));
+        Logger::log(Verbosity::trace, "P: {}", PPLOutput::toString(P, m_polyhedralSystem->getSymbolTable()));
+        Logger::log(Verbosity::trace, "X: {}\n", PPLOutput::toString(X, m_polyhedralSystem->getSymbolTable()));
 
         if (m_backwardNfa.isInitialState(state))
         {
-            spdlog::trace("State {} is initial, returning X: {}",
+            Logger::log(Verbosity::trace, "State {} is initial, returning X: {}",
                 state,
                 PPLOutput::toString(X, m_polyhedralSystem->getSymbolTable())
             );
@@ -95,14 +98,14 @@ inline namespace V1
 
         if (!stateDenotation.isSingular())
         {
-            spdlog::trace("State {} is not singular, adding P: {}",
+            Logger::log(Verbosity::trace, "State {} is not singular, adding P: {}",
                 state,
                 PPLOutput::toString(P, m_polyhedralSystem->getSymbolTable())
             );
 
             addDisjunct(V, state, P);
 
-            spdlog::trace("State {} updated visited region: {}",
+            Logger::log(Verbosity::trace, "State {} updated visited region: {}",
                 state,
                 PPLOutput::toString(X, m_polyhedralSystem->getSymbolTable())
             );
@@ -113,7 +116,7 @@ inline namespace V1
         {
             int predecessor { static_cast<int>(edgePredecessor.dst) };
             const StateDenotation& predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
-            spdlog::trace("\n>>> State: {} -> Processing Predecessor: {}\n{}",
+            Logger::log(Verbosity::trace, "\n>>> State: {} -> Processing Predecessor: {}\n{}",
                 state,
                 predecessor,
                 predecessorStateDenotation.toString(m_polyhedralSystem->getSymbolTable())
@@ -121,7 +124,7 @@ inline namespace V1
 
             Powerset& visitedPowerset { getVisitedPowerset(V, predecessor) };
             assert(visitedPowerset.space_dimension() == m_polyhedralSystem->getSpaceDimension());
-            spdlog::trace("Visited region V[{}]: {}",
+            Logger::log(Verbosity::trace, "Visited region V[{}]: {}",
                 predecessor,
                 PPLOutput::toString(visitedPowerset, m_polyhedralSystem->getSymbolTable())
             );
@@ -129,23 +132,23 @@ inline namespace V1
             PowersetUniquePtr A { PPLUtils::minus(*predecessorStateDenotation.denotation(), visitedPowerset) };
             assert(A->space_dimension() == m_polyhedralSystem->getSpaceDimension());
             assert(A->space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
-            spdlog::trace("Predecessor denotation minus visited region (A): {}",
+            Logger::log(Verbosity::trace, "Predecessor denotation minus visited region (A): {}",
                 PPLOutput::toString(*A, m_polyhedralSystem->getSymbolTable()));
 
             Timer timer {};
-            spdlog::trace("Calling reach operator (isSing = {}).", isSing);
+            Logger::log(Verbosity::trace, "Calling reach operator (isSing = {}).", isSing);
             PPLUtils::ReachPairs reachPairs {
                 predecessorStateDenotation.isSingular()
                     ? PPLUtils::reach0(*A, X, m_polyhedralSystem->getPreFlow())
                     : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->getPreFlow())
             };
-            spdlog::trace("Reach pairs computed (size: {}). Elapsed time: {} s.", reachPairs.size(), timer.elapsedInSeconds());
+            Logger::log(Verbosity::trace, "Reach pairs computed (size: {}). Elapsed time: {} s.", reachPairs.size(), timer.elapsedInSeconds());
 
             int reachPairIndex { 1 };
             for (const auto& [Q, Y]: reachPairs)
             {
-                spdlog::trace("\nReach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
-                spdlog::trace("Q: {}\nY: {}",
+                Logger::log(Verbosity::trace, "\nReach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
+                Logger::log(Verbosity::trace, "Q: {}\nY: {}",
                     PPLOutput::toString(Q, m_polyhedralSystem->getSymbolTable()),
                     PPLOutput::toString(Y, m_polyhedralSystem->getSymbolTable())
                 );
@@ -155,12 +158,12 @@ inline namespace V1
 
                 PowersetUniquePtr denotResult { denot(predecessor, Q, Y, V, !isSing) };
 
-                spdlog::trace("Reach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
-                spdlog::trace("Result: {}", PPLOutput::toString(*denotResult, m_polyhedralSystem->getSymbolTable()));
+                Logger::log(Verbosity::trace, "Reach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
+                Logger::log(Verbosity::trace, "Result: {}", PPLOutput::toString(*denotResult, m_polyhedralSystem->getSymbolTable()));
 
                 PPLUtils::fusion(*result, *denotResult);
 
-                spdlog::trace("Update result denot iteration {}: {}",
+                Logger::log(Verbosity::trace, "Update result denot iteration {}: {}",
                     m_iterations,
                     PPLOutput::toString(*result, m_polyhedralSystem->getSymbolTable())
                 );
@@ -168,7 +171,7 @@ inline namespace V1
                 reachPairIndex++;
             }
 
-            spdlog::trace("<<< State: {} -> Predecessor Completed: {}\n", state, predecessor);
+            Logger::log(Verbosity::trace, "<<< State: {} -> Predecessor Completed: {}\n", state, predecessor);
         }
 
         return result;
