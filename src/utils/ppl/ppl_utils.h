@@ -4,7 +4,8 @@
 #include "ppl_aliases.h"
 
 namespace PPLUtils {
-    typedef std::vector<std::pair<Poly, Poly>> ReachPairs;
+    typedef std::pair<Poly, Poly> ReachPair;
+    typedef std::vector<ReachPair> ReachPairs;
 
     Poly& reflectionAffineImage(Poly& polyhedron);
     Powerset& reflectionAffineImage(Powerset& polyhedron);

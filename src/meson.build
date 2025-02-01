@@ -7,6 +7,7 @@ argparse_dep = dependency('argparse', fallback : ['argparse'], version: '>=3.1')
 spdlog = dependency('spdlog', fallback : ['spdlog'], version: '>=1.15.0')
 
 add_project_arguments('-DSPOT_WANT_STRONG_X', language: 'cpp')
+add_project_arguments('-DPPL_THREAD_SAFE=1', language: 'cpp')
 if get_option('debug') == false
     add_project_arguments('-DNDEBUG', language: 'cpp')
 endif
