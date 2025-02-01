@@ -11,7 +11,11 @@ public:
     DenotRecursive(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
       : m_polyhedralSystem { polyhedralSystem }
       , m_backwardNfa { backwardNfa }
-    {}
+    {
+        const int maxNumberOfPatches { m_backwardNfa.stats().backwardNfaConstructionStats.maxNumberPatches };
+        const int maxNumberOfTotalPatches { m_backwardNfa.totalStates() * maxNumberOfPatches };
+        m_maxRecursionDepth = 1 + 2 * maxNumberOfTotalPatches;
+    }
     ~DenotRecursive() override = default;
 
     PowersetUniquePtr run() override;
@@ -22,12 +26,14 @@ private:
     int m_iterations { };
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
     const BackwardNFA& m_backwardNfa {};
+    int m_maxRecursionDepth {};
 
     PowersetUniquePtr denot(
         int state,
         const Poly& P,
         const Poly& X,
         std::unordered_map<int, Powerset> V,
+        int recursionDepth,
         bool isSing
     );
 

@@ -30,7 +30,7 @@ PowersetUniquePtr DenotRecursive::run()
             );
 
             std::unordered_map<int, Powerset> V {};
-            PowersetUniquePtr finalStatePatchResult { denot(finalState, patchesIt->pointset(), patchesIt->pointset(), V, true) };
+            PowersetUniquePtr finalStatePatchResult { denot(finalState, patchesIt->pointset(), patchesIt->pointset(), V, 0, true) };
 
             Log::log(Verbosity::trace, "Final state {}, patch {} result: {}",
                 finalState,
@@ -56,13 +56,16 @@ PowersetUniquePtr DenotRecursive::run()
 }
 
 PowersetUniquePtr DenotRecursive::denot(
-    const int state,
+    int state,
     const Poly& P,
     const Poly& X,
     std::unordered_map<int, Powerset> V,
-    const bool isSing
+    const int recursionDepth,
+    bool isSing
 )
 {
+    assert(recursionDepth <= m_maxRecursionDepth && "Recursion depth exceeded!!!");
+
     m_iterations++;
     Log::log(Verbosity::trace, "--------- Denot iteration {} ---------", m_iterations);
 
@@ -154,7 +157,7 @@ PowersetUniquePtr DenotRecursive::denot(
             assert(Q.space_dimension() == m_polyhedralSystem->getSpaceDimension());
             assert(Y.space_dimension() == m_polyhedralSystem->getSpaceDimension());
 
-            PowersetUniquePtr denotResult { denot(predecessor, Q, Y, V, !isSing) };
+            PowersetUniquePtr denotResult { denot(predecessor, Q, Y, V, recursionDepth + 1, !isSing) };
 
             Log::log(Verbosity::trace, "Reach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
             Log::log(Verbosity::trace, "Result: {}", PPLOutput::toString(*denotResult, m_polyhedralSystem->getSymbolTable()));
