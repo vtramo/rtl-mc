@@ -5,6 +5,8 @@ core_source_files = [
     current_source_dir / 'Denot.h',
     current_source_dir / 'DenotRecursive.h',
     current_source_dir / 'DenotRecursive.cpp',
+    current_source_dir / 'DenotRecursiveMemoization.h',
+    current_source_dir / 'DenotRecursiveMemoization.cpp',
     current_source_dir / 'DenotIterative.h',
     current_source_dir / 'DenotIterative.cpp',
     current_source_dir / concurrent_dir / 'DenotConcurrentV1.h',

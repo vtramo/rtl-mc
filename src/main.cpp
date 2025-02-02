@@ -13,7 +13,7 @@
 #include "utils/ppl/ppl_utils.h"
 #include "core/Denot.h"
 #include "cli/RtlMcProgram.h"
-#include "core/DenotRecursive.h"
+#include "core/DenotRecursiveMemoization.h"
 #include "utils/Timer.h"
 #include "logger/logger.h"
 #include "logger/Verbosity.h"
@@ -165,5 +165,5 @@ std::unique_ptr<Denot> createDenot(
         return std::make_unique<DenotConcurrentV1>(polyhedralSystem, backwardNfa);
     }
 
-    return std::make_unique<DenotRecursive>(polyhedralSystem, backwardNfa);
+    return std::make_unique<DenotRecursiveMemoization>(polyhedralSystem, backwardNfa);
 }
