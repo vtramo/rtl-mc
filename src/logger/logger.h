@@ -18,9 +18,13 @@ namespace Log
 {
     inline Verbosity g_loggerVerbosity { Verbosity::silent };
 
-    inline void configureLogger(const Verbosity loggerVerbosity)
+    inline void setVerbosityLevel(const Verbosity loggerVerbosity)
     {
         g_loggerVerbosity = loggerVerbosity;
+    }
+
+    inline void configureLogger()
+    {
         spdlog::set_pattern("%v");
         spdlog::set_level(spdlog::level::info);
     }

@@ -1,11 +1,10 @@
-#ifndef POLYHEDRALSYSTEMERRORLISTENER_H
-#define POLYHEDRALSYSTEMERRORLISTENER_H
+#pragma once
 
 #include "antlr4-runtime.h"
 #include "ParserError.h"
 
 
-class PolyhedralSystemErrorListener final: public antlr4::BaseErrorListener {
+class ErrorListener final: public antlr4::BaseErrorListener {
 public:
     void syntaxError(
       antlr4::Recognizer *recognizer,
@@ -22,4 +21,3 @@ private:
 
     void addError(ParserError&& error);
 };
-#endif //POLYHEDRALSYSTEMERRORLISTENER_H

@@ -1,8 +1,6 @@
-#ifndef POLYHEDRALSYSTEMBUILDERVISITOR_H
-#define POLYHEDRALSYSTEMBUILDERVISITOR_H
+#pragma once
 
-#include <ParserError.h>
-
+#include "ParserError.h"
 #include "PolyhedralSystem.h"
 #include "PolyhedralSystemSymbolTable.h"
 #include "PolyhedralSystemParser.h"
@@ -76,5 +74,3 @@ private:
 
     PolyhedralSystemVisitor m_visitor;
 };
-
-#endif //POLYHEDRALSYSTEMBUILDERVISITOR_H

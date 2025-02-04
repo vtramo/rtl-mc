@@ -1,23 +1,7 @@
 current_source_dir = meson.current_source_dir()
 generated_dir = current_source_dir / 'generated' / 'g4'
 
-if get_option('generate_parser')
-    grammar_relative_path = 'g4' / 'PolyhedralSystem.g4'
-    generated_dir_relative_path = 'generated'
-
-    message('Generating ANTLR4 PolyhedralSystem parser... ')
-    run_command('antlr4',
-                '-listener',
-                '-visitor',
-                '-Dlanguage=Cpp',
-                '-v',
-                '4.13.2',
-                grammar_relative_path,
-                '-o', generated_dir_relative_path,  check: true)
-    message('Parser generation complete! (Location: ' + generated_dir + ')')
-endif
-
-include_directories += include_directories(generated_dir_relative_path / 'g4')
+include_directories += include_directories('generated' / 'g4')
 
 polyhedral_system_parser_source_files = [
     generated_dir / 'PolyhedralSystemBaseListener.cpp',
@@ -36,8 +20,6 @@ polyhedral_system_parser_source_files = [
     current_source_dir / 'PolyhedralSystemSymbolTableListener.cpp',
     current_source_dir / 'PolyhedralSystemBuilderVisitor.h',
     current_source_dir / 'PolyhedralSystemBuilderVisitor.cpp',
-    current_source_dir / 'PolyhedralSystemErrorListener.h',
-    current_source_dir / 'PolyhedralSystemErrorListener.cpp',
     current_source_dir / 'PolyhedralSystemParsingResult.h',
     current_source_dir / 'systemparser.h',
     current_source_dir / 'systemparser.cpp',

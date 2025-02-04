@@ -16,6 +16,7 @@ public:
   [[nodiscard]] const spot::atomic_prop_set& atoms() const;
   [[nodiscard]] std::optional<PPL::Variable> getVariable(std::string_view id) const;
   [[nodiscard]] std::optional<std::string> getVariableName(const PPL::Variable& variable) const;
+  [[nodiscard]] std::vector<std::string> getVariableNames() const;
   [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
   [[nodiscard]] int getTotalAtoms() const;
 

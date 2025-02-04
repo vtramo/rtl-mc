@@ -3,3 +3,4 @@ subprojects/*
 !subprojects/*.wrap
 .idea
 src/parser/system/generated/g4
+src/parser/mc/generated/g4

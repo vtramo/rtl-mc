@@ -59,16 +59,6 @@ package system <<Frame>> {
         class PolyhedralSystemBuilderVisitor
     }
 
-    class PolyhedralSystemErrorListener {
-        --data members--
-        -m_errors : std::vector<ParserError>
-        --member functions--
-        +hasErrors() : bool
-        +errors() : std::vector<ParserError>
-        +syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e) : void
-        -addError(ParserError&& error) : void
-    }
-
     class PolyhedralSystemParsingResult {
         --data members--
         -m_lexicalErrorCount : int
@@ -279,13 +269,9 @@ package system <<Frame>> {
     }
 }
 
-class antlr4::BaseErrorListener {}
-
 PolyhedralSystemVisitor <|-- PolyhedralSystemBaseVisitor
 PolyhedralSystemListener <|-- PolyhedralSystemBaseListener
 PolyhedralSystemBuilderVisitor +--> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor
 PolyhedralSystemSymbolTableListener --|> PolyhedralSystemBaseListener
 systemparser_h_cpp ..> PolyhedralSystemParsingResult: create
-
-PolyhedralSystemErrorListener --> antlr4::BaseErrorListener
 @enduml

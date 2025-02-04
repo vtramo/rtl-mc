@@ -125,3 +125,12 @@ namespace
         });
     }
 }
+
+std::vector<std::string> PolyhedralSystemSymbolTable::getVariableNames() const
+{
+    std::vector<std::string> variableNames {};
+    variableNames.reserve(m_variableById.size());
+    for (const auto& [variableName, _]: m_variableById)
+        variableNames.push_back(variableName);
+    return variableNames;
+}

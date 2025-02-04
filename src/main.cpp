@@ -39,8 +39,9 @@ std::unique_ptr<Denot> createDenot(
 
 int main(const int argc, char *argv[])
 {
+    Log::configureLogger();
     RtlMcProgram rtlMcProgram { argc, argv };
-    Log::configureLogger(rtlMcProgram.verbosityLevel());
+    Log::setVerbosityLevel(rtlMcProgram.verbosityLevel());
 
     PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
     spot::formula rtlFormula {
@@ -107,12 +108,20 @@ int main(const int argc, char *argv[])
         Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.executionTimeSeconds);
         Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.totalIterations);
 
-        Log::log(Verbosity::verbose, "[Result] Points: ");
+        Log::log(Verbosity::verbose, "[Result]");
 
         switch (rtlMcProgram.outputFormat())
         {
         case OutputFormat::normal:
-            std::cout << PPLOutput::toString(*denotResult, polyhedralSystem->getSymbolTable()) << '\n';
+            if (rtlMcProgram.modelChecking())
+            {
+                Poly point { rtlMcProgram.modelCheckingPoint() };
+                std::cout << std::boolalpha << denotResult->contains(Powerset { point }) << std::noboolalpha << '\n';
+            }
+            else
+            {
+                std::cout << PPLOutput::toString(*denotResult, polyhedralSystem->getSymbolTable()) << '\n';
+            }
             break;
         case OutputFormat::quiet:
             break;
@@ -130,6 +139,7 @@ int main(const int argc, char *argv[])
 
         Log::log(Verbosity::verbose, "[Result] Existential Denotation: {}.", rtlMcProgram.existential());
         Log::log(Verbosity::verbose, "[Result] Universal Denotation: {}.", rtlMcProgram.universal());
+        Log::log(Verbosity::verbose, "[Result] Model-checking problem: {}.", rtlMcProgram.modelChecking());
     }
     catch (const std::exception& e)
     {

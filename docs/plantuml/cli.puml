@@ -14,6 +14,8 @@ package cli {
         -m_polyhedralSystem: PolyhedralSystemSharedPtr
         -m_rtlFormula: spot::formula
         -m_verbosityLevel: Verbosity
+        -m_modelCheckingPointString: std::optional<string>
+        -m_modelCheckingPoint: Poly
         --constructors--
         +RtlMcProgram(const int argc, char *argv[])
         --member functions--
@@ -23,6 +25,8 @@ package cli {
         +directLtl(): bool
         +universal(): bool
         +existential(): bool
+        +modelChecking(): bool
+        +modelCheckingPoint(): Poly
         +verbosityLevel(): Verbosity
         +outputFormat(): OutputFormat
         +statsFormat(): std::string
@@ -30,6 +34,7 @@ package cli {
         -parseArgs(int argc, char *argv[]): void
         -readAndParsePolyhedralSystemFile(): void
         -readAndParseRtlFile(): void
+        -parseModelCheckingPoint(): void
     }
 
     struct AutomatonOptimizationFlags {

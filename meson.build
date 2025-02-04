@@ -24,6 +24,7 @@ include_directories = [
   include_directories(src_dir / parser_dir),
   include_directories(src_dir / parser_dir / 'rtlf'),
   include_directories(src_dir / parser_dir / system_dir),
+  include_directories(src_dir / parser_dir / 'mc'),
   include_directories(src_dir / core_dir),
   include_directories(src_dir / core_dir / 'concurrent'),
   include_directories(src_dir / 'cli'),

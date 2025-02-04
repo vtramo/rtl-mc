@@ -1,7 +1,6 @@
 grammar LinearExpression;
 import CommonLexerRules;
 
-
 linearExpr
     : op=(PLUS|MINUS)? term (signTerm)*
     ;

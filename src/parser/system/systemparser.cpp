@@ -4,7 +4,7 @@
 #include "PolyhedralSystemParser.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "PolyhedralSystemSymbolTableListener.h"
-#include "PolyhedralSystemErrorListener.h"
+#include "ErrorListener.h"
 
 PolyhedralSystemParsingResult parsePolyhedralSystem(const std::string_view input)
 {
@@ -21,7 +21,7 @@ PolyhedralSystemParsingResult parsePolyhedralSystem(std::istream& input)
 PolyhedralSystemParsingResult parsePolyhedralSystem(antlr4::ANTLRInputStream* input)
 {
     PolyhedralSystemLexer lexer { input };
-    PolyhedralSystemErrorListener* errorListener { new PolyhedralSystemErrorListener {} };
+    ErrorListener* errorListener { new ErrorListener {} };
     lexer.removeErrorListeners();
     lexer.addErrorListener(errorListener);
     antlr4::CommonTokenStream tokens { &lexer };

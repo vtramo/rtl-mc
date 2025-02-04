@@ -4,6 +4,7 @@
 #include "RtlfParsingResult.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
+#include "mcparser.h"
 #include "parsertlf.h"
 #include "Verbosity.h"
 #include "AutomatonOptimizationFlags.h"
@@ -18,24 +19,20 @@ public:
         buildRtlMcProgram();
         parseArgs(argc, argv);
 
-        if (m_gap)
+        if (m_gap || m_nogap)
         {
-            auto [polyhedralSystem, rtlf] = gap(m_k, m_t);
+            auto [polyhedralSystem, rtlf] = m_gap ? gap(m_k, m_t) : nogap(m_k, m_t);
             m_polyhedralSystem = polyhedralSystem;
             m_rtlFormula = rtlf;
-            return;
         }
-
-        if (m_nogap)
+        else
         {
-            auto [polyhedralSystem, rtlf] = nogap(m_k, m_t);
-            m_polyhedralSystem = polyhedralSystem;
-            m_rtlFormula = rtlf;
-            return;
+            readAndParsePolyhedralSystemFile();
+            readAndParseRtlFile();
         }
 
-        readAndParsePolyhedralSystemFile();
-        readAndParseRtlFile();
+        if (modelChecking())
+            parseModelCheckingPoint();
     }
 
     [[nodiscard]] PolyhedralSystemSharedPtr polyhedralSystem() const { return m_polyhedralSystem; }
@@ -43,6 +40,8 @@ public:
     [[nodiscard]] const AutomatonOptimizationFlags& automatonOptimizationFlags() const { return m_automatonOptimizationFlags; }
     [[nodiscard]] bool universal() const { return m_universal; }
     [[nodiscard]] bool existential() const { return m_existential; }
+    [[nodiscard]] bool modelChecking() const { return m_modelCheckingPointString.has_value(); }
+    [[nodiscard]] Poly modelCheckingPoint() const { return m_modelCheckingPoint; }
     [[nodiscard]] bool directLtl() const { return m_directLtl; }
     [[nodiscard]] bool concurrent() const { return m_concurrent; }
     [[nodiscard]] Verbosity verbosityLevel() const { return m_verbosityLevel; }
@@ -63,6 +62,9 @@ private:
     bool m_universal {};
     bool m_existential {};
     bool m_concurrent {};
+
+    std::optional<std::string> m_modelCheckingPointString {};
+    Poly m_modelCheckingPoint {};
 
     bool m_gap {};
     bool m_nogap {};
@@ -103,6 +105,17 @@ private:
             .help("compute the set of points from which every trajectory satisfies φ")
             .flag()
             .store_into(m_universal);
+
+        m_rtlMcProgram.add_argument("--mc")
+            .help("Check if a given point x ∈ ℝⁿ is the source of a trajectory in the polyhedral system that satisfies the temporal formula φ. "
+                      "For --existential, checks if some trajectory from the point satisfies φ. "
+                      "For --universal, checks if all trajectories from the point satisfy φ. "
+                      "Specify all system variables with integer values (e.g., [x=1, y=2, z=3]).")
+            .action([&](const std::string& mcPoint)
+            {
+                m_modelCheckingPointString.emplace(mcPoint);
+                assert(m_modelCheckingPointString.has_value());
+            });
 
         m_rtlMcProgram.add_argument("--direct-ltl")
             .help("discretize the RTLf formula directly into LTL in a single step.")
@@ -256,7 +269,28 @@ private:
         m_rtlFormula = std::move(*rtlfParsingResult);
     }
 
-    static std::tuple<PolyhedralSystemSharedPtr, spot::formula> gap(int k, int t)
+    void parseModelCheckingPoint()
+    {
+        McPointParsingResult mcPointParsingResult {
+            parseMcPoint(
+                std::string_view { *m_modelCheckingPointString },
+                m_polyhedralSystem->getSymbolTable()
+            )
+        };
+
+        if (std::holds_alternative<std::vector<ParserError>>(mcPointParsingResult))
+        {
+            spdlog::error("Errors while parsing model-checking point:");
+            std::vector errors { std::get<std::vector<ParserError>>(mcPointParsingResult) };
+            for (auto& error: errors)
+                spdlog::error("- {}", error.errorMessage());
+            exit(1);
+        }
+
+        m_modelCheckingPoint = Poly { Parma_Polyhedra_Library::Generator_System { std::get<PPL::Generator>(mcPointParsingResult) } };
+    }
+
+    static std::tuple<PolyhedralSystemSharedPtr, spot::formula> gap(const int k, const int t)
     {
         assert(k >= 0);
         assert(t >= 0);
@@ -280,7 +314,7 @@ private:
         return { std::move(polyhedralSystem), std::move(rtlf) };
     }
 
-    static std::tuple<PolyhedralSystemSharedPtr, spot::formula> nogap(int k, int t)
+    static std::tuple<PolyhedralSystemSharedPtr, spot::formula> nogap(const int k, const int t)
     {
         assert(k >= 0);
         assert(t >= 0);

@@ -1,6 +1,6 @@
-#include "PolyhedralSystemErrorListener.h"
+#include "ErrorListener.h"
 
-void PolyhedralSystemErrorListener::syntaxError(
+void ErrorListener::syntaxError(
     antlr4::Recognizer *recognizer,
     [[maybe_unused]] antlr4::Token* offendingSymbol,
     size_t line,
@@ -25,17 +25,17 @@ void PolyhedralSystemErrorListener::syntaxError(
     addError({ msg, line, charPositionInLine, errorType });
 }
 
-void PolyhedralSystemErrorListener::addError(ParserError&& error)
+void ErrorListener::addError(ParserError&& error)
 {
     m_errors.push_back(std::move(error));
 }
 
-bool PolyhedralSystemErrorListener::hasErrors() const
+bool ErrorListener::hasErrors() const
 {
     return !m_errors.empty();
 }
 
-std::vector<ParserError> PolyhedralSystemErrorListener::errors() const
+std::vector<ParserError> ErrorListener::errors() const
 {
     return m_errors;
 }

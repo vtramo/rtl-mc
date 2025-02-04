@@ -105,6 +105,7 @@ package system {
         +atoms() : const spot::atomic_prop_set&
         +getVariable(std::string_view id) : std::optional<PPL::Variable>
         +getVariableName(const PPL::Variable& variable) : std::optional<std::string>
+        +getVariableNames() : std::vector<std::string>
         --operators--
         +operator!= (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2) : bool
         +operator== (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2) : bool

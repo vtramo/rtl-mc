@@ -3,6 +3,7 @@
 package parser {
     !include parser-rtlf.puml
     !include parser-system.puml
+    !include parser-mc.puml
 
     class ParserError {
         --data members--
@@ -42,10 +43,23 @@ package parser {
         unknown
     }
 
+    class ErrorListener {
+        --data members--
+        -m_errors : std::vector<ParserError>
+        --member functions--
+        +hasErrors() : bool
+        +errors() : std::vector<ParserError>
+        +syntaxError(antlr4::Recognizer* recognizer, antlr4::Token* offendingSymbol, size_t line, size_t charPositionInLine, const std::string& msg, std::exception_ptr e) : void
+        -addError(ParserError&& error) : void
+    }
+
+    class antlr4::BaseErrorListener {}
+
     ParserError *--> "1..2" PositionError
     ParserError +-- ParserError::Type
     PolyhedralSystemParsingResult --> "0..*" ParserError
     RtlfParsingResult --> "0..*" ParserError
-    PolyhedralSystemErrorListener --> "0..*" ParserError
+    ErrorListener --> "0..*" ParserError
+    ErrorListener --> antlr4::BaseErrorListener
 }
 @enduml
