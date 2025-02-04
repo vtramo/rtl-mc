@@ -13,12 +13,11 @@ If you have Docker installed...
     docker run --rm rtl-mc
     ```
    ```
-   One of the arguments '-f/--from-files VAR...' or '--gap VAR...' or '--nogap VAR...' is required
    Usage: rtl-mc [--help] [--version] [[--from-files VAR...]|[--gap VAR...]|
-   [--nogap VAR...]] [[--existential]|[--universal]] [--direct-ltl]
-   [[--low]|[--medium]|[--high]] [--any] [[--verbose]...|[--quiet]|
-   [--stats VAR]]
-   
+              [--nogap VAR...]] [[--existential]|[--universal]] [--mc VAR]
+              [--direct-ltl] [[--low]|[--medium]|[--high]] [--any]
+              [[--verbose]...|[--quiet]|[--stats VAR]] [--concurrent]
+
    Model Checking Linear Temporal Properties on Polyhedral Systems
    
    Optional arguments:
@@ -29,6 +28,7 @@ If you have Docker installed...
    --nogap           NO GAP experiment with k alternating steps and max time t. Example: --nogap 2 20. [nargs: 2]
    --existential     compute the set of points from which there exists a trajectory that satisfies φ (default)
    --universal       compute the set of points from which every trajectory satisfies φ
+   --mc              Check if a given point x ∈ ℝⁿ is the source of a trajectory in the polyhedral system that satisfies the temporal formula φ. For --existential, checks if some trajectory from the point satisfies φ. For --universal, checks if all trajectories from the point satisfy φ. Specify all system variables with integer values (e.g., [x=1, y=2, z=3]).
    --direct-ltl      discretize the RTLf formula directly into LTL in a single step.
    --low             minimal optimizations during automaton construction (fast, default)
    --medium          moderate optimizations during automaton construction
@@ -37,6 +37,7 @@ If you have Docker installed...
    -V, --verbose     enable verbose output. Each occurrence of -V increases verbosity level [may be repeated]
    -q, --quiet       suppress all normal output
    -s, --stats       formats the execution statistics. Example: --stats "Tot states: %Ats". Placeholders (%Ats, %Ate, etc.) are described in the documentation.
+   -c, --concurrent  concurrent execution (experimental)
    ```
 You need to provide a polyhedral system file and an rtlf file. You can do this by creating bind mounts:
 ```shell
