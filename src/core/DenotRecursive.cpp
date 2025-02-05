@@ -131,6 +131,8 @@ PowersetUniquePtr DenotRecursive::denot(
         );
 
         PowersetUniquePtr A { PPLUtils::minus(*predecessorStateDenotation.denotation(), visitedPowerset) };
+        if (A->is_empty()) continue;
+
         assert(A->space_dimension() == m_polyhedralSystem->getSpaceDimension());
         assert(A->space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
         Log::log(Verbosity::trace, "Predecessor denotation minus visited region (A): {}",
