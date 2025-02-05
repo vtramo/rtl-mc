@@ -18,9 +18,15 @@ sudo apt install -y libgmp3-dev
 
 ### 4. Installare **PPL** (Parma Polyhedral Library)
 ```bash
-sudo apt install -y libppl-dev ppl-dev
+sudo apt-get install libtool autoconf automake
+git clone https://github.com/BUGSENG/PPL.git
+cd ./PPL
+autoreconf --force --install
+./configure --enable-optimization=sspeed --enable-thread-safe --disable-documentation
+sudo make
+sudo make install
 ```
-individuare dove è stato installato PPL:
+Individuare dove è stato installato PPL:
 ```bash
 ppl-config --libdir
 ```
@@ -45,19 +51,13 @@ Libs: -L${libdir} -L${libdir}/ppl -lppl -lppl_c
 questo pkg config file verrà letto da meson per individuare la dipendenza sul sistema.
 
 ### 6. Installare ANTLR4 CLI
-```bash
-sudo apt install -y antlr4
-```
-
-oppure:
-
 Necessita di una JDK >= 11:
 ```bash
 sudo apt-get install -y openjdk-11-jdk
 ```
 ```bash
 sudo apt-get install -y python3-pip
-python3 -m pip install --break-system-packages antlr4-tools # preferibile
+python3 -m pip install --break-system-packages antlr4-tools
 ```
 
 ### 7. Installare ANTLR4 Runtime
