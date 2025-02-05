@@ -65,6 +65,7 @@ public:
                            m_automatonStats.backwardNfaConstructionStats.totalInitialStates,
                            m_automatonStats.backwardNfaConstructionStats.sccInfo->scc_count(),
                            m_automatonStats.backwardNfaConstructionStats.maxNumberPatches,
+                           m_automatonStats.backwardNfaConstructionStats.maxRecursiveDepth,
                            m_denotStats.totalIterations,
                            m_denotStats.executionTimeSeconds);
     }
@@ -103,6 +104,7 @@ private:
     static constexpr std::string_view s_Abi{ "%Abi"sv };  // BackwardNFA total initial states
     static constexpr std::string_view s_Abc{ "%Abc"sv };  // BackwardNFA total strongly connected components
     static constexpr std::string_view s_Abm{ "%Abm"sv };  // BackwardNFA maximum number of patches in the denotation of any state
+    static constexpr std::string_view s_Abr{ "%Abr"sv };  // BackwardNFA max recursive depth
 
     static constexpr std::string_view s_Dt{ "%Dt"sv };    // Denot total iterations
     static constexpr std::string_view s_Dx{ "%Dx"sv }; // Denot execution time in s
@@ -143,8 +145,9 @@ private:
         replace(input, s_Abi, "{24}");
         replace(input, s_Abc, "{25}");
         replace(input, s_Abm, "{26}");
-        replace(input, s_Dt, "{27}");
-        replace(input, s_Dx, "{28}");
+        replace(input, s_Abr, "{27}");
+        replace(input, s_Dt, "{28}");
+        replace(input, s_Dx, "{29}");
     }
 
     static void replace(std::string& str, const std::string_view from, const std::string_view to)

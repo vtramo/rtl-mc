@@ -11,9 +11,7 @@ public:
       : m_polyhedralSystem { polyhedralSystem }
       , m_backwardNfa { backwardNfa }
     {
-        const int maxNumberOfPatches { m_backwardNfa.stats().backwardNfaConstructionStats.maxNumberPatches };
-        const int maxNumberOfTotalPatches { m_backwardNfa.totalStates() * maxNumberOfPatches };
-        m_maxRecursionDepth = 1 + 2 * maxNumberOfTotalPatches;
+        m_maxRecursionDepth = backwardNfa.maxRecursiveDepth();
     }
     ~DenotRecursive() override = default;
 

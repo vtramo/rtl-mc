@@ -40,14 +40,17 @@ package automaton {
         +printHoaFormat(std::ostream& os) : void
         -buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates) : void
         -extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
-        -createDummyInitialStateWithEdgesToReachableFinalStates() : void
         -translateDiscreteLtlFormulaIntoTgba(bool anyOption) : spot::twa_graph_ptr
         -convertToNfa(spot::twa_graph_ptr tgba) : spot::twa_graph_ptr
         -eraseInitialEdgesWithEmptyDenotation() : void
         -purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates) : void
+        -purgeUnreachableStates() : void
+        -createDummyInitialStateWithEdgesToReachableFinalStates() : void
         -twa() : spot::const_twa_ptr
         -updateMaxNumberOfPatchesStats(int totPatches) : void
         -setBackwardNfaStats(double executionTimeSeconds) : void
+        -setMaxRecursiveDepth(int totalPatches) : void
+        -logBackwardNfaConstruction(double executionTimeSecond) : void
         --static functions--
         -{static} renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr) : void
         -{static} killFinalStates(const spot::twa_graph_ptr& graph) : std::unordered_set<int>

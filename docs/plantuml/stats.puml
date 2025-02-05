@@ -35,6 +35,7 @@ package stats {
         -totalEdges: int
         -totalFinalStates: int
         -maxNumberPatches: int
+        -maxRecursiveDepth: int
         -sccInfo: std::optional<spot::scc_info>
     }
 

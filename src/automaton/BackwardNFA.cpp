@@ -202,6 +202,31 @@ void BackwardNFA::renumberOrRemoveStatesAfterPurge(
     if (updateDummyInitialState) *renumberingContext->m_dummyInitialState = newst[*renumberingContext->m_dummyInitialState];
 }
 
+void BackwardNFA::setMaxRecursiveDepth(const int totalPatches)
+{
+    m_maxRecursiveDepth = 1 + 2 * totalPatches;
+    m_automatonStats.backwardNfaConstructionStats.maxRecursiveDepth = m_maxRecursiveDepth;
+}
+
+void BackwardNFA::logBackwardNfaConstruction(const double executionTimeSeconds)
+{
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA construction completed. Elapsed time: {} s.", executionTimeSeconds);
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total states: {}.", totalStates());
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total initial states: {}.", totalInitialStates());
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total final states: {}.", totalFinalStates());
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total edges: {}.", totalEdges());
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA initial states: [{}].", fmt::join(m_initialStates, ", "));
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA final states: [{}].", fmt::join(m_finalStates, ", "));
+}
+
+void BackwardNFA::purgeUnreachableStates()
+{
+    createDummyInitialStateWithEdgesToReachableFinalStates();
+    spot::twa_graph::shift_action renumberBackwardNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
+    RenumberingContext renumberingContext { &m_initialStates, &m_finalStates, &m_stateDenotationById, &m_dummyInitialState };
+    m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
+}
+
 void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates)
 {
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA construction started.");
@@ -212,6 +237,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
     m_backwardNfa->prop_state_acc(spot::trival { true });
     m_backwardNfa->set_acceptance(nfa->get_acceptance());
 
+    int totalPatches {};
     std::unordered_map<int, std::vector<int>> outEdgeStates {};
     std::unordered_map<int, std::vector<int>> inEdgeStates {};
     for (int nfaState { 0 }; nfaState < static_cast<int>(nfa->num_states()); ++nfaState)
@@ -226,6 +252,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
             StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(nfa, nfaEdge.cond) };
             if (stateDenotation.isEmpty()) continue;
             updateMaxNumberOfPatchesStats(stateDenotation.totalPatches());
+            totalPatches += stateDenotation.totalPatches();
 
             int edgeState { static_cast<int>(m_backwardNfa->new_state()) };
             if (isAccepting) m_finalStates.insert(edgeState);
@@ -255,19 +282,11 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
     }
 
     assert(m_stateDenotationById.size() == m_backwardNfa->num_states());
-    createDummyInitialStateWithEdgesToReachableFinalStates();
-    spot::twa_graph::shift_action renumberBackwardNfaFinalStates { &renumberOrRemoveStatesAfterPurge };
-    RenumberingContext renumberingContext { &m_initialStates, &m_finalStates, &m_stateDenotationById, &m_dummyInitialState };
-    m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
+    purgeUnreachableStates();
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA construction completed. Elapsed time: {} s.", executionTimeSeconds);
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total states: {}.", totalStates());
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total initial states: {}.", totalInitialStates());
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total final states: {}.", totalFinalStates());
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA total edges: {}.", totalEdges());
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA initial states: [{}].", fmt::join(m_initialStates, ", "));
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA final states: [{}].", fmt::join(m_finalStates, ", "));
+    logBackwardNfaConstruction(timer.elapsedInSeconds());
+    setMaxRecursiveDepth(totalPatches);
     setBackwardNfaStats(executionTimeSeconds);
 }
 
@@ -278,6 +297,11 @@ void BackwardNFA::updateMaxNumberOfPatchesStats(const int totPatches)
             m_automatonStats.backwardNfaConstructionStats.maxNumberPatches,
             totPatches
         );
+}
+
+int BackwardNFA::maxRecursiveDepth() const
+{
+    return m_maxRecursiveDepth;
 }
 
 void BackwardNFA::setBackwardNfaStats(const double executionTimeSeconds)
