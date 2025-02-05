@@ -47,6 +47,8 @@ GT: '>'  ;
 GE: '>=' ;
 EQ: '='  ;
 
+ZERO: '0'  ;
+
 FLOW: F L O W;
 INV: I N V;
 VARID: LETTER DIGIT? ;

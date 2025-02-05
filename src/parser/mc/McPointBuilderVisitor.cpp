@@ -1,7 +1,8 @@
 #include <spdlog/fmt/fmt.h>
 #include "McPointBuilderVisitor.h"
 
-static bool startsWithMinusSign(const McPointParser::ValidValueContext* valueContext);
+static bool startsWithMinusSign(const McPointParser::ValidIntegerValueContext* valueContext);
+static bool startsWithMinusSign(const antlr4::Token* token);
 
 McPointBuilderVisitor::McPointBuilderVisitor(const PolyhedralSystemSymbolTable& symbolTable)
     : m_visitor { McPointVisitor { symbolTable } }
@@ -35,17 +36,39 @@ PPL::Generator McPointBuilderVisitor::buildMcPoint(McPointParser::ArrayContext* 
     if (!missingVariables.empty())
     {
         m_visitor.addMissingVariablesError(parseTree, std::move(missingVariables));
-        return PPL::point(PPL::Representation::DENSE);
+        return PPL::point();
     }
 
-    PPL::Linear_Expression pointLinearExpression {};
-    for (const auto& [variableName, value]: m_visitor.m_valueByVariable)
+    return computeMcPoint();
+}
+
+PPL::Generator McPointBuilderVisitor::computeMcPoint()
+{
+    if (m_visitor.m_valueByVariable.size() == 1)
     {
+        const auto & [variableName, fraction] = *m_visitor.m_valueByVariable.begin();
         PPL::Variable variable { *m_visitor.m_symbolTable.getVariable(variableName) };
-        pointLinearExpression += value * variable;
+        return PPL::point(fraction.get_num() * variable, fraction.get_den());
     }
 
-    return PPL::point(pointLinearExpression);
+    auto variableNameAndFractionIt { m_visitor.m_valueByVariable.begin() };
+    const auto& [firstVariableName, firstFraction] = *variableNameAndFractionIt++;
+    const PPL::Variable firstVariable { *m_visitor.m_symbolTable.getVariable(firstVariableName) };
+    PPL::Linear_Expression pointLinearExpression { firstFraction.get_num() * firstVariable };
+    PPL::GMP_Integer mcd { firstFraction.get_num() };
+    PPL::GMP_Integer mcm { firstFraction.get_den() };
+    for (; variableNameAndFractionIt != m_visitor.m_valueByVariable.end(); ++variableNameAndFractionIt)
+    {
+        const auto& [variableName, fraction] = *variableNameAndFractionIt;
+        mcm = lcm(mcm, fraction.get_den());
+        mcd = gcd(mcd, fraction.get_num());
+        const PPL::Variable variable { *m_visitor.m_symbolTable.getVariable(variableName) };
+        pointLinearExpression += fraction.get_num() * variable;
+    }
+    const auto mcdFraction { mcd / mcm };
+    const auto mcdFractionNumerator { mcdFraction.get_val1() };
+    const auto mcdFractionDenominator { mcdFraction.get_val2() };
+    return PPL::point(pointLinearExpression * mcdFractionNumerator, mcdFractionDenominator);
 }
 
 std::any McPointBuilderVisitor::McPointVisitor::visitValidArray(McPointParser::ValidArrayContext* context)
@@ -60,7 +83,7 @@ std::any McPointBuilderVisitor::McPointVisitor::visitValidArray(McPointParser::V
 std::any McPointBuilderVisitor::McPointVisitor::visitValidPair(McPointParser::ValidPairContext* context)
 {
     const std::string variable { context->VARID()->getText() };
-    int value { std::any_cast<int>(visit(context->value())) };
+    const Rational rational { std::any_cast<Rational>(visit(context->value())) };
 
     if (!symbolTableHasVariable(variable))
         addVariableNotPresentInPolySystemError(context->VARID());
@@ -68,18 +91,48 @@ std::any McPointBuilderVisitor::McPointVisitor::visitValidPair(McPointParser::Va
     if (m_valueByVariable.count(variable) == 1)
         addDuplicateVariableParserError(context->VARID());
 
-    m_valueByVariable[variable] = value;
+    m_valueByVariable[variable] = rational;
 
     return 0;
 }
 
-std::any McPointBuilderVisitor::McPointVisitor::visitValidValue(McPointParser::ValidValueContext* context)
+std::any McPointBuilderVisitor::McPointVisitor::visitValidIntegerValue(McPointParser::ValidIntegerValueContext* context)
 {
-    const int value { std::stoi(context->UNSIGNED_INT()->getText()) };
-    return startsWithMinusSign(context) ? -value : value;
+    static constexpr int denominator { 1 };
+    const PPL::GMP_Integer numerator { context->UNSIGNED_INT()->getText() };
+    const Rational rational { numerator, denominator };
+    return startsWithMinusSign(context) ? -rational : rational;
 }
 
-bool McPointBuilderVisitor::McPointVisitor::symbolTableHasVariable(std::string_view variable) const
+std::any McPointBuilderVisitor::McPointVisitor::visitValidRationalValue(McPointParser::ValidRationalValueContext* context)
+{
+    const bool numeratorStartsWithMinusSign { startsWithMinusSign(context->opNum) };
+    const bool denominatorStartsWithMinusSign { startsWithMinusSign(context->opDen) };
+    const bool minus { numeratorStartsWithMinusSign != denominatorStartsWithMinusSign };
+    const PPL::GMP_Integer numerator { context->UNSIGNED_INT()[0]->getText() };
+
+    PPL::GMP_Integer denominator { context->UNSIGNED_INT()[1]->getText() };
+    if (denominator == 0)
+    {
+        addDivisionByZeroError(context);
+        denominator = 1;
+    }
+
+    const Rational rational { numerator, denominator };
+    return minus ? -rational : rational;
+}
+
+void McPointBuilderVisitor::McPointVisitor::addDivisionByZeroError(const McPointParser::ValidRationalValueContext* ctx)
+{
+    antlr4::Token* start { ctx->getStart() };
+    antlr4::Token* end { ctx->getStop() };
+    PositionError startPositionError { start->getLine(), start->getCharPositionInLine() };
+    PositionError endPositionError { end->getLine(), end->getCharPositionInLine() };
+    std::string errorMessage { "Division by zero!" };
+    m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
+}
+
+bool McPointBuilderVisitor::McPointVisitor::symbolTableHasVariable(const std::string_view variable) const
 {
     return m_symbolTable.containsVariable(variable);
 }
@@ -104,10 +157,13 @@ void McPointBuilderVisitor::McPointVisitor::addVariableNotPresentInPolySystemErr
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
 
-void McPointBuilderVisitor::McPointVisitor::addMissingVariablesError(McPointParser::ArrayContext* parseTree, std::vector<std::string>&& missingVariables) {
+void McPointBuilderVisitor::McPointVisitor::addMissingVariablesError(
+    const McPointParser::ArrayContext* parseTree,
+    std::vector<std::string>&& missingVariables
+) {
     std::string variablesList { antlrcpp::join(missingVariables, ", ") };
     std::string errorMessage { fmt::format(
-        "Errore: Le variabili [{}] non sono definite nel sistema poliedrale!",
+        "Variables [{}] are not defined in the Polyhedral System!",
         variablesList
     )};
     PositionError startPositionError { 0, 0 };
@@ -115,9 +171,13 @@ void McPointBuilderVisitor::McPointVisitor::addMissingVariablesError(McPointPars
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
 
-static bool startsWithMinusSign(const McPointParser::ValidValueContext* valueContext)
+static bool startsWithMinusSign(const McPointParser::ValidIntegerValueContext* valueContext)
 {
-    const antlr4::Token* token { valueContext->op };
+    return startsWithMinusSign(valueContext->op);
+}
+
+static bool startsWithMinusSign(const antlr4::Token* token)
+{
     if (!token)
         return false;
 
