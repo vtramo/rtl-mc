@@ -41,6 +41,13 @@ public:
     {
     }
 
+    StateDenotation(const StateDenotation& other)
+        : m_formula { other.m_formula }
+        , m_denotation { std::make_shared<Powerset>(*other.m_denotation) }
+        , m_isSing { other.m_isSing }
+    {
+    }
+
     StateDenotation(StateDenotation&& other) noexcept
         : m_formula { std::move(other.m_formula) }
         , m_denotation { std::move(other.m_denotation) }

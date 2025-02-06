@@ -8,6 +8,7 @@ class PolyhedralSystemFormulaDenotationMap
 public:
     explicit PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem);
     PolyhedralSystemFormulaDenotationMap(PolyhedralSystemFormulaDenotationMap&& other) noexcept;
+    PolyhedralSystemFormulaDenotationMap(const PolyhedralSystemFormulaDenotationMap& other) = default;
 
     PowersetConstSharedPtr getOrComputeDenotation(const spot::formula& formula);
     [[nodiscard]] const PolyhedralSystem& getPolyhedralSystem() const;

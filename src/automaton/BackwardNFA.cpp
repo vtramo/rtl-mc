@@ -12,6 +12,21 @@
 #include <spot/twaalgos/stats.hh>
 #include <spot/twaalgos/sccinfo.hh>
 
+BackwardNFA::BackwardNFA(const BackwardNFA& other)
+    : m_backwardNfa { std::make_shared<spot::twa_graph>(*other.m_backwardNfa) }
+    , m_initialStates { other.m_initialStates }
+    , m_finalStates { other.m_finalStates }
+    , m_dummyInitialState { other.m_dummyInitialState }
+    , m_dummyInitialEdges { other.m_dummyInitialEdges }
+    , m_stateDenotationById { other.m_stateDenotationById }
+    , m_discreteLtlFormula { other.m_discreteLtlFormula }
+    , m_formulaDenotationMap { other.m_formulaDenotationMap }
+    , m_optimizationLevel { other.m_optimizationLevel }
+    , m_automatonStats { other.m_automatonStats }
+    , m_maxRecursiveDepth { other.m_maxRecursiveDepth }
+{
+}
+
 BackwardNFA::BackwardNFA(
     const DiscreteLtlFormula& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,

@@ -25,6 +25,8 @@ public:
         bool anyOption = false
     );
 
+    BackwardNFA(const BackwardNFA& other);
+
     [[nodiscard]] int totalStates() const;
     [[nodiscard]] int totalInitialStates() const;
     [[nodiscard]] int totalFinalStates() const;
@@ -60,6 +62,7 @@ private:
 
     friend std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
     friend class BackwardNFADepthFirstSearch;
+    friend void permutation(const BackwardNFA& backwardNfa, const std::unordered_map<int, int>& permutation);
 
     using RenumberingContextVoidPtr = void*;
     struct RenumberingContext

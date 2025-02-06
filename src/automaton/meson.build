@@ -8,6 +8,7 @@ automaton_source_files = [
     current_source_dir / 'StateDenotation.h',
     current_source_dir / 'BackwardNFADepthFirstSearch.h',
     current_source_dir / 'BackwardNFADepthFirstSearch.cpp',
+    current_source_dir / 'permutations.h',
 ]
 
 project_source_files += automaton_source_files
