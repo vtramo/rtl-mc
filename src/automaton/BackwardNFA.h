@@ -62,7 +62,7 @@ private:
 
     friend std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
     friend class BackwardNFADepthFirstSearch;
-    friend void permutation(const BackwardNFA& backwardNfa, const std::unordered_map<int, int>& permutation);
+    friend class BackwardNFAPermutator;
 
     using RenumberingContextVoidPtr = void*;
     struct RenumberingContext

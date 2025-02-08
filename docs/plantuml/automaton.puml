@@ -20,6 +20,7 @@ package automaton {
         --constructors--
         +BackwardNFA(const DiscreteLtlFormula& discreteLtlFormula, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap, spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High, bool anyOption = false)
         +BackwardNFA(DiscreteLtlFormula&& discreteLtlFormula, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemFormulaDenotationMap, spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High, bool anyOption = false)
+        +BackwardNFA(const BackwardNFA& other);
         --member functions--
         +formula() : const DiscreteLtlFormula&
         +predecessors(int state) : EdgeIterator
@@ -55,7 +56,8 @@ package automaton {
         -{static} renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr) : void
         -{static} killFinalStates(const spot::twa_graph_ptr& graph) : std::unordered_set<int>
         --friends--
-        -friend class BackwardNFADepthFirstSearch;
+        -friend class BackwardNFADepthFirstSearch
+        -friend class BackwardNFAPermutator
         --operators--
         +operator<< (std::ostream& out, const BackwardNFA& backwardNfa) : std::ostream&
     }
@@ -81,6 +83,7 @@ package automaton {
         --constructors--
         +PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem)
         +PolyhedralSystemFormulaDenotationMap(PolyhedralSystemFormulaDenotationMap&& other)
+        +PolyhedralSystemFormulaDenotationMap(const PolyhedralSystemFormulaDenotationMap& other) = default
         -PolyhedralSystemFormulaDenotationMap() = default
         --member functions--
         +getPolyhedralSystem() : const PolyhedralSystem&
@@ -101,6 +104,7 @@ package automaton {
         --constructors--
         +StateDenotation(spot::formula&& formula, PowersetConstSharedPtr denotation, const bool isSing = false)
         +StateDenotation(StateDenotation&& other)
+        +StateDenotation(const StateDenotation& other)
         --member functions--
         +formula() : const spot::formula&
         +denotation() : PowersetConstSharedPtr
@@ -168,11 +172,72 @@ package automaton {
       src_n : int
       it : twa_succ_iterator*
     }
+
+    class BackwardNFAPermutator
+    {
+        --data members--
+        -m_backwardNfa : const BackwardNFA&
+        --constructors--
+        +explicit BackwardNFAPermutator(const BackwardNFA& backwardNfa)
+        --member functions--
+        +generatePermutations(const std::unordered_set<int>& states) const : PermutedBackwardNFAIterator
+        +swapStates(const std::unordered_map<int, int>& swapStateMap) const : std::unique_ptr<BackwardNFA>
+        -swapStates(const std::unordered_map<int, int>& swapStateMap, bool checkSwap) const : std::unique_ptr<BackwardNFA>
+        -checkSwapStateMapValidity(const std::unordered_map<int, int>& swapStateMap) const : void
+        -checkStates(const std::unordered_set<int>& states) const : void
+        --static functions--
+        -{static} replacingState(int state, const std::unordered_map<int, int>& swapStateMap, const std::unordered_map<int, int>& inverseSwapStateMap) : int
+        -{static} invertSwapStateMap(const std::unordered_map<int, int>& swapStateMap) : std::unordered_map<int, int>
+    }
+
+    class PermutedBackwardNFAIterator {
+        --public types--
+        +value_type : BackwardNFA
+        +pointer : BackwardNFA*
+        +reference : value_type&
+        +iterator_category : std::bidirectional_iterator_tag
+        +difference_type : std::ptrdiff_t
+        --constructors--
+        +PermutedBackwardNFAIterator(const PermutedBackwardNFAIterator& other)
+        -explicit PermutedBackwardNFAIterator(const BackwardNFAPermutator& backwardNfaPermutator, std::vector<int> states)
+        --data members--
+        -m_backwardNfaPermutator : const BackwardNFAPermutator&
+        -m_permutedStates : std::vector<int>
+        -m_originalStates : std::vector<int>
+        -m_permutedBackwardNfa : std::unique_ptr<BackwardNFA>
+        -m_permutationMap : std::unordered_map<int, int>
+        -m_totalPermutations : int
+        -m_end : std::unique_ptr<PermutedBackwardNFAIterator>
+        -m_isEnd : bool
+        --operators--
+        +operator* () const : const BackwardNFA&
+        +operator++ () : PermutedBackwardNFAIterator&
+        +operator++ (int) : PermutedBackwardNFAIterator
+        +operator-- () : PermutedBackwardNFAIterator&
+        +operator-- (int) : PermutedBackwardNFAIterator
+        +operator== (const PermutedBackwardNFAIterator& other) const : bool
+        +operator!= (const PermutedBackwardNFAIterator& other) const : bool
+        +begin() const : PermutedBackwardNFAIterator
+        +end() const : PermutedBackwardNFAIterator
+        --member functions--
+        +totalPermutations() const : int
+        +permutationMap() : const std::unordered_map<int, int>&
+        -nextPermutedBackwardNfa() : void
+        -prevPermutedBackwardNfa() : void
+        -createPermutationMap() const : std::unordered_map<int, int>
+        -PermutedBackwardNFAIterator& operator= (const PermutedBackwardNFAIterator& other)
+        --static functions--
+        {static} factorial(int n): long
+        --friends--
+        -friend class BackwardNFAPermutator
+    }
 }
 
 class twa_graph_ptr << spot >> {}
 class formula << spot >> {}
 
+BackwardNFAPermutator "1" *-- "1" PermutedBackwardNFAIterator
+BackwardNFAPermutator *--> "1" BackwardNFA
 BackwardNFA *--> "1" twa_graph_ptr
 BackwardNFA *--> "1" formula
 BackwardNFA *--> "1" PolyhedralSystemFormulaDenotationMap
