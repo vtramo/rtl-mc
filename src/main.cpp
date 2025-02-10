@@ -1,8 +1,13 @@
+#include <BackwardNFAPermutator.h>
 #include <DenotConcurrentV1.h>
 #include <DenotRecursive.h>
+#include <future>
+#include <random>
+#include <bits/random.h>
 #include <spot/tl/parse.hh>
 #include <spot/twaalgos/postproc.hh>
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/bundled/ranges.h>
 
 #include "discretization/DiscreteFiniteLtlFormula.h"
 #include "utils/ppl/ppl_output.h"
@@ -35,6 +40,11 @@ std::unique_ptr<Denot> createDenot(
     const RtlMcProgram& rtlMcProgram,
     PolyhedralSystemSharedPtr polyhedralSystem,
     const BackwardNFA& backwardNfa
+);
+
+std::unordered_map<int, int> createPermutationMap(
+    const std::vector<int>& originalStates,
+    const std::vector<int>& permutedStates
 );
 
 int main(const int argc, char *argv[])
@@ -88,58 +98,33 @@ int main(const int argc, char *argv[])
             )
         };
 
-        Log::log(Verbosity::verbose, "<<< BackwardNFA automaton construction completed. Elapsed time: {} s.\n", timer.elapsedInSeconds());
-        Log::log(Verbosity::debug, "[BackwardNFA]\n{}\n", backwardNfa);
-
-        Log::log(Verbosity::verbose, ">>> Denot algorithm started.");
-        timer.reset();
-
-        std::unique_ptr denotUniquePtr { createDenot(rtlMcProgram, polyhedralSystem, backwardNfa) };
-        Denot& denot { *denotUniquePtr };
-
-        PowersetUniquePtr denotResult {
-            rtlMcProgram.universal()
-                ? PPLUtils::minus(polyhedralSystem->getInvariant(), *denot())
-                : denot()
-        };
-
-        const double denotExecutionTimeSeconds { timer.elapsedInSeconds() };
-        DenotStats denotStats { collectDenotStats(denot, denotExecutionTimeSeconds) };
-        Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.executionTimeSeconds);
-        Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.totalIterations);
-
-        Log::log(Verbosity::verbose, "[Result]");
-
-        switch (rtlMcProgram.outputFormat())
+        std::ofstream file("output.csv");
+        file << "permutation,permutationMap,result,denot total iterations\n";
+        BackwardNFAPermutator permutator { backwardNfa };
+        std::vector originalStates { 3, 242, 2, 11, 10, 0, 233, 236, 237, 232 };
+        std::vector permutedStates { 3, 242, 2, 11, 10, 0, 233, 236, 237, 232 };
+        constexpr int totalRandomPermutations { 1000 };
+        for (int permutation { 1 }; permutation <= totalRandomPermutations; ++permutation)
         {
-        case OutputFormat::normal:
-            if (rtlMcProgram.modelChecking())
-            {
-                Poly point { rtlMcProgram.modelCheckingPoint() };
-                std::cout << std::boolalpha << denotResult->contains(Powerset { point }) << std::noboolalpha << '\n';
-            }
-            else
-            {
-                std::cout << PPLOutput::toString(*denotResult, polyhedralSystem->getSymbolTable()) << '\n';
-            }
-            break;
-        case OutputFormat::quiet:
-            break;
-        case OutputFormat::stats:
-            StatsFormatter statsFormatter {
-                std::move(polyhedralSystemStats),
-                std::move(rtlfFormulaStats),
-                std::move(discretizationStats),
-                AutomatonStats { backwardNfa.stats() },
-                std::move(denotStats)
-            };
-            std::cout << statsFormatter(rtlMcProgram.statsFormat()) << '\n';
-            break;
-        }
+            unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+            std::shuffle(permutedStates.begin(), permutedStates.end(), std::default_random_engine(seed));
+            std::unordered_map randomPermutation { createPermutationMap(originalStates, permutedStates) };
+            file << permutation << '|';
+            file << fmt::format("{}|", randomPermutation);
 
-        Log::log(Verbosity::verbose, "[Result] Existential Denotation: {}.", rtlMcProgram.existential());
-        Log::log(Verbosity::verbose, "[Result] Universal Denotation: {}.", rtlMcProgram.universal());
-        Log::log(Verbosity::verbose, "[Result] Model-checking problem: {}.", rtlMcProgram.modelChecking());
+            std::unique_ptr<BackwardNFA> permutedBackwardNfa { permutator.swapStates(randomPermutation) };
+            std::unique_ptr denotUniquePtr { createDenot(rtlMcProgram, polyhedralSystem, *permutedBackwardNfa) };
+            Denot& denot { *denotUniquePtr };
+
+            PowersetUniquePtr denotResult {
+                rtlMcProgram.universal()
+                    ? PPLUtils::minus(polyhedralSystem->getInvariant(), *denot())
+                    : denot()
+            };
+            file << PPLOutput::toString(*denotResult, polyhedralSystem->getSymbolTable()) << '|';
+            file << denot.totalIterations() << "\n";
+        }
+        file.close();
     }
     catch (const std::exception& e)
     {
@@ -176,4 +161,17 @@ std::unique_ptr<Denot> createDenot(
     }
 
     return std::make_unique<DenotRecursive>(polyhedralSystem, backwardNfa);
+}
+
+std::unordered_map<int, int> createPermutationMap(const std::vector<int>& originalStates, const std::vector<int>& permutedStates)
+{
+    std::unordered_map<int, int> permutation {};
+    int totalStates { static_cast<int>(originalStates.size()) };
+    permutation.reserve(totalStates);
+    for (int i { 0 }; i < totalStates; ++i) {
+        const int state { originalStates[i] };
+        const int replacingState { permutedStates[i] };
+        permutation[state] = replacingState;
+    }
+    return permutation;
 }

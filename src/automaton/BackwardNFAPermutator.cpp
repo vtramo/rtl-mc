@@ -140,7 +140,7 @@ BackwardNFAPermutator::PermutedBackwardNFAIterator BackwardNFAPermutator::genera
     const std::unordered_set<int>& states
 ) const
 {
-    checkStates(states);
+    // checkStates(states);
     std::vector<int> statesVector(states.size());
     std::copy(states.begin(), states.end(), statesVector.begin());
     return PermutedBackwardNFAIterator { *this, statesVector };
@@ -176,9 +176,9 @@ void BackwardNFAPermutator::checkStates(const std::unordered_set<int>& states) c
     }
 }
 
-std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(const std::unordered_map<int, int>& swapStatesMap) const
+std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(const std::unordered_map<int, int>& swapStateMap) const
 {
-    return swapStates(swapStatesMap, true);
+    return swapStates(swapStateMap, true);
 }
 
 std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(std::unordered_map<int, int>&& swapStateMap) const
@@ -191,8 +191,8 @@ std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(
     const bool checkSwap
 ) const
 {
-    if (checkSwap)
-        checkSwapStateMapValidity(permutationStates);
+    // if (checkSwap)
+    //     checkSwapStateMapValidity(permutationStates);
 
     std::unordered_map inversePermutationStates { invertSwapStateMap(permutationStates) };
 
