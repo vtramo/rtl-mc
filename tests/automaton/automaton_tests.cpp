@@ -134,6 +134,21 @@ TEST_CASE("Formula denotation map TEST 1")
 
         REQUIRE(*expectedPowerset == *denotation);
     }
+
+    SECTION("(!q & t0 & t1) | (!p & t0 & t1)")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        spot::formula formula { spot::parse_infix_psl("(!q & t0 & t1) | (!p & t0 & t1)").f };
+
+        PowersetConstUniquePtr t0_t1 { PPLUtils::intersect(t0Powerset, t1Powerset) };
+        PowersetConstUniquePtr notq_t0_t1 { PPLUtils::intersect(not_qPowerset, *t0_t1) };
+        PowersetConstUniquePtr notp_t0_t1 { PPLUtils::intersect(not_pPowerset, *t0_t1) };
+        PowersetConstUniquePtr expectedPowerset { PPLUtils::fusion(notq_t0_t1, notp_t0_t1) };
+
+        PowersetConstSharedPtr denotation { polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formula) };
+
+        REQUIRE(*expectedPowerset == *denotation);
+    }
 }
 
 
