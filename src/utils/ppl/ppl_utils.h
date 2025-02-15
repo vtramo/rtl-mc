@@ -33,6 +33,7 @@ namespace PPLUtils {
     PowersetUniquePtr fusion(const std::vector<PowersetConstSharedPtr>& powersets);
     void fusion(Powerset& a, const Powerset& b);
 
+    Poly zeroPoint(PPL::dimension_type spaceDimension);
     bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y);
 }
 

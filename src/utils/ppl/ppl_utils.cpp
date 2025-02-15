@@ -298,6 +298,14 @@ namespace PPLUtils
         return result;
     }
 
+    Poly zeroPoint(const PPL::dimension_type spaceDimension)
+    {
+        PPL::Linear_Expression zeroPointLinearExpression {};
+        for (PPL::dimension_type dim = 0; dim < spaceDimension; ++dim)
+            zeroPointLinearExpression += 0 * PPL::Variable { dim };
+        return Poly { PPL::Generator_System { PPL::point(zeroPointLinearExpression) } };
+    }
+
     bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y)
     {
         return x.space_dimension() == y.space_dimension();
