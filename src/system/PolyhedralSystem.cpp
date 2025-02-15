@@ -14,9 +14,24 @@ const Poly& PolyhedralSystem::preFlow() const
     return m_preFlow;
 }
 
+bool PolyhedralSystem::isOmnidirectionalFlow() const
+{
+    return m_isOmnidirectionalFlow;
+}
+
+bool PolyhedralSystem::isClosedFlow() const
+{
+    return m_flow.is_topologically_closed();
+}
+
 const Powerset& PolyhedralSystem::invariant() const
 {
     return m_invariant;
+}
+
+bool PolyhedralSystem::isBoundedInvariant() const
+{
+    return m_invariant.is_bounded();
 }
 
 const PolyhedralSystemSymbolTable& PolyhedralSystem::symbolTable() const
@@ -66,7 +81,7 @@ PolyhedralSystemBuilder PolyhedralSystem::builder()
     return PolyhedralSystemBuilder {};
 }
 
-bool operator==(const PolyhedralSystem& polyhedralSystem1, const PolyhedralSystem& polyhedralSystem2)
+bool operator== (const PolyhedralSystem& polyhedralSystem1, const PolyhedralSystem& polyhedralSystem2)
 {
     const bool flowEqual = polyhedralSystem1.m_flow == polyhedralSystem2.m_flow;
     const bool invariantEqual = polyhedralSystem1.m_invariant == polyhedralSystem2.m_invariant;
@@ -87,6 +102,7 @@ PolyhedralSystem::PolyhedralSystem(
   , m_symbolTable { symbolTable }
 {
     computePreFlow();
+    checkAndSetOmnidirectionalFlow();
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
@@ -103,14 +119,17 @@ PolyhedralSystem::PolyhedralSystem(
     m_invariant.m_swap(invariant);
     m_flow.m_swap(flow);
     computePreFlow();
+    checkAndSetOmnidirectionalFlow();
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
 PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
-    : m_denotation { std::move(polyhedralSystem.m_denotation) }
+    : m_isOmnidirectionalFlow { polyhedralSystem.m_isOmnidirectionalFlow }
+    , m_denotation { std::move(polyhedralSystem.m_denotation) }
     , m_symbolTable { std::move(polyhedralSystem.m_symbolTable) }
+    , m_minimizeConstraintsOutput { polyhedralSystem.m_minimizeConstraintsOutput }
 {
     m_flow.m_swap(polyhedralSystem.m_flow);
     m_invariant.m_swap(polyhedralSystem.m_invariant);
@@ -120,13 +139,15 @@ PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
-PolyhedralSystem& PolyhedralSystem::operator=(PolyhedralSystem&& polyhedralSystem) noexcept
+PolyhedralSystem& PolyhedralSystem::operator= (PolyhedralSystem&& polyhedralSystem) noexcept
 {
     m_denotation = std::move(polyhedralSystem.m_denotation);
     m_flow.m_swap(polyhedralSystem.m_flow);
     m_invariant.m_swap(polyhedralSystem.m_invariant);
     m_preFlow.m_swap(polyhedralSystem.m_preFlow);
     m_symbolTable = std::move(polyhedralSystem.m_symbolTable);
+    m_isOmnidirectionalFlow = polyhedralSystem.m_isOmnidirectionalFlow;
+    m_minimizeConstraintsOutput = polyhedralSystem.m_minimizeConstraintsOutput;
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
@@ -139,6 +160,12 @@ void PolyhedralSystem::computePreFlow()
     m_preFlow.m_swap(PPLUtils::reflectionAffineImage(preFlow));
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
+}
+
+void PolyhedralSystem::checkAndSetOmnidirectionalFlow()
+{
+    const Poly zeroPoint { PPLUtils::zeroPoint(spaceDimension()) };
+    m_isOmnidirectionalFlow = m_flow.contains(zeroPoint);
 }
 
 std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSystem)

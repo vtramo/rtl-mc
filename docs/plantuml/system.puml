@@ -25,6 +25,7 @@ package system {
     class PolyhedralSystem {
         --data members--
         -m_flow : Poly
+        -m_isOmnidirectionalFlow : bool
         -m_preFlow : Poly
         -m_symbolTable : PolyhedralSystemSymbolTable
         -m_invariant : Powerset
@@ -39,14 +40,18 @@ package system {
         +spaceDimension() : PPL::dimension_type
         +flow() : Poly&
         +preFlow() : Poly&
+        +isOmnidirectionalFlow() : bool
+        +isClosedFlow() : bool
         +symbolTable() : PolyhedralSystemSymbolTable&
         +invariant() : Powerset&
+        +isBoundedInvariant() : bool
         +totalAtoms() : int
         +interpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
         +interpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
         +setConstraintOutputMinimized(bool) : void
-        +atoms() : const spot::atomic_prop_set&
+        +atoms() : spot::atomic_prop_set&
         -computePreFlow() : void
+        -checkAndSetOmnidirectionalFlow() : void
         --static functions--
         +{static} builder() : PolyhedralSystemBuilder
         --operators--
