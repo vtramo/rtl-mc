@@ -4,32 +4,32 @@
 #include "ppl_utils.h"
 #include "systemparser.h"
 
-const Poly& PolyhedralSystem::getFlow() const
+const Poly& PolyhedralSystem::flow() const
 {
     return m_flow;
 }
 
-const Poly& PolyhedralSystem::getPreFlow() const
+const Poly& PolyhedralSystem::preFlow() const
 {
     return m_preFlow;
 }
 
-const Powerset& PolyhedralSystem::getInvariant() const
+const Powerset& PolyhedralSystem::invariant() const
 {
     return m_invariant;
 }
 
-const PolyhedralSystemSymbolTable& PolyhedralSystem::getSymbolTable() const
+const PolyhedralSystemSymbolTable& PolyhedralSystem::symbolTable() const
 {
     return m_symbolTable;
 }
 
-const spot::atomic_prop_set& PolyhedralSystem::getAtoms() const
+const spot::atomic_prop_set& PolyhedralSystem::atoms() const
 {
     return m_symbolTable.atoms();
 }
 
-std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const std::string_view atom) const
+std::optional<const AtomInterpretation* const> PolyhedralSystem::interpretation(const std::string_view atom) const
 {
     if (const auto it { m_denotation.find(std::string { atom }) }; it != m_denotation.end()) {
         return &it->second;
@@ -38,7 +38,7 @@ std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretati
      return {};
 }
 
-std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretation(const spot::formula& atom) const
+std::optional<const AtomInterpretation* const> PolyhedralSystem::interpretation(const spot::formula& atom) const
 {
     if (!atom.is(spot::op::ap))
     {
@@ -51,12 +51,12 @@ std::optional<const AtomInterpretation* const> PolyhedralSystem::getInterpretati
      return {};
 }
 
-PPL::dimension_type PolyhedralSystem::getSpaceDimension() const
+PPL::dimension_type PolyhedralSystem::spaceDimension() const
 {
     return m_invariant.space_dimension();
 }
 
-int PolyhedralSystem::getTotalAtoms() const
+int PolyhedralSystem::totalAtoms() const
 {
     return static_cast<int>(m_denotation.size());
 }
@@ -88,7 +88,7 @@ PolyhedralSystem::PolyhedralSystem(
 {
     computePreFlow();
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
-    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
@@ -104,7 +104,7 @@ PolyhedralSystem::PolyhedralSystem(
     m_flow.m_swap(flow);
     computePreFlow();
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
-    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
@@ -116,7 +116,7 @@ PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
     m_invariant.m_swap(polyhedralSystem.m_invariant);
     m_preFlow.m_swap(polyhedralSystem.m_preFlow);
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
-    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
 }
 
@@ -128,7 +128,7 @@ PolyhedralSystem& PolyhedralSystem::operator=(PolyhedralSystem&& polyhedralSyste
     m_preFlow.m_swap(polyhedralSystem.m_preFlow);
     m_symbolTable = std::move(polyhedralSystem.m_symbolTable);
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
-    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
     return *this;
 }
@@ -138,7 +138,7 @@ void PolyhedralSystem::computePreFlow()
     Poly preFlow { m_flow };
     m_preFlow.m_swap(PPLUtils::reflectionAffineImage(preFlow));
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
-    assert(m_preFlow.space_dimension() == getSpaceDimension());
+    assert(m_preFlow.space_dimension() == spaceDimension());
 }
 
 std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSystem)
@@ -165,25 +165,25 @@ void PolyhedralSystem::setConstraintOutputMinimized(const bool minimizeConstrain
 std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralSystem)
 {
     const bool minimizeConstraints { polyhedralSystem.m_minimizeConstraintsOutput };
-    const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem.getSymbolTable() };
-    out << "Inv " << PPLOutput::toString(polyhedralSystem.getInvariant(), symbolTable, minimizeConstraints) << '\n';
-    out << "Flow " << PPLOutput::toString(polyhedralSystem.getFlow(), symbolTable, minimizeConstraints) << '\n';
+    const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem.symbolTable() };
+    out << "Inv " << PPLOutput::toString(polyhedralSystem.invariant(), symbolTable, minimizeConstraints) << '\n';
+    out << "Flow " << PPLOutput::toString(polyhedralSystem.flow(), symbolTable, minimizeConstraints) << '\n';
 
     for (const auto& atom: symbolTable.atoms())
     {
-        const AtomInterpretation* atomInterpretation { *polyhedralSystem.getInterpretation(atom) };
+        const AtomInterpretation* atomInterpretation { *polyhedralSystem.interpretation(atom) };
         out << atom << " " << PPLOutput::toString(atomInterpretation->interpretation(), symbolTable, minimizeConstraints) << '\n';
     }
 
-    out << "Total atomic propositions: " << polyhedralSystem.getTotalAtoms() << ".\n";
-    out << "PreFlow: " << PPLOutput::toString(polyhedralSystem.getPreFlow(), polyhedralSystem.getSymbolTable()) << '\n';
+    out << "Total atomic propositions: " << polyhedralSystem.totalAtoms() << ".\n";
+    out << "PreFlow: " << PPLOutput::toString(polyhedralSystem.preFlow(), polyhedralSystem.symbolTable()) << '\n';
 
-    out << "Space dimension: " << polyhedralSystem.getSpaceDimension() << ".\n";
+    out << "Space dimension: " << polyhedralSystem.spaceDimension() << ".\n";
     bool first { true };
     out << "Variables: [";
-    for (PPL::dimension_type dim = 0; dim < polyhedralSystem.getSpaceDimension(); ++dim)
+    for (PPL::dimension_type dim = 0; dim < polyhedralSystem.spaceDimension(); ++dim)
     {
-        out << (first ? "" : ", ") << *polyhedralSystem.getSymbolTable().getVariableName(PPL::Variable { dim });
+        out << (first ? "" : ", ") << *polyhedralSystem.symbolTable().getVariableName(PPL::Variable { dim });
         first = false;
     }
     out << "]\n";

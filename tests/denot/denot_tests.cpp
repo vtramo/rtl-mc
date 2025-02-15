@@ -28,7 +28,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
             )
         )
     };
-    const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem->getSymbolTable() };
+    const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem->symbolTable() };
     auto a { *symbolTable.getVariable("a") };
     auto b { *symbolTable.getVariable("b") };
     auto t { *symbolTable.getVariable("t") };
@@ -286,7 +286,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
             )
         )
     };
-    const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem->getSymbolTable() };
+    const PolyhedralSystemSymbolTable& symbolTable { polyhedralSystem->symbolTable() };
     auto a { *symbolTable.getVariable("a") };
     auto b { *symbolTable.getVariable("b") };
     auto t { *symbolTable.getVariable("t") };

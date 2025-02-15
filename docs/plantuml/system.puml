@@ -36,16 +36,16 @@ package system {
         -PolyhedralSystem(const Powerset& invariant, const Poly& flow, const std::unordered_map<Atom, AtomInterpretation>& denotation, const PolyhedralSystemSymbolTable& symbolTable)
         -PolyhedralSystem(Powerset&& invariant, Poly&& flow, std::unordered_map<Atom, AtomInterpretation>&& denotation, PolyhedralSystemSymbolTable&& symbolTable)
         --member functions--
-        +getSpaceDimension() : PPL::dimension_type
-        +getFlow() : Poly&
-        +getPreFlow() : Poly&
-        +getSymbolTable() : PolyhedralSystemSymbolTable&
-        +getInvariant() : Powerset&
-        +getTotalAtoms() : int
-        +getInterpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
-        +getInterpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
+        +spaceDimension() : PPL::dimension_type
+        +flow() : Poly&
+        +preFlow() : Poly&
+        +symbolTable() : PolyhedralSystemSymbolTable&
+        +invariant() : Powerset&
+        +totalAtoms() : int
+        +interpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
+        +interpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
         +setConstraintOutputMinimized(bool) : void
-        +getAtoms() : const spot::atomic_prop_set&
+        +atoms() : const spot::atomic_prop_set&
         -computePreFlow() : void
         --static functions--
         +{static} builder() : PolyhedralSystemBuilder

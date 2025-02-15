@@ -11,8 +11,8 @@
 inline PolyhedralSystemStats collectPolyhedralSystemStats(const PolyhedralSystem& polyhedralSystem)
 {
     return {
-        polyhedralSystem.getTotalAtoms(),
-        static_cast<int>(polyhedralSystem.getSpaceDimension())
+        polyhedralSystem.totalAtoms(),
+        static_cast<int>(polyhedralSystem.spaceDimension())
     };
 }
 

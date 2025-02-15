@@ -259,7 +259,7 @@ private:
         std::string rtlf { buffer.str() };
         rtlfFile.close();
 
-        RtlfParsingResult rtlfParsingResult { parseRtlf(rtlf, m_polyhedralSystem->getAtoms() ) };
+        RtlfParsingResult rtlfParsingResult { parseRtlf(rtlf, m_polyhedralSystem->atoms() ) };
         if (!rtlfParsingResult.ok())
         {
             std::cerr << "Error while parsing RTLf formula (file " << m_rtlFilename << ").\n";
@@ -274,7 +274,7 @@ private:
         McPointParsingResult mcPointParsingResult {
             parseMcPoint(
                 std::string_view { *m_modelCheckingPointString },
-                m_polyhedralSystem->getSymbolTable()
+                m_polyhedralSystem->symbolTable()
             )
         };
 

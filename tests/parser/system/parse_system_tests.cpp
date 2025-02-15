@@ -20,8 +20,8 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         REQUIRE(polyhedralSystemParsingResult.ok());
 
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
-        REQUIRE(polyhedralSystem.getSpaceDimension() == 2);
-        REQUIRE(polyhedralSystem.getTotalAtoms() == 2);
+        REQUIRE(polyhedralSystem.spaceDimension() == 2);
+        REQUIRE(polyhedralSystem.totalAtoms() == 2);
     }
 
     SECTION("Building PolyhedralSystem with 'Inv' constraint first")
@@ -38,8 +38,8 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         REQUIRE(polyhedralSystemParsingResult.ok());
 
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
-        REQUIRE(polyhedralSystem.getSpaceDimension() == 2);
-        REQUIRE(polyhedralSystem.getTotalAtoms() == 2);
+        REQUIRE(polyhedralSystem.spaceDimension() == 2);
+        REQUIRE(polyhedralSystem.totalAtoms() == 2);
     }
 
     SECTION("Building PolyhedralSystem using '>>' operator with input stream")
@@ -53,8 +53,8 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         PolyhedralSystem polyhedralSystem {};
         input >> polyhedralSystem;
 
-        REQUIRE(polyhedralSystem.getSpaceDimension() == 2);
-        REQUIRE(polyhedralSystem.getTotalAtoms() == 2);
+        REQUIRE(polyhedralSystem.spaceDimension() == 2);
+        REQUIRE(polyhedralSystem.totalAtoms() == 2);
     }
 
     SECTION("Building PolyhedralSystem with 'Flow' last in input stream")
@@ -69,8 +69,8 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         PolyhedralSystem polyhedralSystem {};
         input >> polyhedralSystem;
 
-        REQUIRE(polyhedralSystem.getSpaceDimension() == 2);
-        REQUIRE(polyhedralSystem.getTotalAtoms() == 3);
+        REQUIRE(polyhedralSystem.spaceDimension() == 2);
+        REQUIRE(polyhedralSystem.totalAtoms() == 3);
     }
 
     SECTION("Building PolyhedralSystem with multiple constraints and atoms (3 dimensions & 4 atoms)")
@@ -86,8 +86,8 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         PolyhedralSystem polyhedralSystem {};
         input >> polyhedralSystem;
 
-        REQUIRE(polyhedralSystem.getSpaceDimension() == 3);
-        REQUIRE(polyhedralSystem.getTotalAtoms() == 4);
+        REQUIRE(polyhedralSystem.spaceDimension() == 3);
+        REQUIRE(polyhedralSystem.totalAtoms() == 4);
     }
 
     SECTION("Building a complex PolyhedralSystem with multiple constraints and atoms (6 dimensions & 11 atoms)")
@@ -110,8 +110,8 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         };
         input >> polyhedralSystem;
 
-        REQUIRE(polyhedralSystem.getSpaceDimension() == 6);
-        REQUIRE(polyhedralSystem.getTotalAtoms() == 11);
+        REQUIRE(polyhedralSystem.spaceDimension() == 6);
+        REQUIRE(polyhedralSystem.totalAtoms() == 11);
     }
 
     SECTION("Parse a PolyhedralSystem spec then compare with the expected PolyhedralSystem")
@@ -147,8 +147,8 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         PolyhedralSystem polyhedralSystem {};
         input >> polyhedralSystem;
 
-        REQUIRE(expectedPolyhedralSystem.getTotalAtoms() == polyhedralSystem.getTotalAtoms());
-        REQUIRE(expectedPolyhedralSystem.getSpaceDimension() == polyhedralSystem.getSpaceDimension());
+        REQUIRE(expectedPolyhedralSystem.totalAtoms() == polyhedralSystem.totalAtoms());
+        REQUIRE(expectedPolyhedralSystem.spaceDimension() == polyhedralSystem.spaceDimension());
         REQUIRE(expectedPolyhedralSystem == polyhedralSystem);
     }
 
@@ -314,11 +314,11 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         input >> polyhedralSystem;
 
         REQUIRE(input.fail());
-        REQUIRE(polyhedralSystem.getFlow().is_empty());
-        REQUIRE(polyhedralSystem.getInvariant().is_empty());
-        REQUIRE(polyhedralSystem.getPreFlow().is_empty());
-        REQUIRE(polyhedralSystem.getSpaceDimension() == 0);
-        REQUIRE(polyhedralSystem.getTotalAtoms() == 0);
+        REQUIRE(polyhedralSystem.flow().is_empty());
+        REQUIRE(polyhedralSystem.invariant().is_empty());
+        REQUIRE(polyhedralSystem.preFlow().is_empty());
+        REQUIRE(polyhedralSystem.spaceDimension() == 0);
+        REQUIRE(polyhedralSystem.totalAtoms() == 0);
     }
 
     SECTION("Missing INV")

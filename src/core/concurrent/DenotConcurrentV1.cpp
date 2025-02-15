@@ -15,7 +15,7 @@ PowersetUniquePtr DenotConcurrentV1::run()
     std::cout << "finalStatesPerThread: " << finalStatesPerThread << std::endl;
     std::cout << "totalFinalStates: " << totalFinalStates << std::endl;
 
-    std::vector results(numThreads, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY });
+    std::vector results(numThreads, Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY });
     std::vector<std::thread> threads {};
     threads.reserve(numThreads - 1);
     int start = 0;
@@ -39,7 +39,7 @@ PowersetUniquePtr DenotConcurrentV1::run()
     for (auto& thread: threads)
         thread.join();
 
-    PowersetUniquePtr finalResult { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
+    PowersetUniquePtr finalResult { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
     for (const auto& result: results)
         PPLUtils::fusion(*finalResult, result);
     return finalResult;
@@ -69,10 +69,10 @@ Powerset DenotConcurrentV1::denot(
 )
 {
     // std::cerr << "Thread " << std::this_thread::get_id() << " State: " << state << std::endl;
-    assert(P.space_dimension() == m_polyhedralSystem->getSpaceDimension());
-    assert(P.space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
-    assert(X.space_dimension() == m_polyhedralSystem->getSpaceDimension());
-    assert(X.space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
+    assert(P.space_dimension() == m_polyhedralSystem->spaceDimension());
+    assert(P.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
+    assert(X.space_dimension() == m_polyhedralSystem->spaceDimension());
+    assert(X.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
     const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
     assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
@@ -83,29 +83,29 @@ Powerset DenotConcurrentV1::denot(
     if (!stateDenotation.isSingular())
         addDisjunct(V, state, P);
 
-    Powerset result { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY };
+    Powerset result { m_polyhedralSystem->spaceDimension(), PPL::EMPTY };
     for (const auto& edgePredecessor: m_backwardNfa.predecessors(state))
     {
         int predecessor { static_cast<int>(edgePredecessor.dst) };
         const StateDenotation& predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
         Powerset& visitedPowerset { getVisitedPowerset(V, predecessor) };
-        assert(visitedPowerset.space_dimension() == m_polyhedralSystem->getSpaceDimension());
+        assert(visitedPowerset.space_dimension() == m_polyhedralSystem->spaceDimension());
 
         PowersetUniquePtr A { PPLUtils::minus(*predecessorStateDenotation.denotation(), visitedPowerset) };
-        assert(A->space_dimension() == m_polyhedralSystem->getSpaceDimension());
-        assert(A->space_dimension() == m_polyhedralSystem->getPreFlow().space_dimension());
+        assert(A->space_dimension() == m_polyhedralSystem->spaceDimension());
+        assert(A->space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
         // std::cout << "A: " << PPLOutput::toString(*A, m_polyhedralSystem->getSymbolTable()) << " | X: " << PPLOutput::toString(X, m_polyhedralSystem->getSymbolTable()) << std::endl;
         PPLUtils::ReachPairs reachPairs {
             predecessorStateDenotation.isSingular()
-                ? PPLUtils::reach0(*A, X, m_polyhedralSystem->getPreFlow())
-                : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->getPreFlow())
+                ? PPLUtils::reach0(*A, X, m_polyhedralSystem->preFlow())
+                : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->preFlow())
         };
 
         for (const auto& [Q, Y]: reachPairs)
         {
-            assert(Q.space_dimension() == m_polyhedralSystem->getSpaceDimension());
-            assert(Y.space_dimension() == m_polyhedralSystem->getSpaceDimension());
+            assert(Q.space_dimension() == m_polyhedralSystem->spaceDimension());
+            assert(Y.space_dimension() == m_polyhedralSystem->spaceDimension());
 
             const Powerset& powerset { denot(predecessor, Q, Y, V, !isSing) };
             PPLUtils::fusion(result, powerset);
@@ -117,10 +117,10 @@ Powerset DenotConcurrentV1::denot(
 
 void DenotConcurrentV1::addDisjunct(std::unordered_map<int, Powerset>& V, const int state, const Poly& P) const
 {
-    V.try_emplace(state, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY }).first->second.add_disjunct(P);
+    V.try_emplace(state, Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY }).first->second.add_disjunct(P);
 }
 
 Powerset& DenotConcurrentV1::getVisitedPowerset(std::unordered_map<int, Powerset>& V, const int state) const
 {
-    return V.try_emplace(state, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY }).first->second;
+    return V.try_emplace(state, Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY }).first->second;
 }

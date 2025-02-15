@@ -6,13 +6,13 @@ PowersetUniquePtr DenotIterative::run()
 {
     m_iterations = 0;
 
-    PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
+    PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
     for (const int finalState: m_backwardNfa.finalStates())
     {
         const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
         PowersetConstSharedPtr denotationFinalState { finalStateDenotation.denotation() };
-        PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
+        PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
         for (Powerset::const_iterator patchesIt { denotationFinalState->begin() }; patchesIt != denotationFinalState->end(); ++patchesIt)
         {
             std::unordered_map<int, Powerset> V {};
@@ -44,7 +44,7 @@ PowersetUniquePtr DenotIterative::denot(
 {
     std::stack<DenotFrame> stack {};
     stack.push({ _state, _P, _X, _V, _isSing });
-    PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
+    PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
     while (!stack.empty())
     {
@@ -77,8 +77,8 @@ PowersetUniquePtr DenotIterative::denot(
 
             PPLUtils::ReachPairs reachPairs {
                 predecessorStateDenotation.isSingular()
-                    ? PPLUtils::reach0(*A, denotFrame.X, m_polyhedralSystem->getPreFlow())
-                    : PPLUtils::reachPlus(*A, denotFrame.X, m_polyhedralSystem->getPreFlow())
+                    ? PPLUtils::reach0(*A, denotFrame.X, m_polyhedralSystem->preFlow())
+                    : PPLUtils::reachPlus(*A, denotFrame.X, m_polyhedralSystem->preFlow())
             };
 
             for (const auto& [Q, Y]: reachPairs)
@@ -95,10 +95,10 @@ PowersetUniquePtr DenotIterative::denot(
 
 void DenotIterative::addDisjunct(std::unordered_map<int, Powerset>& V, const int state, const Poly& P) const
 {
-    V.try_emplace(state, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY }).first->second.add_disjunct(P);
+    V.try_emplace(state, Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY }).first->second.add_disjunct(P);
 }
 
 Powerset& DenotIterative::getVisitedPowerset(std::unordered_map<int, Powerset>& V, const int state) const
 {
-    return V.try_emplace(state, Powerset { m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY }).first->second;
+    return V.try_emplace(state, Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY }).first->second;
 }

@@ -476,7 +476,7 @@ std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa)
 
         out << "State " << state << '\n';
         const PolyhedralSystem& polyhedralSystem { backwardNfa.m_formulaDenotationMap.getPolyhedralSystem() };
-        stateDenotation.print(out, polyhedralSystem.getSymbolTable());
+        stateDenotation.print(out, polyhedralSystem.symbolTable());
         out << std::boolalpha;
         out << "\nInitial state: " << backwardNfa.isInitialState(state) << '\n';
         out << "Final state: " << backwardNfa.isFinalState(state) << '\n';

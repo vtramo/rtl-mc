@@ -99,7 +99,7 @@ int main(const int argc, char *argv[])
 
         PowersetUniquePtr denotResult {
             rtlMcProgram.universal()
-                ? PPLUtils::minus(polyhedralSystem->getInvariant(), *denot())
+                ? PPLUtils::minus(polyhedralSystem->invariant(), *denot())
                 : denot()
         };
 
@@ -120,7 +120,7 @@ int main(const int argc, char *argv[])
             }
             else
             {
-                std::cout << PPLOutput::toString(*denotResult, polyhedralSystem->getSymbolTable()) << '\n';
+                std::cout << PPLOutput::toString(*denotResult, polyhedralSystem->symbolTable()) << '\n';
             }
             break;
         case OutputFormat::quiet:

@@ -12,7 +12,7 @@ public:
       : m_polyhedralSystem { polyhedralSystem }
       , m_backwardNfa { backwardNfa }
     {
-        m_spaceDimension = m_polyhedralSystem->getSpaceDimension();
+        m_spaceDimension = m_polyhedralSystem->spaceDimension();
     }
     ~DenotConcurrentV4() override = default;
 

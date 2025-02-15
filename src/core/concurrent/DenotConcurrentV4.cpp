@@ -7,14 +7,14 @@ PowersetUniquePtr DenotConcurrentV4::run()
 {
     m_iterations = 0;
 
-    PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
+    PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
     for (const int finalState: m_backwardNfa.finalStates())
     {
         const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
 
         PowersetConstSharedPtr denotationFinalState { finalStateDenotation.denotation() };
-        PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY) };
+        PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
         for (Powerset::const_iterator patchesIt { denotationFinalState->begin() }; patchesIt != denotationFinalState->end(); ++patchesIt)
         {
@@ -109,8 +109,8 @@ std::pair<int, PPLUtils::ReachPairs> DenotConcurrentV4::computeReachPairs(
 
     PPLUtils::ReachPairs reachPairs {
         predecessorStateDenotation.isSingular()
-            ? PPLUtils::reach0(*A, X, m_polyhedralSystem->getPreFlow())
-            : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->getPreFlow())
+            ? PPLUtils::reach0(*A, X, m_polyhedralSystem->preFlow())
+            : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->preFlow())
     };
 
     return { predecessor, std::move(reachPairs) };

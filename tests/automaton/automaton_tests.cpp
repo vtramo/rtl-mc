@@ -28,16 +28,16 @@ TEST_CASE("Formula denotation map TEST 1")
             )
         )
     };
-    PolyhedralSystemSymbolTable symbolTable { polyhedralSystem->getSymbolTable() };
-    const Powerset& pPowerset { (*polyhedralSystem->getInterpretation("p"))->interpretation() };
-    const Powerset& qPowerset { (*polyhedralSystem->getInterpretation("q"))->interpretation() };
-    const Powerset& t0Powerset { (*polyhedralSystem->getInterpretation("t0"))->interpretation() };
-    const Powerset& t1Powerset { (*polyhedralSystem->getInterpretation("t1"))->interpretation() };
+    PolyhedralSystemSymbolTable symbolTable { polyhedralSystem->symbolTable() };
+    const Powerset& pPowerset { (*polyhedralSystem->interpretation("p"))->interpretation() };
+    const Powerset& qPowerset { (*polyhedralSystem->interpretation("q"))->interpretation() };
+    const Powerset& t0Powerset { (*polyhedralSystem->interpretation("t0"))->interpretation() };
+    const Powerset& t1Powerset { (*polyhedralSystem->interpretation("t1"))->interpretation() };
 
-    const Powerset& not_pPowerset { (*polyhedralSystem->getInterpretation("p"))->notInterpretation() };
-    const Powerset& not_qPowerset { (*polyhedralSystem->getInterpretation("q"))->notInterpretation() };
-    const Powerset& not_t0Powerset { (*polyhedralSystem->getInterpretation("t0"))->notInterpretation() };
-    const Powerset& not_t1Powerset { (*polyhedralSystem->getInterpretation("t1"))->notInterpretation() };
+    const Powerset& not_pPowerset { (*polyhedralSystem->interpretation("p"))->notInterpretation() };
+    const Powerset& not_qPowerset { (*polyhedralSystem->interpretation("q"))->notInterpretation() };
+    const Powerset& not_t0Powerset { (*polyhedralSystem->interpretation("t0"))->notInterpretation() };
+    const Powerset& not_t1Powerset { (*polyhedralSystem->interpretation("t1"))->notInterpretation() };
 
     SECTION("p & q & t0 & t1")
     {

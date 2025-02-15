@@ -57,14 +57,14 @@ PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::computeFormulaDenot
         return std::make_shared<Powerset>(atomIntepretation->interpretation()); // TODO: evitare questa copia
     }
 
-    PowersetConstSharedPtr powersetResult {};
+    PowersetSharedPtr powersetResult {};
     if (formula.is_tt())
     {
-        powersetResult = std::make_shared<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::UNIVERSE);
+        powersetResult = std::make_shared<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::UNIVERSE);
     }
     else if (formula.is_ff())
     {
-        powersetResult = std::make_shared<Powerset>(m_polyhedralSystem->getSpaceDimension(), PPL::EMPTY);
+        powersetResult = std::make_shared<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY);
     }
     else
     {
@@ -79,7 +79,7 @@ PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::computeFormulaDenot
             powersetResult = PPLUtils::fusion(powersets);
     }
 
-    assert(powersetResult->space_dimension() == m_polyhedralSystem->getSpaceDimension());
+    assert(powersetResult->space_dimension() == m_polyhedralSystem->spaceDimension());
     saveFormulaDenotation(formula, powersetResult);
     return powersetResult;
 }
@@ -88,7 +88,7 @@ const AtomInterpretation* PolyhedralSystemFormulaDenotationMap::getAtomInterpret
 {
     assert(formula.is_literal() && !formula.is(spot::op::Not));
 
-    const std::optional atomInterpretation { m_polyhedralSystem->getInterpretation(formula) };
+    const std::optional atomInterpretation { m_polyhedralSystem->interpretation(formula) };
 
     if (!atomInterpretation)
         throw std::invalid_argument("The atom " + formula.ap_name() + " has no interpretation!");
@@ -115,7 +115,7 @@ std::ostream& operator<< (std::ostream& out, PolyhedralSystemFormulaDenotationMa
     {
         const auto& [powerset, formulaToString] = powersetAndFormulaToString;
         out << "Formula: " << formulaToString << '\n'
-            << "Denotation: " << PPLOutput::toString(*powerset, polyhedralSystemFormulaDenotationMap.m_polyhedralSystem->getSymbolTable())
+            << "Denotation: " << PPLOutput::toString(*powerset, polyhedralSystemFormulaDenotationMap.m_polyhedralSystem->symbolTable())
             << "\n\n";
     }
 
