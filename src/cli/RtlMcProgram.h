@@ -110,7 +110,7 @@ private:
             .help("Check if a given point x ∈ ℝⁿ is the source of a trajectory in the polyhedral system that satisfies the temporal formula φ. "
                       "For --existential, checks if some trajectory from the point satisfies φ. "
                       "For --universal, checks if all trajectories from the point satisfy φ. "
-                      "Specify all system variables with integer values (e.g., [x=1, y=2, z=3]).")
+                      "Specify all system variables with rational values (e.g., [x=1/3, y=-2/3, z=1]).")
             .action([&](const std::string& mcPoint)
             {
                 m_modelCheckingPointString.emplace(mcPoint);
