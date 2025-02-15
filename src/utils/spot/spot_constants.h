@@ -19,7 +19,6 @@ namespace spot::constants {
 
     inline const formula g_singOpenLastPropertyFinite {
         spot::parse_infix_psl(
-            "sing &"
             "G( !alive | ((sing <-> X(alive & !sing)) | !Xalive) ) &"
             "F(sing & alive & !Xalive)"
         ).f
@@ -30,7 +29,6 @@ namespace spot::constants {
 
     inline const formula g_singOpenLastProperty {
         spot::parse_infix_psl(
-            "sing &"
             "G((sing <-> X[!]!sing) | !X[!] true) &"
             "F(!X[!] true & sing)"
         ).f

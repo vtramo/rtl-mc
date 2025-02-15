@@ -16,7 +16,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         spot::formula expectedFormula {
             spot::from_ltlf(spot::parse_infix_psl(
                 "((sing & X[!](p0)) | (!sing & p0)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -33,7 +32,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         spot::formula expectedFormula {
             spot::from_ltlf(spot::parse_infix_psl(
                 "F p0 &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -51,7 +49,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
             spot::from_ltlf(spot::parse_infix_psl(
                 "F p0 &"
                 "F p1 &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -68,7 +65,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         spot::formula expectedFormula {
             spot::from_ltlf(spot::parse_infix_psl(
                 "G p0 &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -86,7 +82,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
             spot::from_ltlf(spot::parse_infix_psl(
                 "G p0 &"
                 "F p1 &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -105,7 +100,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
                 "G(p0 & p1) & p2 &"
                 "G p3 &"
                 "F(p4 & F p5) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -122,7 +116,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         spot::formula expectedFormula {
             spot::from_ltlf(spot::parse_infix_psl(
                 "p0 U (p1 & (p0 | sing)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -139,7 +132,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         spot::formula expectedFormula {
             spot::from_ltlf(spot::parse_infix_psl(
                 "(p0 R (p1 | (p0 & !sing))) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -157,7 +149,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
             spot::from_ltlf(spot::parse_infix_psl(
                 "(p0 R (p1 | (p0 & !sing))) &"
                 "F(p0 & p1) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -174,7 +165,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         spot::formula expectedFormula {
             spot::from_ltlf(spot::parse_infix_psl(
                 "((p0 U (p1 & (p0 | sing))) | G (p0)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -197,7 +187,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
                 "G(p8) &"
                 "F(p9) &"
                 "((sing & X[!](p10)) | (!sing & p10)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -214,7 +203,6 @@ TEST_CASE("Discretize to LTL from RTLf", "[discretization-ltl]")
         spot::formula expectedFormula {
             spot::from_ltlf(spot::parse_infix_psl(
                 "G(a & b) & t & G(t1) & F(ab & F(ba)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f)
@@ -243,7 +231,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         spot::formula expectedFormula {
             spot::parse_infix_psl(
                 "((sing & X[!](p0)) | (!sing & p0)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f
@@ -260,7 +247,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         spot::formula expectedFormula {
             spot::parse_infix_psl(
                 "F(p0) & F(p1) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(!X[!] true & sing)"
             ).f
@@ -277,7 +263,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         spot::formula expectedFormula {
             spot::parse_infix_psl(
                 "G(p0) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!] true) &"
                 "F(!X[!]true & sing)"
             ).f
@@ -294,7 +279,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         spot::formula expectedFormula {
             spot::parse_infix_psl(
                 "(p0 U (p1 & (p0 | sing))) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(!X[!]true & sing)"
             ).f
@@ -311,7 +295,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         spot::formula expectedFormula {
             spot::parse_infix_psl(
                 "(p0 R (p1 | (p0 & !sing))) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f
@@ -329,7 +312,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
             spot::parse_infix_psl(
                 "(p0 R (p1 | (p0 & !sing))) &"
                 "F(p0 & p1) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f
@@ -346,7 +328,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         spot::formula expectedFormula {
             spot::parse_infix_psl(
                 "((p0 U (p1 & (p0 | sing))) | G (p0)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f
@@ -369,7 +350,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
                 "G(p8) &"
                 "F(p9) &"
                 "((sing & X[!](p10)) | (!sing & p10)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f
@@ -386,7 +366,6 @@ TEST_CASE("Discretize to LTLf from RTLf", "[discretization-ltlf]")
         spot::formula expectedFormula {
             spot::parse_infix_psl(
                 "G(a & b) & t & G(t1) & F(ab & F(ba)) &"
-                "sing &"
                 "G((sing <-> X[!]!sing) | !X[!]true) &"
                 "F(sing & !X[!]true)"
             ).f
