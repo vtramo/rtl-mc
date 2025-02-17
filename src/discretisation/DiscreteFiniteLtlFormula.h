@@ -8,7 +8,7 @@ class DiscreteFiniteLtlFormula {
 public:
     static DiscreteFiniteLtlFormula discretise(spot::formula&& formula) {
         spot::formula discreteLtlFormula { toDiscretisedFormula(std::move(formula)) };
-        return DiscreteFiniteLtlFormula { imposeSingOpenLastProperty(std::move(discreteLtlFormula)) };
+        return DiscreteFiniteLtlFormula { applyFiniteAlternationSingOpenObservables(std::move(discreteLtlFormula)) };
     }
     const spot::formula& formula() const { return m_discreteFiniteLtlFormula; }
     DiscreteLtlFormula toLtl() const { return DiscreteLtlFormula { spot::from_ltlf(m_discreteFiniteLtlFormula) }; }

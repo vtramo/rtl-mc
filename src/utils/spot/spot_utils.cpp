@@ -191,14 +191,14 @@ namespace SpotUtils
         return Not(spot::constants::g_sing);
     }
 
-    spot::formula singOpenLastPropertyFinite()
+    spot::formula finiteAlternationSingOpenObservablesOneStep()
     {
-        return spot::constants::g_singOpenLastPropertyFinite;
+        return spot::constants::g_finiteAlternationSingOpenObservablesOneStep;
     }
 
-    spot::formula singOpenLastProperty()
+    spot::formula finiteAlternationSingOpenObservables()
     {
-        return spot::constants::g_singOpenLastProperty;
+        return spot::constants::g_finiteAlternationSingOpenObservables;
     }
 
     spot::formula aliveUntilGNotAlive()

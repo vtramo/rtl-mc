@@ -25,7 +25,7 @@ package discretisation {
         --member functions--
         +formula() : spot::formula&
         --static functions--
-        -{static} discretiseToLtl(spot::formula&& formula) : DiscreteLtlFormula
+        -{static} discretiseFromFiniteLtl(spot::formula&& formula) : DiscreteLtlFormula
         --operators--
         -operator== (const DiscreteLtlFormula& discreteLtlFormula, const spot::formula& formula) : bool
         -operator<< (std::ostream& os, const DiscreteLtlFormula& formula) : std :: ostream&
@@ -33,9 +33,9 @@ package discretisation {
 
     object discretisation_h_cpp {
         +toDiscretisedLtlFormula(spot::formula&& formula): spot::formula
-        +imposeSingOpenLastFiniteProperty(spot::formula&& formula): spot::formula
+        +applyFiniteAlternationSingOpenObservablesOneStep(spot::formula&& formula): spot::formula
         +toDiscretisedFormula(spot::formula&& formula): spot::formula
-        +imposeSingOpenLastProperty(spot::formula&& formula): spot::formula
+        +applyFiniteAlternationSingOpenObservables(spot::formula&& formula): spot::formula
         --discretisation + to LTL--
         -dsctF(spot::formula&& formula): spot::formula
         -dsctG(spot::formula&& formula): spot::formula

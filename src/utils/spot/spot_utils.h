@@ -42,8 +42,8 @@ namespace SpotUtils
     spot::formula singOrNot(spot::formula&& formula);
     spot::formula singAndAliveAnd(spot::formula&& formula);
     spot::formula aliveUntilGNotAlive();
-    spot::formula singOpenLastPropertyFinite();
-    spot::formula singOpenLastProperty();
+    spot::formula finiteAlternationSingOpenObservablesOneStep();
+    spot::formula finiteAlternationSingOpenObservables();
 
     spot::formula generateAlternatingFormula(int k, spot::formula p = ap("p"), spot::formula q = ap("q"));
     std::string toFormulaString(const spot::formula& formula);

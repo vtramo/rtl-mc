@@ -63,7 +63,7 @@ int main(const int argc, char *argv[])
 
     DiscreteLtlFormula discreteLtlFormula {
         rtlMcProgram.directLtl()
-            ? DiscreteLtlFormula::discretiseToLtl(std::move(rtlFormula))
+            ? DiscreteLtlFormula::discretiseFromFiniteLtl(std::move(rtlFormula))
             : DiscreteFiniteLtlFormula::discretise(std::move(rtlFormula)).toLtl()
     };
 

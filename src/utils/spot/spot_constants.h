@@ -1,5 +1,4 @@
-#ifndef SPOT_CONSTANTS_H
-#define SPOT_CONSTANTS_H
+#pragma once
 
 #include <spot/tl/parse.hh>
 #include "spot_utils.h"
@@ -17,7 +16,7 @@ namespace spot::constants {
 
     inline const formula g_lastFinite { Not(X(alive())) }; // !Xalive
 
-    inline const formula g_singOpenLastPropertyFinite {
+    inline const formula g_finiteAlternationSingOpenObservablesOneStep {
         spot::parse_infix_psl(
             "G( !alive | ((sing <-> X(alive & !sing)) | !Xalive) ) &"
             "F(sing & alive & !Xalive)"
@@ -27,12 +26,10 @@ namespace spot::constants {
 
     inline const formula g_last { spot::parse_infix_psl("!X[!] true").f }; // !X[!] true
 
-    inline const formula g_singOpenLastProperty {
+    inline const formula g_finiteAlternationSingOpenObservables {
         spot::parse_infix_psl(
             "G((sing <-> X[!]!sing) | !X[!] true) &"
             "F(!X[!] true & sing)"
         ).f
     };
 }
-
-#endif //SPOT_CONSTANTS_H

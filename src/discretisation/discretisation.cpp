@@ -22,22 +22,22 @@ namespace
     spot::formula dscW(spot::formula&& formula);
 }
 
-spot::formula imposeSingOpenLastFiniteProperty(spot::formula&& formula)
+spot::formula applyFiniteAlternationSingOpenObservablesOneStep(spot::formula&& formula)
 {
     return And({
                 std::move(formula),
-                singOpenLastPropertyFinite(),
+                finiteAlternationSingOpenObservablesOneStep(),
                 alive(),
                 aliveUntilGNotAlive(),
             });
 
 }
 
-spot::formula imposeSingOpenLastProperty(spot::formula&& formula)
+spot::formula applyFiniteAlternationSingOpenObservables(spot::formula&& formula)
 {
     return And({
                 std::move(formula),
-                singOpenLastProperty(),
+                finiteAlternationSingOpenObservables(),
              });
 }
 

@@ -43,6 +43,7 @@ public:
     [[nodiscard]] spot::postprocessor::optimization_level optimizationLevel() const;
     [[nodiscard]] const AutomatonStats& stats() const;
     [[nodiscard]] int maxRecursiveDepth() const;
+    [[nodiscard]] int sufficientHorizon() const;
 
     void printHoaFormat(std::ostream& os) const;
     void printDotFormat(std::ostream& os) const;
@@ -58,7 +59,6 @@ private:
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
     spot::postprocessor::optimization_level m_optimizationLevel {};
     AutomatonStats m_automatonStats {};
-    int m_maxRecursiveDepth {};
 
     friend std::ostream& operator<< (std::ostream& out, const BackwardNFA& backwardNfa);
     friend class BackwardNFADepthFirstSearch;
@@ -96,7 +96,6 @@ private:
     void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nfa);
     void createDummyInitialStateWithEdgesToReachableFinalStates();
     void purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates);
-    void setMaxRecursiveDepth(int totalPatches);
     void logBackwardNfaConstruction(double executionTimeSeconds);
     void purgeUnreachableStates();
     spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption);
@@ -104,5 +103,5 @@ private:
     spot::const_twa_ptr twa() const;
 
     void updateMaxNumberOfPatchesStats(int totPatches);
-    void setBackwardNfaStats(double executionTimeSeconds);
+    void setBackwardNfaStats(double executionTimeSeconds, int totalPatches);
 };

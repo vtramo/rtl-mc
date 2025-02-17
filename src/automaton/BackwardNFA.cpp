@@ -23,7 +23,6 @@ BackwardNFA::BackwardNFA(const BackwardNFA& other)
     , m_formulaDenotationMap { other.m_formulaDenotationMap }
     , m_optimizationLevel { other.m_optimizationLevel }
     , m_automatonStats { other.m_automatonStats }
-    , m_maxRecursiveDepth { other.m_maxRecursiveDepth }
 {
 }
 
@@ -217,12 +216,6 @@ void BackwardNFA::renumberOrRemoveStatesAfterPurge(
     if (updateDummyInitialState) *renumberingContext->m_dummyInitialState = newst[*renumberingContext->m_dummyInitialState];
 }
 
-void BackwardNFA::setMaxRecursiveDepth(const int totalPatches)
-{
-    m_maxRecursiveDepth = 1 + 2 * totalPatches;
-    m_automatonStats.backwardNfaConstructionStats.maxRecursiveDepth = m_maxRecursiveDepth;
-}
-
 void BackwardNFA::logBackwardNfaConstruction(const double executionTimeSeconds)
 {
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA construction completed. Elapsed time: {} s.", executionTimeSeconds);
@@ -301,8 +294,7 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
     logBackwardNfaConstruction(timer.elapsedInSeconds());
-    setMaxRecursiveDepth(totalPatches);
-    setBackwardNfaStats(executionTimeSeconds);
+    setBackwardNfaStats(executionTimeSeconds, totalPatches);
 }
 
 void BackwardNFA::updateMaxNumberOfPatchesStats(const int totPatches)
@@ -314,12 +306,17 @@ void BackwardNFA::updateMaxNumberOfPatchesStats(const int totPatches)
         );
 }
 
-int BackwardNFA::maxRecursiveDepth() const
+int BackwardNFA::sufficientHorizon() const
 {
-    return m_maxRecursiveDepth;
+    return m_automatonStats.backwardNfaConstructionStats.sufficientHorizon;
 }
 
-void BackwardNFA::setBackwardNfaStats(const double executionTimeSeconds)
+int BackwardNFA::maxRecursiveDepth() const
+{
+    return m_automatonStats.backwardNfaConstructionStats.maxRecursiveDepth;
+}
+
+void BackwardNFA::setBackwardNfaStats(const double executionTimeSeconds, const int totalPatches)
 {
     auto* backwardNfaStats { &m_automatonStats.backwardNfaConstructionStats };
     backwardNfaStats->executionTimeSeconds = executionTimeSeconds;
@@ -328,6 +325,8 @@ void BackwardNFA::setBackwardNfaStats(const double executionTimeSeconds)
     backwardNfaStats->totalEdges = totalEdges();
     backwardNfaStats->totalFinalStates = totalFinalStates();
     backwardNfaStats->sccInfo = spot::scc_info { m_backwardNfa };
+    backwardNfaStats->sufficientHorizon = 2 * totalStates() * m_automatonStats.backwardNfaConstructionStats.maxNumberPatches;
+    backwardNfaStats->maxRecursiveDepth = 1 + 2 * totalPatches;
 }
 
 const AutomatonStats& BackwardNFA::stats() const

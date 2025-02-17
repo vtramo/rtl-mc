@@ -6,14 +6,14 @@
 class DiscreteLtlFormula
 {
 public:
-    static DiscreteLtlFormula discretiseToLtl(spot::formula&& formula)
+    static DiscreteLtlFormula discretiseFromFiniteLtl(spot::formula&& formula)
     {
         spot::formula discretisedLtlFormula { toDiscretisedLtlFormula(std::move(formula)) };
-        return DiscreteLtlFormula { imposeSingOpenLastFiniteProperty(std::move(discretisedLtlFormula)) };
+        return DiscreteLtlFormula { applyFiniteAlternationSingOpenObservablesOneStep(std::move(discretisedLtlFormula)) };
     }
     const spot::formula& formula() const { return m_discreteLtlFormula; }
 private:
-    spot::formula m_discreteLtlFormula{};
+    spot::formula m_discreteLtlFormula {};
 
     friend class BackwardNFA;
     friend class DiscreteFiniteLtlFormula;
