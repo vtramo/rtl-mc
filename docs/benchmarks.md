@@ -12,7 +12,7 @@ meson configure -Db_sanitize=none buildDir
 e ricompilare (altrimenti i risultati non saranno "precisi").
 
 ### Eseguire una determinata benchmark suite
-- `meson test --benchmark -C buildDir -v discretization`
+- `meson test --benchmark -C buildDir -v discretisation`
 - `meson test --benchmark -C buildDir -v system-parser`
 - `meson test --benchmark -C buildDir -v rtlf-parser`
 - `meson test --benchmark -C buildDir -t 0 -v automaton-construction` (`-t 0` per disabilitare il timeout)
@@ -41,16 +41,16 @@ PolyhedralSystem Parser benchmark 1            100             1      16.279 s
 
 
 -------------------------------------------------------------------------------
-Discretization benchmarks
+Discretisation benchmarks
 -------------------------------------------------------------------------------
-../tests/benchmarks/discretization/discretization_benchmarks.cpp:7
+../tests/benchmarks/discretisation/discretisation_benchmarks.cpp:7
 ...............................................................................
 
 benchmark name                       samples       iterations    est run time
                                      mean          low mean      high mean
                                      std dev       low std dev   high std dev
 -------------------------------------------------------------------------------
-Discretization benchmark 1                     100             1    272.996 ms 
+Discretisation benchmark 1                     100             1    272.996 ms 
                                          2.7611 ms    2.75646 ms    2.76591 ms 
                                         24.2133 us    20.8521 us    29.8995 us 
                                                                                

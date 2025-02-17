@@ -9,7 +9,7 @@
 | `%rl`       | Rtlf formula length                                                  |
 | `%dta`      | Discrete LTL formula total atomic propositions                       |
 | `%dl`       | Discrete LTL formula length                                          |
-| `%dx`       | Discretization execution time in s                                   |
+| `%dx`       | Discretisation execution time in s                                   |
 | `%Ata`      | Translation Discrete LTL formula into TGBA total accepting sets      |
 | `%Ats`      | Translation Discrete LTL formula into TGBA total states              |
 | `%Ate`      | Translation Discrete LTL formula into TGBA total edges               |
@@ -39,9 +39,9 @@
 # Example Usage
 
 ```bash
-rtl-mc --gap 10 1 -s "Polyhedral System total atoms: %Pta | Discretization execution time: %dx s | Denot execution time: %Dx s."
+rtl-mc --gap 10 1 -s "Polyhedral System total atoms: %Pta | Discretisation execution time: %dx s | Denot execution time: %Dx s."
 ```
 
 ```
-Polyhedral System total atoms: 4 | Discretization execution time: 0.021374 s | Denot execution time: 48.379416000000006 s.
+Polyhedral System total atoms: 4 | Discretisation execution time: 0.021374 s | Denot execution time: 48.379416000000006 s.
 ```

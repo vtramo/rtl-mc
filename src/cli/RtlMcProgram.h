@@ -118,7 +118,7 @@ private:
             });
 
         m_rtlMcProgram.add_argument("--direct-ltl")
-            .help("discretize the RTLf formula directly into LTL in a single step.")
+            .help("discretise the RTLf formula directly into LTL in a single step.")
             .flag()
             .store_into(m_directLtl);
 

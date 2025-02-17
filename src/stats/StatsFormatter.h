@@ -4,7 +4,7 @@
 #include "AutomatonStats.h"
 #include "DenotStats.h"
 #include "RtlFormulaStats.h"
-#include "DiscretizationStats.h"
+#include "DiscretisationStats.h"
 
 #include <string>
 #include <spdlog/fmt/fmt.h>
@@ -17,12 +17,12 @@ public:
     StatsFormatter(
         PolyhedralSystemStats&& polyhedralSystemStats,
         RtlFormulaStats&& rtlFormulaStats,
-        DiscretizationStats&& discretizationStats,
+        DiscretisationStats&& discretisationStats,
         AutomatonStats&& automatonStats,
         DenotStats&& denotStats
     ) : m_polyhedralSystemStats { std::move(polyhedralSystemStats) }
       , m_rtlFormulaStats { std::move(rtlFormulaStats) }
-      , m_discretizationStats { std::move(discretizationStats) }
+      , m_discretisationStats { std::move(discretisationStats) }
       , m_automatonStats { std::move(automatonStats) }
       , m_denotStats { std::move(denotStats) }
     {
@@ -42,9 +42,9 @@ public:
                            m_polyhedralSystemStats.spaceDimension,
                            m_rtlFormulaStats.totalAtomicPropositions,
                            m_rtlFormulaStats.length,
-                           m_discretizationStats.discreteLtlFormulaTotalAtomicPropositions,
-                           m_discretizationStats.discreteLtlFormulaLength,
-                           m_discretizationStats.discretizationExecutionTimeSeconds,
+                           m_discretisationStats.discreteLtlFormulaTotalAtomicPropositions,
+                           m_discretisationStats.discreteLtlFormulaLength,
+                           m_discretisationStats.discretisationExecutionTimeSeconds,
                            m_automatonStats.translationFormulaIntoTgba.totalAcceptingSets,
                            m_automatonStats.translationFormulaIntoTgba.totalStates,
                            m_automatonStats.translationFormulaIntoTgba.totalEdges,
@@ -79,7 +79,7 @@ private:
 
     static constexpr std::string_view s_dta{ "%dta"sv };  // Discrete LTL formula total atomic propositions
     static constexpr std::string_view s_dl{ "%dl"sv };    // Discrete LTL formula length
-    static constexpr std::string_view s_dx{ "%dx"sv };    // Discretization execution time in s
+    static constexpr std::string_view s_dx{ "%dx"sv };    // Discretisation execution time in s
 
     static constexpr std::string_view s_Ata{ "%Ata"sv };  // Translation Discrete LTL formula into TGBA total accepting sets
     static constexpr std::string_view s_Ats{ "%Ats"sv };  // Translation Discrete LTL formula into TGBA total states
@@ -112,7 +112,7 @@ private:
 
     PolyhedralSystemStats m_polyhedralSystemStats {};
     RtlFormulaStats m_rtlFormulaStats {};
-    DiscretizationStats m_discretizationStats {};
+    DiscretisationStats m_discretisationStats {};
     AutomatonStats m_automatonStats {};
     DenotStats m_denotStats {};
 

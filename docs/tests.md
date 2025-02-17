@@ -1,7 +1,7 @@
 ### Come eseguire i tests
 - `meson test -C buildDir system-parser -v` (PolyhedralSystem parser)
 - `meson test -C buildDir rtlf-parser -v` (RTLf parser)
-- `meson test -C buildDir discretization -v` (discretization)
+- `meson test -C buildDir discretisation -v` (discretisation)
 - `meson test -C buildDir automaton -v` (automaton)
 - `meson test -C buildDir spot-utils -v` (spot utils)
 - `meson test -C buildDir denot -v` (denot)

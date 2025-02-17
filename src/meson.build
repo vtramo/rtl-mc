@@ -26,7 +26,7 @@ project_source_files = ['main.cpp']
 
 subdir('parser')
 subdir('system')
-subdir('discretization')
+subdir('discretisation')
 subdir('utils')
 subdir('automaton')
 subdir('core')

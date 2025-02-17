@@ -2,7 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <spot/tl/parse.hh>
-#include "discretization.h"
+#include "discretisation.h"
 #include "PolyhedralSystem.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "BackwardNFA.h"
@@ -11,7 +11,7 @@ TEST_CASE("Automaton construction benchmarks", "[benchmark][automaton]")
 {
     std::string formulaStr { readTestFileAsString("automaton-formula-benchmark-1.txt") };
     spot::parsed_formula parsedFormula { spot::parse_infix_psl(formulaStr) };
-    DiscreteLtlFormula discretizedLtlFormula { DiscreteLtlFormula::discretizeToLtl(std::move(parsedFormula.f)) };
+    DiscreteLtlFormula discretisedLtlFormula { DiscreteLtlFormula::discretiseToLtl(std::move(parsedFormula.f)) };
     REQUIRE(parsedFormula.errors.empty());
 
     std::istringstream polyhedralSystemInput { readTestFileAsString("automaton-polyhedral-system-benchmark-1.txt") };
@@ -22,6 +22,6 @@ TEST_CASE("Automaton construction benchmarks", "[benchmark][automaton]")
     BENCHMARK("Automaton construction benchmark 1")
     {
         PolyhedralSystemFormulaDenotationMap PolyhedralSystemLabelDenotationMap { polyhedralSystemPtr };
-        BackwardNFA backwardNfa { discretizedLtlFormula, std::move(PolyhedralSystemLabelDenotationMap) };
+        BackwardNFA backwardNfa { discretisedLtlFormula, std::move(PolyhedralSystemLabelDenotationMap) };
     };
 }

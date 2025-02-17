@@ -4,7 +4,7 @@ stats_source_file = [
     current_source_dir / 'AutomatonStats.h',
     current_source_dir / 'DenotStats.h',
     current_source_dir / 'RtlFormulaStats.h',
-    current_source_dir / 'DiscretizationStats.h',
+    current_source_dir / 'DiscretisationStats.h',
     current_source_dir / 'StatsFormatter.h',
     current_source_dir / 'collectors.h',
 ]

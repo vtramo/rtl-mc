@@ -4,11 +4,11 @@
 #include <spot/twaalgos/postproc.hh>
 #include <spdlog/spdlog.h>
 
-#include "discretization/DiscreteFiniteLtlFormula.h"
+#include "discretisation/DiscreteFiniteLtlFormula.h"
 #include "utils/ppl/ppl_output.h"
 #include "automaton/BackwardNFA.h"
 #include "automaton/PolyhedralSystemFormulaDenotationMap.h"
-#include "discretization/DiscreteLtlFormula.h"
+#include "discretisation/DiscreteLtlFormula.h"
 #include "system/PolyhedralSystem.h"
 #include "utils/ppl/ppl_aliases.h"
 #include "utils/ppl/ppl_utils.h"
@@ -58,21 +58,21 @@ int main(const int argc, char *argv[])
     Log::log(Verbosity::verbose, "[RTLf Formula] Total atomic propositions: {}.", rtlfFormulaStats.totalAtomicPropositions);
     Log::log(Verbosity::verbose, "[RTLf Formula] Length: {}.\n", rtlfFormulaStats.length);
 
-    Log::log(Verbosity::verbose, ">>> RTLf formula discretization started.");
+    Log::log(Verbosity::verbose, ">>> RTLf formula discretisation started.");
     Timer timer {};
 
     DiscreteLtlFormula discreteLtlFormula {
         rtlMcProgram.directLtl()
-            ? DiscreteLtlFormula::discretizeToLtl(std::move(rtlFormula))
-            : DiscreteFiniteLtlFormula::discretize(std::move(rtlFormula)).toLtl()
+            ? DiscreteLtlFormula::discretiseToLtl(std::move(rtlFormula))
+            : DiscreteFiniteLtlFormula::discretise(std::move(rtlFormula)).toLtl()
     };
 
-    const double discretizationExecutionTimeSeconds { timer.elapsedInSeconds() };
-    Log::log(Verbosity::verbose, "<<< Discretization completed. Elapsed time: {} s.", discretizationExecutionTimeSeconds);
-    DiscretizationStats discretizationStats { collectDiscretizationStats(discreteLtlFormula, discretizationExecutionTimeSeconds) };
+    const double discretisationExecutionTimeSeconds { timer.elapsedInSeconds() };
+    Log::log(Verbosity::verbose, "<<< Discretisation completed. Elapsed time: {} s.", discretisationExecutionTimeSeconds);
+    DiscretisationStats discretisationStats { collectDiscretisationStats(discreteLtlFormula, discretisationExecutionTimeSeconds) };
     Log::log(Verbosity::verbose, "[Discrete LTL formula] Formula: {}.", discreteLtlFormula);
-    Log::log(Verbosity::verbose, "[Discrete LTL formula] Total atomic propositions: {}.", discretizationStats.discreteLtlFormulaTotalAtomicPropositions);
-    Log::log(Verbosity::verbose, "[Discrete LTL formula] Length: {}.\n", discretizationStats.discreteLtlFormulaLength);
+    Log::log(Verbosity::verbose, "[Discrete LTL formula] Total atomic propositions: {}.", discretisationStats.discreteLtlFormulaTotalAtomicPropositions);
+    Log::log(Verbosity::verbose, "[Discrete LTL formula] Length: {}.\n", discretisationStats.discreteLtlFormulaLength);
 
     try
     {
@@ -129,7 +129,7 @@ int main(const int argc, char *argv[])
             StatsFormatter statsFormatter {
                 std::move(polyhedralSystemStats),
                 std::move(rtlfFormulaStats),
-                std::move(discretizationStats),
+                std::move(discretisationStats),
                 AutomatonStats { backwardNfa.stats() },
                 std::move(denotStats)
             };

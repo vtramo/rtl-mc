@@ -6,8 +6,8 @@
 
 class DiscreteFiniteLtlFormula {
 public:
-    static DiscreteFiniteLtlFormula discretize(spot::formula&& formula) {
-        spot::formula discreteLtlFormula { toDiscretizedFormula(std::move(formula)) };
+    static DiscreteFiniteLtlFormula discretise(spot::formula&& formula) {
+        spot::formula discreteLtlFormula { toDiscretisedFormula(std::move(formula)) };
         return DiscreteFiniteLtlFormula { imposeSingOpenLastProperty(std::move(discreteLtlFormula)) };
     }
     const spot::formula& formula() const { return m_discreteFiniteLtlFormula; }
@@ -16,7 +16,7 @@ public:
 private:
     spot::formula m_discreteFiniteLtlFormula {};
 
-    friend DiscreteFiniteLtlFormula discretize(spot::formula&& formula);
+    friend DiscreteFiniteLtlFormula discretise(spot::formula&& formula);
 
     DiscreteFiniteLtlFormula() = default;
     explicit DiscreteFiniteLtlFormula(spot::formula&& formula)

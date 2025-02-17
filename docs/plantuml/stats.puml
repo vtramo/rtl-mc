@@ -45,11 +45,11 @@ package stats {
         -executionTimeSeconds: double
     }
 
-    struct DiscretizationStats {
+    struct DiscretisationStats {
         --data members--
         -discreteLtlFormulaTotalAtomicPropositions: int
         -discreteLtlFormulaLength: int
-        -discretizationExecutionTimeSeconds: double
+        -discretisationExecutionTimeSeconds: double
     }
 
     struct PolyhedralSystemStats {
@@ -68,11 +68,11 @@ package stats {
         --data members--
         -m_polyhedralSystemStats: PolyhedralSystemStats
         -m_rtlFormulaStats: RtlFormulaStats
-        -m_discretizationStats: DiscretizationStats
+        -m_discretisationStats: DiscretisationStats
         -m_automatonStats: AutomatonStats
         -m_denotStats: DenotStats
         --constructors--
-        +StatsFormatter(PolyhedralSystemStats&&, RtlFormulaStats&&, DiscretizationStats&&, AutomatonStats&&, DenotStats&&)
+        +StatsFormatter(PolyhedralSystemStats&&, RtlFormulaStats&&, DiscretisationStats&&, AutomatonStats&&, DenotStats&&)
         --member functions--
         +operator()(std::string&& input): std::string
         +format(std::string&& input): std::string
@@ -82,7 +82,7 @@ package stats {
 
     StatsFormatter --> "1" PolyhedralSystemStats
     StatsFormatter --> "1" RtlFormulaStats
-    StatsFormatter --> "1" DiscretizationStats
+    StatsFormatter --> "1" DiscretisationStats
     StatsFormatter --> "1" AutomatonStats
     StatsFormatter --> "1" DenotStats
     AutomatonStats #---> "1" TranslationFormulaIntoTgbaStats

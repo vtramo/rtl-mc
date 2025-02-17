@@ -1,4 +1,4 @@
-#include "discretization.h"
+#include "discretisation.h"
 #include "spot_constants.h"
 
 using namespace SpotUtils;
@@ -41,7 +41,7 @@ spot::formula imposeSingOpenLastProperty(spot::formula&& formula)
              });
 }
 
-spot::formula toDiscretizedLtlFormula(spot::formula&& formula)
+spot::formula toDiscretisedLtlFormula(spot::formula&& formula)
 {
     switch (formula.kind())
     {
@@ -62,12 +62,12 @@ spot::formula toDiscretizedLtlFormula(spot::formula&& formula)
     default:
         return formula.map([] (spot::formula child)
         {
-            return toDiscretizedLtlFormula(std::move(child));
+            return toDiscretisedLtlFormula(std::move(child));
         });
     }
 }
 
-spot::formula toDiscretizedFormula(spot::formula&& formula)
+spot::formula toDiscretisedFormula(spot::formula&& formula)
 {
     switch (formula.kind())
     {
@@ -88,7 +88,7 @@ spot::formula toDiscretizedFormula(spot::formula&& formula)
     default:
         return formula.map([] (spot::formula child)
         {
-            return toDiscretizedFormula(std::move(child));
+            return toDiscretisedFormula(std::move(child));
         });
     }
 }
@@ -97,7 +97,7 @@ namespace
 {
     spot::formula dsctX(spot::formula&& formula)
     {
-        spot::formula childDsct { toDiscretizedLtlFormula(formula[0]) };
+        spot::formula childDsct { toDiscretisedLtlFormula(formula[0]) };
         spot::formula next { X(And({ childDsct, alive() })) };
         return Or({
             And({ sing(), std::move(next) }),
@@ -107,20 +107,20 @@ namespace
 
     spot::formula dsctF(spot::formula&& formula)
     {
-        spot::formula childDsct { toDiscretizedLtlFormula(formula[0]) };
+        spot::formula childDsct { toDiscretisedLtlFormula(formula[0]) };
         return F(And({ std::move(childDsct), alive() }));
     }
 
     spot::formula dsctG(spot::formula&& formula)
     {
-        spot::formula childDsct { toDiscretizedLtlFormula(formula[0]) };
+        spot::formula childDsct { toDiscretisedLtlFormula(formula[0]) };
         return G(Or({ std::move(childDsct), notAlive() }));
     }
 
     spot::formula dsctU(spot::formula&& formula)
     {
-        spot::formula child1Dsct { toDiscretizedLtlFormula(formula[0]) };
-        spot::formula child2Dsct { toDiscretizedLtlFormula(formula[1]) };
+        spot::formula child1Dsct { toDiscretisedLtlFormula(formula[0]) };
+        spot::formula child2Dsct { toDiscretisedLtlFormula(formula[1]) };
         spot::formula child1DsctCopy { child1Dsct };
 
         return U(std::move(child1DsctCopy), And({
@@ -132,8 +132,8 @@ namespace
 
     spot::formula dsctR(spot::formula&& formula)
     {
-        spot::formula child1Dsct { toDiscretizedLtlFormula(formula[0]) };
-        spot::formula child2Dsct { toDiscretizedLtlFormula(formula[1]) };
+        spot::formula child1Dsct { toDiscretisedLtlFormula(formula[0]) };
+        spot::formula child2Dsct { toDiscretisedLtlFormula(formula[1]) };
         spot::formula child1DsctCopy { child1Dsct };
 
         return R(std::move(child1DsctCopy), Or({ std::move(child2Dsct), And({ std::move(child1Dsct), notSing() }), notAlive() }));
@@ -166,7 +166,7 @@ namespace
 
     spot::formula dscX(spot::formula&& formula)
     {
-        spot::formula childDsc { toDiscretizedFormula(formula[0]) };
+        spot::formula childDsc { toDiscretisedFormula(formula[0]) };
         spot::formula strongNext { strongX(childDsc) };
         return Or({
             And({ sing(), strongNext }),
@@ -176,20 +176,20 @@ namespace
 
     spot::formula dscF(spot::formula&& formula)
     {
-        spot::formula childDsc { toDiscretizedFormula(formula[0]) };
+        spot::formula childDsc { toDiscretisedFormula(formula[0]) };
         return F(std::move(childDsc));
     }
 
     spot::formula dscG(spot::formula&& formula)
     {
-        spot::formula childDsc { toDiscretizedFormula(formula[0]) };
+        spot::formula childDsc { toDiscretisedFormula(formula[0]) };
         return G(std::move(childDsc));
     }
 
     spot::formula dscU(spot::formula&& formula)
     {
-        spot::formula child1Dsc { toDiscretizedFormula(formula[0]) };
-        spot::formula child2Dsc { toDiscretizedFormula(formula[1]) };
+        spot::formula child1Dsc { toDiscretisedFormula(formula[0]) };
+        spot::formula child2Dsc { toDiscretisedFormula(formula[1]) };
 
         spot::formula child2AndSingOrChild1 { And({ std::move(child2Dsc), singOr(child1Dsc) }) };
         return U(std::move(child1Dsc), std::move(child2AndSingOrChild1));
@@ -207,8 +207,8 @@ namespace
 
     spot::formula dscR(spot::formula&& formula)
     {
-        spot::formula child1Dsc { toDiscretizedFormula(formula[0]) };
-        spot::formula child2Dsc { toDiscretizedFormula(formula[1]) };
+        spot::formula child1Dsc { toDiscretisedFormula(formula[0]) };
+        spot::formula child2Dsc { toDiscretisedFormula(formula[1]) };
 
         spot::formula child1AndNotSing { And({ child1Dsc, notSing() }) };
         return R(std::move(child1Dsc), Or({ std::move(child2Dsc), std::move(child1AndNotSing) }));

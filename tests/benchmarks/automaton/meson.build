@@ -1,5 +1,5 @@
 automaton_benchmarks_source_files = [
-    discretization_source_files,
+    discretisation_source_files,
     automaton_source_files,
     polyhedral_system_parser_source_files,
     polyhedral_system_source_files,

@@ -1,8 +1,8 @@
 #pragma once
 
-struct DiscretizationStats
+struct DiscretisationStats
 {
     int discreteLtlFormulaTotalAtomicPropositions {};
     int discreteLtlFormulaLength {};
-    double discretizationExecutionTimeSeconds {};
+    double discretisationExecutionTimeSeconds {};
 };

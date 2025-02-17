@@ -69,7 +69,7 @@ void BackwardNFA::eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nfa)
 spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool anyOption)
 {
     std::string optimizationLevel { SpotUtils::toOptimizationLevelString(m_optimizationLevel) };
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA automaton started.");
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Translation of the discretised LTL formula into a TGBA automaton started.");
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Optimization level: {}.", optimizationLevel);
 
     spot::translator ltlToNbaTranslator {};
@@ -83,7 +83,7 @@ spot::twa_graph_ptr BackwardNFA::translateDiscreteLtlFormulaIntoTgba(const bool 
     spot::twa_graph_ptr formulaTgba { ltlToNbaTranslator.run(m_discreteLtlFormula.formula()) };
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
-    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Translation of the discretized LTL formula into a TGBA completed. Elapsed time: {} s.", executionTimeSeconds);
+    Log::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Translation of the discretised LTL formula into a TGBA completed. Elapsed time: {} s.", executionTimeSeconds);
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Total TGBA states: {}.", formulaTgba->num_states());
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Total TGBA edges {}.", formulaTgba->num_edges());
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Translation] Total TGBA accepting sets {}.", formulaTgba->num_sets());

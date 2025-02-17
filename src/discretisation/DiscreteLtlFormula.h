@@ -1,15 +1,15 @@
 #pragma once
 
 #include <spot/tl/formula.hh>
-#include "discretization.h"
+#include "discretisation.h"
 
 class DiscreteLtlFormula
 {
 public:
-    static DiscreteLtlFormula discretizeToLtl(spot::formula&& formula)
+    static DiscreteLtlFormula discretiseToLtl(spot::formula&& formula)
     {
-        spot::formula discretizedLtlFormula { toDiscretizedLtlFormula(std::move(formula)) };
-        return DiscreteLtlFormula { imposeSingOpenLastFiniteProperty(std::move(discretizedLtlFormula)) };
+        spot::formula discretisedLtlFormula { toDiscretisedLtlFormula(std::move(formula)) };
+        return DiscreteLtlFormula { imposeSingOpenLastFiniteProperty(std::move(discretisedLtlFormula)) };
     }
     const spot::formula& formula() const { return m_discreteLtlFormula; }
 private:
@@ -17,7 +17,7 @@ private:
 
     friend class BackwardNFA;
     friend class DiscreteFiniteLtlFormula;
-    friend DiscreteLtlFormula discretizeToLtl(spot::formula&& formula);
+    friend DiscreteLtlFormula discretiseToLtl(spot::formula&& formula);
 
     DiscreteLtlFormula() = default;
     explicit DiscreteLtlFormula(spot::formula&& formula)

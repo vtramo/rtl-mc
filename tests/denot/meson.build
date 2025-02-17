@@ -7,7 +7,7 @@ denot_tests_src_files = [
     polyhedral_system_parser_source_files,
     spot_utils_source_files,
     ppl_utils_source_files,
-    discretization_source_files
+    discretisation_source_files
 ]
 
 denot_tests_exe = executable(

@@ -1,5 +1,5 @@
 @startuml
-package discretization {
+package discretisation {
     class DiscreteFiniteLtlFormula {
         --data members--
         -m_discreteFiniteLtlFormula : spot::formula
@@ -10,7 +10,7 @@ package discretization {
         +formula() : spot::formula&
         +toLtl() : DiscreteLtlFormula
         --static functions--
-        -{static} discretize(spot::formula&& formula) : DiscreteFiniteLtlFormula
+        -{static} discretise(spot::formula&& formula) : DiscreteFiniteLtlFormula
         --operators--
         -operator== (const DiscreteFiniteLtlFormula& discreteFormula, const spot::formula& formula) : bool
         -operator<< (std::ostream& os, const DiscreteFiniteLtlFormula& formula) : std :: ostream&
@@ -25,18 +25,18 @@ package discretization {
         --member functions--
         +formula() : spot::formula&
         --static functions--
-        -{static} discretizeToLtl(spot::formula&& formula) : DiscreteLtlFormula
+        -{static} discretiseToLtl(spot::formula&& formula) : DiscreteLtlFormula
         --operators--
         -operator== (const DiscreteLtlFormula& discreteLtlFormula, const spot::formula& formula) : bool
         -operator<< (std::ostream& os, const DiscreteLtlFormula& formula) : std :: ostream&
     }
 
-    object discretization_h_cpp {
-        +toDiscretizedLtlFormula(spot::formula&& formula): spot::formula
+    object discretisation_h_cpp {
+        +toDiscretisedLtlFormula(spot::formula&& formula): spot::formula
         +imposeSingOpenLastFiniteProperty(spot::formula&& formula): spot::formula
-        +toDiscretizedFormula(spot::formula&& formula): spot::formula
+        +toDiscretisedFormula(spot::formula&& formula): spot::formula
         +imposeSingOpenLastProperty(spot::formula&& formula): spot::formula
-        --discretization + to LTL--
+        --discretisation + to LTL--
         -dsctF(spot::formula&& formula): spot::formula
         -dsctG(spot::formula&& formula): spot::formula
         -dsctX(spot::formula&& formula): spot::formula
@@ -44,7 +44,7 @@ package discretization {
         -dsctR(spot::formula&& formula): spot::formula
         -dsctM(spot::formula&& formula): spot::formula
         -dsctW(spot::formula&& formula): spot::formula
-        --only discretization--
+        --only discretisation--
         -dscF(spot::formula&& formula): spot::formula
         -dscG(spot::formula&& formula): spot::formula
         -dscX(spot::formula&& formula): spot::formula
@@ -60,7 +60,7 @@ class spot::formula {}
 DiscreteFiniteLtlFormula ...> DiscreteLtlFormula : create
 DiscreteFiniteLtlFormula*-> "1" spot::formula
 DiscreteLtlFormula*-> "1" spot::formula
-DiscreteLtlFormula ..> discretization_h_cpp : use
-DiscreteFiniteLtlFormula ..> discretization_h_cpp : use
+DiscreteLtlFormula ..> discretisation_h_cpp : use
+DiscreteFiniteLtlFormula ..> discretisation_h_cpp : use
 
 @enduml

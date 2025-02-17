@@ -31,7 +31,7 @@ TEST_CASE("Denot benchmark GAP")
         )
     };
 
-    DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretize(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
+    DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
     BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap), spot::postprocessor::optimization_level::High };
     DenotRecursive denot { polyhedralSystem, backwardNfa };

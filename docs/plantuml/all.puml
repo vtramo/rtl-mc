@@ -2,7 +2,7 @@
 !include parser.puml
 !include system.puml
 !include automaton.puml
-!include discretization.puml
+!include discretisation.puml
 !include core.puml
 !include cli.puml
 !include stats.puml
