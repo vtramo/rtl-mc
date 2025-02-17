@@ -306,11 +306,6 @@ void BackwardNFA::updateMaxNumberOfPatchesStats(const int totPatches)
         );
 }
 
-int BackwardNFA::sufficientHorizon() const
-{
-    return m_automatonStats.backwardNfaConstructionStats.sufficientHorizon;
-}
-
 int BackwardNFA::maxRecursiveDepth() const
 {
     return m_automatonStats.backwardNfaConstructionStats.maxRecursiveDepth;
@@ -325,7 +320,7 @@ void BackwardNFA::setBackwardNfaStats(const double executionTimeSeconds, const i
     backwardNfaStats->totalEdges = totalEdges();
     backwardNfaStats->totalFinalStates = totalFinalStates();
     backwardNfaStats->sccInfo = spot::scc_info { m_backwardNfa };
-    backwardNfaStats->sufficientHorizon = 2 * totalStates() * m_automatonStats.backwardNfaConstructionStats.maxNumberPatches;
+    backwardNfaStats->totalNumberPatches = totalPatches;
     backwardNfaStats->maxRecursiveDepth = 1 + 2 * totalPatches;
 }
 

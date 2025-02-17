@@ -41,8 +41,8 @@ struct AutomatonStats
         int totalEdges {};
         int totalFinalStates {};
         int maxNumberPatches {};
+        int totalNumberPatches {};
         int maxRecursiveDepth {};
-        int sufficientHorizon {};
         std::optional<spot::scc_info> sccInfo {};
     };
 

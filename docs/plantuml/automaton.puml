@@ -36,7 +36,6 @@ package automaton {
         +initialStates() : const std::unordered_set<int>&
         +finalStates() : const std::unordered_set<int>&
         +maxRecursiveDepth() : const
-        +sufficientHorizon() : const
         +optimizationLevel() : spot::postprocessor::optimization_level
         +stats() : AutomatonStats& const
         +printDotFormat(std::ostream& os) : void
@@ -100,7 +99,6 @@ package automaton {
     class StateDenotation {
         --data members--
         -m_formula : spot::formula
-        -m_observables : std::unique_ptr<spot::atomic_prop_set>
         -m_denotation : PowersetConstSharedPtr
         -m_isSing : bool
         --constructors--
@@ -109,7 +107,6 @@ package automaton {
         +StateDenotation(const StateDenotation& other)
         --member functions--
         +formula() : const spot::formula&
-        +observables() : const spot::atomic_prop_set&
         +denotation() : PowersetConstSharedPtr
         +totalPatches() : int
         +isSingular() : bool
@@ -117,7 +114,6 @@ package automaton {
         +isEmpty() : bool
         +toString(const PolyhedralSystemSymbolTable& symbolTable) : std::string
         +print(std::ostream& ostream, const PolyhedralSystemSymbolTable& symbolTable) : void
-        -extractObservables() : void
     }
 
     class BackwardNFADepthFirstSearch {

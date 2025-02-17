@@ -30,8 +30,8 @@
 | `%Abi`      | BackwardNFA total initial states                                     |
 | `%Abc`      | BackwardNFA total strongly connected component                       |
 | `%Abm`      | BackwardNFA maximum number of patches in the denotation of any state |
+| `%Abp`      | BackwardNFA total patches                                            |
 | `%Abr`      | BackwardNFA max recursive depth                                      |
-| `%Abh`      | BackwardNFA sufficient horizon                                       |
 | `%Dt`       | Denot total iterations                                               |
 | `%Dx`       | Denot execution time in s                                            |
 
