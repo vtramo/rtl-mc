@@ -68,7 +68,9 @@ public:
                            m_automatonStats.backwardNfaConstructionStats.totalNumberPatches,
                            m_automatonStats.backwardNfaConstructionStats.maxRecursiveDepth,
                            m_denotStats.totalIterations,
-                           m_denotStats.executionTimeSeconds);
+                           m_denotStats.executionTimeSeconds,
+                           m_denotStats.totalAcceptingTraces
+                           );
     }
 
 private:
@@ -108,8 +110,9 @@ private:
     static constexpr std::string_view s_Abp{ "%Abp"sv };  // BackwardNFA total patches
     static constexpr std::string_view s_Abr{ "%Abr"sv };  // BackwardNFA max recursive depth
 
-    static constexpr std::string_view s_Dt{ "%Dt"sv };    // Denot total iterations
+    static constexpr std::string_view s_Dt{ "%Dt"sv }; // Denot total iterations
     static constexpr std::string_view s_Dx{ "%Dx"sv }; // Denot execution time in s
+    static constexpr std::string_view s_Da{ "%Da"sv }; // Denot total accepting traces
 
 
     PolyhedralSystemStats m_polyhedralSystemStats {};
@@ -151,6 +154,7 @@ private:
         replace(input, s_Abr, "{28}");
         replace(input, s_Dt, "{29}");
         replace(input, s_Dx, "{30}");
+        replace(input, s_Da, "{31}");
     }
 
     static void replace(std::string& str, const std::string_view from, const std::string_view to)

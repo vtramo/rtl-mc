@@ -34,6 +34,7 @@
 | `%Abr`      | BackwardNFA max recursive depth                                      |
 | `%Dt`       | Denot total iterations                                               |
 | `%Dx`       | Denot execution time in s                                            |
+| `%Da`       | Denot total accepting traces                                         |
 
 ---
 

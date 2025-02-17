@@ -64,8 +64,6 @@ PowersetUniquePtr DenotRecursive::denot(
     bool isSing
 )
 {
-    assert(recursionDepth <= m_maxRecursionDepth && "Recursion depth exceeded!!!");
-
     m_iterations++;
     Log::log(Verbosity::trace, "--------- Denot iteration {} ---------", m_iterations);
     Log::log(Verbosity::trace, "Recursion Depth: {}", recursionDepth);
@@ -76,7 +74,10 @@ PowersetUniquePtr DenotRecursive::denot(
     assert(X.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
     const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
+    assert(recursionDepth <= m_maxRecursionDepth && "Recursion depth exceeded!!!");
     assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
+
+    m_backwardTrace.push(fmt::format("{}", stateDenotation.observables()));
 
     Log::log(Verbosity::trace, "State: {}. Denotation {}", state, stateDenotation.toString(m_polyhedralSystem->symbolTable()));
     Log::log(Verbosity::trace, "State: {}. Is initial {}", state, m_backwardNfa.isInitialState(state));
@@ -97,6 +98,9 @@ PowersetUniquePtr DenotRecursive::denot(
             state,
             PPLOutput::toString(X, m_polyhedralSystem->symbolTable())
         );
+
+        saveAcceptingTrace();
+        m_backwardTrace.pop();
 
         return std::make_unique<Powerset>(X);
     }
@@ -189,6 +193,7 @@ PowersetUniquePtr DenotRecursive::denot(
         result->size()
     );
 
+    m_backwardTrace.pop();
     return result;
 }
 
@@ -200,4 +205,17 @@ void DenotRecursive::addDisjunct(std::vector<Powerset>& V, const int state, cons
 const Powerset& DenotRecursive::getVisitedPowerset(std::vector<Powerset>& V, const int state)
 {
     return V[state];
+}
+
+void DenotRecursive::saveAcceptingTrace()
+{
+    std::stack backwardTrace { m_backwardTrace };
+    std::vector<std::string> acceptingTrace {};
+    acceptingTrace.reserve(backwardTrace.size());
+    while (!backwardTrace.empty())
+    {
+        acceptingTrace.push_back(backwardTrace.top());
+        backwardTrace.pop();
+    }
+    m_acceptingTraces.push_back(acceptingTrace);
 }

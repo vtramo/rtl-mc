@@ -38,6 +38,7 @@ DenotStats collectDenotStats(const D& denot, const double executionTimeSeconds)
 {
     return {
         denot.totalIterations(),
-        executionTimeSeconds
+        denot.totalAcceptingTraces(),
+        executionTimeSeconds,
     };
 }

@@ -10,6 +10,7 @@ package core {
         --member functions--
         +run(): PowersetUniquePtr
         +totalIterations(): int
+        +totalAcceptingTraces(): int
         -denot(const int state, const Poly& P, const Poly& X, std::unordered_map<int, Powerset> V): PowersetUniquePtr
         -addDisjunct(std::unordered_map<int, Powerset>& V, int state, const Poly& P): void
         -getDisjunct(std::unordered_map<int, Powerset>& V, int state): const Powerset&

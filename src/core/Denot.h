@@ -10,4 +10,5 @@ public:
     PowersetUniquePtr operator() () { return run(); }
     virtual PowersetUniquePtr run() { return PowersetUniquePtr(); }
     virtual int totalIterations() const { return 0; }
+    virtual int totalAcceptingTraces() const { return 0; }
 };

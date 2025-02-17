@@ -3,6 +3,7 @@
 #include <spot/tl/parse.hh>
 #include <spot/twaalgos/postproc.hh>
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/bundled/ranges.h>
 
 #include "discretisation/DiscreteFiniteLtlFormula.h"
 #include "utils/ppl/ppl_output.h"
@@ -32,7 +33,7 @@ BackwardNFA buildBackwardNfa(
 );
 
 std::unique_ptr<Denot> createDenot(
-    const RtlMcProgram& rtlMcProgram,
+    bool concurrent,
     PolyhedralSystemSharedPtr polyhedralSystem,
     const BackwardNFA& backwardNfa
 );
@@ -94,8 +95,8 @@ int main(const int argc, char *argv[])
         Log::log(Verbosity::verbose, ">>> Denot algorithm started.");
         timer.reset();
 
-        std::unique_ptr denotUniquePtr { createDenot(rtlMcProgram, polyhedralSystem, backwardNfa) };
-        Denot& denot { *denotUniquePtr };
+        std::unique_ptr denotUniquePtr { createDenot(rtlMcProgram.concurrent(), polyhedralSystem, backwardNfa) };
+        DenotRecursive& denot { dynamic_cast<DenotRecursive&>(*denotUniquePtr) };
 
         PowersetUniquePtr denotResult {
             rtlMcProgram.universal()
@@ -107,6 +108,12 @@ int main(const int argc, char *argv[])
         DenotStats denotStats { collectDenotStats(denot, denotExecutionTimeSeconds) };
         Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.executionTimeSeconds);
         Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.totalIterations);
+
+        const std::vector<std::vector<std::string>>& acceptingTraces { denot.acceptingTraces() };
+        Log::log(Verbosity::verbose, "Total accepting traces: {}", denot.totalAcceptingTraces());
+        Log::log(Verbosity::trace, "Accepted traces:");
+        for (const std::vector<std::string>& acceptingTrace: acceptingTraces)
+            Log::log(Verbosity::trace, "> [{}]", fmt::format("{}", fmt::join(acceptingTrace, ", ")));
 
         Log::log(Verbosity::verbose, "[Result]");
 
@@ -167,11 +174,11 @@ BackwardNFA buildBackwardNfa(
 }
 
 std::unique_ptr<Denot> createDenot(
-    const RtlMcProgram& rtlMcProgram,
+    const bool concurrent,
     PolyhedralSystemSharedPtr polyhedralSystem,
     const BackwardNFA& backwardNfa
 ) {
-    if (rtlMcProgram.concurrent()) {
+    if (concurrent) {
         return std::make_unique<DenotConcurrentV1>(polyhedralSystem, backwardNfa);
     }
 
