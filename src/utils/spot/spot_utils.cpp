@@ -413,4 +413,29 @@ namespace SpotUtils
             }
         }
     }
+
+    bool isNonRecurrent(spot::formula& formula)
+    {
+        if (!formula.is_ltl_formula())
+            throw std::invalid_argument("Spot formula is not a LTL formula");
+
+        bool isNonRecurrent { true };
+
+        formula.traverse([&isNonRecurrent] (const spot::formula& child)
+                        {
+                            if (!isNonRecurrent) return true;
+
+                            if (child.is(spot::op::G))
+                            {
+                                isNonRecurrent = child[0].is_boolean();
+                            } else if (child.is(spot::op::R))
+                            {
+                                isNonRecurrent = child[1].is_boolean();
+                            }
+
+                            return !isNonRecurrent;
+                        });
+
+        return isNonRecurrent;
+    }
 }

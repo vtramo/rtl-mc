@@ -39,7 +39,6 @@ RtlfParsingResult parseRtlf(const std::string_view rtlf, const spot::atomic_prop
     if (!illegalAtoms.empty())
     {
         rtlfParsingResult.setIllegalAtoms(std::move(illegalAtoms));
-        return rtlfParsingResult;
     }
 
     return rtlfParsingResult;

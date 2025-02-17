@@ -47,7 +47,7 @@ namespace SpotUtils
 
     spot::formula generateAlternatingFormula(int k, spot::formula p = ap("p"), spot::formula q = ap("q"));
     std::string toFormulaString(const spot::formula& formula);
-    std::string toOptimizationLevelString(const spot::postprocessor::optimization_level optimizationLevel);
+    std::string toOptimizationLevelString(spot::postprocessor::optimization_level optimizationLevel);
     bool isSing(const spot::formula& formula);
     bool isNotSing(const spot::formula& formula);
     bool isSingOrNotSing(const spot::formula& formula);
@@ -59,6 +59,7 @@ namespace SpotUtils
     spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula);
     spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard);
     void transpose(const spot::twa_graph_ptr& twaGraph);
+    bool isNonRecurrent(spot::formula& formula);
 }
 
 #endif //SPOT_UTILS_H
