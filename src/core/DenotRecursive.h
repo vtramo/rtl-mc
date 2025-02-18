@@ -34,6 +34,6 @@ private:
         bool isSing
     );
 
-    static void addDisjunct(std::vector<Powerset>& V, int state, const Poly& P);
+    void addDisjunct(std::vector<Powerset>& V, int state, const Poly& P) const;
     static const Powerset& getVisitedPowerset(std::vector<Powerset>& V, int state);
 };

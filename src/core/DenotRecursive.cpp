@@ -93,28 +93,37 @@ PowersetUniquePtr DenotRecursive::denot(
 
     if (m_backwardNfa.isInitialState(state))
     {
-        Log::log(Verbosity::trace, "State {} is initial, returning X: {}",
+        if (stateDenotation.isSingular())
+        {
+            Log::log(Verbosity::trace, "State {} is initial and singular, returning X: {}",
+                state,
+                PPLOutput::toString(X, m_polyhedralSystem->symbolTable())
+            );
+
+            return std::make_unique<Powerset>(X);
+        }
+
+        PPLUtils::ReachPairs reachPairs {
+            PPLUtils::reachPlus(
+                Powerset { X },
+                Poly { m_polyhedralSystem->spaceDimension(), PPL::UNIVERSE },
+                m_polyhedralSystem->preFlow()
+            )
+        };
+        PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
+        for (const auto& [Q, Y]: reachPairs)
+            result->add_disjunct(Q);
+
+        Log::log(Verbosity::trace, "State {} is initial and open, returning: {}",
             state,
-            PPLOutput::toString(X, m_polyhedralSystem->symbolTable())
+            PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
         );
 
-        return std::make_unique<Powerset>(X);
+        return result;
     }
 
     if (!stateDenotation.isSingular())
-    {
-        Log::log(Verbosity::trace, "State {} is not singular, adding P: {}",
-            state,
-            PPLOutput::toString(P, m_polyhedralSystem->symbolTable())
-        );
-
         addDisjunct(V, state, P);
-
-        Log::log(Verbosity::trace, "State {} updated visited region: {}",
-            state,
-            PPLOutput::toString(X, m_polyhedralSystem->symbolTable())
-        );
-    }
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
     for (const auto& edgePredecessor: m_backwardNfa.predecessors(state))
@@ -192,9 +201,19 @@ PowersetUniquePtr DenotRecursive::denot(
     return result;
 }
 
-void DenotRecursive::addDisjunct(std::vector<Powerset>& V, const int state, const Poly& P)
+void DenotRecursive::addDisjunct(std::vector<Powerset>& V, const int state, const Poly& P) const
 {
+    Log::log(Verbosity::trace, "State {} is not singular, adding P: {}",
+        state,
+        PPLOutput::toString(P, m_polyhedralSystem->symbolTable())
+    );
+
     V[state].add_disjunct(P);
+
+    Log::log(Verbosity::trace, "V[{}]: {}",
+        state,
+        PPLOutput::toString(V[state], m_polyhedralSystem->symbolTable())
+    );
 }
 
 const Powerset& DenotRecursive::getVisitedPowerset(std::vector<Powerset>& V, const int state)
