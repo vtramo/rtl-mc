@@ -8,6 +8,10 @@ project('rtl-mc', 'cpp',
     'b_sanitize=none' # https://github.com/google/sanitizers
   ])
 
+if get_option('enable_profiling') == true
+  add_global_arguments('-pg', language : 'cpp')
+endif
+
 src_dir = 'src'
 parser_dir = 'parser'
 system_dir = 'system'

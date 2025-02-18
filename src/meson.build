@@ -8,6 +8,7 @@ spdlog = dependency('spdlog', fallback : ['spdlog'], version: '>=1.15.0')
 
 add_project_arguments('-DSPOT_WANT_STRONG_X', language: 'cpp')
 add_project_arguments('-DPPL_THREAD_SAFE=1', language: 'cpp')
+
 if get_option('debug') == false
     add_project_arguments('-DNDEBUG', language: 'cpp')
 endif
@@ -34,10 +35,16 @@ subdir('cli')
 subdir('logger')
 subdir('stats')
 
+link_args = []
+if get_option('enable_profiling') == true
+    link_args += ['-pg']
+endif
+
 project_exe = executable(
     meson.project_name(),
     project_source_files,
     dependencies : project_dependencies,
     include_directories : include_directories,
-    install : true
+    install : true,
+    link_args : link_args
 )
