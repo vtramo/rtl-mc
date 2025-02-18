@@ -24,6 +24,7 @@ private:
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
     const BackwardNFA& m_backwardNfa {};
     int m_maxRecursionDepth {};
+    int m_breadth {};
 
     PowersetUniquePtr denot(
         int state,

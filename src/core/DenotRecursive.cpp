@@ -67,8 +67,10 @@ PowersetUniquePtr DenotRecursive::denot(
     assert(recursionDepth <= m_maxRecursionDepth && "Recursion depth exceeded!!!");
 
     m_iterations++;
+    m_breadth++;
     Log::log(Verbosity::trace, "--------- Denot iteration {} ---------", m_iterations);
     Log::log(Verbosity::trace, "Recursion Depth: {}", recursionDepth);
+    Log::log(Verbosity::trace, "Recursion Breadth: {}", m_breadth);
 
     assert(P.space_dimension() == m_polyhedralSystem->spaceDimension());
     assert(P.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
@@ -78,15 +80,16 @@ PowersetUniquePtr DenotRecursive::denot(
     const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
     assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
 
-    Log::log(Verbosity::trace, "State: {}. Denotation {}", state, stateDenotation.toString(m_polyhedralSystem->symbolTable()));
+    Log::log(Verbosity::trace, "State: {}. Denotation size {}.", state, stateDenotation.denotation()->size());
+    Log::log(Verbosity::trace, "State: {}. Denotation {}.", state, stateDenotation.toString(m_polyhedralSystem->symbolTable()));
     Log::log(Verbosity::trace, "State: {}. Is initial {}", state, m_backwardNfa.isInitialState(state));
     Log::log(Verbosity::trace, "State: {}. Is final {}", state, m_backwardNfa.isFinalState(state));
 
     const Powerset& visitedPowerset { getVisitedPowerset(V, state) };
-    Log::log(Verbosity::trace, "Visited region V[{}]: {}. Size: {}",
+    Log::log(Verbosity::trace, "Visited region. Size: {}. V[{}]: {}.",
+        visitedPowerset.size(),
         state,
-        PPLOutput::toString(visitedPowerset, m_polyhedralSystem->symbolTable()),
-        visitedPowerset.size()
+        PPLOutput::toString(visitedPowerset, m_polyhedralSystem->symbolTable())
     );
     Log::log(Verbosity::trace, "P: {}", PPLOutput::toString(P, m_polyhedralSystem->symbolTable()));
     Log::log(Verbosity::trace, "X: {}\n", PPLOutput::toString(X, m_polyhedralSystem->symbolTable()));
@@ -100,6 +103,7 @@ PowersetUniquePtr DenotRecursive::denot(
                 PPLOutput::toString(X, m_polyhedralSystem->symbolTable())
             );
 
+            m_breadth--;
             return std::make_unique<Powerset>(X);
         }
 
@@ -114,11 +118,13 @@ PowersetUniquePtr DenotRecursive::denot(
         for (const auto& [Q, Y]: reachPairs)
             result->add_disjunct(Q);
 
-        Log::log(Verbosity::trace, "State {} is initial and open, returning: {}",
+        Log::log(Verbosity::trace, "State {} is initial and open. Result size: {}. Returning: {}",
             state,
+            result->size(),
             PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
         );
 
+        m_breadth--;
         return result;
     }
 
@@ -178,12 +184,17 @@ PowersetUniquePtr DenotRecursive::denot(
             PowersetUniquePtr denotResult { denot(predecessor, Q, Y, V, recursionDepth + 1, !isSing) };
 
             Log::log(Verbosity::trace, "Reach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
-            Log::log(Verbosity::trace, "Result: {}", PPLOutput::toString(*denotResult, m_polyhedralSystem->symbolTable()));
+            Log::log(Verbosity::trace, "(State: {}, Predecessor {}) Result size: {}. Result: {}",
+                state,
+                predecessor,
+                denotResult->size(),
+                PPLOutput::toString(*denotResult, m_polyhedralSystem->symbolTable()));
 
             PPLUtils::fusion(*result, *denotResult);
 
-            Log::log(Verbosity::trace, "Update result denot iteration {}: {}",
+            Log::log(Verbosity::trace, "Update result. Denot iteration {}. Result size: {}. Result: {}",
                 m_iterations,
+                result->size(),
                 PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
             );
 
@@ -193,11 +204,12 @@ PowersetUniquePtr DenotRecursive::denot(
         Log::log(Verbosity::trace, "<<< State: {} -> Predecessor Completed: {}\n", state, predecessor);
     }
 
-    Log::log(Verbosity::trace, "Returning result: {}. Size: {}",
-        PPLOutput::toString(*result, m_polyhedralSystem->symbolTable()),
-        result->size()
+    Log::log(Verbosity::trace, "Returning result. Result size: {}. Result: {}",
+        result->size(),
+        PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
     );
 
+    m_breadth--;
     return result;
 }
 
