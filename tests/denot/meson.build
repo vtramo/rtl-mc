@@ -1,6 +1,5 @@
 denot_tests_src_files = [
     'denot_tests.cpp',
-    'denot_memoization_tests.cpp',
     core_source_files,
     automaton_source_files,
     polyhedral_system_source_files,
