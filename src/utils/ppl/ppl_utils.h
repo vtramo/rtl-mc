@@ -35,6 +35,8 @@ namespace PPLUtils {
 
     Poly zeroPoint(PPL::dimension_type spaceDimension);
     bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y);
+
+    bool containsDisjunct(const Powerset& powerset, const Poly& disjunct);
 }
 
 #endif //PPL_UTILS_H
