@@ -63,10 +63,8 @@ PowersetUniquePtr DenotRecursive::denot(
     assert(recursionDepth <= m_maxRecursionDepth && "Recursion depth exceeded!!!");
 
     m_iterations++;
-    m_breadth++;
     Log::log(Verbosity::trace, "--------- Denot iteration {} ---------", m_iterations);
     Log::log(Verbosity::trace, "Recursion Depth: {}", recursionDepth);
-    Log::log(Verbosity::trace, "Recursion Breadth: {}", m_breadth);
 
     assert(P.space_dimension() == m_polyhedralSystem->spaceDimension());
     assert(P.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
@@ -97,7 +95,6 @@ PowersetUniquePtr DenotRecursive::denot(
                 PPLOutput::toString(X, m_polyhedralSystem->symbolTable())
             );
 
-            m_breadth--;
             return std::make_unique<Powerset>(X);
         }
 
@@ -118,7 +115,6 @@ PowersetUniquePtr DenotRecursive::denot(
             PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
         );
 
-        m_breadth--;
         return result;
     }
 
@@ -208,7 +204,6 @@ PowersetUniquePtr DenotRecursive::denot(
         PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
     );
 
-    m_breadth--;
     return result;
 }
 
