@@ -4,8 +4,19 @@
 #include "Timer.h"
 #include "ppl_utils.h"
 
+std::vector<Powerset> DenotRecursive::initializeUnvisitedMap() const
+{
+    std::vector<Powerset> V {};
+    V.resize(m_backwardNfa.totalStates());
+    for (int state = 0; state < m_backwardNfa.totalStates(); state++)
+        V[state] = *m_backwardNfa.stateDenotation(state).denotation();
+    return V;
+}
+
 PowersetUniquePtr DenotRecursive::run() {
     m_iterations = 0;
+
+    std::vector V { initializeUnvisitedMap() };
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
@@ -26,7 +37,6 @@ PowersetUniquePtr DenotRecursive::run() {
                 PPLOutput::toString(patchesIt->pointset(), m_polyhedralSystem->symbolTable())
             );
 
-            std::vector V(m_backwardNfa.totalStates(), Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY });
             PowersetUniquePtr finalStatePatchResult { denot(finalState, patchesIt->pointset(), patchesIt->pointset(), V, 0, true) };
 
             Log::log(Verbosity::trace, "Final state {}, patch {} result: {}",
@@ -79,12 +89,6 @@ PowersetUniquePtr DenotRecursive::denot(
     Log::log(Verbosity::trace, "State: {}. Is initial {}", state, m_backwardNfa.isInitialState(state));
     Log::log(Verbosity::trace, "State: {}. Is final {}", state, m_backwardNfa.isFinalState(state));
 
-    const Powerset & visitedPowerset { getVisitedPowerset(V, state) };
-    Log::log(Verbosity::trace, "Visited region. Size: {}. V[{}]: {}.",
-        visitedPowerset.size(),
-        state,
-        PPLOutput::toString(visitedPowerset, m_polyhedralSystem->symbolTable())
-    );
     Log::log(Verbosity::trace, "P: {}", PPLOutput::toString(P, m_polyhedralSystem->symbolTable()));
     Log::log(Verbosity::trace, "X: {}\n", PPLOutput::toString(X, m_polyhedralSystem->symbolTable()));
 
@@ -118,11 +122,9 @@ PowersetUniquePtr DenotRecursive::denot(
         return result;
     }
 
-    if (!stateDenotation.isSingular())
-        addDisjunct(V, state, P);
-
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
-    for (const auto & edgePredecessor : m_backwardNfa.predecessors(state)) {
+    for (const auto & edgePredecessor: m_backwardNfa.predecessors(state))
+    {
         int predecessor { static_cast<int>(edgePredecessor.dst) };
         const StateDenotation & predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
 
@@ -132,68 +134,56 @@ PowersetUniquePtr DenotRecursive::denot(
             predecessorStateDenotation.toString(m_polyhedralSystem->symbolTable())
         );
 
-        const Powerset & predecessorVisitedPowerset { getVisitedPowerset(V, predecessor) };
-        assert(predecessorVisitedPowerset.space_dimension() == m_polyhedralSystem->spaceDimension());
+        for (
+            Powerset::iterator predecessorUnvisitedPatchIt { V[predecessor].begin() };
+            predecessorUnvisitedPatchIt != V[predecessor].end();
+            ++predecessorUnvisitedPatchIt
+        )
+        {
+            Powerset A { Powerset { predecessorUnvisitedPatchIt->pointset() } };
+            if (!predecessorStateDenotation.isSingular())
+                predecessorUnvisitedPatchIt = V[predecessor].drop_disjunct(predecessorUnvisitedPatchIt);
 
-        Log::log(Verbosity::trace, "Visited region predecessor V[{}]: {}. Size: {}",
-            predecessor,
-            PPLOutput::toString(predecessorVisitedPowerset, m_polyhedralSystem->symbolTable()),
-            predecessorVisitedPowerset.size()
-        );
+            Timer timer {};
+            Log::log(Verbosity::trace, "Calling reach operator (isSing = {}).", isSing);
+            PPLUtils::ReachPairs reachPairs {
+                predecessorStateDenotation.isSingular()
+                    ? PPLUtils::reach0(A, X, m_polyhedralSystem->preFlow())
+                    : PPLUtils::reachPlus(A, X, m_polyhedralSystem->preFlow())
+            };
+            Log::log(Verbosity::trace, "Reach pairs computed (size: {}). Elapsed time: {} s.", reachPairs.size(), timer.elapsedInSeconds());
 
-        Powerset A { *predecessorStateDenotation.denotation() };
-        for (Powerset::const_iterator it2 { predecessorVisitedPowerset.begin() }; it2 != predecessorVisitedPowerset.end(); ++it2)
-            for (Powerset::iterator it1 { A.begin() }; it1 != A.end(); ++it1)
-                if (it1->pointset() == it2->pointset()) {
-                    A.drop_disjunct(it1);
-                    break;
-                }
-        if (A.is_empty()) continue;
+            int reachPairIndex { 1 };
+            for (const auto & [Q, Y]: reachPairs) {
+                Log::log(Verbosity::trace, "\nReach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
+                Log::log(Verbosity::trace, "Q: {}, Y: {}",
+                    PPLOutput::toString(Q, m_polyhedralSystem->symbolTable()),
+                    PPLOutput::toString(Y, m_polyhedralSystem->symbolTable())
+                );
 
-        assert(A.space_dimension() == m_polyhedralSystem->spaceDimension());
-        assert(A.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
-        Log::log(Verbosity::trace, "Predecessor denotation minus visited region (A): {}, Size: {}",
-            PPLOutput::toString(A, m_polyhedralSystem->symbolTable()), A.size());
+                assert(Q.space_dimension() == m_polyhedralSystem->spaceDimension());
+                assert(Y.space_dimension() == m_polyhedralSystem->spaceDimension());
+                assert(PPLUtils::containsDisjunct(*predecessorStateDenotation.denotation(), Q));
 
-        Timer timer {};
-        Log::log(Verbosity::trace, "Calling reach operator (isSing = {}).", isSing);
-        PPLUtils::ReachPairs reachPairs {
-            predecessorStateDenotation.isSingular()
-                ? PPLUtils::reach0(A, X, m_polyhedralSystem->preFlow())
-                : PPLUtils::reachPlus(A, X, m_polyhedralSystem->preFlow())
-        };
-        Log::log(Verbosity::trace, "Reach pairs computed (size: {}). Elapsed time: {} s.", reachPairs.size(), timer.elapsedInSeconds());
+                PowersetUniquePtr denotResult { denot(predecessor, Q, Y, V, recursionDepth + 1, !isSing) };
 
-        int reachPairIndex { 1 };
-        for (const auto & [Q, Y] : reachPairs) {
-            Log::log(Verbosity::trace, "\nReach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
-            Log::log(Verbosity::trace, "Q: {}, Y: {}",
-                PPLOutput::toString(Q, m_polyhedralSystem->symbolTable()),
-                PPLOutput::toString(Y, m_polyhedralSystem->symbolTable())
-            );
+                Log::log(Verbosity::trace, "Reach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
+                Log::log(Verbosity::trace, "(State: {}, Predecessor {}) Result size: {}. Result: {}",
+                    state,
+                    predecessor,
+                    denotResult->size(),
+                    PPLOutput::toString(*denotResult, m_polyhedralSystem->symbolTable()));
 
-            assert(Q.space_dimension() == m_polyhedralSystem->spaceDimension());
-            assert(Y.space_dimension() == m_polyhedralSystem->spaceDimension());
-            assert(PPLUtils::containsDisjunct(*predecessorStateDenotation.denotation(), Q));
+                PPLUtils::fusion(*result, *denotResult);
 
-            PowersetUniquePtr denotResult { denot(predecessor, Q, Y, V, recursionDepth + 1, !isSing) };
+                Log::log(Verbosity::trace, "Update result. Denot iteration {}. Result size: {}. Result: {}",
+                    m_iterations,
+                    result->size(),
+                    PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
+                );
 
-            Log::log(Verbosity::trace, "Reach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
-            Log::log(Verbosity::trace, "(State: {}, Predecessor {}) Result size: {}. Result: {}",
-                state,
-                predecessor,
-                denotResult->size(),
-                PPLOutput::toString(*denotResult, m_polyhedralSystem->symbolTable()));
-
-            PPLUtils::fusion(*result, *denotResult);
-
-            Log::log(Verbosity::trace, "Update result. Denot iteration {}. Result size: {}. Result: {}",
-                m_iterations,
-                result->size(),
-                PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
-            );
-
-            reachPairIndex++;
+                reachPairIndex++;
+            }
         }
 
         Log::log(Verbosity::trace, "<<< State: {} -> Predecessor Completed: {}\n", state, predecessor);
@@ -205,22 +195,4 @@ PowersetUniquePtr DenotRecursive::denot(
     );
 
     return result;
-}
-
-void DenotRecursive::addDisjunct(std::vector<Powerset> & V, const int state, const Poly & P) const {
-    Log::log(Verbosity::trace, "State {} is not singular, adding P: {}",
-        state,
-        PPLOutput::toString(P, m_polyhedralSystem->symbolTable())
-    );
-
-    V[state].add_disjunct(P);
-
-    Log::log(Verbosity::trace, "V[{}]: {}",
-        state,
-        PPLOutput::toString(V[state], m_polyhedralSystem->symbolTable())
-    );
-}
-
-const Powerset & DenotRecursive::getVisitedPowerset(std::vector<Powerset> & V, const int state) {
-    return V[state];
 }

@@ -14,7 +14,6 @@ public:
         m_maxRecursionDepth = backwardNfa.maxRecursiveDepth();
     }
     ~DenotRecursive() override = default;
-
     PowersetUniquePtr run() override;
 
     [[nodiscard]] int totalIterations() const override { return m_iterations; }
@@ -25,6 +24,7 @@ private:
     const BackwardNFA& m_backwardNfa {};
     int m_maxRecursionDepth {};
 
+    std::vector<Powerset> initializeUnvisitedMap() const;
     PowersetUniquePtr denot(
         int state,
         const Poly& P,
@@ -33,7 +33,4 @@ private:
         int recursionDepth,
         bool isSing
     );
-
-    void addDisjunct(std::vector<Powerset>& V, int state, const Poly& P) const;
-    static const Powerset& getVisitedPowerset(std::vector<Powerset>& V, int state);
 };
