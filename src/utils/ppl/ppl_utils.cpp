@@ -5,6 +5,13 @@
 using PPL::IO_Operators::operator<<;
 
 namespace PPLUtils {
+    std::string toString(const Poly& poly)
+    {
+        std::ostringstream iss { };
+        iss << poly;
+        return iss.str();
+    }
+
     Poly & reflectionAffineImage(Poly & polyhedron) {
         const PPL::dimension_type spaceDimension { polyhedron.space_dimension() };
 
