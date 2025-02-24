@@ -37,4 +37,5 @@ namespace PPLUtils {
     bool containsDisjunct(const Powerset& powerset, const Poly& disjunct);
     PowersetUniquePtr border(const Powerset& p, const Powerset& q);
     bool areAdjacent(const Powerset& p, const Powerset& q);
+    PolyUniquePtr interior(const Poly& poly);
 }

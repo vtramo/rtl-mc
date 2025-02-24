@@ -301,4 +301,32 @@ namespace PPLUtils {
         PowersetUniquePtr borderPQ { border(p, q) };
         return !borderPQ->is_empty();
     }
+
+    PolyUniquePtr interior(const Poly& poly)
+    {
+        PPL::Constraint_System constraints { poly.constraints() };
+        PPL::Constraint_System strictConstraints {};
+        for (auto constraint: constraints)
+        {
+            switch (constraint.type())
+            {
+            case Parma_Polyhedra_Library::Constraint::EQUALITY:
+            case Parma_Polyhedra_Library::Constraint::STRICT_INEQUALITY:
+                strictConstraints.insert(constraint);
+                break;
+            case Parma_Polyhedra_Library::Constraint::NONSTRICT_INEQUALITY:
+                PPL::GMP_Integer inhomogeneousTerm { -constraint.inhomogeneous_term() };
+                PPL::Linear_Expression expression {};
+                for (PPL::dimension_type dim { 0 }; dim < constraint.space_dimension(); ++dim)
+                {
+                    PPL::Variable variable { dim };
+                    expression += constraint.coefficient(variable) * variable;
+                }
+                Parma_Polyhedra_Library::Constraint strictConstraint { expression > inhomogeneousTerm };
+                strictConstraints.insert(strictConstraint);
+                break;
+            }
+        }
+        return std::make_unique<Poly>(strictConstraints);
+    }
 }
