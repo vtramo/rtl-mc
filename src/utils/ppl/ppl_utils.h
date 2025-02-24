@@ -1,6 +1,4 @@
-#ifndef PPL_UTILS_H
-#define PPL_UTILS_H
-
+#pragma once
 #include "ppl_aliases.h"
 
 namespace PPLUtils {
@@ -37,6 +35,5 @@ namespace PPLUtils {
     bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y);
 
     bool containsDisjunct(const Powerset& powerset, const Poly& disjunct);
+    bool areAdjacent(const Powerset& p, const Powerset& q);
 }
-
-#endif //PPL_UTILS_H
