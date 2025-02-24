@@ -26,6 +26,7 @@ package system {
         --data members--
         -m_flow : Poly
         -m_isOmnidirectionalFlow : bool
+        -m_isMovementForced : bool
         -m_preFlow : Poly
         -m_symbolTable : PolyhedralSystemSymbolTable
         -m_invariant : Powerset
@@ -41,6 +42,7 @@ package system {
         +flow() : Poly&
         +preFlow() : Poly&
         +isOmnidirectionalFlow() : bool
+        +isMovementForced() : bool
         +isClosedFlow() : bool
         +symbolTable() : PolyhedralSystemSymbolTable&
         +invariant() : Powerset&
@@ -51,7 +53,7 @@ package system {
         +setConstraintOutputMinimized(bool) : void
         +atoms() : spot::atomic_prop_set&
         -computePreFlow() : void
-        -checkAndSetOmnidirectionalFlow() : void
+        -evaluateFlowProperties() : void
         --static functions--
         +{static} builder() : PolyhedralSystemBuilder
         --operators--

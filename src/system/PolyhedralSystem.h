@@ -23,6 +23,7 @@ public:
     [[nodiscard]] const Poly& preFlow() const;
     [[nodiscard]] bool isOmnidirectionalFlow() const;
     [[nodiscard]] bool isClosedFlow() const;
+    [[nodiscard]] bool isMovementForced() const;
 
     [[nodiscard]] const Powerset& invariant() const;
     [[nodiscard]] bool isBoundedInvariant() const;
@@ -47,6 +48,7 @@ private:
     Powerset m_invariant { 0, PPL::EMPTY };
     Poly m_flow { 0, PPL::EMPTY };
     bool m_isOmnidirectionalFlow { false };
+    bool m_isMovementForced { false };
     Poly m_preFlow { 0, PPL::EMPTY };
     std::unordered_map<Atom, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
@@ -72,7 +74,7 @@ private:
     friend class PolyhedralSystemBuilder;
 
     void computePreFlow();
-    void checkAndSetOmnidirectionalFlow();
+    void evaluateFlowProperties();
 };
 
 std::ostream& operator<< (std::ostream&, const PolyhedralSystem&);
