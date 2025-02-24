@@ -175,10 +175,8 @@ void PolyhedralSystem::evaluateFlowProperties()
     PolyUniquePtr interiorFlow { PPLUtils::interior(m_flow) };
     Poly closureFlow { m_flow };
     closureFlow.topological_closure_assign();
-
     m_isOmnidirectionalFlow = interiorFlow->contains(zeroPoint);
     m_isMovementForced = !closureFlow.contains(zeroPoint);
-    assert(m_isOmnidirectionalFlow != m_isMovementForced);
 }
 
 std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSystem)
