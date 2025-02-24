@@ -4,6 +4,7 @@ parse_system_benchmarks_source_files = [
     polyhedral_system_parser_source_files,
     polyhedral_system_source_files,
     ppl_utils_source_files,
+    operators_source_files,
     spot_utils_source_files
 ]
 

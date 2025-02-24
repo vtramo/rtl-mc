@@ -130,7 +130,7 @@ TEST_CASE("Interior")
     SECTION(
         "{ x + y + z + k >= -2 - j - z & x + y <= 2 & x >= -1 & x <= 1 & y >= -2 & y <= 2 & j = 1 } "
         "SHOULD BE "
-        "{ x + y + 2*z + k + j > -2 & -x - y > -2 & x > -1 & -x > -1 & y > -2 & -y > -2 & j = 1 }"
+        "{ x + y + 2*z + k + j > -2 & -x - y > -2 & x > -1 & -x > -1 & y > -2 & -y > -2 }"
     )
     {
         Poly poly {
@@ -152,7 +152,6 @@ TEST_CASE("Interior")
                 { -x > -1 },
                 { y > -2 },
                 { -y > -2 },
-                { j == 1 },
             })
         };
 

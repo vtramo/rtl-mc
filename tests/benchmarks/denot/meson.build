@@ -8,6 +8,7 @@ denot_benchmarks_source_files = [
     'denot_benchmarks.cpp',
     spot_utils_source_files,
     ppl_utils_source_files,
+    operators_source_files,
 ]
 
 denot_benchmarks_exe = executable(

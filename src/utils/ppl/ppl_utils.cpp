@@ -318,6 +318,7 @@ namespace PPLUtils {
             switch (constraint.type())
             {
             case Parma_Polyhedra_Library::Constraint::EQUALITY:
+                break;
             case Parma_Polyhedra_Library::Constraint::STRICT_INEQUALITY:
                 strictConstraints.insert(constraint);
                 break;

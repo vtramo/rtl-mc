@@ -7,6 +7,7 @@ automaton_benchmarks_source_files = [
     'automaton_benchmarks.cpp',
     spot_utils_source_files,
     ppl_utils_source_files,
+    operators_source_files,
 ]
 
 automaton_benchmarks_exe = executable(
