@@ -282,7 +282,7 @@ namespace PPLUtils {
         return false;
     }
 
-    bool areAdjacent(const Powerset& p, const Powerset& q)
+    PowersetUniquePtr border(const Powerset& p, const Powerset& q)
     {
         Powerset closureP { p };
         closureP.topological_closure_assign();
@@ -293,7 +293,12 @@ namespace PPLUtils {
         PowersetUniquePtr pIntersectClosureQ { intersect(p, std::move(closureQ)) };
         PowersetUniquePtr qIntersectClosureP { intersect(q, std::move(closureP)) };
         fusion(*pIntersectClosureQ, *qIntersectClosureP);
+        return pIntersectClosureQ;
+    }
 
-        return !pIntersectClosureQ->is_empty();
+    bool areAdjacent(const Powerset& p, const Powerset& q)
+    {
+        PowersetUniquePtr borderPQ { border(p, q) };
+        return !borderPQ->is_empty();
     }
 }
