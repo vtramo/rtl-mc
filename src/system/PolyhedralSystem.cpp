@@ -165,7 +165,8 @@ void PolyhedralSystem::computePreFlow()
 void PolyhedralSystem::checkAndSetOmnidirectionalFlow()
 {
     const Poly zeroPoint { PPLUtils::zeroPoint(spaceDimension()) };
-    m_isOmnidirectionalFlow = m_flow.contains(zeroPoint);
+    PolyUniquePtr interiorFlow { PPLUtils::interior(m_flow) };
+    m_isOmnidirectionalFlow = interiorFlow->contains(zeroPoint);
 }
 
 std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSystem)
