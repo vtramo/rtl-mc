@@ -93,6 +93,14 @@ namespace SpotUtils
         return spot::formula::And(std::move(formulas));
     }
 
+    spot::formula andAtoms(const spot::atomic_prop_set& atoms)
+    {
+        spot::formula result {};
+        for (spot::formula atom: atoms)
+            result = And(std::vector { std::move(atom), std::move(result) });
+        return result;
+    }
+
     spot::formula generateAlternatingFormula(int k, spot::formula p, spot::formula q)
     {
         assert(k > 0);

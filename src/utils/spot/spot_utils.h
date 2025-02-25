@@ -60,6 +60,7 @@ namespace SpotUtils
     spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard);
     void transpose(const spot::twa_graph_ptr& twaGraph);
     bool isNonRecurrent(spot::formula& formula);
+    spot::formula andAtoms(const spot::atomic_prop_set& atoms);
 }
 
 #endif //SPOT_UTILS_H
