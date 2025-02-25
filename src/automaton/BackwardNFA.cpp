@@ -331,10 +331,10 @@ const AutomatonStats& BackwardNFA::stats() const
 
 StateDenotation BackwardNFA::extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard)
 {
-    spot::formula formula { spot::bdd_to_formula(guard, nfa->get_dict()) }; // we can also use bdd_to_cnf_formula ...
-    auto [formulaWithoutSing, containsSing] { SpotUtils::removeSing(std::move(formula)) };
+    spot::formula formulaPossiblyWithSing { spot::bdd_to_formula(guard, nfa->get_dict()) };
+    auto [formulaWithoutSing, containsSing] { SpotUtils::removeSing(spot::formula { formulaPossiblyWithSing }) };
     const PowersetConstSharedPtr powerset { m_formulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
-    return StateDenotation { std::move(formulaWithoutSing), powerset, containsSing };
+    return StateDenotation { std::move(formulaPossiblyWithSing), powerset, containsSing };
 }
 
 spot::const_twa_ptr BackwardNFA::twa() const
