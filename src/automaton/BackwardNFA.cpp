@@ -235,6 +235,13 @@ void BackwardNFA::purgeUnreachableStates()
     m_backwardNfa->purge_unreachable_states(&renumberBackwardNfaFinalStates, &renumberingContext);
 }
 
+bdd BackwardNFA::stateLabelsAsBdd(const int outEdgeState) const
+{
+    const StateDenotation& outStateDenotation { m_stateDenotationById.at(outEdgeState) };
+    spot::atomic_prop_set labels { outStateDenotation.labels() };
+    return { spot::formula_to_bdd(SpotUtils::andAtoms(labels), m_backwardNfa->get_dict(), m_backwardNfa) };
+}
+
 void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates)
 {
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Construction] Backward NFA construction started.");
@@ -274,7 +281,8 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
             {
                 if (outEdgeState == edgeState) continue;
                 const bool isOutAccepting { m_finalStates.count(outEdgeState) == 1 };
-                m_backwardNfa->new_acc_edge(outEdgeState, edgeState, bdd_true(), isOutAccepting);
+                bdd labels { stateLabelsAsBdd(edgeState) };
+                m_backwardNfa->new_acc_edge(outEdgeState, edgeState, labels, isOutAccepting);
             }
         }
 
@@ -284,7 +292,8 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
             {
                 if (outEdgeState == inEdgeState) continue;
                 const bool isOutAccepting { m_finalStates.count(outEdgeState) == 1 };
-                m_backwardNfa->new_acc_edge(outEdgeState, inEdgeState, bdd_true(), isOutAccepting);
+                bdd labels { stateLabelsAsBdd(inEdgeState) };
+                m_backwardNfa->new_acc_edge(outEdgeState, inEdgeState, labels, isOutAccepting);
             }
         }
     }

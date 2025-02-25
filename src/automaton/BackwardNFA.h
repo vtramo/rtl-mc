@@ -99,6 +99,7 @@ private:
     void setMaxRecursiveDepth(int totalPatches);
     void logBackwardNfaConstruction(double executionTimeSeconds);
     void purgeUnreachableStates();
+    bdd stateLabelsAsBdd(int outEdgeState) const;
     spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption);
     spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
     spot::const_twa_ptr twa() const;

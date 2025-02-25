@@ -47,6 +47,7 @@ package automaton {
         -eraseInitialEdgesWithEmptyDenotation() : void
         -purgeUnreachableStatesThenRenumberFinalStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaFinalStates) : void
         -purgeUnreachableStates() : void
+        -stateLabelsAsBdd(int outEdgeState) : bdd
         -createDummyInitialStateWithEdgesToReachableFinalStates() : void
         -twa() : spot::const_twa_ptr
         -updateMaxNumberOfPatchesStats(int totPatches) : void
