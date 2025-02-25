@@ -107,6 +107,7 @@ package automaton {
         +StateDenotation(const StateDenotation& other)
         --member functions--
         +formula() : const spot::formula&
+        +labels() : const spot::atomic_prop_set&
         +denotation() : PowersetConstSharedPtr
         +totalPatches() : int
         +isSingular() : bool
