@@ -199,16 +199,6 @@ namespace SpotUtils
         return Not(spot::constants::g_sing);
     }
 
-    spot::formula finiteAlternationSingOpenObservablesOneStep()
-    {
-        return spot::constants::g_finiteAlternationSingOpenObservablesOneStep;
-    }
-
-    spot::formula finiteAlternationSingOpenObservables()
-    {
-        return spot::constants::g_finiteAlternationSingOpenObservables;
-    }
-
     spot::formula aliveUntilGNotAlive()
     {
         return spot::constants::g_aliveUntilGNotAlive;

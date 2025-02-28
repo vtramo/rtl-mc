@@ -20,6 +20,11 @@ namespace
     spot::formula dscR(spot::formula&& formula);
     spot::formula dscM(spot::formula&& formula);
     spot::formula dscW(spot::formula&& formula);
+
+    spot::formula finiteAlternationSingOpenObservablesOneStep();
+    spot::formula alternationSingOpenObservablesOneStep();
+    spot::formula finiteAlternationSingOpenObservables();
+    spot::formula alternationSingOpenObservables();
 }
 
 spot::formula applyFiniteAlternationSingOpenObservablesOneStep(spot::formula&& formula)
@@ -33,11 +38,29 @@ spot::formula applyFiniteAlternationSingOpenObservablesOneStep(spot::formula&& f
 
 }
 
+spot::formula applyAlternationSingOpenObservablesOneStep(spot::formula&& formula)
+{
+    return And({
+                std::move(formula),
+                alternationSingOpenObservablesOneStep(),
+                alive(),
+                aliveUntilGNotAlive(),
+            });
+}
+
 spot::formula applyFiniteAlternationSingOpenObservables(spot::formula&& formula)
 {
     return And({
                 std::move(formula),
                 finiteAlternationSingOpenObservables(),
+             });
+}
+
+spot::formula applyAlternationSingOpenObservables(spot::formula&& formula)
+{
+    return And({
+                std::move(formula),
+                alternationSingOpenObservables(),
              });
 }
 
@@ -222,5 +245,25 @@ namespace
         spot::formula eventually { dscF(F(And({ child1, child2 }))) };
         spot::formula release { dscR(R(std::move(child1), std::move(child2))) };
         return And({ std::move(eventually), std::move(release) });
+    }
+
+    spot::formula finiteAlternationSingOpenObservablesOneStep()
+    {
+        return spot::constants::g_finiteAlternationSingOpenObservablesOneStep;
+    }
+
+    spot::formula alternationSingOpenObservablesOneStep()
+    {
+        return spot::constants::g_alternationSingOpenObservablesOneStep;
+    }
+
+    spot::formula finiteAlternationSingOpenObservables()
+    {
+        return spot::constants::g_finiteAlternationSingOpenObservables;
+    }
+
+    spot::formula alternationSingOpenObservables()
+    {
+        return spot::constants::g_alternationSingOpenObservables;
     }
 }

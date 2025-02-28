@@ -23,6 +23,12 @@ namespace spot::constants {
         ).f
     };
 
+    inline const formula g_alternationSingOpenObservablesOneStep {
+        spot::parse_infix_psl(
+            "G( !alive | ((sing <-> X(alive & !sing)) | !Xalive) )"
+        ).f
+    };
+
 
     inline const formula g_last { spot::parse_infix_psl("!X[!] true").f }; // !X[!] true
 
@@ -30,6 +36,12 @@ namespace spot::constants {
         spot::parse_infix_psl(
             "G((sing <-> X[!]!sing) | !X[!] true) &"
             "F(!X[!] true & sing)"
+        ).f
+    };
+
+    inline const formula g_alternationSingOpenObservables {
+        spot::parse_infix_psl(
+            "G((sing <-> X[!]!sing) | !X[!] true)"
         ).f
     };
 }

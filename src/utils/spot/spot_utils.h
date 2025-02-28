@@ -1,5 +1,4 @@
-#ifndef SPOT_UTILS_H
-#define SPOT_UTILS_H
+#pragma once
 
 #include <spot/tl/apcollect.hh>
 #include <spot/tl/formula.hh>
@@ -42,8 +41,6 @@ namespace SpotUtils
     spot::formula singOrNot(spot::formula&& formula);
     spot::formula singAndAliveAnd(spot::formula&& formula);
     spot::formula aliveUntilGNotAlive();
-    spot::formula finiteAlternationSingOpenObservablesOneStep();
-    spot::formula finiteAlternationSingOpenObservables();
 
     spot::formula generateAlternatingFormula(int k, spot::formula p = ap("p"), spot::formula q = ap("q"));
     std::string toFormulaString(const spot::formula& formula);
@@ -62,5 +59,3 @@ namespace SpotUtils
     bool isNonRecurrent(spot::formula& formula);
     spot::formula andAtoms(const spot::atomic_prop_set& atoms);
 }
-
-#endif //SPOT_UTILS_H

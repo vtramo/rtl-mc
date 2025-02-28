@@ -6,6 +6,12 @@
 class DiscreteLtlFormula
 {
 public:
+    static DiscreteLtlFormula discretise(spot::formula&& formula)
+    {
+        spot::formula discretisedLtlFormula { toDiscretisedLtlFormula(std::move(formula)) };
+        return DiscreteLtlFormula { applyAlternationSingOpenObservablesOneStep(std::move(discretisedLtlFormula)) };
+    }
+
     static DiscreteLtlFormula discretiseFromFiniteLtl(spot::formula&& formula)
     {
         spot::formula discretisedLtlFormula { toDiscretisedLtlFormula(std::move(formula)) };
