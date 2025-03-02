@@ -1,5 +1,4 @@
-#ifndef POLYHEDRALSYSTEMBUILDER_H
-#define POLYHEDRALSYSTEMBUILDER_H
+#pragma once
 
 #include <AtomInterpretation.h>
 
@@ -49,5 +48,3 @@ private:
     void assertDenotationIsNotNull() const;
     void assertThatAllDimensionsAreEqual() const;
 };
-
-#endif //POLYHEDRALSYSTEMBUILDER_H

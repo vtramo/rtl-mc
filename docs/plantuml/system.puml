@@ -60,6 +60,7 @@ package system {
         -m_invariant : Powerset
         -m_minimizeConstraintsOutput : bool
         -m_denotation : std::unordered_map<Atom, AtomInterpretation>
+        -m_bddDict : spot::bdd_dict_ptr
         --constructors--
         +PolyhedralSystem()
         +PolyhedralSystem(PolyhedralSystem&&)
@@ -80,6 +81,8 @@ package system {
         +interpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
         +setConstraintOutputMinimized(bool) : void
         +atoms() : spot::atomic_prop_set&
+        +bddDict() : spot::bdd_dict_ptr
+        -makeBddDict(): void
         -computePreFlow() : void
         -evaluateFlowProperties() : void
         --static functions--

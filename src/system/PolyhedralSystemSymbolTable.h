@@ -1,5 +1,4 @@
-#ifndef POLYHEDRALSYSTEMSYMBOLTABLE_H
-#define POLYHEDRALSYSTEMSYMBOLTABLE_H
+#pragma once
 
 #include "ppl_aliases.h"
 #include <optional>
@@ -29,5 +28,3 @@ private:
   PPL::dimension_type m_dimensions {};
   spot::atomic_prop_set m_atoms {};
 };
-
-#endif //POLYHEDRALSYSTEMSYMBOLTABLE_H

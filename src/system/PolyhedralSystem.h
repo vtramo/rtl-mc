@@ -34,6 +34,7 @@ public:
     [[nodiscard]] std::optional<const AtomInterpretation* const> interpretation(std::string_view atom) const;
     [[nodiscard]] std::optional<const AtomInterpretation* const> interpretation(const spot::formula& atom) const;
     [[nodiscard]] PPL::dimension_type spaceDimension() const;
+    [[nodiscard]] spot::bdd_dict_ptr bddDict() const;
     void setConstraintOutputMinimized(bool);
 
     [[nodiscard]] static PolyhedralSystemBuilder builder();
@@ -50,6 +51,7 @@ private:
     bool m_isOmnidirectionalFlow { false };
     bool m_isMovementForced { false };
     Poly m_preFlow { 0, PPL::EMPTY };
+    spot::bdd_dict_ptr m_bddDict {};
     std::unordered_map<Atom, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
     bool m_minimizeConstraintsOutput { false };
@@ -73,6 +75,7 @@ private:
 
     friend class PolyhedralSystemBuilder;
 
+    void makeBddDict();
     void computePreFlow();
     void evaluateFlowProperties();
 };

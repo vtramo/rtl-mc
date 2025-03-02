@@ -1,4 +1,5 @@
 #include <utility>
+#include <spot/twa/bdddict.hh>
 #include "PolyhedralSystem.h"
 #include "ppl_output.h"
 #include "ppl_utils.h"
@@ -108,6 +109,7 @@ PolyhedralSystem::PolyhedralSystem(
 {
     computePreFlow();
     evaluateFlowProperties();
+    makeBddDict();
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
@@ -125,6 +127,7 @@ PolyhedralSystem::PolyhedralSystem(
     m_flow.m_swap(flow);
     computePreFlow();
     evaluateFlowProperties();
+    makeBddDict();
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
     assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
@@ -133,6 +136,7 @@ PolyhedralSystem::PolyhedralSystem(
 PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
     : m_isOmnidirectionalFlow { polyhedralSystem.m_isOmnidirectionalFlow }
     , m_isMovementForced { polyhedralSystem.m_isMovementForced }
+    , m_bddDict { std::move(polyhedralSystem.m_bddDict) }
     , m_denotation { std::move(polyhedralSystem.m_denotation) }
     , m_symbolTable { std::move(polyhedralSystem.m_symbolTable) }
     , m_minimizeConstraintsOutput { polyhedralSystem.m_minimizeConstraintsOutput }
@@ -154,6 +158,7 @@ PolyhedralSystem& PolyhedralSystem::operator= (PolyhedralSystem&& polyhedralSyst
     m_symbolTable = std::move(polyhedralSystem.m_symbolTable);
     m_isOmnidirectionalFlow = polyhedralSystem.m_isOmnidirectionalFlow;
     m_isMovementForced = polyhedralSystem.m_isMovementForced;
+    m_bddDict = std::move(polyhedralSystem.m_bddDict);
     m_minimizeConstraintsOutput = polyhedralSystem.m_minimizeConstraintsOutput;
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
@@ -179,6 +184,11 @@ void PolyhedralSystem::evaluateFlowProperties()
     m_isMovementForced = !closureFlow.contains(zeroPoint);
 }
 
+void PolyhedralSystem::makeBddDict()
+{
+    m_bddDict = spot::make_bdd_dict();
+}
+
 std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSystem)
 {
     PolyhedralSystemParsingResult parsingResult { parsePolyhedralSystem(istream) };
@@ -198,6 +208,11 @@ std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSys
 void PolyhedralSystem::setConstraintOutputMinimized(const bool minimizeConstraintsOutput)
 {
     m_minimizeConstraintsOutput = minimizeConstraintsOutput;
+}
+
+spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
+{
+    return m_bddDict;
 }
 
 std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralSystem)
