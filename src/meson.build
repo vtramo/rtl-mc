@@ -28,6 +28,7 @@ project_dependencies = [
 project_source_files = ['main.cpp']
 
 subdir('abstractions')
+subdir('product')
 subdir('parser')
 subdir('system')
 subdir('discretisation')
