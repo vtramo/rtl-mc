@@ -12,6 +12,13 @@ namespace PPLUtils {
         return iss.str();
     }
 
+    std::string toString(const Powerset& powerset)
+    {
+        std::ostringstream iss { };
+        iss << powerset;
+        return iss.str();
+    }
+
     Poly & reflectionAffineImage(Poly & polyhedron) {
         const PPL::dimension_type spaceDimension { polyhedron.space_dimension() };
 
@@ -156,6 +163,54 @@ namespace PPLUtils {
                 a.add_disjunct(it->pointset());
     }
 
+    PowersetUniquePtr fusion(const Poly& a, const Poly& b)
+    {
+        assert(a.space_dimension() == b.space_dimension());
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(a) };
+        result->add_disjunct(b);
+        return result;
+    }
+
+    PolyUniquePtr intersect(const Poly& a, const Poly& b)
+    {
+        assert(a.space_dimension() == b.space_dimension());
+
+        if (b.is_universe()) {
+            return std::make_unique<Poly>(a);
+        }
+
+        if (a.is_universe()) {
+            return std::make_unique<Poly>(b);
+        }
+
+        auto result { std::make_unique<Poly>(a) };
+        result->intersection_assign(b);
+        return result;
+    }
+
+    PolyUniquePtr intersect(const Poly& a, Poly&& b)
+    {
+        assert(a.space_dimension() == b.space_dimension());
+
+        PolyUniquePtr result { nullptr };
+
+        if (b.is_universe()) {
+            return std::make_unique<Poly>(a);
+        }
+
+        if (a.is_universe()) {
+            result = std::make_unique<Poly>();
+            result->m_swap(b);
+            return result;
+        }
+
+        result = std::make_unique<Poly>();
+        result->m_swap(b);
+        result->intersection_assign(a);
+        return result;
+    }
+
     PowersetUniquePtr intersect(const Powerset & a, const Powerset & b) {
         assert(a.space_dimension() == b.space_dimension());
 
@@ -229,7 +284,7 @@ namespace PPLUtils {
         return result;
     }
 
-    PowersetUniquePtr intersect(std::vector<Powerset> & powersets) {
+    PowersetUniquePtr intersect(const std::vector<Powerset>& powersets) {
         if (powersets.empty())
             return std::make_unique<Powerset>(Powerset { PPL::EMPTY });
 
