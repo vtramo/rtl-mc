@@ -13,7 +13,7 @@ public:
     std::vector<Tile> extractTiles(const Observable& observable);
 private:
     const Observable* m_currentObservable;
-    std::unordered_set<int> m_patchesIndexesInFirstTile {};
+    std::unordered_set<int> m_patchesIdInFirstTile {};
 
     Tile findFirstTile();
     std::list<std::reference_wrapper<const Poly>> collectPatchesNotInFirstTile();

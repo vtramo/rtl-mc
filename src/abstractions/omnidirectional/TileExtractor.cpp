@@ -48,7 +48,7 @@ std::vector<Tile> TileExtractor::extractTiles(const Observable& observable)
     observableTiles.resize(observableTiles.size() + remainingTails.size());
     std::move_backward(remainingTails.begin(), remainingTails.end(), observableTiles.end());
 
-    m_patchesIndexesInFirstTile.clear();
+    m_patchesIdInFirstTile.clear();
     return observableTiles;
 }
 
@@ -59,7 +59,7 @@ Tile TileExtractor::findFirstTile()
 
     PowersetSharedPtr tilePatches { std::make_shared<Powerset>(firstPatch) };
 
-    m_patchesIndexesInFirstTile.insert(1);
+    m_patchesIdInFirstTile.insert(1);
 
     std::stack<std::reference_wrapper<const Poly>> todoPatches {};
     todoPatches.push(firstPatch);
@@ -69,19 +69,19 @@ Tile TileExtractor::findFirstTile()
         const Poly& currentPatch { todoPatches.top() };
         todoPatches.pop();
 
-        int patchIndex {};
+        int patchId {};
         for (const auto& otherPatchWrapper: *m_currentObservable->interpretation())
         {
-            ++patchIndex;
+            ++patchId;
             const Poly& otherPatch { otherPatchWrapper.pointset() };
             if (otherPatch == currentPatch) continue;
-            if (m_patchesIndexesInFirstTile.count(patchIndex)) continue;
+            if (m_patchesIdInFirstTile.count(patchId)) continue;
 
             if (areAdjacent(otherPatch, currentPatch))
             {
                 tilePatches->add_disjunct(otherPatch);
                 todoPatches.push(otherPatch);
-                m_patchesIndexesInFirstTile.insert(patchIndex);
+                m_patchesIdInFirstTile.insert(patchId);
             }
         }
     } while (!todoPatches.empty());
@@ -98,7 +98,7 @@ std::list<std::reference_wrapper<const Poly>> TileExtractor::collectPatchesNotIn
     {
         ++patchIndex;
         const Poly& patch { patchWrapper.pointset() };
-        if (!m_patchesIndexesInFirstTile.count(patchIndex))
+        if (!m_patchesIdInFirstTile.count(patchIndex))
             patchesNotInFirstTile.push_back(patch);
     }
 
