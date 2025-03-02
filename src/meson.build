@@ -11,6 +11,8 @@ add_project_arguments('-DPPL_THREAD_SAFE=1', language: 'cpp')
 
 if get_option('debug') == false
     add_project_arguments('-DNDEBUG', language: 'cpp')
+else
+    add_project_arguments('-DDEBUG', language: 'cpp')
 endif
 
 project_dependencies = [
