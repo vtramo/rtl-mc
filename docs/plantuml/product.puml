@@ -1,0 +1,42 @@
+@startuml
+
+package product {
+    class FiniteSynchronousProduct {
+        -- type aliases --
+        +using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
+        -- data members --
+        -m_synchronousProduct: spot::twa_graph_ptr
+        -m_productStatePair: spot::product_states*
+        -m_nfa: FiniteLtlAutomatonConstSharedPtr
+        -m_abstraction: OmnidirectionalPolyhedralAbstractionConstSharedPtr
+        -m_denotationByState: std::unordered_map<int, PowersetConstSharedPtr>
+        -m_initialStates: std::unordered_set<int>
+        -m_finalStates: std::unordered_set<int>
+        -m_existentialDenotation: PowersetSharedPtr
+        -- constructors --
+        +FiniteSynchronousProduct(nfa: FiniteLtlAutomatonConstSharedPtr, abstraction: OmnidirectionalPolyhedralAbstractionConstSharedPtr)
+        -- member functions --
+        +totalStates() : int
+        +totalInitialStates() : int
+        +totalFinalStates() : int
+        +totalEdges() : int
+        +isInitialState(state: unsigned) : bool
+        +isFinalState(state: unsigned) : bool
+        +initialStates() : const std::unordered_set<int>&
+        +finalStates() : const std::unordered_set<int>&
+        +hasSuccessors(state: unsigned) : bool
+        +successors(state: unsigned) : EdgeIterator
+        +countSuccessors(state: unsigned) : int
+        +points(state: unsigned) : PowersetConstSharedPtr
+        +productStatePair(state: unsigned) : std::pair<int, int>
+        +existentialDenotation() : PowersetConstSharedPtr
+        +printDotFormat(os: std::ostream&) : void
+        -- private member functions --
+        -buildAutomaton() : void
+        -twa() : spot::const_twa_graph_ptr
+    }
+
+    FiniteSynchronousProduct --> "1" FiniteLtlAutomaton
+    FiniteSynchronousProduct --> "1" OmnidirectionalPolyhedralAbstraction
+}
+@enduml

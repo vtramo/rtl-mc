@@ -5,18 +5,32 @@ package abstractions {
         --data members--
         -m_atoms: std::shared_ptr<const spot::atomic_prop_set>
         -m_interpretation: PowersetConstSharedPtr
+        -m_interpretationToString: std::optional<std::string>
         -m_hashcode: std::size_t
         --constructors--
-        +Observable(spot::atomic_prop_set atoms, PowersetConstSharedPtr interpretation)
+        +Observable(spot::atomic_prop_set atoms, const Powerset& interpretation)
+        +Observable(spot::atomic_prop_set atoms, PowersetSharedPtr interpretation)
+        +Observable(spot::atomic_prop_set atoms, const Powerset& interpretation, std::string interpretationToString)
+        +Observable(spot::atomic_prop_set atoms, PowersetSharedPtr interpretation, std::string interpretationToString)
         +Observable(const Observable& other)
         +Observable(Observable&& other)
+        +Observable() = default
         --member function--
-        +interpretation(): PowersetConstSharedPtr
         +atoms(): const spot::atomic_prop_set&
+        +interpretation(): PowersetConstSharedPtr
+        +isUniverse(): bool
+        +isEmpty(): bool
+        +totalAtoms(): int
+        +totalPatches(): int
         +hashcode(): std::size_t
         --operators--
         +operator!= (const Observable& observable1, const Observable& observable2) : bool
         +operator== (const Observable& observable1, const Observable& observable2) : bool
+        +operator<< (std::ostream& os, const Observable& observable) : std::ostream&
+    }
+
+    struct "std::hash<Observable>" as ObservableHash {
+        +std::size_t operator() (const Observable& observable) const noexcept
     }
 
     package finite {
@@ -68,10 +82,6 @@ package abstractions {
 
                 struct "std::hash<ObservablePatch>" as ObservablePatchHash {
                     +std::size_t operator() (const ObservablePatch& observablePatch) const noexcept
-                }
-
-                struct "std::hash<Observable>" as ObservableHash {
-                    +std::size_t operator() (const Observable& observable) const noexcept
                 }
 
                 ObservablePatchSequence <..> ObservablePatchHash
@@ -130,82 +140,111 @@ package abstractions {
                 GeneralFinitePolyhedralAbstraction --> "*" ObservableTraversalNode
                 GeneralFinitePolyhedralAbstraction ..> SingOpenStatePair
         }
+    }
 
-        package omnidirectional {
-            class Tile {
-                --data members--
-                -m_observable: Observable
-                -m_powerset: PowersetConstSharedPtr
-                -m_closure: PowersetConstSharedPtr
-                -m_hashcode: std::size_t
-                --constructors--
-                +Tile(const Tile& other)
-                +Tile(Tile&& other)
-                --member functions--
-                +observable(): const Observable&
-                +powerset(): PowersetConstSharedPtr
-                +closure(): PowersetConstSharedPtr
-                +hashcode(): std::size_t
-                +operator!= (const Tile& tile1, const Tile& tile2) : bool
-                +operator== (const Tile& tile1, const Tile& tile2) : bool
-            }
-
-            class TileNode {
-                --data members--
-                -m_tile: Tile
-                -m_observable: Observable
-                --constructors--
-                +TileNode(const Tile& tile)
-                +TileNode(const TileNode& other)
-                +TileNode(TileNode&& other)
-                --member functions--
-                +observable(): const Observable&
-                +points(): PowersetConstSharedPtr
-                --operators--
-                +operator!= (const TileNode& tileNode1, const TileNode& tileNode2) : bool
-                +operator== (const TileNode& tileNode1, const TileNode& tileNode2) : bool
-            }
-
-            class TripleTileNode {
-                --data members--
-                -m_triple: std::tuple<Tile, Tile, Tile>
-                -m_observable: Observable
-                --constructors--
-                +TripleTileNode(const Tile& tile1, const Tile& tile2, const Tile& tile3)
-                +TripleTileNode(const TileNode&)
-                +TripleTileNode(TileNode&&)
-                --member functions--
-                +observable(): const Observable&
-                +points(): PowersetConstSharedPtr
-                --operators--
-                +operator!= (const TripleTileNode& tripleTileNode1, const TripleTileNode& tripleTileNode2) : bool
-                +operator== (const TripleTileNode& tripleTileNode1, const TripleTileNode& tripleTileNode2) : bool
-            }
-
-            struct "std::hash<Tile>" as TileHash {
-                +std::size_t operator() (const Tile& tile) const noexcept
-            }
-
-            class OmnidirectionalFinitePolyhedralAbstraction {
-                --data members--
-                -m_graph: spot::twa_graph_ptr
-                -m_nodeByState: std::unordered_map<int, std::variant<TileNode, TripleTileNode>>
-                --constructors--
-                +OmnidirectionalFinitePolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
-                --data members--
-                +observable(int state): const Observable&
-                +points(int state): PowersetConstSharedPtr
-            }
-
-            Tile <..> TileHash
-            Tile --> "1" Observable
-            TileNode --> "1" Observable
-            TileNode --> "1" Tile
-            TripleTileNode --> "3" Observable
-            TripleTileNode --> "3" Tile
-            OmnidirectionalFinitePolyhedralAbstraction --> "*" TileNode
-            OmnidirectionalFinitePolyhedralAbstraction --> "*" TripleTileNode
+    package omnidirectional {
+        class Tile {
+            --data members--
+            -m_observable: Observable
+            -m_powerset: PowersetConstSharedPtr
+            -m_closure: PowersetConstSharedPtr
+            -m_hashcode: std::size_t
+            --constructors--
+            +Tile(const Tile& other)
+            +Tile(Tile&& other)
+            +Tile(Observable observable, PowersetSharedPtr patches)
+            +Tile(Observable observable, const Powerset& patches)
+            --member functions--
+            +observable(): const Observable&
+            +powerset(): PowersetConstSharedPtr
+            +closure(): PowersetConstSharedPtr
+            +hashcode(): std::size_t
+            -computeClosurePatches(): void
+            -computeHashCode(): void
+            --operators--
+            +operator!= (const Tile& tile1, const Tile& tile2): bool
+            +operator== (const Tile& tile1, const Tile& tile2): bool
+            +operator<< (std::ostream& os, const Tile& tile): std::ostream&
         }
+
+        class TileExtractor {
+             --data members--
+             -m_currentObservable: const Observable*
+             -m_patchesIndexesInFirstTile: std::unordered_set<int>
+             --constructors--
+             +TileExtractor()
+             --member functions--
+             +extractTiles(const std::vector<Observable>& observables): std::vector<Tile>
+             +extractTiles(const Observable& observable): std::vector<Tile>
+             -findFirstTile(): Tile
+             -collectPatchesNotInFirstTile(): std::list<std::reference_wrapper<const Poly>>
+             -findRemainingTiles(): std::vector<Tile>
+             --static functions--
+             {static} -border(const Poly& p, const Poly& q): PowersetUniquePtr
+             {static} -areAdjacent(const Poly& p, const Poly& q): bool
+        }
+
+        class TileNode {
+            --data members--
+            -m_tile: Tile
+            --constructors--
+            +TileNode(const Tile& tile)
+            +TileNode(const TileNode& other)
+            +TileNode(TileNode&& other)
+            --member functions--
+            +observable(): const Observable&
+            +points(): PowersetConstSharedPtr
+            +isUniverse(): bool
+            +isEmpty(): bool
+            --operators--
+            +operator!= (const TileNode& tileNode1, const TileNode& tileNode2) : bool
+            +operator== (const TileNode& tileNode1, const TileNode& tileNode2) : bool
+        }
+
+        class TripleTileNode {
+            --data members--
+            -m_triple: std::tuple<Tile, Tile, Tile>
+            -m_observable: Observable
+            -m_points: PowersetConstSharedPtr
+            --constructors--
+            +TripleTileNode(const Tile& tile1, const Tile& tile2, const Tile& tile3)
+            +TripleTileNode(const TileNode&)
+            +TripleTileNode(TileNode&&)
+            --member functions--
+            +observable(): const Observable&
+            +points(): PowersetConstSharedPtr
+            +isUniverse(): bool
+            +isEmpty(): bool
+            -computeObservable(): void
+            -computePoints(): void
+            --operators--
+            +operator!= (const TripleTileNode& tripleTileNode1, const TripleTileNode& tripleTileNode2) : bool
+            +operator== (const TripleTileNode& tripleTileNode1, const TripleTileNode& tripleTileNode2) : bool
+        }
+
+        struct "std::hash<Tile>" as TileHash {
+            +std::size_t operator() (const Tile& tile) const noexcept
+        }
+
+        class OmnidirectionalPolyhedralAbstraction {
+            --data members--
+            -m_graph: spot::twa_graph_ptr
+            -m_tileNodes: std::unordered_map<int, std::variant<TileNode, TripleTileNode>>
+            --constructors--
+            +OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
+            --data members--
+            +observable(int state): const Observable&
+            +points(int state): PowersetConstSharedPtr
+        }
+
+        Tile <..> TileHash
+        Tile --> "1" Observable
+        TileNode --> "1" Observable
+        TileNode --> "1" Tile
+        TripleTileNode --> "3" Observable
+        TripleTileNode --> "3" Tile
+        TileExtractor ..> Tile
+        TileExtractor --> "0..1" Observable
     }
 }
 @enduml
