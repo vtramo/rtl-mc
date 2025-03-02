@@ -9,12 +9,12 @@
 #include "DiscreteFiniteLtlFormula.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "BackwardNFA.h"
-#include "DenotRecursive.h"
+#include "DenotOnTheFly.h"
 #include "Denot.h"
 
 using namespace SpotUtils;
 
-TEST_CASE("Denot benchmark GAP")
+TEST_CASE("Denot on the fly benchmark GAP")
 {
     PolyhedralSystemConstSharedPtr polyhedralSystem {
         std::make_shared<PolyhedralSystem>(
@@ -34,7 +34,7 @@ TEST_CASE("Denot benchmark GAP")
     DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
     BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap), spot::postprocessor::optimization_level::High };
-    DenotRecursive denot { polyhedralSystem, backwardNfa };
+    DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
     BENCHMARK("k=50")
     {

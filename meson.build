@@ -17,7 +17,7 @@ parser_dir = 'parser'
 system_dir = 'system'
 automaton_dir = 'automaton'
 utils_dir = 'utils'
-core_dir = 'core'
+onthefly_dir = 'onthefly'
 abstraction_dir = 'abstractions'
 include_directories = [
   include_directories('.'),
@@ -36,8 +36,8 @@ include_directories = [
   include_directories(src_dir / parser_dir / 'rtlf'),
   include_directories(src_dir / parser_dir / system_dir),
   include_directories(src_dir / parser_dir / 'mc'),
-  include_directories(src_dir / core_dir),
-  include_directories(src_dir / core_dir / 'concurrent'),
+  include_directories(src_dir / onthefly_dir),
+  include_directories(src_dir / onthefly_dir / 'concurrent'),
   include_directories(src_dir / 'cli'),
   include_directories(src_dir / 'logger'),
   include_directories(src_dir / 'stats'),

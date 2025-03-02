@@ -9,10 +9,10 @@
 #include "DiscreteFiniteLtlFormula.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "PolyhedralSystemParsingResult.h"
-#include "DenotRecursive.h"
+#include "DenotOnTheFly.h"
 #include "Denot.h"
 
-TEST_CASE("GAP Test Cases (DenotRecursive)")
+TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 {
     PolyhedralSystemConstSharedPtr polyhedralSystem {
         std::make_shared<PolyhedralSystem>(
@@ -38,7 +38,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -62,7 +62,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -86,7 +86,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -110,7 +110,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -134,7 +134,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -158,7 +158,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -182,7 +182,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -206,7 +206,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -230,7 +230,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -254,7 +254,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -270,7 +270,7 @@ TEST_CASE("GAP Test Cases (DenotRecursive)")
     }
 }
 
-TEST_CASE("NO GAP Test Cases (DenotRecursive)")
+TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 {
     PolyhedralSystemConstSharedPtr polyhedralSystem {
         std::make_shared<PolyhedralSystem>(
@@ -297,7 +297,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -321,7 +321,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -345,7 +345,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -369,7 +369,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -393,7 +393,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -417,7 +417,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -441,7 +441,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -465,7 +465,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -489,7 +489,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({
@@ -513,7 +513,7 @@ TEST_CASE("NO GAP Test Cases (DenotRecursive)")
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
-        DenotRecursive denot { polyhedralSystem, backwardNfa };
+        DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
             PPLUtils::powerset({

@@ -1,10 +1,10 @@
-#include "DenotRecursive.h"
+#include "DenotOnTheFly.h"
 #include "logger.h"
 #include "reach.h"
 #include "Timer.h"
 #include "ppl_utils.h"
 
-PowersetUniquePtr DenotRecursive::run() {
+PowersetUniquePtr DenotOnTheFly::run() {
     m_iterations = 0;
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
@@ -52,7 +52,7 @@ PowersetUniquePtr DenotRecursive::run() {
     return result;
 }
 
-PowersetUniquePtr DenotRecursive::denot(
+PowersetUniquePtr DenotOnTheFly::denot(
     int state,
     const Poly & P,
     const Poly & X,
@@ -207,7 +207,7 @@ PowersetUniquePtr DenotRecursive::denot(
     return result;
 }
 
-void DenotRecursive::addDisjunct(std::vector<Powerset> & V, const int state, const Poly & P) const {
+void DenotOnTheFly::addDisjunct(std::vector<Powerset> & V, const int state, const Poly & P) const {
     Log::log(Verbosity::trace, "State {} is not singular, adding P: {}",
         state,
         PPLOutput::toString(P, m_polyhedralSystem->symbolTable())
@@ -221,6 +221,6 @@ void DenotRecursive::addDisjunct(std::vector<Powerset> & V, const int state, con
     );
 }
 
-const Powerset & DenotRecursive::getVisitedPowerset(std::vector<Powerset> & V, const int state) {
+const Powerset & DenotOnTheFly::getVisitedPowerset(std::vector<Powerset> & V, const int state) {
     return V[state];
 }

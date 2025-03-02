@@ -4,16 +4,16 @@
 #include "PolyhedralSystem.h"
 #include "BackwardNFA.h"
 
-class DenotRecursive: public Denot
+class DenotOnTheFly: public Denot
 {
 public:
-    DenotRecursive(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
+    DenotOnTheFly(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
       : m_polyhedralSystem { polyhedralSystem }
       , m_backwardNfa { backwardNfa }
     {
         m_maxRecursionDepth = backwardNfa.maxRecursiveDepth();
     }
-    ~DenotRecursive() override = default;
+    ~DenotOnTheFly() override = default;
 
     PowersetUniquePtr run() override;
 

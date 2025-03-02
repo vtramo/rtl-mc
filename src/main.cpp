@@ -1,5 +1,3 @@
-#include <DenotConcurrentV1.h>
-#include <DenotRecursive.h>
 #include <spot/tl/parse.hh>
 #include <spot/twaalgos/postproc.hh>
 #include <spdlog/spdlog.h>
@@ -20,6 +18,7 @@
 #include "stats/collectors.h"
 #include "stats/StatsFormatter.h"
 #include "utils/spot/spot_utils.h"
+#include "DenotOnTheFly.h"
 
 class DiscreteLtlFormula;
 using PPL::IO_Operators::operator<<;
@@ -175,5 +174,5 @@ std::unique_ptr<Denot> createDenot(
         return std::make_unique<DenotConcurrentV1>(polyhedralSystem, backwardNfa);
     }
 
-    return std::make_unique<DenotRecursive>(polyhedralSystem, backwardNfa);
+    return std::make_unique<DenotOnTheFly>(polyhedralSystem, backwardNfa);
 }
