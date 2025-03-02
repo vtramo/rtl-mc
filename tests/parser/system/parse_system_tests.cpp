@@ -1,5 +1,5 @@
-#include <ppl_output.h>
 #include <catch2/catch_test_macros.hpp>
+#include "ppl_output.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "ppl_utils.h"
 #include "PolyhedralSystem.h"
