@@ -18,12 +18,15 @@ system_dir = 'system'
 automaton_dir = 'automaton'
 utils_dir = 'utils'
 core_dir = 'core'
+abstraction_dir = 'abstractions'
 include_directories = [
   include_directories('.'),
   include_directories(src_dir / utils_dir),
   include_directories(src_dir / utils_dir / 'ppl'),
   include_directories(src_dir / utils_dir / 'spot'),
   include_directories(src_dir / system_dir),
+  include_directories(src_dir / abstraction_dir),
+  include_directories(src_dir / abstraction_dir / 'omnidirectional'),
   include_directories(src_dir / 'discretisation'),
   include_directories(src_dir / 'operators'),
   include_directories(src_dir / 'product'),
