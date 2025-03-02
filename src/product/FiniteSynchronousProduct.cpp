@@ -52,7 +52,6 @@ void FiniteSynchronousProduct::buildAutomaton()
 
     private:
         FiniteSynchronousProduct* m_finiteSynchronousProduct {};
-        PowersetSharedPtr m_result { };
     };
 
     Dfs dfs { this };
@@ -132,11 +131,6 @@ std::pair<int, int> FiniteSynchronousProduct::productStatePair(const unsigned st
     assert(static_cast<int>(state) < totalStates() && "State is out of range!");
 
     return m_productStatePair->at(state);
-}
-
-PowersetConstSharedPtr FiniteSynchronousProduct::existentialDenotation() const
-{
-    return m_existentialDenotation;
 }
 
 void FiniteSynchronousProduct::printDotFormat(std::ostream& os) const

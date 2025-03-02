@@ -29,7 +29,6 @@ public:
     [[nodiscard]] int countSuccessors(unsigned state) const;
     [[nodiscard]] PowersetConstSharedPtr points(unsigned state) const;
     [[nodiscard]] std::pair<int, int> productStatePair(unsigned state) const;
-    [[nodiscard]] PowersetConstSharedPtr existentialDenotation() const;
 
     void printDotFormat(std::ostream& os) const;
 
