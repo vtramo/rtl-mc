@@ -1,34 +1,6 @@
 @startuml
 
 package abstractions {
-    class Observable {
-        --data members--
-        -m_atoms: std::shared_ptr<const spot::atomic_prop_set>
-        -m_interpretation: PowersetConstSharedPtr
-        -m_interpretationToString: std::optional<std::string>
-        -m_hashcode: std::size_t
-        --constructors--
-        +Observable(spot::atomic_prop_set atoms, const Powerset& interpretation)
-        +Observable(spot::atomic_prop_set atoms, PowersetSharedPtr interpretation)
-        +Observable(spot::atomic_prop_set atoms, const Powerset& interpretation, std::string interpretationToString)
-        +Observable(spot::atomic_prop_set atoms, PowersetSharedPtr interpretation, std::string interpretationToString)
-        +Observable(const Observable& other)
-        +Observable(Observable&& other)
-        +Observable() = default
-        --member function--
-        +atoms(): const spot::atomic_prop_set&
-        +interpretation(): PowersetConstSharedPtr
-        +isUniverse(): bool
-        +isEmpty(): bool
-        +totalAtoms(): int
-        +totalPatches(): int
-        +hashcode(): std::size_t
-        --operators--
-        +operator!= (const Observable& observable1, const Observable& observable2) : bool
-        +operator== (const Observable& observable1, const Observable& observable2) : bool
-        +operator<< (std::ostream& os, const Observable& observable) : std::ostream&
-    }
-
     struct "std::hash<Observable>" as ObservableHash {
         +std::size_t operator() (const Observable& observable) const noexcept
     }
