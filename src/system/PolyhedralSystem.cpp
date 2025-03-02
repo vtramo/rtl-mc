@@ -1,5 +1,7 @@
 #include <utility>
 #include <spot/twa/bdddict.hh>
+
+#include "utils.h"
 #include "PolyhedralSystem.h"
 #include "ppl_output.h"
 #include "ppl_utils.h"
@@ -213,6 +215,48 @@ void PolyhedralSystem::setConstraintOutputMinimized(const bool minimizeConstrain
 spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
 {
     return m_bddDict;
+}
+
+std::vector<Observable> PolyhedralSystem::generateObservables() const
+{
+    const spot::atomic_prop_set& polyhedralAtoms { atoms() };
+
+    int totPolyhedralAtoms { totalAtoms() };
+    std::vector<Observable> observables {};
+    for (int k { 1 }; k <= totPolyhedralAtoms; k++)
+    {
+        std::vector kCombinations {
+            combinations<spot::formula>(
+                polyhedralAtoms.begin(),
+                polyhedralAtoms.end(),
+                totPolyhedralAtoms,
+                k
+            )
+        };
+
+        for (spot::atomic_prop_set kCombination: kCombinations)
+        {
+            PowersetSharedPtr observableDenotation { std::make_shared<Powerset>(spaceDimension(), PPL::UNIVERSE) };
+            for (const spot::formula& polyhedralAtom: polyhedralAtoms)
+            {
+                const AtomInterpretation* atomInterpretation { *interpretation(polyhedralAtom) };
+                observableDenotation->intersection_assign(
+                    kCombination.count(polyhedralAtom) == 1
+                        ? atomInterpretation->interpretation()
+                        : atomInterpretation->notInterpretation()
+                );
+            }
+
+#ifdef DEBUG
+            Observable observable { kCombination, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
+#else
+            Observable observable { kCombination, observableDenotation };
+#endif
+            observables.push_back(observable);
+        }
+    }
+
+    return observables;
 }
 
 std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralSystem)

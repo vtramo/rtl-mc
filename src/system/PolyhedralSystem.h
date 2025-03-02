@@ -7,6 +7,7 @@
 #include "PolyhedralSystemBuilder.h"
 #include "PolyhedralSystemSymbolTable.h"
 #include "AtomInterpretation.h"
+#include "Observable.h"
 
 using Atom = std::string;
 
@@ -35,6 +36,7 @@ public:
     [[nodiscard]] std::optional<const AtomInterpretation* const> interpretation(const spot::formula& atom) const;
     [[nodiscard]] PPL::dimension_type spaceDimension() const;
     [[nodiscard]] spot::bdd_dict_ptr bddDict() const;
+    [[nodiscard]] std::vector<Observable> generateObservables() const;
     void setConstraintOutputMinimized(bool);
 
     [[nodiscard]] static PolyhedralSystemBuilder builder();

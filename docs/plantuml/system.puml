@@ -82,6 +82,7 @@ package system {
         +setConstraintOutputMinimized(bool) : void
         +atoms() : spot::atomic_prop_set&
         +bddDict() : spot::bdd_dict_ptr
+        +generateObservables() : std::vector<Observable>
         -makeBddDict(): void
         -computePreFlow() : void
         -evaluateFlowProperties() : void
