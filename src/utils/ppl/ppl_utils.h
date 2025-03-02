@@ -42,7 +42,5 @@ namespace PPLUtils {
     bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y);
 
     bool containsDisjunct(const Powerset& powerset, const Poly& disjunct);
-    PowersetUniquePtr border(const Powerset& p, const Powerset& q);
-    bool areAdjacent(const Powerset& p, const Powerset& q);
     PolyUniquePtr interior(const Poly& poly);
 }

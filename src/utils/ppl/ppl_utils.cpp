@@ -344,26 +344,6 @@ namespace PPLUtils {
         return false;
     }
 
-    PowersetUniquePtr border(const Powerset& p, const Powerset& q)
-    {
-        Powerset closureP { p };
-        closureP.topological_closure_assign();
-
-        Powerset closureQ { q };
-        closureQ.topological_closure_assign();
-
-        PowersetUniquePtr pIntersectClosureQ { intersect(p, std::move(closureQ)) };
-        PowersetUniquePtr qIntersectClosureP { intersect(q, std::move(closureP)) };
-        fusion(*pIntersectClosureQ, *qIntersectClosureP);
-        return pIntersectClosureQ;
-    }
-
-    bool areAdjacent(const Powerset& p, const Powerset& q)
-    {
-        PowersetUniquePtr borderPQ { border(p, q) };
-        return !borderPQ->is_empty();
-    }
-
     PolyUniquePtr interior(const Poly& poly)
     {
         PPL::Constraint_System constraints { poly.constraints() };
