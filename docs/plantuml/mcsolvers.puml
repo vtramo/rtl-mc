@@ -1,18 +1,19 @@
 @startuml
-package core {
-    class Denot {
+package mcsolvers {
+    class DenotOnTheFly {
         --data members--
         -m_iterations: int
         -m_polyhedralSystem: PolyhedralSystemConstSharedPtr
         -m_backwardNfa: const BackwardNFA&
+        -m_maxRecursionDepth: int
         --constructors--
-        +Denot(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
+        +DenotOnTheFly(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
         --member functions--
         +run(): PowersetUniquePtr
         +totalIterations(): int
         -denot(const int state, const Poly& P, const Poly& X, std::unordered_map<int, Powerset> V): PowersetUniquePtr
-        -addDisjunct(std::unordered_map<int, Powerset>& V, int state, const Poly& P): void
-        -getDisjunct(std::unordered_map<int, Powerset>& V, int state): const Powerset&
+        -addDisjunct(std::vector<Powerset>& V, int state, const Poly& P): void
+        -getDisjunct(std::vector<Powerset>& V, int state): const Powerset&
         --operators--
         +operator() (): PowersetUniquePtr
     }

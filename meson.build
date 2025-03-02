@@ -15,8 +15,9 @@ endif
 src_dir = 'src'
 parser_dir = 'parser'
 system_dir = 'system'
-automaton_dir = 'automaton'
+automata_dir = 'automata'
 utils_dir = 'utils'
+mcsolvers_dir = 'mcsolvers'
 onthefly_dir = 'onthefly'
 abstraction_dir = 'abstractions'
 include_directories = [
@@ -30,14 +31,14 @@ include_directories = [
   include_directories(src_dir / 'discretisation'),
   include_directories(src_dir / 'operators'),
   include_directories(src_dir / 'product'),
-  include_directories(src_dir / automaton_dir),
-  include_directories(src_dir / automaton_dir / 'onthefly'),
+  include_directories(src_dir / automata_dir),
+  include_directories(src_dir / automata_dir / 'onthefly'),
   include_directories(src_dir / parser_dir),
   include_directories(src_dir / parser_dir / 'rtlf'),
   include_directories(src_dir / parser_dir / system_dir),
   include_directories(src_dir / parser_dir / 'mc'),
-  include_directories(src_dir / onthefly_dir),
-  include_directories(src_dir / onthefly_dir / 'concurrent'),
+  include_directories(src_dir / mcsolvers_dir / onthefly_dir),
+  include_directories(src_dir / mcsolvers_dir / onthefly_dir / 'concurrent'),
   include_directories(src_dir / 'cli'),
   include_directories(src_dir / 'logger'),
   include_directories(src_dir / 'stats'),

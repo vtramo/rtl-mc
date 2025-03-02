@@ -1,6 +1,6 @@
 @startuml
 
-package automaton {
+package automata {
     class twa_graph_ptr << spot >> {}
     class formula << spot >> {}
 
