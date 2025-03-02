@@ -67,6 +67,5 @@ void BackwardNFADepthFirstSearch::push(const spot::state* s, int sn)
 
 void BackwardNFADepthFirstSearch::pop()
 {
-
     spot::twa_reachable_iterator_depth_first::pop();
 }

@@ -1,5 +1,5 @@
 automaton_tests_src_files = [
-    'automaton_tests.cpp',
+    'on_the_fly_tests.cpp',
     automaton_source_files,
     polyhedral_system_source_files,
     polyhedral_system_parser_source_files,

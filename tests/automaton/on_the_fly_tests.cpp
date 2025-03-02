@@ -9,7 +9,6 @@
 #include "PolyhedralSystem.h"
 #include "systemparser.h"
 
-using PPL::IO_Operators::operator<<;
 using namespace SpotUtils;
 
 TEST_CASE("Formula denotation map TEST 1")

@@ -15,6 +15,7 @@ endif
 src_dir = 'src'
 parser_dir = 'parser'
 system_dir = 'system'
+automaton_dir = 'automaton'
 utils_dir = 'utils'
 core_dir = 'core'
 include_directories = [
@@ -25,7 +26,9 @@ include_directories = [
   include_directories(src_dir / system_dir),
   include_directories(src_dir / 'discretisation'),
   include_directories(src_dir / 'operators'),
-  include_directories(src_dir / 'automaton'),
+  include_directories(src_dir / 'product'),
+  include_directories(src_dir / automaton_dir),
+  include_directories(src_dir / automaton_dir / 'onthefly'),
   include_directories(src_dir / parser_dir),
   include_directories(src_dir / parser_dir / 'rtlf'),
   include_directories(src_dir / parser_dir / system_dir),

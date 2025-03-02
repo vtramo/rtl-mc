@@ -58,6 +58,12 @@ void BackwardNFA::eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nfa)
     while (outIteraser)
     {
         spot::formula formula { spot::bdd_to_formula(outIteraser->cond, nfa->get_dict()) };
+        if (formula.is_ff())
+        {
+            ++outIteraser;
+            continue;
+        }
+
         const auto& [formulaWithoutSing, _] { SpotUtils::removeSing(std::move(formula)) };
         PowersetConstSharedPtr denotation { m_formulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
         if (denotation->is_empty()) outIteraser.erase();
@@ -128,6 +134,7 @@ std::unordered_set<int> BackwardNFA::killFinalStates(const spot::twa_graph_ptr& 
         {
             acceptingStates.insert(nfaState);
             graph->kill_state(nfaState);
+            graph->new_acc_edge(nfaState, nfaState, bdd_false(), true);
         }
     Log::log(Verbosity::veryVerbose, "[BackwardNFA - Kill Final States] Final states: [{}].", fmt::join(acceptingStates, ", "));
     return acceptingStates;
@@ -261,6 +268,8 @@ void BackwardNFA::buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std
 
         for (const auto& nfaEdge: nfa->out(nfaState))
         {
+            if (nfaEdge.cond == bdd_false()) continue;
+
             int nfaEdgeDst { static_cast<int>(nfaEdge.dst) };
             const bool isAccepting { nfaAcceptingStates.count(nfaEdgeDst) == 1 };
 

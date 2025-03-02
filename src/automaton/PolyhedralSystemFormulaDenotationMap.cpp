@@ -1,15 +1,13 @@
 #include "PolyhedralSystemFormulaDenotationMap.h"
 
 #include <memory>
-#include <ppl_utils.h>
-#include <spot_utils.h>
-
+#include "ppl_utils.h"
+#include "spot_utils.h"
 #include "ppl_output.h"
 
-using Parma_Polyhedra_Library::IO_Operators::operator<<;
 
 PolyhedralSystemFormulaDenotationMap::PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem)
-    : m_polyhedralSystem{polyhedralSystem}
+    : m_polyhedralSystem { polyhedralSystem }
 {
 }
 
@@ -50,11 +48,11 @@ PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::computeFormulaDenot
         if (formula.is(spot::op::Not))
         {
             atomIntepretation = getAtomInterpretation(formula[0]);
-            return std::make_shared<Powerset>(atomIntepretation->notInterpretation()); // TODO: evitare questa copia
+            return std::make_shared<Powerset>(atomIntepretation->notInterpretation());
         }
 
         atomIntepretation = getAtomInterpretation(formula);
-        return std::make_shared<Powerset>(atomIntepretation->interpretation()); // TODO: evitare questa copia
+        return std::make_shared<Powerset>(atomIntepretation->interpretation());
     }
 
     PowersetSharedPtr powersetResult {};

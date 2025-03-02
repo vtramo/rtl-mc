@@ -9,7 +9,7 @@ class DenotRecursiveMemoization: public Denot
 public:
     DenotRecursiveMemoization(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
       : m_polyhedralSystem { polyhedralSystem }
-    , m_backwardNfa { backwardNfa }
+      , m_backwardNfa { backwardNfa }
     {
         const int maxNumberOfPatches { m_backwardNfa.stats().backwardNfaConstructionStats.maxNumberPatches };
         const int maxNumberOfTotalPatches { m_backwardNfa.totalStates() * maxNumberOfPatches };

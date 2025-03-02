@@ -1,8 +1,8 @@
-#include <test_utils.h>
 #include <catch2/catch_test_macros.hpp>
 #include <spot/tl/ltlf.hh>
 #include <spot/tl/parse.hh>
 
+#include "test_utils.h"
 #include "spot_utils.h"
 #include "DiscreteLtlFormula.h"
 #include "DiscreteFiniteLtlFormula.h"

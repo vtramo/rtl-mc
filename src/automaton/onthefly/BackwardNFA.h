@@ -6,7 +6,8 @@
 #include "StateDenotation.h"
 #include "BackwardNFADepthFirstSearch.h"
 
-class BackwardNFA {
+class BackwardNFA
+{
 public:
     using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>;
 

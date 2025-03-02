@@ -151,9 +151,6 @@ void BackwardNFAPermutator::checkStates(const std::unordered_set<int>& states) c
     if (states.size() < 2)
         throw std::invalid_argument("You must specify at least two states!");
 
-    int firstState { *states.begin() };
-    bool singularity { m_backwardNfa.stateDenotation(firstState).isSingular() };
-
     for (const auto& state: states)
     {
         if (m_backwardNfa.isInitialState(state))
@@ -169,10 +166,6 @@ void BackwardNFAPermutator::checkStates(const std::unordered_set<int>& states) c
                 )
             );
         }
-        //
-        // const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
-        // if (stateDenotation.isSingular() != singularity)
-        //     throw std::invalid_argument(fmt::format("The states must be either all singular or all non-singular!"));
     }
 }
 
