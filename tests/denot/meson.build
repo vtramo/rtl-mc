@@ -1,6 +1,6 @@
 denot_on_the_fly_src_files = [
     'denot_on_the_fly_tests.cpp',
-    core_source_files,
+    denot_on_the_fly_source_files,
     automaton_source_files,
     polyhedral_system_source_files,
     polyhedral_system_parser_source_files,
