@@ -1,10 +1,12 @@
 ### Come eseguire i tests
 - `meson test -C buildDir system-parser -v` (PolyhedralSystem parser)
+- `meson test -C buildDir system-observables -v` (PolyhedralSystem generate obersevables)
+- `meson test -C buildDir tile -v` (Tile extractor)
 - `meson test -C buildDir rtlf-parser -v` (RTLf parser)
 - `meson test -C buildDir discretisation -v` (discretisation)
 - `meson test -C buildDir automaton -v` (automaton)
 - `meson test -C buildDir spot-utils -v` (spot utils)
-- `meson test -C buildDir denot -v` (denot)
+- `meson test -C buildDir denot-on-the-fly -v` (denot on the fly)
 - `meson test -C buildDir -v` (tutti i test escluso i benchmarks)
 
 ### Eseguire i test con valgrind attivo
