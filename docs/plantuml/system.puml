@@ -59,13 +59,13 @@ package system {
         -m_symbolTable : PolyhedralSystemSymbolTable
         -m_invariant : Powerset
         -m_minimizeConstraintsOutput : bool
-        -m_denotation : std::unordered_map<Atom, AtomInterpretation>
+        -m_denotation : std::unordered_map<spot::formula, AtomInterpretation>
         -m_bddDict : spot::bdd_dict_ptr
         --constructors--
         +PolyhedralSystem()
         +PolyhedralSystem(PolyhedralSystem&&)
-        -PolyhedralSystem(const Powerset& invariant, const Poly& flow, const std::unordered_map<Atom, AtomInterpretation>& denotation, const PolyhedralSystemSymbolTable& symbolTable)
-        -PolyhedralSystem(Powerset&& invariant, Poly&& flow, std::unordered_map<Atom, AtomInterpretation>&& denotation, PolyhedralSystemSymbolTable&& symbolTable)
+        -PolyhedralSystem(const Powerset& invariant, const Poly& flow, const std::unordered_map<spot::formula, AtomInterpretation>& denotation, const PolyhedralSystemSymbolTable& symbolTable)
+        -PolyhedralSystem(Powerset&& invariant, Poly&& flow, std::unordered_map<spot::formula, AtomInterpretation>&& denotation, PolyhedralSystemSymbolTable&& symbolTable)
         --member functions--
         +spaceDimension() : PPL::dimension_type
         +flow() : Poly&
@@ -77,8 +77,12 @@ package system {
         +invariant() : Powerset&
         +isBoundedInvariant() : bool
         +totalAtoms() : int
-        +interpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
-        +interpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
+        +containsAtom(spot::formula atom): bool
+        +containsAtom(std::string_view atom): bool
+        +getAtomInterpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
+        +getAtomInterpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
+        +addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation) : const AtomInterpretation&
+        +addAtomInterpretation(std::string_view atom, const Powerset& interpretation) : const AtomInterpretation&
         +setConstraintOutputMinimized(bool) : void
         +atoms() : spot::atomic_prop_set&
         +bddDict() : spot::bdd_dict_ptr
@@ -101,14 +105,14 @@ package system {
         -m_flow : std::unique_ptr<Poly>
         -m_symbolTable : std::unique_ptr<PolyhedralSystemSymbolTable>
         -m_invariant : std::unique_ptr<Powerset>
-        -m_denotation : std::unique_ptr<std::unordered_map<Atom, Powerset>>
+        -m_denotation : std::unique_ptr<std::unordered_map<spot::formula, Powerset>>
         --constructors--
         +PolyhedralSystemBuilder()
         +~PolyhedralSystemBuilder()
         --member functions--
         +build() : PolyhedralSystem
-        +denotation(const std::unordered_map<std::string, Powerset>& denotation) : PolyhedralSystemBuilder&
-        +denotation(std::unordered_map<std::string, Powerset>&& denotation) : PolyhedralSystemBuilder&
+        +denotation(const std::unordered_map<spot::formula, Powerset>& denotation) : PolyhedralSystemBuilder&
+        +denotation(std::unordered_map<spot::formula, Powerset>&& denotation) : PolyhedralSystemBuilder&
         +flow(const Poly& flow) : PolyhedralSystemBuilder&
         +flow(Poly&& flow) : PolyhedralSystemBuilder&
         +invariant(const Powerset& invariant) : PolyhedralSystemBuilder&
@@ -116,7 +120,7 @@ package system {
         +symbolTable(const PolyhedralSystemSymbolTable& polyhedralSystemSymbolTable) : PolyhedralSystemBuilder&
         +symbolTable(PolyhedralSystemSymbolTable&& polyhedralSystemSymbolTable) : PolyhedralSystemBuilder&
         -buildPolyhedralSystem() : PolyhedralSystem
-        -buildDenotation() : std::unordered_map<Atom , AtomInterpretation>
+        -buildDenotation() : std::unordered_map<spot::formula, AtomInterpretation>
         -assertDenotationIsNotNull() : void
         -assertFlowIsNotNull() : void
         -assertInvariantIsNotNull() : void
@@ -134,6 +138,7 @@ package system {
         +PolyhedralSystemSymbolTable()
         --member functions--
         +addAtom(std::string_view atom) : PolyhedralSystemSymbolTable&
+        +addAtom(const spot::formula& atom) : PolyhedralSystemSymbolTable&
         +addAtoms(std::initializer_list<std::string_view> atoms) : PolyhedralSystemSymbolTable&
         +addVariable(std::string_view id) : PolyhedralSystemSymbolTable&
         +addVariables(std::initializer_list<std::string_view> ids) : PolyhedralSystemSymbolTable&

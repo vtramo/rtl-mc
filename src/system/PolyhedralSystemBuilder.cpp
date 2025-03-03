@@ -49,15 +49,15 @@ PolyhedralSystemBuilder& PolyhedralSystemBuilder::symbolTable(PolyhedralSystemSy
     return *this;
 }
 
-PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(const std::unordered_map<std::string, Powerset>& denotation)
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(const std::unordered_map<spot::formula, Powerset>& denotation)
 {
-    m_denotation = std::make_unique<std::unordered_map<Atom, Powerset>>(denotation);
+    m_denotation = std::make_unique<std::unordered_map<spot::formula, Powerset>>(denotation);
     return *this;
 }
 
-PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(std::unordered_map<std::string, Powerset>&& denotation)
+PolyhedralSystemBuilder& PolyhedralSystemBuilder::denotation(std::unordered_map<spot::formula, Powerset>&& denotation)
 {
-    m_denotation = std::make_unique<std::unordered_map<Atom, Powerset>>();
+    m_denotation = std::make_unique<std::unordered_map<spot::formula, Powerset>>();
     m_denotation->swap(denotation);
     return *this;
 }
@@ -101,9 +101,9 @@ void PolyhedralSystemBuilder::assertThatAllDimensionsAreEqual() const
     assertDimensionEquality(flowSpaceDimension, m_invariant->space_dimension(), "Invariant");
     assertDimensionEquality(flowSpaceDimension, m_symbolTable->getSpaceDimension(), "Symbol Table");
 
-    for (auto& [atomId, atomPowerset]: *m_denotation)
+    for (auto& [atom, atomPowerset]: *m_denotation)
     {
-        assertDimensionEquality(flowSpaceDimension, atomPowerset.space_dimension(), "Denotation entry: " + atomId);
+        assertDimensionEquality(flowSpaceDimension, atomPowerset.space_dimension(), "Denotation entry: " + atom.ap_name());
     }
 }
 
@@ -119,9 +119,9 @@ PolyhedralSystem PolyhedralSystemBuilder::build() const
     return buildPolyhedralSystem();
 }
 
-std::unordered_map<Atom, AtomInterpretation> PolyhedralSystemBuilder::buildDenotation() const
+std::unordered_map<spot::formula, AtomInterpretation> PolyhedralSystemBuilder::buildDenotation() const
 {
-    std::unordered_map<Atom, AtomInterpretation> interpretations {};
+    std::unordered_map<spot::formula, AtomInterpretation> interpretations {};
     interpretations.reserve(m_denotation->size());
 
     for (auto& [atom, interpretation]: *m_denotation)

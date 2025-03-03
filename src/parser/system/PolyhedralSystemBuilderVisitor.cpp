@@ -1,5 +1,9 @@
 #include "PolyhedralSystemBuilderVisitor.h"
 
+#include "spot_utils.h"
+
+using namespace SpotUtils;
+
 namespace
 {
     int extractCoefficient(PolyhedralSystemParser::IntTimesVarContext* context);
@@ -67,7 +71,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPower
     if (containsAtom(atomId))
         addDuplicateAtomParserError(ctx->VARID());
 
-    m_denotation[atomId] = *powerset;
+    m_denotation[ap(atomId)] = *powerset;
     m_powersets[m_visitKey] = std::move(powerset);
     return m_visitKey++;
 }
@@ -80,7 +84,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPoly(
     if (containsAtom(atomId))
         addDuplicateAtomParserError(ctx->VARID());
     auto powerset { std::make_unique<Powerset>(*poly) };
-    m_denotation[atomId] = *powerset;
+    m_denotation[ap(atomId)] = *powerset;
     m_powersets[m_visitKey] = std::move(powerset);
     return m_visitKey++;
 }
@@ -92,7 +96,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty
         addDuplicateAtomParserError(ctx->VARID());
 
     auto bottomPowerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
-    m_denotation[atomId] = *bottomPowerset;
+    m_denotation[ap(atomId)] = *bottomPowerset;
     m_powersets[m_visitKey] = std::move(bottomPowerset);
     return m_visitKey++;
 }
@@ -266,7 +270,12 @@ const std::vector<ParserError>& PolyhedralSystemBuilderVisitor::errors() const
 
 bool PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::containsAtom(const std::string_view atom) const
 {
-    return m_denotation.count(std::string { atom }) == 1;
+    return containsAtom(ap(atom));
+}
+
+bool PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::containsAtom(const spot::formula& atom) const
+{
+    return m_denotation.count(atom) == 1;
 }
 
 Poly PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getFlow() const
@@ -274,7 +283,8 @@ Poly PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getFlow() const
     return m_flow;
 }
 
-std::unordered_map<std::string, Powerset> PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getDenotation() const
+std::unordered_map<spot::formula, Powerset>
+PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::getDenotation() const
 {
     return m_denotation;
 }

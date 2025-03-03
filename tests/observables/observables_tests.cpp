@@ -30,10 +30,10 @@ TEST_CASE("Generate observables")
         };
         REQUIRE(polyhedralSystemParsingResult.ok());
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
-        const Powerset& p { (*polyhedralSystem.interpretation("p"))->interpretation() };
-        const Powerset& q { (*polyhedralSystem.interpretation("q"))->interpretation() };
-        const Powerset& notP { (*polyhedralSystem.interpretation("p"))->notInterpretation() };
-        const Powerset& notQ { (*polyhedralSystem.interpretation("q"))->notInterpretation() };
+        const Powerset& p { (*polyhedralSystem.getAtomInterpretation("p"))->interpretation() };
+        const Powerset& q { (*polyhedralSystem.getAtomInterpretation("q"))->interpretation() };
+        const Powerset& notP { (*polyhedralSystem.getAtomInterpretation("p"))->notInterpretation() };
+        const Powerset& notQ { (*polyhedralSystem.getAtomInterpretation("q"))->notInterpretation() };
 
         std::vector observables { polyhedralSystem.generateObservables() };
 
@@ -65,14 +65,14 @@ TEST_CASE("Generate observables")
         };
         REQUIRE(polyhedralSystemParsingResult.ok());
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
-        const Powerset& p { (*polyhedralSystem.interpretation("p"))->interpretation() };
-        const Powerset& q { (*polyhedralSystem.interpretation("q"))->interpretation() };
-        const Powerset& r { (*polyhedralSystem.interpretation("r"))->interpretation() };
-        const Powerset& v { (*polyhedralSystem.interpretation("v"))->interpretation() };
-        const Powerset& notP { (*polyhedralSystem.interpretation("p"))->notInterpretation() };
-        const Powerset& notQ { (*polyhedralSystem.interpretation("q"))->notInterpretation() };
-        const Powerset& notR { (*polyhedralSystem.interpretation("r"))->notInterpretation() };
-        const Powerset& notV { (*polyhedralSystem.interpretation("v"))->notInterpretation() };
+        const Powerset& p { (*polyhedralSystem.getAtomInterpretation("p"))->interpretation() };
+        const Powerset& q { (*polyhedralSystem.getAtomInterpretation("q"))->interpretation() };
+        const Powerset& r { (*polyhedralSystem.getAtomInterpretation("r"))->interpretation() };
+        const Powerset& v { (*polyhedralSystem.getAtomInterpretation("v"))->interpretation() };
+        const Powerset& notP { (*polyhedralSystem.getAtomInterpretation("p"))->notInterpretation() };
+        const Powerset& notQ { (*polyhedralSystem.getAtomInterpretation("q"))->notInterpretation() };
+        const Powerset& notR { (*polyhedralSystem.getAtomInterpretation("r"))->notInterpretation() };
+        const Powerset& notV { (*polyhedralSystem.getAtomInterpretation("v"))->notInterpretation() };
 
         std::vector observables { polyhedralSystem.generateObservables() };
 

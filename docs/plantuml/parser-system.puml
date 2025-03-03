@@ -22,7 +22,7 @@ package system <<Frame>> {
         -m_linearExpressions : std::unordered_map<int, std::unique_ptr<PPL::Linear_Expression>>
         -m_polyhedra : std::unordered_map<int, std::unique_ptr<Poly>>
         -m_powersets : std::unordered_map<int, std::unique_ptr<Powerset>>
-        -m_denotation : std::unordered_map<std::string, Powerset>
+        -m_denotation : std::unordered_map<spot::formula, Powerset>
         -m_errors : std::vector<ParserError>
         --constructors--
         +PolyhedralSystemVisitor(PolyhedralSystemSymbolTable& symbolTable)
@@ -30,7 +30,7 @@ package system <<Frame>> {
         +getFlow() : Poly
         +getSymbolTable() : PolyhedralSystemSymbolTable
         +getInvariant() : Powerset
-        +getDenotation() : std::unordered_map<std::string , Powerset>
+        +getDenotation() : std::unordered_map<spot::formula, Powerset>
         --visit functions--
         +visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx) : std::any
         +visitAtomPoly(PolyhedralSystemParser::AtomPolyContext* ctx) : std::any
@@ -50,6 +50,7 @@ package system <<Frame>> {
         +visitVar(PolyhedralSystemParser::VarContext* context) : std::any
         --private member functions--
         -containsAtom(std::string_view atom) : bool
+        -containsAtom(const spot::formula& atom) : bool
         -addDuplicateAtomParserError(antlr4::tree::TerminalNode*) : void
         -popConstraint(int visitKey) : std::unique_ptr<PPL::Constraint>
         -popLinearExpression(int visitKey) : std::unique_ptr<PPL::Linear_Expression>

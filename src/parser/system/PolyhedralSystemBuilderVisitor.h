@@ -44,7 +44,7 @@ private:
         std::any visitVar(PolyhedralSystemParser::VarContext* context) override;
         std::any visitInt(PolyhedralSystemParser::IntContext* context) override;
 
-        [[nodiscard]] std::unordered_map<std::string, Powerset> getDenotation() const;
+        [[nodiscard]] std::unordered_map<spot::formula, Powerset> getDenotation() const;
         [[nodiscard]] Powerset getInvariant() const;
         [[nodiscard]] Poly getFlow() const;
         [[nodiscard]] PolyhedralSystemSymbolTable getSymbolTable() const;
@@ -58,12 +58,13 @@ private:
         std::unordered_map<int, std::unique_ptr<PPL::Linear_Expression>> m_linearExpressions {};
 
         std::reference_wrapper<PolyhedralSystemSymbolTable> m_symbolTable;
-        std::unordered_map<std::string, Powerset> m_denotation {};
+        std::unordered_map<spot::formula, Powerset> m_denotation {};
         Powerset m_invariant {};
         Poly m_flow {};
 
         std::vector<ParserError> m_errors {};
 
+        bool containsAtom(const spot::formula& atom) const;
         bool containsAtom(std::string_view atom) const;
         void addDuplicateAtomParserError(antlr4::tree::TerminalNode*);
         PolyUniquePtr popPoly(int visitKey);

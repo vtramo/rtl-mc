@@ -9,8 +9,6 @@
 #include "AtomInterpretation.h"
 #include "Observable.h"
 
-using Atom = std::string;
-
 class PolyhedralSystem;
 
 using PolyhedralSystemSharedPtr = std::shared_ptr<PolyhedralSystem>;
@@ -19,6 +17,8 @@ using PolyhedralSystemConstSharedPtr = std::shared_ptr<const PolyhedralSystem>;
 class PolyhedralSystem {
 public:
     PolyhedralSystem() = default;
+
+    [[nodiscard]] PPL::dimension_type spaceDimension() const;
 
     [[nodiscard]] const Poly& flow() const;
     [[nodiscard]] const Poly& preFlow() const;
@@ -31,12 +31,18 @@ public:
 
     [[nodiscard]] const PolyhedralSystemSymbolTable& symbolTable() const;
     [[nodiscard]] const spot::atomic_prop_set& atoms() const;
+    [[nodiscard]] bool containsAtom(spot::formula atom) const;
+    [[nodiscard]] bool containsAtom(std::string_view atom) const;
     [[nodiscard]] int totalAtoms() const;
-    [[nodiscard]] std::optional<const AtomInterpretation* const> interpretation(std::string_view atom) const;
-    [[nodiscard]] std::optional<const AtomInterpretation* const> interpretation(const spot::formula& atom) const;
-    [[nodiscard]] PPL::dimension_type spaceDimension() const;
+
+    [[nodiscard]] std::optional<const AtomInterpretation* const> getAtomInterpretation(std::string_view atom) const;
+    [[nodiscard]] std::optional<const AtomInterpretation* const> getAtomInterpretation(const spot::formula& atom) const;
+    const AtomInterpretation& addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation);
+    const AtomInterpretation& addAtomInterpretation(std::string_view atom, const Powerset& interpretation);
+
     [[nodiscard]] spot::bdd_dict_ptr bddDict() const;
     [[nodiscard]] std::vector<Observable> generateObservables() const;
+
     void setConstraintOutputMinimized(bool);
 
     [[nodiscard]] static PolyhedralSystemBuilder builder();
@@ -54,21 +60,21 @@ private:
     bool m_isMovementForced { false };
     Poly m_preFlow { 0, PPL::EMPTY };
     spot::bdd_dict_ptr m_bddDict {};
-    std::unordered_map<Atom, AtomInterpretation> m_denotation {};
+    std::unordered_map<spot::formula, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
     bool m_minimizeConstraintsOutput { false };
 
     PolyhedralSystem(
         const Powerset& invariant,
         const Poly& flow,
-        const std::unordered_map<Atom, AtomInterpretation>& denotation,
+        const std::unordered_map<spot::formula, AtomInterpretation>& denotation,
         const PolyhedralSystemSymbolTable& symbolTable
     );
 
     PolyhedralSystem(
         Powerset&& invariant,
         Poly&& flow,
-        std::unordered_map<Atom, AtomInterpretation>&& denotation,
+        std::unordered_map<spot::formula, AtomInterpretation>&& denotation,
         PolyhedralSystemSymbolTable&& symbolTable
     );
 

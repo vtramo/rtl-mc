@@ -2,8 +2,12 @@
 #include "ppl_output.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "ppl_utils.h"
+#include "spot_utils.h"
 #include "PolyhedralSystem.h"
 #include "systemparser.h"
+
+using namespace SpotUtils;
+using namespace PPLUtils;
 
 TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 {
@@ -200,12 +204,12 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         PPL::Variable y { *symbolTable.getVariable("Y") };
         PolyhedralSystem expectedPolyhedralSystem {
             PolyhedralSystem::builder()
-                .flow(PPLUtils::poly({ x + 0*y <= 4 }))
+                .flow(poly({ x + 0*y <= 4 }))
                 .denotation({
-                    { "p", PPLUtils::powerset({{ x < 3, y <= 3 }, { x < 3, y <= 10 }}) },
-                    { "q", PPLUtils::powerset({{ x > 3, y >= 4 }})}
+                    { ap("p"), powerset({{ x < 3, y <= 3 }, { x < 3, y <= 10 }}) },
+                    { ap("q"), powerset({{ x > 3, y >= 4 }})}
                 })
-                .invariant(PPLUtils::powerset({{ x + y >= 3, y >= 4 }}))
+                .invariant(powerset({{ x + y >= 3, y >= 4 }}))
                 .symbolTable(symbolTable)
                 .build()
         };

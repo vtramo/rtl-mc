@@ -2,9 +2,10 @@
 #include <spot/twa/bdddict.hh>
 
 #include "utils.h"
+#include "ppl_utils.h"
+#include "spot_utils.h"
 #include "PolyhedralSystem.h"
 #include "ppl_output.h"
-#include "ppl_utils.h"
 #include "systemparser.h"
 
 const Poly& PolyhedralSystem::flow() const
@@ -52,26 +53,53 @@ const spot::atomic_prop_set& PolyhedralSystem::atoms() const
     return m_symbolTable.atoms();
 }
 
-std::optional<const AtomInterpretation* const> PolyhedralSystem::interpretation(const std::string_view atom) const
+std::optional<const AtomInterpretation* const> PolyhedralSystem::getAtomInterpretation(const std::string_view atom) const
 {
-    if (const auto it { m_denotation.find(std::string { atom }) }; it != m_denotation.end()) {
+    return getAtomInterpretation(SpotUtils::ap(atom));
+}
+
+std::optional<const AtomInterpretation* const> PolyhedralSystem::getAtomInterpretation(const spot::formula& atom) const
+{
+    if (!atom.is(spot::op::ap))
+        return {};
+
+    if (const auto it { m_denotation.find(atom) }; it != m_denotation.end())
         return &it->second;
-    }
 
      return {};
 }
 
-std::optional<const AtomInterpretation* const> PolyhedralSystem::interpretation(const spot::formula& atom) const
+const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const std::string_view atom, const Powerset& interpretation)
+{
+    return addAtomInterpretation(SpotUtils::ap(atom), interpretation);
+}
+
+const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation)
 {
     if (!atom.is(spot::op::ap))
-    {
-        return {};
-    }
+        throw std::invalid_argument("PolyhedralSystem::addAtomInterpretation: formula is not an atomic proposition!");
 
-    if (const auto it { m_denotation.find(atom.ap_name()) }; it != m_denotation.end())
-        return &it->second;
+    if (containsAtom(atom))
+        throw std::invalid_argument("PolyhedralSystem::addAtomInterpretation: atom " + atom.ap_name() + " already exists!");
 
-     return {};
+    m_symbolTable.addAtom(atom);
+    return m_denotation.emplace(atom, AtomInterpretation { interpretation, m_invariant }).first->second;
+}
+
+bool PolyhedralSystem::containsAtom(const std::string_view atom) const
+{
+    return containsAtom(SpotUtils::ap(atom));
+}
+
+bool PolyhedralSystem::containsAtom(spot::formula atom) const
+{
+    if (!atom.is(spot::op::ap))
+        return false;
+
+    if (const auto it { m_denotation.find(atom) }; it != m_denotation.end())
+        return true;
+
+    return false;
 }
 
 PPL::dimension_type PolyhedralSystem::spaceDimension() const
@@ -102,7 +130,7 @@ bool operator== (const PolyhedralSystem& polyhedralSystem1, const PolyhedralSyst
 PolyhedralSystem::PolyhedralSystem(
     const Powerset& invariant,
     const Poly& flow,
-    const std::unordered_map<Atom, AtomInterpretation>& denotation,
+    const std::unordered_map<spot::formula, AtomInterpretation>& denotation,
     const PolyhedralSystemSymbolTable& symbolTable
 ) : m_invariant { invariant }
   , m_flow { flow }
@@ -120,7 +148,7 @@ PolyhedralSystem::PolyhedralSystem(
 PolyhedralSystem::PolyhedralSystem(
     Powerset&& invariant,
     Poly&& flow,
-    std::unordered_map<Atom, AtomInterpretation>&& denotation,
+    std::unordered_map<spot::formula, AtomInterpretation>&& denotation,
     PolyhedralSystemSymbolTable&& symbolTable
 ) : m_denotation { std::move(denotation) }
   , m_symbolTable { std::move(symbolTable) }
@@ -239,7 +267,7 @@ std::vector<Observable> PolyhedralSystem::generateObservables() const
             PowersetSharedPtr observableDenotation { std::make_shared<Powerset>(spaceDimension(), PPL::UNIVERSE) };
             for (const spot::formula& polyhedralAtom: polyhedralAtoms)
             {
-                const AtomInterpretation* atomInterpretation { *interpretation(polyhedralAtom) };
+                const AtomInterpretation* atomInterpretation { *getAtomInterpretation(polyhedralAtom) };
                 observableDenotation->intersection_assign(
                     kCombination.count(polyhedralAtom) == 1
                         ? atomInterpretation->interpretation()
@@ -268,7 +296,7 @@ std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralS
 
     for (const auto& atom: symbolTable.atoms())
     {
-        const AtomInterpretation* atomInterpretation { *polyhedralSystem.interpretation(atom) };
+        const AtomInterpretation* atomInterpretation { *polyhedralSystem.getAtomInterpretation(atom) };
         out << atom << " " << PPLOutput::toString(atomInterpretation->interpretation(), symbolTable, minimizeConstraints) << '\n';
     }
 

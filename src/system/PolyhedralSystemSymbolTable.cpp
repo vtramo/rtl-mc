@@ -29,25 +29,26 @@ PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addVariable(const std:
 PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addVariables(const std::initializer_list<std::string_view> ids)
 {
     for (const auto &id: ids)
-    {
         addVariable(id);
-    }
 
     return *this;
 }
 
 PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtom(const std::string_view atom)
 {
-    m_atoms.insert(SpotUtils::ap(atom));
+    return addAtom(SpotUtils::ap(atom));
+}
+
+PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtom(const spot::formula& atom)
+{
+    m_atoms.insert(atom);
     return *this;
 }
 
 PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtoms(const std::initializer_list<std::string_view> atoms)
 {
-    for (const auto &id: atoms)
-    {
-        addAtom(id);
-    }
+    for (const auto &atom: atoms)
+        addAtom(atom);
 
     return *this;
 }

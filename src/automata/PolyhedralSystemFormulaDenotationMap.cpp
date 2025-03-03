@@ -86,7 +86,7 @@ const AtomInterpretation* PolyhedralSystemFormulaDenotationMap::getAtomInterpret
 {
     assert(formula.is_literal() && !formula.is(spot::op::Not));
 
-    const std::optional atomInterpretation { m_polyhedralSystem->interpretation(formula) };
+    const std::optional atomInterpretation { m_polyhedralSystem->getAtomInterpretation(formula) };
 
     if (!atomInterpretation)
         throw std::invalid_argument("The atom " + formula.ap_name() + " has no interpretation!");

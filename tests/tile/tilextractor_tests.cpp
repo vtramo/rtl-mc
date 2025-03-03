@@ -1,9 +1,9 @@
-#include <TileExtractor.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
 
 #include "ppl_output.h"
+#include "TileExtractor.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
 #include "spot_utils.h"
@@ -27,10 +27,10 @@ TEST_CASE("Extract Tiles from Observables")
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
         REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
 
-        const Powerset& p { (*polyhedralSystem.interpretation("p"))->interpretation() };
-        const Powerset& q { (*polyhedralSystem.interpretation("q"))->interpretation() };
-        const Powerset& notP { (*polyhedralSystem.interpretation("p"))->notInterpretation() };
-        const Powerset& notQ { (*polyhedralSystem.interpretation("q"))->notInterpretation() };
+        const Powerset& p { (*polyhedralSystem.getAtomInterpretation("p"))->interpretation() };
+        const Powerset& q { (*polyhedralSystem.getAtomInterpretation("q"))->interpretation() };
+        const Powerset& notP { (*polyhedralSystem.getAtomInterpretation("p"))->notInterpretation() };
+        const Powerset& notQ { (*polyhedralSystem.getAtomInterpretation("q"))->notInterpretation() };
 
         std::vector observables { polyhedralSystem.generateObservables() };
         REQUIRE(observables.size() == 3);

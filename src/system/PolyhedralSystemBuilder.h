@@ -1,12 +1,10 @@
 #pragma once
 
-#include <AtomInterpretation.h>
+#include "AtomInterpretation.h"
 
 #include "PolyhedralSystemSymbolTable.h"
 
 class PolyhedralSystem;
-
-using Atom = std::string;
 
 class PolyhedralSystemBuilder {
 public:
@@ -16,8 +14,8 @@ public:
     PolyhedralSystemBuilder& invariant(const Powerset& invariant);
     PolyhedralSystemBuilder& invariant(Powerset&& invariant);
 
-    PolyhedralSystemBuilder& denotation(const std::unordered_map<std::string, Powerset>& denotation);
-    PolyhedralSystemBuilder& denotation(std::unordered_map<std::string, Powerset>&& denotation);
+    PolyhedralSystemBuilder& denotation(const std::unordered_map<spot::formula, Powerset>& denotation);
+    PolyhedralSystemBuilder& denotation(std::unordered_map<spot::formula, Powerset>&& denotation);
 
     PolyhedralSystemBuilder& symbolTable(const PolyhedralSystemSymbolTable& polyhedralSystemSymbolTable);
     PolyhedralSystemBuilder& symbolTable(PolyhedralSystemSymbolTable&& polyhedralSystemSymbolTable);
@@ -35,11 +33,11 @@ public:
 
 private:
     std::unique_ptr<PolyhedralSystemSymbolTable> m_symbolTable { nullptr };
-    std::unique_ptr<std::unordered_map<Atom, Powerset>> m_denotation { nullptr };
+    std::unique_ptr<std::unordered_map<spot::formula, Powerset>> m_denotation { nullptr };
     std::unique_ptr<Powerset> m_invariant { nullptr };
     std::unique_ptr<Poly> m_flow { nullptr };
 
-    [[nodiscard]] std::unordered_map<Atom, AtomInterpretation> buildDenotation() const;
+    [[nodiscard]] std::unordered_map<spot::formula, AtomInterpretation> buildDenotation() const;
     [[nodiscard]] PolyhedralSystem buildPolyhedralSystem() const;
 
     void assertInvariantIsNotNull() const;
