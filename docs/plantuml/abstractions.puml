@@ -18,6 +18,7 @@ package abstractions {
                 +ObservablePatch(ObservablePatch&& other)
                 --member functions--
                 +observable(): Observable
+                +observableInterpretation(): PowersetConstSharedPtr
                 +patch(): const Poly&
                 +spaceDimension(): PPL::dimension_type
                 +hashcode(): std::size_t

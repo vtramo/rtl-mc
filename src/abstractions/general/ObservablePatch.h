@@ -17,6 +17,7 @@ public:
     }
 
     [[nodiscard]] const Observable& observable() const { return m_observable; }
+    [[nodiscard]] PowersetConstSharedPtr observableInterpretation() const { return m_observable.interpretation(); }
     [[nodiscard]] const Poly& patch() const { return m_patch; }
     [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_observable.spaceDimension(); }
     [[nodiscard]] std::size_t hashcode() const { return m_hashcode; }
