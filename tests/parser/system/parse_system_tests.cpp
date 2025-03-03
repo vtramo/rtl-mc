@@ -249,6 +249,62 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         REQUIRE(!polyhedralSystem.isBoundedInvariant());
         REQUIRE(polyhedralSystem.isClosedFlow());
     }
+
+    SECTION("Parse a PolyhedralSystem spec then add new atomic proposition (stay)")
+    {
+        std::istringstream input {
+            "Flow { X <= 4 }"
+            "Inv ( { 1*X + Y >= 3 & Y >= 4 } )"
+            "p ( { X < 3 & 1Y <= 3 } { X < 3 & 1*Y <= 10 } )"
+            "q { 1X > 3 & Y >= 4 }"
+        };
+
+
+        PolyhedralSystemSymbolTable symbolTable {};
+        symbolTable
+            .addVariables({ "X", "Y" })
+            .addAtoms({ "p", "q" });
+
+        PPL::Variable x { *symbolTable.getVariable("X") };
+        PPL::Variable y { *symbolTable.getVariable("Y") };
+        PolyhedralSystem expectedPolyhedralSystem {
+            PolyhedralSystem::builder()
+                .flow(poly({ x + 0*y <= 4 }))
+                .denotation({
+                    { ap("p"), powerset({{ x < 3, y <= 3 }, { x < 3, y <= 10 }}) },
+                    { ap("q"), powerset({{ x > 3, y >= 4 }})}
+                })
+                .invariant(powerset({{ x + y >= 3, y >= 4 }}))
+                .symbolTable(symbolTable)
+                .build()
+        };
+
+        PolyhedralSystem polyhedralSystem {};
+        input >> polyhedralSystem;
+
+        REQUIRE(expectedPolyhedralSystem.totalAtoms() == polyhedralSystem.totalAtoms());
+        REQUIRE(expectedPolyhedralSystem.spaceDimension() == polyhedralSystem.spaceDimension());
+        REQUIRE(expectedPolyhedralSystem == polyhedralSystem);
+
+        REQUIRE(expectedPolyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(!expectedPolyhedralSystem.isMovementForced());
+        REQUIRE(!expectedPolyhedralSystem.isBoundedInvariant());
+        REQUIRE(expectedPolyhedralSystem.isClosedFlow());
+
+        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(!polyhedralSystem.isMovementForced());
+        REQUIRE(!polyhedralSystem.isBoundedInvariant());
+        REQUIRE(polyhedralSystem.isClosedFlow());
+
+        spot::formula stay { ap("stay") };
+        Powerset stayInterpretation { powerset({{ x - y >= 3 }, { x - y <= 6 }}) };
+        polyhedralSystem.addAtomInterpretation(stay, stayInterpretation);
+        REQUIRE(polyhedralSystem.containsAtom(stay));
+        std::optional stayAtomInterpretation { polyhedralSystem.getAtomInterpretation(stay) };
+        REQUIRE(stayAtomInterpretation.has_value());
+        REQUIRE((*stayAtomInterpretation)->interpretation() == *intersect(stayInterpretation, polyhedralSystem.invariant()));
+    }
+
 }
 
 TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]")
