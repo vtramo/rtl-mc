@@ -83,7 +83,7 @@ const std::unordered_set<int>& FiniteSynchronousProduct::initialStates() const
 
 bool FiniteSynchronousProduct::isInitialState(const unsigned state) const
 {
-    return m_synchronousProduct->get_init_state_number() == state;
+    return m_initialStates.count(state);
 }
 
 bool FiniteSynchronousProduct::isFinalState(const unsigned state) const
