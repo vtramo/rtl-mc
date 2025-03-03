@@ -21,7 +21,6 @@ public:
         computeHashCode();
     }
 
-
     Tile() = default;
 
     const Observable& observable() const { return m_observable; }
@@ -57,7 +56,7 @@ private:
 
     void computeHashCode()
     {
-        m_hashcode = m_observable.hashcode() ^ m_patches->hash_code(); // TODO: find a better hash function
+        m_hashcode = m_patches->hash_code();
     }
 };
 
