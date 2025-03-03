@@ -17,13 +17,6 @@ TEST_CASE(
     "Space dimension: 2\n"
     "Variables: [x, y]\n"
     "Flow: { x = 1 & y = 1 }\n\n"
-
-    "ObservablePatchSequence:\n"
-    "0. Observable1 Patch2: { x >= 1 & x <= 2 & y >= 2 & y <= 3 }\n"
-    "1. Observable2 Patch1: { x >= 1 & x <= 3 & y >  3 & y <= 4 }\n"
-    "2. Observable2 Patch2: { x >= 2 & x <= 4 & y >= 4 & y <= 5 }\n"
-    "3. Observable3 Patch1: { x >= 3 & x <= 5 & y >  5 & y <= 6 }\n"
-    "4. Observable3 Patch2: { x >= 4 & x <= 5 & y >= 6 & y <  7 }\n\n"
 )
 {
     PPL::Variable x { 0 };
@@ -51,21 +44,116 @@ TEST_CASE(
     Observable observable2 { AP({"q"}), observable2Interpretation };
     Observable observable3 { AP({"r"}), observable3Interpretation };
 
-    ObservablePatchSequence sequence {
-        std::vector {
-            ObservablePatch  { observable1, observable1Patch2 },
-            ObservablePatch  { observable2, observable2Patch1 },
-            ObservablePatch  { observable2, observable2Patch2 },
-            ObservablePatch  { observable3, observable3Patch1 },
-            ObservablePatch  { observable3, observable3Patch2 },
-        }, 2
-    };
-
     Poly preFlow { PPLUtils::point(1*x + 1*y) };
     reflectionAffineImage(preFlow);
 
-    SECTION("Traversal Zero should return ( { x >= 1 & x <= 2 & y = 3 } )")
+    SECTION(
+        "ObservablePatchSequence:\n"
+        "0. Observable1 Patch2: { x >= 1 & x <= 2 & y >= 2 & y <= 3 }\n"
+        "1. Observable2 Patch1: { x >= 1 & x <= 3 & y >  3 & y <= 4 }\n"
+        "2. Observable2 Patch2: { x >= 2 & x <= 4 & y >= 4 & y <= 5 }\n"
+        "3. Observable3 Patch1: { x >= 3 & x <= 5 & y >  5 & y <= 6 }\n"
+        "4. Observable3 Patch2: { x >= 4 & x <= 5 & y >= 6 & y <  7 }\n\n"
+    )
     {
-        REQUIRE(*traversalZero(sequence, preFlow) == powerset({{ x >= 1, x <= 2, y == 3 }}));
+        ObservablePatchSequence sequence {
+            std::vector {
+                ObservablePatch  { observable1, observable1Patch2 },
+                ObservablePatch  { observable2, observable2Patch1 },
+                ObservablePatch  { observable2, observable2Patch2 },
+                ObservablePatch  { observable3, observable3Patch1 },
+                ObservablePatch  { observable3, observable3Patch2 },
+            }, 2
+        };
+
+        SECTION("Traversal Zero should return ( { x >= 1 & x <= 2 & y = 3 } )")
+        {
+            PowersetSharedPtr traversalZeroResult { traversalZero(sequence, preFlow) };
+            Powerset expectedResult { powerset({{ x >= 1, x <= 2, y == 3 }}) };
+            INFO("Traversal Zero Result: " + PPLUtils::toString(*traversalZeroResult));
+            INFO("Expected Result: " + PPLUtils::toString(expectedResult));
+            REQUIRE(*traversalZeroResult == expectedResult);
+        }
+
+        SECTION("Traversal Plus should return ( { x >= 1 & -x + y > 1 & -y >= -3 } )")
+        {
+            PowersetSharedPtr traversalPlusResult { traversalPlus(sequence, preFlow) };
+            Powerset expectedResult { powerset({{ x >= 1, -x + y > 1, -y >= -3 }}) };
+            INFO("Traversal Plus Result: " + PPLUtils::toString(*traversalPlusResult));
+            INFO("Expected Result: " + PPLUtils::toString(expectedResult));
+            REQUIRE(*traversalPlusResult == expectedResult);
+        }
+    }
+
+    SECTION(
+        "ObservablePatchSequence:\n"
+        "0. Observable1 Patch2: { x >= 1 & x <= 2 & y >= 2 & y <= 3 }\n"
+        "1. Observable2 Patch1: { x >= 1 & x <= 3 & y >  3 & y <= 4 }\n"
+        "2. Observable2 Patch2: { x >= 2 & x <= 4 & y >= 4 & y <= 5 }\n"
+        "3. Observable3 Patch1: { x >= 3 & x <= 5 & y >  5 & y <= 6 }\n\n"
+    )
+    {
+        ObservablePatchSequence sequence {
+            std::vector {
+                ObservablePatch  { observable1, observable1Patch2 },
+                ObservablePatch  { observable2, observable2Patch1 },
+                ObservablePatch  { observable2, observable2Patch2 },
+                ObservablePatch  { observable3, observable3Patch1 },
+            }, 2
+        };
+
+        SECTION("Traversal Zero should return ( { x >= 1 & x <= 2 & y = 3 } )")
+        {
+            PowersetSharedPtr traversalZeroResult { traversalZero(sequence, preFlow) };
+            Powerset expectedResult { powerset({{ x >= 1, x <= 2, y == 3 }}) };
+            INFO("Traversal Zero Result: " + PPLUtils::toString(*traversalZeroResult));
+            INFO("Expected Result: " + PPLUtils::toString(expectedResult));
+            REQUIRE(*traversalZeroResult == expectedResult);
+        }
+
+        SECTION("Traversal Plus should return ( { x >= 1 & -x + y >= 1 & y <= 3 } )")
+        {
+            PowersetSharedPtr traversalPlusResult { traversalPlus(sequence, preFlow) };
+            Powerset expectedResult { powerset({{ x >= 1, -x + y >= 1, y <= 3 }}) };
+            INFO("Traversal Zero Result: " + PPLUtils::toString(*traversalPlusResult));
+            INFO("Expected Result: " + PPLUtils::toString(expectedResult));
+            REQUIRE(*traversalPlusResult == expectedResult);
+        }
+    }
+
+    SECTION(
+        "ObservablePatchSequence:\n"
+        "0. Observable2 Patch1: { x >= 1 & x <= 3 & y >  3 & y <= 4 }\n"
+        "1. Observable2 Patch2: { x >= 2 & x <= 4 & y >= 4 & y <= 5 }\n"
+        "2. Observable3 Patch1: { x >= 3 & x <= 5 & y >  5 & y <= 6 }\n"
+        "3. Observable3 Patch2: { x >= 4 & x <= 5 & y >= 6 & y <  7 }\n\n"
+    )
+    {
+        ObservablePatchSequence sequence {
+            std::vector {
+                ObservablePatch  { observable2, observable2Patch1 },
+                ObservablePatch  { observable2, observable2Patch2 },
+                ObservablePatch  { observable3, observable3Patch1 },
+                ObservablePatch  { observable3, observable3Patch2 },
+            }, 2
+        };
+
+        SECTION("Traversal Zero should return ( { x >= 2 & x < 3 & y == 4 } )")
+        {
+            PowersetSharedPtr traversalZeroResult { traversalZero(sequence, preFlow) };
+            Powerset expectedResult { powerset({{ x >= 2, x < 3, y == 4 }}) };
+            INFO("Traversal Zero Result: " + PPLUtils::toString(*traversalZeroResult));
+            INFO("Expected Result: " + PPLUtils::toString(expectedResult));
+            REQUIRE(*traversalZeroResult == expectedResult);
+        }
+
+        SECTION("Traversal Plus should return ( { -x + y >= 1 & -y >= -4 & y > 3 & x - y >= -2 } )")
+        {
+            PowersetSharedPtr traversalPlusResult { traversalPlus(sequence, preFlow) };
+            Powerset expectedResult { powerset({{ -x + y >= 1, -y >= -4, y > 3, x - y >= -2 }}) };
+            INFO("Traversal Plus Result: " + PPLUtils::toString(*traversalPlusResult));
+            INFO("Expected Result: " + PPLUtils::toString(expectedResult));
+            REQUIRE(*traversalPlus(sequence, preFlow) == expectedResult);
+        }
     }
 }
