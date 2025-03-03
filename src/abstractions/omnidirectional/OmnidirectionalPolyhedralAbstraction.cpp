@@ -19,15 +19,6 @@ OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(Polyh
     buildAbstraction(std::move(tiles));
 }
 
-void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& tiles)
-{
-    const int totalTiles { static_cast<int>(tiles.size()) };
-    for (int i { 0 }; i < totalTiles; ++i)
-        for (int j { 0 }; j < totalTiles; ++j)
-            for (int k { 0 }; k < totalTiles; ++k)
-                processTriple(tiles[i], tiles[j], tiles[k]);
-}
-
 void OmnidirectionalPolyhedralAbstraction::initializeGraph(spot::bdd_dict_ptr bddDict)
 {
     m_graph = std::make_shared<spot::twa_graph>(bddDict);
@@ -35,7 +26,24 @@ void OmnidirectionalPolyhedralAbstraction::initializeGraph(spot::bdd_dict_ptr bd
     m_graph->set_acceptance(spot::acc_cond::acc_code::t());
 }
 
-void OmnidirectionalPolyhedralAbstraction::processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3)
+void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& tiles)
+{
+    const int totalTiles { static_cast<int>(tiles.size()) };
+    std::unordered_map<Tile, unsigned> stateByTile {};
+    stateByTile.reserve(totalTiles * 3 / 2);
+
+    for (int i { 0 }; i < totalTiles; ++i)
+        for (int j { 0 }; j < totalTiles; ++j)
+            for (int k { 0 }; k < totalTiles; ++k)
+                processTriple(tiles[i], tiles[j], tiles[k], stateByTile);
+}
+
+void OmnidirectionalPolyhedralAbstraction::processTriple(
+    const Tile& tile1,
+    const Tile& tile2,
+    const Tile& tile3,
+    std::unordered_map<Tile, unsigned>& stateByTile
+)
 {
     TripleTileNode qTripleTileNode { tile1, tile2, tile3 };
     if (qTripleTileNode.isEmpty()) return;
@@ -43,8 +51,8 @@ void OmnidirectionalPolyhedralAbstraction::processTriple(const Tile& tile1, cons
     unsigned qState { m_graph->new_state() };
     m_tileNodes.insert(std::make_pair(qState, qTripleTileNode));
 
-    unsigned pState { getStateByTileOrCreate(tile1) };
-    unsigned rState { getStateByTileOrCreate(tile3) };
+    unsigned pState { getStateByTileOrCreate(tile1, stateByTile) };
+    unsigned rState { getStateByTileOrCreate(tile3, stateByTile) };
     TileNode pTileNode { tile1 };
     TileNode rTileNode { tile3 };
     m_tileNodes.insert(std::make_pair(pState, pTileNode));
@@ -54,15 +62,16 @@ void OmnidirectionalPolyhedralAbstraction::processTriple(const Tile& tile1, cons
     m_graph->new_acc_edge(qState, rState, observableAsBdd(rTileNode.observable()));
 }
 
-unsigned OmnidirectionalPolyhedralAbstraction::getStateByTileOrCreate(const Tile& tile)
+unsigned OmnidirectionalPolyhedralAbstraction::getStateByTileOrCreate(
+    const Tile& tile,
+    std::unordered_map<Tile, unsigned>& stateByTile
+)
 {
-    if (m_stateByTile.count(tile))
-    {
-        return m_stateByTile[tile];
-    }
+    if (stateByTile.count(tile))
+        return stateByTile[tile];
 
     unsigned s { m_graph->new_state() };
-    m_stateByTile[tile] = s;
+    stateByTile[tile] = s;
     return s;
 }
 

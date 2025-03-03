@@ -31,11 +31,10 @@ public:
 private:
     spot::twa_graph_ptr m_graph {};
     std::unordered_map<unsigned, std::variant<TileNode, TripleTileNode>> m_tileNodes {};
-    std::unordered_map<Tile, unsigned> m_stateByTile {};
 
     void buildAbstraction(std::vector<Tile>&& tiles);
     void initializeGraph(spot::bdd_dict_ptr bddDict);
-    unsigned getStateByTileOrCreate(const Tile& tile);
+    unsigned getStateByTileOrCreate(const Tile& tile, std::unordered_map<Tile, unsigned>& stateByTile);
     bdd observableAsBdd(const Observable& observable);
-    void processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3);
+    void processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile);
 };

@@ -205,28 +205,25 @@ package abstractions {
             --data members--
             -m_graph: spot::twa_graph_ptr
             -m_tileNodes: std::unordered_map<unsigned, std::variant<TileNode, TripleTileNode>>
-            -m_stateByTile: std::unordered_map<Tile, unsigned>
             --constructors--
             +OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
             --member functions--
-            +observable(state: unsigned): const Observable&
-            +points(state: unsigned): PowersetConstSharedPtr
+            +observable(unsigned state): const Observable&
+            +points(unsigned state): PowersetConstSharedPtr
             +initialState(): int
             +totalStates(): int
             +totalEdges(): int
-            +successors(state: unsigned): EdgeIterator
-            +hasSuccessors(state: unsigned): bool
-            +countSuccessors(state: unsigned): int
+            +successors(unsigned state): EdgeIterator
+            +hasSuccessors(unsigned state): bool
+            +countSuccessors(unsigned state): int
             +twa(): spot::const_twa_graph_ptr
-            +printDotFormat(os: std::ostream&): void
-            --private member functions--
-            -buildAbstraction(tiles: std::vector<Tile>&&): void
-            -initializeGraph(bddDict: spot::bdd_dict_ptr): void
-            -getStateByTileOrCreate(tile: Tile): unsigned
-            -observableAsBdd(observable: Observable): bdd
-            -processTriple(tile1: Tile, tile2: Tile, tile3: Tile): void
+            +printDotFormat(std::ostream& os): void
+            -buildAbstraction(std::vector<Tile>&& tiles): void
+            -initializeGraph(spot::bdd_dict_ptr bddDict): void
+            -observableAsBdd(const Observable& observable): bdd
+            -processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile): void
+            -getStateByTileOrCreate(const Tile& tile, std::unordered_map<Tile, unsigned>& stateByTile): unsigned
         }
-
 
         Tile <..> TileHash
         Tile --> "1" Observable
