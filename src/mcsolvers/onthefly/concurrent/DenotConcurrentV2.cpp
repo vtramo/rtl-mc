@@ -1,5 +1,4 @@
 #include "DenotConcurrentV2.h"
-#include "reach.h"
 
 PowersetUniquePtr DenotConcurrentV2::run()
 {
@@ -68,10 +67,10 @@ PowersetUniquePtr DenotConcurrentV2::denot(
         assert(A->space_dimension() == m_polyhedralSystem->spaceDimension());
         assert(A->space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
-        PPLUtils::ReachPairs reachPairs {
+        ReachPairs reachPairs {
             predecessorStateDenotation.isSingular()
-                ? PPLUtils::reach0(*A, X, m_polyhedralSystem->preFlow())
-                : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->preFlow())
+                ? reach0(*A, X, m_polyhedralSystem->preFlow())
+                : reachPlus(*A, X, m_polyhedralSystem->preFlow())
         };
 
         if (reachPairs.empty()) continue;

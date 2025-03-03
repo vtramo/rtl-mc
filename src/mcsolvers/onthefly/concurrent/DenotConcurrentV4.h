@@ -3,7 +3,7 @@
 #include "Denot.h"
 #include "BackwardNFA.h"
 #include "PolyhedralSystem.h"
-#include "ppl_utils.h"
+#include "reach.h"
 
 class DenotConcurrentV4: public Denot
 {
@@ -32,7 +32,7 @@ private:
         bool isSing
     );
 
-    std::pair<int, PPLUtils::ReachPairs> computeReachPairs(
+    std::pair<int, ReachPairs> computeReachPairs(
         int predecessor,
         const Powerset& predecessorVisitedPatches,
         const Poly& X

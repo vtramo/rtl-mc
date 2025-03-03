@@ -1,5 +1,4 @@
 #include "DenotConcurrentV3.h"
-#include "reach.h"
 
 PowersetUniquePtr DenotConcurrentV3::run()
 {
@@ -60,7 +59,7 @@ PowersetUniquePtr DenotConcurrentV3::denot(
     const int totalPredecessors { m_backwardNfa.countPredecessors(state) };
     BackwardNFA::EdgeIterator edgeIterator { m_backwardNfa.predecessors(state) };
     const int myPredecessor { static_cast<int>(edgeIterator.begin()->dst) };
-    std::vector<std::future<std::pair<int, PPLUtils::ReachPairs>>> reachPairFutures {};
+    std::vector<std::future<std::pair<int, ReachPairs>>> reachPairFutures {};
     if (totalPredecessors > 1)
     {
         reachPairFutures.reserve(totalPredecessors - 1);
@@ -78,9 +77,9 @@ PowersetUniquePtr DenotConcurrentV3::denot(
         });
     }
 
-    std::vector<std::pair<int, PPLUtils::ReachPair>> predecessorReachPairs {};
+    std::vector<std::pair<int, ReachPair>> predecessorReachPairs {};
     predecessorReachPairs.reserve(totalPredecessors);
-    PPLUtils::ReachPairs myReachPairs { computeReachPairs(myPredecessor, getVisitedPowerset(V, myPredecessor), X).second };
+    ReachPairs myReachPairs { computeReachPairs(myPredecessor, getVisitedPowerset(V, myPredecessor), X).second };
     for (auto&& myReachPair: myReachPairs)
         predecessorReachPairs.emplace_back(myPredecessor, std::move(myReachPair));
 
@@ -126,7 +125,7 @@ PowersetUniquePtr DenotConcurrentV3::denot(
     return result;
 }
 
-std::future<std::pair<int, PPLUtils::ReachPairs>> DenotConcurrentV3::computeReachPairsAsync(
+std::future<std::pair<int, ReachPairs>> DenotConcurrentV3::computeReachPairsAsync(
     int predecessor,
     const Powerset& predecessorVisitedRegion,
     const Poly& X
@@ -144,7 +143,7 @@ std::future<std::pair<int, PPLUtils::ReachPairs>> DenotConcurrentV3::computeReac
     return std::async(task);
 }
 
-std::pair<int, PPLUtils::ReachPairs> DenotConcurrentV3::computeReachPairs(
+std::pair<int, ReachPairs> DenotConcurrentV3::computeReachPairs(
     int predecessor,
     const Powerset& predecessorVisitedRegion,
     const Poly& X
@@ -158,10 +157,10 @@ std::pair<int, PPLUtils::ReachPairs> DenotConcurrentV3::computeReachPairs(
     assert(A->space_dimension() == m_polyhedralSystem->spaceDimension());
     assert(A->space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
-    PPLUtils::ReachPairs reachPairs {
+    ReachPairs reachPairs {
         predecessorStateDenotation.isSingular()
-            ? PPLUtils::reach0(*A, X, m_polyhedralSystem->preFlow())
-            : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->preFlow())
+            ? reach0(*A, X, m_polyhedralSystem->preFlow())
+            : reachPlus(*A, X, m_polyhedralSystem->preFlow())
     };
 
     return { predecessor, std::move(reachPairs) };

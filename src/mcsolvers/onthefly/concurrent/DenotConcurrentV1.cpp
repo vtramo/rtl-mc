@@ -96,10 +96,10 @@ Powerset DenotConcurrentV1::denot(
         assert(A->space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
         // std::cout << "A: " << PPLOutput::toString(*A, m_polyhedralSystem->getSymbolTable()) << " | X: " << PPLOutput::toString(X, m_polyhedralSystem->getSymbolTable()) << std::endl;
-        PPLUtils::ReachPairs reachPairs {
+        ReachPairs reachPairs {
             predecessorStateDenotation.isSingular()
-                ? PPLUtils::reach0(*A, X, m_polyhedralSystem->preFlow())
-                : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->preFlow())
+                ? reach0(*A, X, m_polyhedralSystem->preFlow())
+                : reachPlus(*A, X, m_polyhedralSystem->preFlow())
         };
 
         for (const auto& [Q, Y]: reachPairs)

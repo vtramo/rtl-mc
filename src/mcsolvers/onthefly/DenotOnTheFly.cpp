@@ -98,8 +98,8 @@ PowersetUniquePtr DenotOnTheFly::denot(
             return std::make_unique<Powerset>(X);
         }
 
-        PPLUtils::ReachPairs reachPairs {
-            PPLUtils::reachPlus(
+        ReachPairs reachPairs {
+            reachPlus(
                 Powerset { X },
                 Poly { m_polyhedralSystem->spaceDimension(), PPL::UNIVERSE },
                 m_polyhedralSystem->preFlow()
@@ -157,10 +157,10 @@ PowersetUniquePtr DenotOnTheFly::denot(
 
         Timer timer {};
         Log::log(Verbosity::trace, "Calling reach operator (isSing = {}).", isSing);
-        PPLUtils::ReachPairs reachPairs {
+        ReachPairs reachPairs {
             predecessorStateDenotation.isSingular()
-                ? PPLUtils::reach0(A, X, m_polyhedralSystem->preFlow())
-                : PPLUtils::reachPlus(A, X, m_polyhedralSystem->preFlow())
+                ? reach0(A, X, m_polyhedralSystem->preFlow())
+                : reachPlus(A, X, m_polyhedralSystem->preFlow())
         };
         Log::log(Verbosity::trace, "Reach pairs computed (size: {}). Elapsed time: {} s.", reachPairs.size(), timer.elapsedInSeconds());
 

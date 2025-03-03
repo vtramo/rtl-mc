@@ -1,5 +1,4 @@
 #include "DenotConcurrentV4.h"
-#include "reach.h"
 #include <future>
 
 
@@ -49,13 +48,13 @@ PowersetUniquePtr DenotConcurrentV4::denot(
         return result;
 
     const int totalPredecessors { m_backwardNfa.countPredecessors(state) };
-    std::vector<std::pair<int, PPLUtils::ReachPair>> predecessorReachPairs {};
+    std::vector<std::pair<int, ReachPair>> predecessorReachPairs {};
     predecessorReachPairs.reserve(totalPredecessors * 2);
     for (auto edgePredecessor: m_backwardNfa.predecessors(state))
     {
         const int predecessor { static_cast<int>(edgePredecessor.dst) };
         const auto& predecessorVisitedPatches { getVisitedPatches(V, predecessor) };
-        PPLUtils::ReachPairs reachPairs { computeReachPairs(predecessor, predecessorVisitedPatches, X).second };
+        ReachPairs reachPairs { computeReachPairs(predecessor, predecessorVisitedPatches, X).second };
         for (auto&& reachPair: reachPairs)
             predecessorReachPairs.emplace_back(predecessor, std::move(reachPair));
     }
@@ -98,7 +97,7 @@ PowersetUniquePtr DenotConcurrentV4::denot(
     return result;
 }
 
-std::pair<int, PPLUtils::ReachPairs> DenotConcurrentV4::computeReachPairs(
+std::pair<int, ReachPairs> DenotConcurrentV4::computeReachPairs(
     int predecessor,
     const Powerset& predecessorVisitedPatches,
     const Poly& X
@@ -107,10 +106,10 @@ std::pair<int, PPLUtils::ReachPairs> DenotConcurrentV4::computeReachPairs(
     const StateDenotation& predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
     PowersetUniquePtr A { PPLUtils::minus(*predecessorStateDenotation.denotation(), predecessorVisitedPatches) };
 
-    PPLUtils::ReachPairs reachPairs {
+    ReachPairs reachPairs {
         predecessorStateDenotation.isSingular()
-            ? PPLUtils::reach0(*A, X, m_polyhedralSystem->preFlow())
-            : PPLUtils::reachPlus(*A, X, m_polyhedralSystem->preFlow())
+            ? reach0(*A, X, m_polyhedralSystem->preFlow())
+            : reachPlus(*A, X, m_polyhedralSystem->preFlow())
     };
 
     return { predecessor, std::move(reachPairs) };

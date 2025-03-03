@@ -12,9 +12,6 @@ template<> struct std::hash<PPL::Pointset_Powerset<Poly>>
 };
 
 namespace PPLUtils {
-    typedef std::pair<Poly, Poly> ReachPair;
-    typedef std::vector<ReachPair> ReachPairs;
-
     std::string toString(const Poly& poly);
     std::string toString(const Powerset& powerset);
 
