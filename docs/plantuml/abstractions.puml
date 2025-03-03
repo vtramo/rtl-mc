@@ -41,8 +41,9 @@ package abstractions {
                 +cend(): std::vector<ObservablePatch>::const_iterator
                 +isEmpty(): bool
                 +totalPatches(): int
-                +firstObservablePatch(): std::optional<const ObservablePatch&>
+                +firstObservablePatch(): std::optional<const ObservablePatch* const>
                 +hashcode(): std::size_t
+                -computeHashCode(): void
                 --operators--
                 +operator!= (const ObservablePatchSequence& seq1, const ObservablePatchSequence& seq2) : bool
                 +operator== (const ObservablePatchSequence& seq1, const ObservablePatchSequence& seq2) : bool
