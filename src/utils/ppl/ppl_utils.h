@@ -47,6 +47,7 @@ namespace PPLUtils {
     PowersetUniquePtr fusion(const Poly& a, const Poly& b);
 
     Poly zeroPoint(PPL::dimension_type spaceDimension);
+    Poly point(PPL::Linear_Expression pointLinearExpression);
     bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y);
 
     bool containsDisjunct(const Powerset& powerset, const Poly& disjunct);
