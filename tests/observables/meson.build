@@ -1,4 +1,4 @@
-system_tests_source_files = [
+observables_system_tests_source_files = [
     'observables_tests.cpp',
     polyhedral_system_parser_source_files,
     polyhedral_system_source_files,
@@ -9,7 +9,7 @@ system_tests_source_files = [
 
 observables_system_tests_exe = executable(
     'observables_system_tests',
-    system_tests_source_files,
+    observables_system_tests_source_files,
     dependencies : [catch2_dep, catch2_with_main_dep, spot_dep, antlr4_runtime_dep, ppl_dep, gmp_dep, gmpxx_dep],
     include_directories : include_directories
 )
