@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Observable.h"
+#include "utils.h"
 
 class Tile
 {
@@ -56,7 +57,7 @@ private:
 
     void computeHashCode()
     {
-        m_hashcode = m_patches->hash_code();
+        hashCombine(m_hashcode, m_observable, m_patches);
     }
 };
 

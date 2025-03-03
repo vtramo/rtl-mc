@@ -2,6 +2,7 @@
 
 #include "Observable.h"
 #include "ppl_utils.h"
+#include "utils.h"
 
 class ObservablePatch
 {
@@ -11,7 +12,8 @@ public:
         , m_patch { patch }
     {
         assert(PPLUtils::containsDisjunct(*m_observable.interpretation(), m_patch));
-        m_hashcode = m_patch.hash_code();
+
+        hashCombine(m_hashcode, m_observable, m_patch);
     }
 
     [[nodiscard]] const Observable& observable() const { return m_observable; }

@@ -22,6 +22,7 @@ package system {
         +totalAtoms(): int
         +totalPatches(): int
         +hashcode(): std::size_t
+        -computeHashCode(): void
         --operators--
         +operator!= (const Observable& observable1, const Observable& observable2) : bool
         +operator== (const Observable& observable1, const Observable& observable2) : bool

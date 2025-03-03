@@ -1,10 +1,11 @@
 #pragma once
 
-#include <ppl_utils.h>
 #include <spot/tl/formula.hh>
 #include <spot/tl/apcollect.hh>
 #include <optional>
 
+#include "ppl_utils.h"
+#include "utils.h"
 #include "ppl_aliases.h"
 
 using PPL::IO_Operators::operator<<;
@@ -15,14 +16,14 @@ public:
         : m_atoms { std::make_shared<spot::atomic_prop_set>(std::move(atoms)) }
         , m_interpretation { std::move(interpretation) }
     {
-        m_hashcode = std::hash<std::shared_ptr<spot::atomic_prop_set>>{} (m_atoms);
+        computeHashCode();
     }
 
     Observable(spot::atomic_prop_set atoms, const Powerset& interpretation)
         : m_atoms { std::make_shared<spot::atomic_prop_set>(std::move(atoms)) }
         , m_interpretation { std::make_shared<Powerset>(interpretation) }
     {
-        m_hashcode = std::hash<std::shared_ptr<spot::atomic_prop_set>>{} (m_atoms);
+        computeHashCode();
     }
 
     Observable(spot::atomic_prop_set atoms, PowersetSharedPtr interpretation, std::string interpretationToString)
@@ -30,7 +31,7 @@ public:
         , m_interpretation { std::move(interpretation) }
         , m_interpretationToString { std::move(interpretationToString) }
     {
-        m_hashcode = std::hash<std::shared_ptr<spot::atomic_prop_set>>{} (m_atoms);
+        computeHashCode();
     }
 
     Observable(spot::atomic_prop_set atoms, const Powerset& interpretation, std::string interpretationToString)
@@ -38,7 +39,7 @@ public:
         , m_interpretation { std::make_shared<Powerset>(interpretation) }
         , m_interpretationToString { std::move(interpretationToString) }
     {
-        m_hashcode = std::hash<std::shared_ptr<spot::atomic_prop_set>>{} (m_atoms);
+        computeHashCode();
     }
 
     Observable() = default;
@@ -73,6 +74,11 @@ private:
     PowersetConstSharedPtr m_interpretation {};
     std::optional<std::string> m_interpretationToString {};
     std::size_t m_hashcode {};
+
+    void computeHashCode()
+    {
+        hashCombine(m_hashcode, m_atoms, m_interpretation);
+    }
 };
 
 inline bool operator== (const Observable& observable1, const Observable& observable2) {
