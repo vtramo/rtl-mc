@@ -42,7 +42,6 @@ private:
     std::unordered_map<int, PowersetConstSharedPtr> m_denotationByState {};
     std::unordered_set<int> m_initialStates {};
     std::unordered_set<int> m_finalStates {};
-    PowersetSharedPtr m_existentialDenotation {};
 
     void buildAutomaton();
 };

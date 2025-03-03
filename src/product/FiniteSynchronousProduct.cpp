@@ -16,10 +16,10 @@ FiniteSynchronousProduct::FiniteSynchronousProduct(
 
 void FiniteSynchronousProduct::buildAutomaton()
 {
-    class Dfs: public spot::twa_reachable_iterator_depth_first
+    class CollectStatePropertiesDfs: public spot::twa_reachable_iterator_depth_first
     {
     public:
-        explicit Dfs(FiniteSynchronousProduct* finiteSynchronousProduct)
+        explicit CollectStatePropertiesDfs(FiniteSynchronousProduct* finiteSynchronousProduct)
             : twa_reachable_iterator_depth_first(finiteSynchronousProduct->twa())
         {
             m_finiteSynchronousProduct = finiteSynchronousProduct;
@@ -28,20 +28,18 @@ void FiniteSynchronousProduct::buildAutomaton()
         void process_state(const spot::state* state, const int _, spot::twa_succ_iterator* __) override
         {
             unsigned productStateNumber { m_finiteSynchronousProduct->twa()->state_number(state) };
-            auto [s, v] { m_finiteSynchronousProduct->m_productStatePair->at(productStateNumber) };
-            PowersetConstSharedPtr productStateDenotation { m_finiteSynchronousProduct->m_abstraction->points(v) };
+            auto [nfaState, abstractionState] { m_finiteSynchronousProduct->m_productStatePair->at(productStateNumber) };
+
+            PowersetConstSharedPtr productStateDenotation { m_finiteSynchronousProduct->m_abstraction->points(abstractionState) };
             m_finiteSynchronousProduct->m_denotationByState[productStateNumber] = productStateDenotation;
 
-            if (m_finiteSynchronousProduct->m_nfa->isInitialState(s))
-            {
+            if (m_finiteSynchronousProduct->m_nfa->isInitialState(nfaState))
                 m_finiteSynchronousProduct->m_initialStates.insert(productStateNumber);
-            }
 
-            if (m_finiteSynchronousProduct->m_nfa->isFinalState(s))
-            {
+            if (m_finiteSynchronousProduct->m_nfa->isFinalState(nfaState))
                 m_finiteSynchronousProduct->m_finalStates.insert(productStateNumber);
-            }
         }
+
     protected:
         void pop() override
         {
@@ -52,8 +50,8 @@ void FiniteSynchronousProduct::buildAutomaton()
         FiniteSynchronousProduct* m_finiteSynchronousProduct {};
     };
 
-    Dfs dfs { this };
-    dfs.run();
+    CollectStatePropertiesDfs collectInitialFinalDenotationStatesDfs { this };
+    collectInitialFinalDenotationStatesDfs.run();
 }
 
 int FiniteSynchronousProduct::totalStates() const
