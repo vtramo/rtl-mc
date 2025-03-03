@@ -6,15 +6,59 @@
 using PPL::IO_Operators::operator<<;
 using namespace PPLUtils;
 
+PowersetUniquePtr reach0(const Powerset& A, const Powerset& B, const Poly& preFlow)
+{
+    assert(A.space_dimension() == B.space_dimension());
+    assert(A.space_dimension() == preFlow.space_dimension());
+
+    PowersetUniquePtr result { std::make_unique<Powerset>(A.space_dimension(), PPL::EMPTY) };
+
+    for (const auto& bWrapper: B)
+    {
+        const Poly& b { bWrapper.pointset() };
+        for (const auto& [Q, X]: reach0(A, b, preFlow))
+        {
+            result->add_disjunct(X);
+        }
+    }
+
+    return result;
+}
+
+PowersetUniquePtr reachPlus(const Powerset& A, const Powerset& B, const Poly& preFlow)
+{
+    assert(A.space_dimension() == B.space_dimension());
+    assert(A.space_dimension() == preFlow.space_dimension());
+
+    assert(A.space_dimension() == B.space_dimension());
+    assert(A.space_dimension() == preFlow.space_dimension());
+
+    PowersetUniquePtr result { std::make_unique<Powerset>(A.space_dimension(), PPL::EMPTY) };
+
+    for (const auto& bWrapper: B)
+    {
+        const Poly& b { bWrapper.pointset() };
+        for (const auto& [Q, X]: reachPlus(A, b, preFlow))
+        {
+            result->add_disjunct(X);
+        }
+    }
+
+    return result;
+}
+
+
 ReachPairs reach0(const Powerset& A, const Poly& B, const Poly& preFlow)
 {
     assert(A.space_dimension() == B.space_dimension());
     assert(A.space_dimension() == preFlow.space_dimension());
+
     Poly preB { B };
     Poly closureB { B };
     preB.positive_time_elapse_assign(preFlow);
     closureB.topological_closure_assign();
     preB.intersection_assign(closureB);
+
     assert(preB.space_dimension() == closureB.space_dimension());
     assert(A.space_dimension() == preFlow.space_dimension());
 
