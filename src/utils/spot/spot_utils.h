@@ -55,7 +55,7 @@ namespace SpotUtils
     spot::atomic_prop_vector collectAtomsNotIn(const spot::atomic_prop_set& forbiddenAtoms, spot::formula& formula);
     spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula);
     spot::atomic_prop_set extractLabelsFromEdgeGuard(const spot::twa_graph_ptr& twaGraph, const bdd& guard);
-    void transpose(const spot::twa_graph_ptr& twaGraph);
+    spot::twa_graph_ptr transpose(const spot::twa_graph_ptr& twaGraph);
     bool isNonRecurrent(spot::formula& formula);
     spot::formula andAtoms(const spot::atomic_prop_set& atoms);
 }

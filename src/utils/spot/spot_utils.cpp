@@ -397,19 +397,22 @@ namespace SpotUtils
         return spot::constants::g_sing == formula;
     }
 
-    void transpose(const spot::twa_graph_ptr& twaGraph)
+    spot::twa_graph_ptr transpose(const spot::twa_graph_ptr& twaGraph)
     {
-        const unsigned totalStates { twaGraph->num_states() };
+        unsigned totalStates { twaGraph->num_states() };
+        spot::twa_graph_ptr transposedTwaGraph { spot::make_twa_graph(twaGraph->get_dict()) };
+        transposedTwaGraph->copy_ap_of(twaGraph);
+        transposedTwaGraph->new_states(totalStates);
 
-        for (unsigned srcStateId { 0 }; srcStateId < totalStates; ++srcStateId)
+        for (unsigned state { 0 }; state < totalStates; ++state)
         {
-            for (auto& nfaEdge: twaGraph->out(srcStateId))
+            for (const auto& edge: twaGraph->out(state))
             {
-                unsigned nfaEdgeDst = nfaEdge.dst;
-                nfaEdge.dst = srcStateId;
-                nfaEdge.src = nfaEdgeDst;
+                transposedTwaGraph->new_edge(edge.dst, state, edge.cond, edge.acc);
             }
         }
+
+        return transposedTwaGraph;
     }
 
     bool isNonRecurrent(spot::formula& formula)
