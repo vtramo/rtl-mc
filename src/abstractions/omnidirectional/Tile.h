@@ -23,10 +23,10 @@ public:
 
     Tile() = default;
 
-    const Observable& observable() const { return m_observable; }
-    PowersetConstSharedPtr patches() const { return m_patches; }
-    PowersetConstSharedPtr closure() const { return m_closure; }
-    std::size_t hashcode() const { return m_hashcode; }
+    [[nodiscard]] const Observable& observable() const { return m_observable; }
+    [[nodiscard]] PowersetConstSharedPtr patches() const { return m_patches; }
+    [[nodiscard]] PowersetConstSharedPtr closure() const { return m_closure; }
+    [[nodiscard]] std::size_t hashcode() const { return m_hashcode; }
 
     friend std::ostream& operator<< (std::ostream& os, const Tile& tile)
     {

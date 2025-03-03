@@ -6,114 +6,113 @@ struct "std::hash<Observable>" as ObservableHash {
 }
 
 package abstractions {
-    package finite {
         package general {
-                class ObservablePatch {
-                    --data members--
-                    -m_observable: Observable
-                    -m_patch: const Poly&
-                    -m_hashcode: std::size_t
-                    --constructors--
-                    +ObservablePatch(Observable observable, const Poly& patch)
-                    +ObservablePatch(const ObservablePatch& other)
-                    +ObservablePatch(ObservablePatch&& other)
-                    --member functions--
-                    +observable(): Observable
-                    +patch(): const Poly&
-                    +hashcode(): std::size_t
-                    --operators--
-                    +operator!= (const ObservablePatch& patchObservable1, const ObservablePatch& patchObservable2) : bool
-                    +operator== (const ObservablePatch& patchObservable1, const ObservablePatch& patchObservable2) : bool
-                }
+            class ObservablePatch {
+                --data members--
+                -m_observable: Observable
+                -m_patch: const Poly&
+                -m_hashcode: std::size_t
+                --constructors--
+                +ObservablePatch(Observable observable, const Poly& patch)
+                +ObservablePatch(const ObservablePatch& other)
+                +ObservablePatch(ObservablePatch&& other)
+                --member functions--
+                +observable(): Observable
+                +patch(): const Poly&
+                +hashcode(): std::size_t
+                --operators--
+                +operator!= (const ObservablePatch& patchObservable1, const ObservablePatch& patchObservable2) : bool
+                +operator== (const ObservablePatch& patchObservable1, const ObservablePatch& patchObservable2) : bool
+            }
 
-                ObservablePatch --> "1" Observable
+            ObservablePatch --> "1" Observable
 
-                class ObservablePatchSequence {
-                    --data members--
-                    -m_sequence: std::vector<ObservablePatch>
-                    -m_hashcode: std::size_t
-                    --constructors--
-                    +ObservablePatchSequence(std::vector<ObservablePatch> sequence)
-                    +ObservablePatchSequence(const ObservablePatchSequence& other)
-                    +ObservablePatchSequence(ObservablePatchSequence&& other)
-                    --member functions--
-                    +sequence(): const std::vector<ObservablePatch>&
-                    +cbegin(): std::vector<ObservablePatch>::const_iterator
-                    +cend(): std::vector<ObservablePatch>::const_iterator
-                    +isEmpty(): bool
-                    +totalPatches(): int
-                    +firstObservablePatch(): std::optional<const ObservablePatch&>
-                    +hashcode(): std::size_t
-                    --operators--
-                    +operator!= (const ObservablePatchSequence& seq1, const ObservablePatchSequence& seq2) : bool
-                    +operator== (const ObservablePatchSequence& seq1, const ObservablePatchSequence& seq2) : bool
-                }
+            class ObservablePatchSequence {
+                --data members--
+                -m_sequence: std::vector<ObservablePatch>
+                -m_hashcode: std::size_t
+                --constructors--
+                +ObservablePatchSequence(std::vector<ObservablePatch> sequence)
+                +ObservablePatchSequence(const ObservablePatchSequence& other)
+                +ObservablePatchSequence(ObservablePatchSequence&& other)
+                --member functions--
+                +sequence(): const std::vector<ObservablePatch>&
+                +cbegin(): std::vector<ObservablePatch>::const_iterator
+                +cend(): std::vector<ObservablePatch>::const_iterator
+                +isEmpty(): bool
+                +totalPatches(): int
+                +firstObservablePatch(): std::optional<const ObservablePatch&>
+                +hashcode(): std::size_t
+                --operators--
+                +operator!= (const ObservablePatchSequence& seq1, const ObservablePatchSequence& seq2) : bool
+                +operator== (const ObservablePatchSequence& seq1, const ObservablePatchSequence& seq2) : bool
+            }
 
-                struct "std::hash<ObservablePatchSequence>" as ObservablePatchSequenceHash {
-                    +std::size_t operator() (const ObservablePatchSequence& observablePatchSequence) const noexcept
-                }
+            struct "std::hash<ObservablePatchSequence>" as ObservablePatchSequenceHash {
+                +std::size_t operator() (const ObservablePatchSequence& observablePatchSequence) const noexcept
+            }
 
-                struct "std::hash<ObservablePatch>" as ObservablePatchHash {
-                    +std::size_t operator() (const ObservablePatch& observablePatch) const noexcept
-                }
+            struct "std::hash<ObservablePatch>" as ObservablePatchHash {
+                +std::size_t operator() (const ObservablePatch& observablePatch) const noexcept
+            }
 
-                ObservablePatchSequence <..> ObservablePatchHash
-                ObservablePatch <..> ObservablePatchSequenceHash
-                Observable <..> ObservableHash
+            ObservablePatchSequence <..> ObservablePatchHash
+            ObservablePatch <..> ObservablePatchSequenceHash
+            Observable <..> ObservableHash
 
-                class ObservableTraversalNode {
-                    --data members--
-                    -m_travPoints: PowersetSharedPtr
-                    -m_observable: Observable
-                    -m_isSing: bool
-                    --constructors--
-                    +ObservableTraversalNode(ObservablePatchSequence sequence, const Poly& preFlow, bool isSing = false)
-                    --member functions--
-                    +travPoints(): PowersetConstSharedPtr
-                    +observable(): Observable
-                    +isSing(): bool
-                    +isEmpty(): bool
-                    +isUniverse(): bool
-                }
+            class ObservableTraversalNode {
+                --data members--
+                -m_travPoints: PowersetSharedPtr
+                -m_observable: Observable
+                -m_isSing: bool
+                --constructors--
+                +ObservableTraversalNode(ObservablePatchSequence sequence, const Poly& preFlow, bool isSing = false)
+                --member functions--
+                +travPoints(): PowersetConstSharedPtr
+                +observable(): Observable
+                +isSing(): bool
+                +isEmpty(): bool
+                +isUniverse(): bool
+            }
 
-                ObservablePatchSequence --> "1...*" ObservablePatch
-                ObservableTraversalNode --> "1" Observable
-                ObservableTraversalNode ..> ObservablePatchSequence
+            ObservablePatchSequence --> "1...*" ObservablePatch
+            ObservableTraversalNode --> "1" Observable
+            ObservableTraversalNode ..> ObservablePatchSequence
 
-                class GeneralFinitePolyhedralAbstraction {
-                    --data members--
-                    -m_graph: spot::twa_graph_ptr
-                    -m_sufficientHorizon: int
-                    -m_totalTrees: int
-                    -m_nodeByState: std::unordered_map<int, ObservableTraversalNode>
-                    --constructors--
-                    +GeneralFinitePolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, int totalStatesFiniteAutomaton)
-                    --member function--
-                    +points(int state): PowersetConstSharedPtr
-                    +observable(int state): const Observable&
-                    +sufficientHorizon(): int
-                    +totalTrees(): int
-                }
+            class GeneralPolyhedralAbstraction {
+                --data members--
+                -m_graph: spot::twa_graph_ptr
+                -m_sufficientHorizon: int
+                -m_totalTrees: int
+                -m_nodeByState: std::unordered_map<int, ObservableTraversalNode>
+                --constructors--
+                +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, int totalStatesFiniteAutomaton)
+                --member function--
+                +points(int state): PowersetConstSharedPtr
+                +observable(int state): const Observable&
+                +sufficientHorizon(): int
+                +totalTrees(): int
+            }
 
-                class SingOpenStatePair {
-                    --data members--
-                    -m_singState: std::optional<int>
-                    -m_openState: std::optional<int>
-                    --constructors--
-                    +SingOpenStatePair(int state, bool isSing)
-                    +SingOpenStatePair(int singState, int openState)
-                    --member functions--
-                    +containsSingState(): bool
-                    +containsOpenState(): bool
-                    +singState(): int
-                    +openState(): int
-                }
+            class SingOpenStatePair {
+                --data members--
+                -m_singState: std::optional<int>
+                -m_openState: std::optional<int>
+                --constructors--
+                +SingOpenStatePair(int state, bool isSing)
+                +SingOpenStatePair(int singState, int openState)
+                --member functions--
+                +containsSingState(): bool
+                +containsOpenState(): bool
+                +singState(): int
+                +openState(): int
+            }
 
-                GeneralFinitePolyhedralAbstraction --> "*" ObservablePatchSequence
-                GeneralFinitePolyhedralAbstraction --> "*" ObservableTraversalNode
-                GeneralFinitePolyhedralAbstraction ..> SingOpenStatePair
-        }
+            GeneralPolyhedralAbstraction --> "*" ObservablePatchSequence
+            GeneralPolyhedralAbstraction --> "*" ObservableTraversalNode
+            GeneralPolyhedralAbstraction ..> SingOpenStatePair
     }
+
 
     package omnidirectional {
         class Tile {

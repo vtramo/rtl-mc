@@ -1,6 +1,6 @@
 tilextractor_tests_src_files = [
     'tilextractor_tests.cpp',
-    omnidirectional_source_files,
+    omnidirectional_abstraction_source_files,
     polyhedral_system_source_files,
     polyhedral_system_parser_source_files,
     spot_utils_source_files,

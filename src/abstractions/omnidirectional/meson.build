@@ -1,6 +1,6 @@
 current_source_dir = meson.current_source_dir()
 
-omnidirectional_source_files = [
+omnidirectional_abstraction_source_files = [
     current_source_dir / 'Tile.h',
     current_source_dir / 'TileExtractor.h',
     current_source_dir / 'TileExtractor.cpp',
@@ -10,4 +10,4 @@ omnidirectional_source_files = [
     current_source_dir / 'OmnidirectionalPolyhedralAbstraction.cpp'
 ]
 
-project_source_files += omnidirectional_source_files
+abstractions_source_files += omnidirectional_abstraction_source_files
