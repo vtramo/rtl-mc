@@ -50,6 +50,7 @@ public:
     [[nodiscard]] bool isEmpty() const { return m_interpretation->is_empty(); }
     [[nodiscard]] int totalAtoms() const { return m_atoms->size(); }
     [[nodiscard]] int totalPatches() const { return m_interpretation->size(); }
+    [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_interpretation->space_dimension(); }
     [[nodiscard]] std::size_t hashcode() const { return m_hashcode; }
 
     friend std::ostream& operator<< (std::ostream& os, const Observable& observable)

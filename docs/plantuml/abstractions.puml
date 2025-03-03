@@ -19,6 +19,7 @@ package abstractions {
                 --member functions--
                 +observable(): Observable
                 +patch(): const Poly&
+                +spaceDimension(): PPL::dimension_type
                 +hashcode(): std::size_t
                 --operators--
                 +operator!= (const ObservablePatch& patchObservable1, const ObservablePatch& patchObservable2) : bool
@@ -31,8 +32,9 @@ package abstractions {
                 --data members--
                 -m_sequence: std::vector<ObservablePatch>
                 -m_hashcode: std::size_t
+                -m_spaceDimension: PPL::dimension_type
                 --constructors--
-                +ObservablePatchSequence(std::vector<ObservablePatch> sequence)
+                +ObservablePatchSequence(std::vector<ObservablePatch> sequence, PPL::dimension_type spaceDimension)
                 +ObservablePatchSequence(const ObservablePatchSequence& other)
                 +ObservablePatchSequence(ObservablePatchSequence&& other)
                 --member functions--
@@ -42,6 +44,7 @@ package abstractions {
                 +isEmpty(): bool
                 +totalPatches(): int
                 +firstObservablePatch(): std::optional<const ObservablePatch* const>
+                +spaceDimension(): PPL::dimension_type
                 +hashcode(): std::size_t
                 -computeHashCode(): void
                 --operators--
@@ -71,6 +74,7 @@ package abstractions {
                 --member functions--
                 +travPoints(): PowersetConstSharedPtr
                 +observable(): Observable
+                +spaceDimension(): PPL::dimension_type
                 +isSing(): bool
                 +isEmpty(): bool
                 +isUniverse(): bool
@@ -109,7 +113,7 @@ package abstractions {
                 +openState(): int
             }
 
-            GeneralPolyhedralAbstraction --> "*" ObservablePatchSequence
+            GeneralPolyhedralAbstraction ..> ObservablePatchSequence
             GeneralPolyhedralAbstraction --> "*" ObservableTraversalNode
             GeneralPolyhedralAbstraction ..> SingOpenStatePair
     }
@@ -131,6 +135,7 @@ package abstractions {
             +observable(): const Observable&
             +powerset(): PowersetConstSharedPtr
             +closure(): PowersetConstSharedPtr
+            +spaceDimension(): PPL::dimension_type
             +hashcode(): std::size_t
             -computeClosurePatches(): void
             -computeHashCode(): void
@@ -168,6 +173,7 @@ package abstractions {
             +observable(): const Observable&
             +points(): PowersetConstSharedPtr
             +isUniverse(): bool
+            +spaceDimension(): PPL::dimension_type
             +isEmpty(): bool
             --operators--
             +operator!= (const TileNode& tileNode1, const TileNode& tileNode2) : bool
@@ -188,6 +194,7 @@ package abstractions {
             +points(): PowersetConstSharedPtr
             +isUniverse(): bool
             +isEmpty(): bool
+            +spaceDimension(): PPL::dimension_type
             -computeObservable(): void
             -computePoints(): void
             --operators--

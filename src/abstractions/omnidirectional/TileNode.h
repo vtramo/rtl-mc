@@ -9,10 +9,11 @@ public:
         : m_tile { tile }
     {}
 
-    const Observable& observable() const { return m_tile.observable(); }
-    PowersetConstSharedPtr points() const { return m_tile.patches(); }
-    bool isUniverse() const { return points()->is_universe(); }
-    bool isEmpty() const { return points()->is_empty(); }
+    [[nodiscard]] const Observable& observable() const { return m_tile.observable(); }
+    [[nodiscard]] PowersetConstSharedPtr points() const { return m_tile.patches(); }
+    [[nodiscard]] bool isUniverse() const { return points()->is_universe(); }
+    [[nodiscard]] bool isEmpty() const { return points()->is_empty(); }
+    [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_tile.spaceDimension(); }
 
     friend bool operator!= (const TileNode& tileNode1, const TileNode& tileNode2)
     {

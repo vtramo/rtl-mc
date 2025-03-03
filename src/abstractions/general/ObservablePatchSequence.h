@@ -9,14 +9,16 @@
 class ObservablePatchSequence
 {
 public:
-    ObservablePatchSequence(std::vector<ObservablePatch> sequence)
+    ObservablePatchSequence(std::vector<ObservablePatch> sequence, const PPL::dimension_type spaceDimension)
         : m_sequence { std::move(sequence) }
+        , m_spaceDimension { spaceDimension }
     {
         computeHashCode();
     }
 
     ObservablePatchSequence(const ObservablePatchSequence& other)
         : m_sequence { other.m_sequence }
+        , m_spaceDimension { other.m_spaceDimension }
         , m_hashcode { other.m_hashcode }
     {}
 
@@ -30,6 +32,7 @@ public:
     [[nodiscard]] std::vector<ObservablePatch>::const_iterator cend() const { return m_sequence.cend(); }
     [[nodiscard]] bool isEmpty() const { return m_sequence.empty(); }
     [[nodiscard]] int totalPatches() const { return static_cast<int>(m_sequence.size()); }
+    [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_spaceDimension; }
     [[nodiscard]] std::optional<const ObservablePatch* const> firstObservablePatch() const
     {
         if (!m_sequence.empty())
@@ -42,6 +45,7 @@ public:
 
 private:
     std::vector<ObservablePatch> m_sequence {};
+    PPL::dimension_type m_spaceDimension {};
     std::size_t m_hashcode {};
 
     void computeHashCode()

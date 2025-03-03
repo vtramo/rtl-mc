@@ -10,14 +10,18 @@ public:
     TripleTileNode(const Tile& tile1, const Tile& tile2, const Tile& tile3)
         : m_triple { std::make_tuple(tile1, tile2, tile3) }
     {
+        assert(tile1.spaceDimension() == tile2.spaceDimension());
+        assert(tile2.spaceDimension() == tile3.spaceDimension());
+
         computeObservable();
         computePoints();
     }
 
-    const Observable& observable() const { return m_observable; }
-    PowersetConstSharedPtr points() const { return m_points; }
-    bool isUniverse() const { return m_points->is_universe(); }
-    bool isEmpty() const { return m_points->is_empty(); }
+    [[nodiscard]] const Observable& observable() const { return m_observable; }
+    [[nodiscard]] PowersetConstSharedPtr points() const { return m_points; }
+    [[nodiscard]] bool isUniverse() const { return m_points->is_universe(); }
+    [[nodiscard]] bool isEmpty() const { return m_points->is_empty(); }
+    [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_observable.spaceDimension(); }
 
     friend bool operator!= (const TripleTileNode& tripleTileNode1, const TripleTileNode& tripleTileNode2)
     {

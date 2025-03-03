@@ -21,6 +21,7 @@ package system {
         +isEmpty(): bool
         +totalAtoms(): int
         +totalPatches(): int
+        +spaceDimension(): PPL::dimension_type
         +hashcode(): std::size_t
         -computeHashCode(): void
         --operators--

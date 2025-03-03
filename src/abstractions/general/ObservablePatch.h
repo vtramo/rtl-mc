@@ -18,6 +18,7 @@ public:
 
     [[nodiscard]] const Observable& observable() const { return m_observable; }
     [[nodiscard]] const Poly& patch() const { return m_patch; }
+    [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_observable.spaceDimension(); }
     [[nodiscard]] std::size_t hashcode() const { return m_hashcode; }
 
 private:

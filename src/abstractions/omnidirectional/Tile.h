@@ -28,6 +28,7 @@ public:
     [[nodiscard]] PowersetConstSharedPtr patches() const { return m_patches; }
     [[nodiscard]] PowersetConstSharedPtr closure() const { return m_closure; }
     [[nodiscard]] std::size_t hashcode() const { return m_hashcode; }
+    [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_observable.spaceDimension(); }
 
     friend std::ostream& operator<< (std::ostream& os, const Tile& tile)
     {
