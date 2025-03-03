@@ -5,6 +5,7 @@
 using ReachPair = std::pair<Poly, Poly>;
 using ReachPairs = std::vector<ReachPair>;
 
+PowersetUniquePtr reach0(const Poly& A, const Powerset& B, const Poly& preFlow);
 PowersetUniquePtr reach0(const Powerset& A, const Powerset& B, const Poly& preFlow);
 PowersetUniquePtr reachPlus(const Powerset& A, const Powerset& B, const Poly& preFlow);
 

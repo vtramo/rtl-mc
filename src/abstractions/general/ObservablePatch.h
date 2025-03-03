@@ -8,8 +8,8 @@ class ObservablePatch
 {
 public:
     ObservablePatch(Observable observable, const Poly& patch)
-        : m_observable { observable }
-        , m_patch { patch }
+        : m_patch { patch }
+        , m_observable { observable }
     {
         assert(PPLUtils::containsDisjunct(*m_observable.interpretation(), m_patch));
 
@@ -22,8 +22,8 @@ public:
     [[nodiscard]] std::size_t hashcode() const { return m_hashcode; }
 
 private:
+    const Poly& m_patch;
     Observable m_observable {};
-    const Poly& m_patch {};
     std::size_t m_hashcode {};
 };
 

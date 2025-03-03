@@ -6,6 +6,11 @@
 using PPL::IO_Operators::operator<<;
 using namespace PPLUtils;
 
+PowersetUniquePtr reach0(const Poly& A, const Powerset& B, const Poly& preFlow)
+{
+    return reach0(Powerset { A }, B, preFlow);
+}
+
 PowersetUniquePtr reach0(const Powerset& A, const Powerset& B, const Poly& preFlow)
 {
     assert(A.space_dimension() == B.space_dimension());

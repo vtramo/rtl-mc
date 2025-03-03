@@ -262,6 +262,28 @@ namespace PPLUtils {
         return result;
     }
 
+    PowersetUniquePtr intersect(const Poly& a, Powerset&& b)
+    {
+        assert(a.space_dimension() == b.space_dimension());
+
+        PowersetUniquePtr result { nullptr };
+
+        if (b.is_universe()) {
+            return std::make_unique<Powerset>(a);
+        }
+
+        if (a.is_universe()) {
+            result = std::make_unique<Powerset>();
+            result->m_swap(b);
+            return result;
+        }
+
+        result = std::make_unique<Powerset>();
+        result->m_swap(b);
+        result->intersection_assign(Powerset { a });
+        return result;
+    }
+
     PowersetUniquePtr intersect(Powerset && a, Powerset && b) {
         assert(a.space_dimension() == b.space_dimension());
 

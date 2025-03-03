@@ -27,6 +27,7 @@ namespace PPLUtils {
     PolyUniquePtr intersect(const Poly& a, Poly&& b);
     PowersetUniquePtr intersect(const Powerset& a, const Powerset& b);
     PowersetUniquePtr intersect(const Powerset& a, Powerset&& b);
+    PowersetUniquePtr intersect(const Poly& a, Powerset&& b);
     PowersetUniquePtr intersect(Powerset&& a, Powerset&& b);
     PowersetUniquePtr intersect(const std::vector<Powerset>& powersets);
     PowersetUniquePtr intersect(const std::vector<PowersetConstSharedPtr>& powersets);
