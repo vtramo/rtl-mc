@@ -29,6 +29,7 @@ public:
     [[nodiscard]] int countSuccessors(unsigned state) const;
     [[nodiscard]] PowersetConstSharedPtr points(unsigned state) const;
     [[nodiscard]] std::pair<int, int> productStatePair(unsigned state) const;
+    [[nodiscard]] spot::twa_graph_ptr transpose() const;
 
     void printDotFormat(std::ostream& os) const;
 

@@ -140,3 +140,8 @@ spot::const_twa_graph_ptr FiniteSynchronousProduct::twa()
 {
     return m_synchronousProduct;
 }
+
+spot::twa_graph_ptr FiniteSynchronousProduct::transpose() const
+{
+    return SpotUtils::transpose(m_synchronousProduct);
+}

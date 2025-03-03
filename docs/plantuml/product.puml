@@ -29,7 +29,7 @@ package product {
         +countSuccessors(state: unsigned) : int
         +points(state: unsigned) : PowersetConstSharedPtr
         +productStatePair(state: unsigned) : std::pair<int, int>
-        +existentialDenotation() : PowersetConstSharedPtr
+        +transpose() : spot::twa_graph_ptr
         +printDotFormat(os: std::ostream&) : void
         -- private member functions --
         -buildAutomaton() : void
