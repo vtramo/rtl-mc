@@ -13,7 +13,10 @@ public:
     [[nodiscard]] int totalPatches() const;
     [[nodiscard]] PPL::dimension_type spaceDimension() const;
     [[nodiscard]] std::optional<const ObservablePatch* const> firstObservablePatch() const;
-    [[nodiscard]] ObservablePatchSequenceSlice advanceStartIndex() const;
+    [[nodiscard]] std::optional<PowersetConstSharedPtr> firstObservableInterpretation() const;
+    [[nodiscard]] ObservablePatchSequenceSlice advanceStartIndexByOne() const;
+    [[nodiscard]] unsigned startIndex() const;
+    [[nodiscard]] unsigned endIndex() const;
 
 private:
     const ObservablePatchSequence& m_observablePatchSequence;

@@ -14,7 +14,7 @@ ObservablePatchSequenceSlice::ObservablePatchSequenceSlice(
         throw std::invalid_argument("ObservablePatchSequenceSlice: 'endIndex' must be less than the total number of patches!");
 }
 
-ObservablePatchSequenceSlice ObservablePatchSequenceSlice::advanceStartIndex() const
+ObservablePatchSequenceSlice ObservablePatchSequenceSlice::advanceStartIndexByOne() const
 {
     return ObservablePatchSequenceSlice { m_observablePatchSequence, m_startIndex + 1, m_endIndex };
 }
@@ -36,11 +36,26 @@ std::optional<const ObservablePatch* const> ObservablePatchSequenceSlice::firstO
     return &m_observablePatchSequence.sequence()[m_startIndex];
 }
 
+std::optional<PowersetConstSharedPtr> ObservablePatchSequenceSlice::firstObservableInterpretation() const
+{
+    if (isEmpty()) return {};
+    return m_observablePatchSequence.sequence()[m_startIndex].observableInterpretation();
+}
+
 PPL::dimension_type ObservablePatchSequenceSlice::spaceDimension() const
 {
     return m_observablePatchSequence.spaceDimension();
 }
 
+unsigned ObservablePatchSequenceSlice::startIndex() const
+{
+    return m_startIndex;
+}
+
+unsigned ObservablePatchSequenceSlice::endIndex() const
+{
+    return m_endIndex;
+}
 
 PowersetSharedPtr traversalZero(const ObservablePatchSequence& sequence, const Poly& preFlow)
 {
@@ -64,7 +79,7 @@ PowersetSharedPtr traversalZero(const ObservablePatchSequenceSlice slice, const 
 
     const ObservablePatch* firstObservablePatch { *slice.firstObservablePatch() };
     const Poly& firstPatch { firstObservablePatch->patch() };
-    PowersetSharedPtr traversalPlusResult { traversalPlus(slice.advanceStartIndex(), preFlow) };
+    PowersetSharedPtr traversalPlusResult { traversalPlus(slice.advanceStartIndexByOne(), preFlow) };
     return reach0(firstPatch, *traversalPlusResult, preFlow);
 }
 
@@ -88,10 +103,20 @@ PowersetSharedPtr traversalPlus(const ObservablePatchSequenceSlice slice, const 
         return std::make_shared<Powerset>(slice.spaceDimension(), PPL::UNIVERSE);
     }
 
+    ObservablePatchSequenceSlice advancedSliceByOne { slice.advanceStartIndexByOne() };
+    PowersetSharedPtr traversalZeroResult { traversalZero(advancedSliceByOne, preFlow) };
+
     const ObservablePatch* firstObservablePatch { *slice.firstObservablePatch() };
-    PowersetConstSharedPtr firstObservablePatchInterpretation { firstObservablePatch->observable().interpretation() };
-    const Poly& firstPatch { firstObservablePatch->patch() };
-    PowersetSharedPtr traversalZeroResult { traversalZero(slice.advanceStartIndex(), preFlow) };
-    PowersetUniquePtr reachPlusResult { reachPlus(*firstObservablePatchInterpretation, *traversalZeroResult, preFlow) };
-    return PPLUtils::intersect(firstPatch, std::move(*reachPlusResult));
+    PowersetConstSharedPtr firstObservableInterpretation { firstObservablePatch->observableInterpretation() };
+    PowersetConstSharedPtr reachObservableInterpretation {
+        advancedSliceByOne.isEmpty()
+            ? firstObservableInterpretation
+            : PPLUtils::fusion(
+                **advancedSliceByOne.firstObservableInterpretation(),
+                *firstObservableInterpretation
+              )
+    };
+    PowersetUniquePtr reachPlusResult { reachPlus(*reachObservableInterpretation, *traversalZeroResult, preFlow) };
+
+    return PPLUtils::intersect(firstObservablePatch->patch(), std::move(*reachPlusResult));
 }
