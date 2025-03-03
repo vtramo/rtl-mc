@@ -1,6 +1,16 @@
 #pragma once
 #include "ppl_aliases.h"
 
+template<> struct std::hash<Poly>
+{
+    std::size_t operator() (const Poly& poly) const noexcept;
+};
+
+template<> struct std::hash<PPL::Pointset_Powerset<Poly>>
+{
+    std::size_t operator() (const PPL::Pointset_Powerset<Poly>& powerset) const noexcept;
+};
+
 namespace PPLUtils {
     typedef std::pair<Poly, Poly> ReachPair;
     typedef std::vector<ReachPair> ReachPairs;

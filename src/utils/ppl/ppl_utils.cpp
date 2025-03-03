@@ -4,6 +4,20 @@
 
 using PPL::IO_Operators::operator<<;
 
+std::size_t std::hash<Parma_Polyhedra_Library::NNC_Polyhedron>::operator()(const Poly& poly) const noexcept
+{
+    return poly.hash_code();
+}
+
+std::size_t
+std::hash<Parma_Polyhedra_Library::Pointset_Powerset<Parma_Polyhedra_Library::NNC_Polyhedron>>::operator()
+(
+    const PPL::Pointset_Powerset<Poly>& powerset
+) const noexcept
+{
+    return powerset.hash_code();
+}
+
 namespace PPLUtils {
     std::string toString(const Poly& poly)
     {
