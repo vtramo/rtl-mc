@@ -355,7 +355,7 @@ StateDenotation BackwardNFA::extractStateDenotationFromEdgeGuard(const spot::con
     return StateDenotation { std::move(formulaPossiblyWithSing), powerset, containsSing };
 }
 
-spot::const_twa_ptr BackwardNFA::twa() const
+spot::const_twa_graph_ptr BackwardNFA::twa() const
 {
     return m_backwardNfa;
 }

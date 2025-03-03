@@ -29,11 +29,10 @@ package product {
         +countSuccessors(state: unsigned) : int
         +points(state: unsigned) : PowersetConstSharedPtr
         +productStatePair(state: unsigned) : std::pair<int, int>
+        +twa() : spot::const_twa_graph_ptr
         +transpose() : spot::twa_graph_ptr
         +printDotFormat(os: std::ostream&) : void
-        -- private member functions --
         -buildAutomaton() : void
-        -twa() : spot::const_twa_graph_ptr
     }
 
     FiniteSynchronousProduct --> "1" FiniteLtlAutomaton

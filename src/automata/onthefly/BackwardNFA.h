@@ -44,6 +44,7 @@ public:
     [[nodiscard]] spot::postprocessor::optimization_level optimizationLevel() const;
     [[nodiscard]] const AutomatonStats& stats() const;
     [[nodiscard]] int maxRecursiveDepth() const;
+    [[nodiscard]] spot::const_twa_graph_ptr twa() const;
 
     void printHoaFormat(std::ostream& os) const;
     void printDotFormat(std::ostream& os) const;
@@ -103,7 +104,6 @@ private:
     bdd stateLabelsAsBdd(int outEdgeState) const;
     spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption);
     spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
-    spot::const_twa_ptr twa() const;
 
     void updateMaxNumberOfPatchesStats(int totPatches);
     void setBackwardNfaStats(double executionTimeSeconds, int totalPatches);

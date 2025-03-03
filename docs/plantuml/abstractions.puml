@@ -1,10 +1,11 @@
 @startuml
 
-package abstractions {
-    struct "std::hash<Observable>" as ObservableHash {
-        +std::size_t operator() (const Observable& observable) const noexcept
-    }
+class Observable {}
+struct "std::hash<Observable>" as ObservableHash {
+    +std::size_t operator() (const Observable& observable) const noexcept
+}
 
+package abstractions {
     package finite {
         package general {
                 class ObservablePatch {
@@ -199,15 +200,33 @@ package abstractions {
         }
 
         class OmnidirectionalPolyhedralAbstraction {
+            --type aliases--
+            using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
             --data members--
             -m_graph: spot::twa_graph_ptr
-            -m_tileNodes: std::unordered_map<int, std::variant<TileNode, TripleTileNode>>
+            -m_tileNodes: std::unordered_map<unsigned, std::variant<TileNode, TripleTileNode>>
+            -m_stateByTile: std::unordered_map<Tile, unsigned>
             --constructors--
             +OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
-            --data members--
-            +observable(int state): const Observable&
-            +points(int state): PowersetConstSharedPtr
+            --member functions--
+            +observable(state: unsigned): const Observable&
+            +points(state: unsigned): PowersetConstSharedPtr
+            +initialState(): int
+            +totalStates(): int
+            +totalEdges(): int
+            +successors(state: unsigned): EdgeIterator
+            +hasSuccessors(state: unsigned): bool
+            +countSuccessors(state: unsigned): int
+            +twa(): spot::const_twa_graph_ptr
+            +printDotFormat(os: std::ostream&): void
+            --private member functions--
+            -buildAbstraction(tiles: std::vector<Tile>&&): void
+            -initializeGraph(bddDict: spot::bdd_dict_ptr): void
+            -getStateByTileOrCreate(tile: Tile): unsigned
+            -observableAsBdd(observable: Observable): bdd
+            -processTriple(tile1: Tile, tile2: Tile, tile3: Tile): void
         }
+
 
         Tile <..> TileHash
         Tile --> "1" Observable
@@ -217,6 +236,8 @@ package abstractions {
         TripleTileNode --> "3" Tile
         TileExtractor ..> Tile
         TileExtractor --> "0..1" Observable
+        OmnidirectionalPolyhedralAbstraction --> "*" TileNode
+        OmnidirectionalPolyhedralAbstraction --> "*" TripleTileNode
     }
 }
 @enduml

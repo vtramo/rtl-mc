@@ -38,6 +38,7 @@ package automata {
             +totalStates() : int
             +initialStates() : const std::unordered_set<int>&
             +finalStates() : const std::unordered_set<int>&
+            +twa() : spot::const_twa_graph_ptr
             +maxRecursiveDepth() : const
             +optimizationLevel() : spot::postprocessor::optimization_level
             +stats() : AutomatonStats& const
@@ -52,7 +53,6 @@ package automata {
             -purgeUnreachableStates() : void
             -stateLabelsAsBdd(int outEdgeState) : bdd
             -createDummyInitialStateWithEdgesToReachableFinalStates() : void
-            -twa() : spot::const_twa_ptr
             -updateMaxNumberOfPatchesStats(int totPatches) : void
             -setBackwardNfaStats(double executionTimeSeconds, int totalPatches) : void
             -logBackwardNfaConstruction(double executionTimeSecond) : void
@@ -281,6 +281,7 @@ package automata {
         +optimizationLevel() : spot::postprocessor::optimization_level
         +stats() : const AutomatonStats&
         +maxRecursiveDepth() : int
+        +twa(): spot::const_twa_graph_ptr
         +printHoaFormat(os: std::ostream&) : void
         +printDotFormat(os: std::ostream&) : void
         -- static functions --

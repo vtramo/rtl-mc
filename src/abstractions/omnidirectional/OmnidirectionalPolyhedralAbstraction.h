@@ -24,6 +24,7 @@ public:
     [[nodiscard]] EdgeIterator successors(unsigned state);
     [[nodiscard]] bool hasSuccessors(unsigned state);
     [[nodiscard]] int countSuccessors(unsigned state);
+    [[nodiscard]] spot::const_twa_graph_ptr twa() const;
 
     void printDotFormat(std::ostream& os) const;
 
@@ -37,7 +38,4 @@ private:
     unsigned getStateByTileOrCreate(const Tile& tile);
     bdd observableAsBdd(const Observable& observable);
     void processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3);
-    spot::const_twa_graph_ptr twa() const;
-
-    friend class FiniteSynchronousProduct;
 };

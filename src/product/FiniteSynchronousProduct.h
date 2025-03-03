@@ -30,6 +30,7 @@ public:
     [[nodiscard]] PowersetConstSharedPtr points(unsigned state) const;
     [[nodiscard]] std::pair<int, int> productStatePair(unsigned state) const;
     [[nodiscard]] spot::twa_graph_ptr transpose() const;
+    [[nodiscard]] spot::const_twa_graph_ptr twa();
 
     void printDotFormat(std::ostream& os) const;
 
@@ -44,5 +45,4 @@ private:
     PowersetSharedPtr m_existentialDenotation {};
 
     void buildAutomaton();
-    spot::const_twa_graph_ptr twa();
 };

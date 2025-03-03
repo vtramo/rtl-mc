@@ -38,6 +38,7 @@ public:
     [[nodiscard]] EdgeIterator successors(int state) const;
     [[nodiscard]] int countSuccessors(int state) const;
     [[nodiscard]] const DiscreteLtlFormula& formula() const;
+    [[nodiscard]] spot::const_twa_graph_ptr twa() const;
     [[nodiscard]] spot::postprocessor::optimization_level optimizationLevel() const;
     [[nodiscard]] const AutomatonStats& stats() const;
     [[nodiscard]] int maxRecursiveDepth() const;
@@ -55,9 +56,6 @@ private:
     int m_maxRecursiveDepth {};
 
     friend std::ostream& operator<< (std::ostream& out, const FiniteLtlAutomaton& finiteLtlAutomaton);
-    friend class FiniteLtlAutomatonDepthFirstSearch;
-    friend class FiniteLtlAutomatonPermutator;
-    friend class FiniteSynchronousProduct;
 
     using RenumberingContextVoidPtr = void*;
     struct RenumberingContext
@@ -82,7 +80,6 @@ private:
     void purgeUnreachableStates();
     spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption, spot::bdd_dict_ptr bddDict);
     spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
-    spot::const_twa_graph_ptr twa() const;
 
     std::array<int, 2> collectPatchStats();
     void updateMaxNumberOfPatchesStats(int totPatches);
