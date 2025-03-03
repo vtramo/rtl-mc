@@ -37,11 +37,11 @@ void OmnidirectionalPolyhedralAbstraction::initializeGraph(spot::bdd_dict_ptr bd
 
 void OmnidirectionalPolyhedralAbstraction::processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3)
 {
-    TripleTileNode tripleTileNode { tile1, tile2, tile3 };
-    if (tripleTileNode.isEmpty()) return;
+    TripleTileNode qTripleTileNode { tile1, tile2, tile3 };
+    if (qTripleTileNode.isEmpty()) return;
 
     unsigned qState { m_graph->new_state() };
-    m_tileNodes.insert(std::make_pair(qState, tripleTileNode));
+    m_tileNodes.insert(std::make_pair(qState, qTripleTileNode));
 
     unsigned pState { getStateByTileOrCreate(tile1) };
     unsigned rState { getStateByTileOrCreate(tile3) };
@@ -50,8 +50,8 @@ void OmnidirectionalPolyhedralAbstraction::processTriple(const Tile& tile1, cons
     m_tileNodes.insert(std::make_pair(pState, pTileNode));
     m_tileNodes.insert(std::make_pair(rState, rTileNode));
 
-    m_graph->new_acc_edge(pState, qState, observableAsBdd(tripleTileNode.observable()));
-    m_graph->new_acc_edge(qState, rState, observableAsBdd(tile3.observable()));
+    m_graph->new_acc_edge(pState, qState, observableAsBdd(qTripleTileNode.observable()));
+    m_graph->new_acc_edge(qState, rState, observableAsBdd(rTileNode.observable()));
 }
 
 unsigned OmnidirectionalPolyhedralAbstraction::getStateByTileOrCreate(const Tile& tile)

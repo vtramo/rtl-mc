@@ -1,7 +1,5 @@
 #include "FiniteSynchronousProduct.h"
 
-#include <pairwise_reduce.h>
-
 FiniteSynchronousProduct::FiniteSynchronousProduct(
     FiniteLtlAutomatonConstSharedPtr nfa,
     OmnidirectionalPolyhedralAbstractionConstSharedPtr abstraction
@@ -36,7 +34,7 @@ void FiniteSynchronousProduct::buildAutomaton()
 
             if (m_finiteSynchronousProduct->m_nfa->isInitialState(s))
             {
-                m_finiteSynchronousProduct->m_initialStates.insert(s);
+                m_finiteSynchronousProduct->m_initialStates.insert(productStateNumber);
             }
 
             if (m_finiteSynchronousProduct->m_nfa->isFinalState(s))
