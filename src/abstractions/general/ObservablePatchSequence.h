@@ -33,6 +33,11 @@ public:
     [[nodiscard]] bool isEmpty() const { return m_sequence.empty(); }
     [[nodiscard]] int totalPatches() const { return static_cast<int>(m_sequence.size()); }
     [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_spaceDimension; }
+    [[nodiscard]] std::optional<const Observable* const> firstObservable() const
+    {
+        if (isEmpty()) return {};
+        return &(*firstObservablePatch())->observable();
+    }
     [[nodiscard]] std::optional<const ObservablePatch* const> firstObservablePatch() const
     {
         if (!m_sequence.empty())

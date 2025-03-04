@@ -44,6 +44,7 @@ package abstractions {
                 +cend(): std::vector<ObservablePatch>::const_iterator
                 +isEmpty(): bool
                 +totalPatches(): int
+                +firstObservable(): std::optional<const Observable* const>
                 +firstObservablePatch(): std::optional<const ObservablePatch* const>
                 +spaceDimension(): PPL::dimension_type
                 +hashcode(): std::size_t
@@ -76,9 +77,11 @@ package abstractions {
                 +travPoints(): PowersetConstSharedPtr
                 +observable(): Observable
                 +spaceDimension(): PPL::dimension_type
-                +isSing(): bool
+                +isSingular(): bool
                 +isEmpty(): bool
                 +isUniverse(): bool
+                -computeObservable(const ObservablePatchSequence& sequence): void
+                -computeTravPoints(const ObservablePatchSequence& sequence, const Poly& preFlow): void
             }
 
             ObservablePatchSequence --> "1...*" ObservablePatch
