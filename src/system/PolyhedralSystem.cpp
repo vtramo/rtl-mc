@@ -262,25 +262,33 @@ std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterE
             )
         };
 
-        for (spot::atomic_prop_set kCombination: kCombinations)
+        for (std::vector kCombination: kCombinations)
         {
             PowersetSharedPtr observableDenotation { std::make_shared<Powerset>(spaceDimension(), PPL::UNIVERSE) };
+            spot::atomic_prop_set observableAtoms {};
+
+            for (const spot::formula& observableAtom: kCombination)
+            {
+                const AtomInterpretation* atomInterpretation { *getAtomInterpretation(observableAtom) };
+                observableDenotation->intersection_assign(atomInterpretation->interpretation());
+                observableAtoms.insert(observableAtom);
+            }
+
             for (const spot::formula& polyhedralAtom: polyhedralAtoms)
             {
-                const AtomInterpretation* atomInterpretation { *getAtomInterpretation(polyhedralAtom) };
-                observableDenotation->intersection_assign(
-                    kCombination.count(polyhedralAtom) == 1
-                        ? atomInterpretation->interpretation()
-                        : atomInterpretation->notInterpretation()
-                );
+                if (!observableAtoms.count(polyhedralAtom))
+                {
+                    const AtomInterpretation* atomInterpretation { *getAtomInterpretation(polyhedralAtom) };
+                    observableDenotation->intersection_assign(atomInterpretation->notInterpretation());
+                }
             }
 
             if (filterEmptyObservables && observableDenotation->is_empty()) continue;
 
 #ifdef DEBUG
-            Observable observable { kCombination, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
+            Observable observable { observableAtoms, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
 #else
-            Observable observable { kCombination, observableDenotation };
+            Observable observable { observableAtoms, observableDenotation };
 #endif
             observables.push_back(observable);
         }
