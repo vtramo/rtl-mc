@@ -35,20 +35,42 @@ TEST_CASE("Generate observables")
         const Powerset& notP { (*polyhedralSystem.getAtomInterpretation("p"))->notInterpretation() };
         const Powerset& notQ { (*polyhedralSystem.getAtomInterpretation("q"))->notInterpretation() };
 
-        std::vector observables { polyhedralSystem.generateObservables() };
+        SECTION("Without filtering empty observables")
+        {
+            constexpr bool filterEmptyObservables { false };
+            std::vector observables { polyhedralSystem.generateObservables(filterEmptyObservables) };
 
-        REQUIRE(observables.size() == 3);
-        REQUIRE(allObservablesAreDisjoint(observables));
-        REQUIRE_THAT(
-            observables,
-            Catch::Matchers::UnorderedEquals(
-                std::vector {
-                    Observable { AP({"p"}), intersect(p, notQ), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"p", "q"}), intersect(p, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
-                }
-            )
-        );
+            REQUIRE(observables.size() == 3);
+            REQUIRE(allObservablesAreDisjoint(observables));
+            REQUIRE_THAT(
+                observables,
+                Catch::Matchers::UnorderedEquals(
+                    std::vector {
+                        Observable { AP({"p"}), intersect(p, notQ), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "q"}), intersect(p, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                    }
+                )
+            );
+        }
+
+        SECTION("Filtering empty observables")
+        {
+            constexpr bool filterEmptyObservables { true };
+            std::vector observables { polyhedralSystem.generateObservables(filterEmptyObservables) };
+
+            REQUIRE(observables.size() == 2);
+            REQUIRE(allObservablesAreDisjoint(observables));
+            REQUIRE_THAT(
+                observables,
+                Catch::Matchers::UnorderedEquals(
+                    std::vector {
+                        Observable { AP({"p"}), intersect(p, notQ), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                    }
+                )
+            );
+        }
     }
 
     SECTION("{p, q, r, v}")
@@ -74,32 +96,58 @@ TEST_CASE("Generate observables")
         const Powerset& notR { (*polyhedralSystem.getAtomInterpretation("r"))->notInterpretation() };
         const Powerset& notV { (*polyhedralSystem.getAtomInterpretation("v"))->notInterpretation() };
 
-        std::vector observables { polyhedralSystem.generateObservables() };
+        SECTION("Without filtering empty observables")
+        {
+            constexpr bool filterEmptyObservables { false };
+            std::vector observables { polyhedralSystem.generateObservables(filterEmptyObservables) };
 
-        REQUIRE(observables.size() == 15);
-        REQUIRE(allObservablesAreDisjoint(observables));
-        REQUIRE_THAT(
-            observables,
-            Catch::Matchers::UnorderedEquals(
-                std::vector{
-                    Observable { AP({"p"}), intersect({ p, notQ, notR, notV }),         PPLOutput::toString(*intersect({ p, notQ, notR, notV }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"q"}), intersect({ notP, q, notR, notV }),         PPLOutput::toString(*intersect({ notP, q, notR, notV }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"r"}), intersect({ notP, notQ, r, notV }),         PPLOutput::toString(*intersect({ notP, notQ, r, notV }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"v"}), intersect({ notP, notQ, notR, v }),         PPLOutput::toString(*intersect({ notP, notQ, notR, v }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"p", "q"}), intersect({ p, q, notR, notV }),       PPLOutput::toString(*intersect({ p, q, notR, notV }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"p", "r"}), intersect({ p, notQ, r, notV }),       PPLOutput::toString(*intersect({ p, notQ, r, notV }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"p", "v"}), intersect({ p, notQ, notR, v }),       PPLOutput::toString(*intersect({ p, notQ, notR, v }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"q", "v"}), intersect({ notP, q, notR, v }),       PPLOutput::toString(*intersect({ notP, q, notR, v }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"q", "r"}), intersect({ r, q, notP, notV }),       PPLOutput::toString(*intersect({ r, q, notR, notV }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"r", "v"}), intersect({ notP, notQ, r, v }),       PPLOutput::toString(*intersect({ notP, notQ, r, v }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"p", "q", "r"}), intersect({ p, q, r, notV }),     PPLOutput::toString(*intersect({ p, q, r, notV }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"p", "q", "v"}), intersect({ p, q, notR, v }),     PPLOutput::toString(*intersect({ p, q, notR, v }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"p", "r", "v"}), intersect({ p, notQ, r, v }),     PPLOutput::toString(*intersect({ p, notQ, r, v }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"q", "r", "v"}), intersect({ notP, q, r, v }),     PPLOutput::toString(*intersect({ notP, q, r, v }), polyhedralSystem.symbolTable()) },
-                    Observable { AP({"p", "q", "r", "v"}), intersect({ p, q, r, v }),   PPLOutput::toString(*intersect({ p, q, r, v }), polyhedralSystem.symbolTable()) },
-                }
-            )
-        );
+            REQUIRE(observables.size() == 15);
+            REQUIRE(allObservablesAreDisjoint(observables));
+            REQUIRE_THAT(
+                observables,
+                Catch::Matchers::UnorderedEquals(
+                    std::vector{
+                        Observable { AP({"p"}), intersect({ p, notQ, notR, notV }),         PPLOutput::toString(*intersect({ p, notQ, notR, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"q"}), intersect({ notP, q, notR, notV }),         PPLOutput::toString(*intersect({ notP, q, notR, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"r"}), intersect({ notP, notQ, r, notV }),         PPLOutput::toString(*intersect({ notP, notQ, r, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"v"}), intersect({ notP, notQ, notR, v }),         PPLOutput::toString(*intersect({ notP, notQ, notR, v }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "q"}), intersect({ p, q, notR, notV }),       PPLOutput::toString(*intersect({ p, q, notR, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "r"}), intersect({ p, notQ, r, notV }),       PPLOutput::toString(*intersect({ p, notQ, r, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "v"}), intersect({ p, notQ, notR, v }),       PPLOutput::toString(*intersect({ p, notQ, notR, v }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"q", "v"}), intersect({ notP, q, notR, v }),       PPLOutput::toString(*intersect({ notP, q, notR, v }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"q", "r"}), intersect({ r, q, notP, notV }),       PPLOutput::toString(*intersect({ r, q, notR, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"r", "v"}), intersect({ notP, notQ, r, v }),       PPLOutput::toString(*intersect({ notP, notQ, r, v }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "q", "r"}), intersect({ p, q, r, notV }),     PPLOutput::toString(*intersect({ p, q, r, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "q", "v"}), intersect({ p, q, notR, v }),     PPLOutput::toString(*intersect({ p, q, notR, v }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "r", "v"}), intersect({ p, notQ, r, v }),     PPLOutput::toString(*intersect({ p, notQ, r, v }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"q", "r", "v"}), intersect({ notP, q, r, v }),     PPLOutput::toString(*intersect({ notP, q, r, v }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "q", "r", "v"}), intersect({ p, q, r, v }),   PPLOutput::toString(*intersect({ p, q, r, v }), polyhedralSystem.symbolTable()) },
+                    }
+                )
+            );
+        }
+
+        SECTION("Filtering empty observables")
+        {
+            constexpr bool filterEmptyObservables { true };
+            std::vector observables { polyhedralSystem.generateObservables(filterEmptyObservables) };
+
+            REQUIRE(observables.size() == 6);
+            REQUIRE(allObservablesAreDisjoint(observables));
+            REQUIRE_THAT(
+                observables,
+                Catch::Matchers::UnorderedEquals(
+                    std::vector{
+                        Observable { AP({"q"}), intersect({ notP, q, notR, notV }),         PPLOutput::toString(*intersect({ notP, q, notR, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"r"}), intersect({ notP, notQ, r, notV }),         PPLOutput::toString(*intersect({ notP, notQ, r, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"v"}), intersect({ notP, notQ, notR, v }),         PPLOutput::toString(*intersect({ notP, notQ, notR, v }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "q"}), intersect({ p, q, notR, notV }),       PPLOutput::toString(*intersect({ p, q, notR, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"q", "r"}), intersect({ r, q, notP, notV }),       PPLOutput::toString(*intersect({ r, q, notR, notV }), polyhedralSystem.symbolTable()) },
+                        Observable { AP({"p", "q", "v"}), intersect({ p, q, notR, v }),     PPLOutput::toString(*intersect({ p, q, notR, v }), polyhedralSystem.symbolTable()) },
+                    }
+                )
+            );
+        }
     }
 }
 

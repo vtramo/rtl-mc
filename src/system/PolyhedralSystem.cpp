@@ -245,7 +245,7 @@ spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
     return m_bddDict;
 }
 
-std::vector<Observable> PolyhedralSystem::generateObservables() const
+std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterEmptyObservables) const
 {
     const spot::atomic_prop_set& polyhedralAtoms { atoms() };
 
@@ -274,6 +274,8 @@ std::vector<Observable> PolyhedralSystem::generateObservables() const
                         : atomInterpretation->notInterpretation()
                 );
             }
+
+            if (filterEmptyObservables && observableDenotation->is_empty()) continue;
 
 #ifdef DEBUG
             Observable observable { kCombination, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };

@@ -33,7 +33,7 @@ TEST_CASE("Extract Tiles from Observables")
         const Powerset& notQ { (*polyhedralSystem.getAtomInterpretation("q"))->notInterpretation() };
 
         std::vector observables { polyhedralSystem.generateObservables() };
-        REQUIRE(observables.size() == 3);
+        REQUIRE(observables.size() == 2);
 
 
         TileExtractor tileExtractor {};

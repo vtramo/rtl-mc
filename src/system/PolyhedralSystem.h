@@ -41,7 +41,7 @@ public:
     const AtomInterpretation& addAtomInterpretation(std::string_view atom, const Powerset& interpretation);
 
     [[nodiscard]] spot::bdd_dict_ptr bddDict() const;
-    [[nodiscard]] std::vector<Observable> generateObservables() const;
+    [[nodiscard]] std::vector<Observable> generateObservables(bool filterEmptyObservables = true) const;
 
     void setConstraintOutputMinimized(bool);
 
