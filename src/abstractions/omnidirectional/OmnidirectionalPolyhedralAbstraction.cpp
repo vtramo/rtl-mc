@@ -1,17 +1,15 @@
-#include <spot/twa/formula2bdd.hh>
-#include <spot/twaalgos/dot.hh>
-
 #include "OmnidirectionalPolyhedralAbstraction.h"
 #include "TileExtractor.h"
 
 OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
-    : m_spaceDimension { polyhedralSystem->spaceDimension() }
+    : PolyhedralAbstraction { polyhedralSystem }
 {
     if (!polyhedralSystem->isOmnidirectionalFlow())
         throw std::invalid_argument("To construct an OmnidirectionalPolyhedralAbstraction, the flow must be omnidirectional!");
 
+    PolyhedralAbstraction::initializeGraph();
+
     std::vector tiles { extractTilesFromPolyhedralSystem(polyhedralSystem) };
-    initializeGraph(polyhedralSystem->bddDict());
     buildAbstraction(std::move(tiles));
 }
 
@@ -22,16 +20,9 @@ std::vector<Tile> OmnidirectionalPolyhedralAbstraction::extractTilesFromPolyhedr
     return tileExtractor.extractTiles(observables);
 }
 
-void OmnidirectionalPolyhedralAbstraction::initializeGraph(spot::bdd_dict_ptr bddDict)
-{
-    m_graph = std::make_shared<spot::twa_graph>(bddDict);
-    m_graph->prop_state_acc(spot::trival { true });
-    m_graph->set_acceptance(spot::acc_cond::acc_code::t());
-}
-
 void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& tiles)
 {
-    const int totalTiles { static_cast<int>(tiles.size()) };
+    const int totalTiles {static_cast<int>(tiles.size())};
     std::unordered_map<Tile, unsigned> stateByTile {};
     stateByTile.reserve(totalTiles * 3 / 2);
 
@@ -78,20 +69,9 @@ unsigned OmnidirectionalPolyhedralAbstraction::getStateByTileOrCreate(
     return s;
 }
 
-bdd OmnidirectionalPolyhedralAbstraction::observableAsBdd(const Observable& observable)
-{
-    const spot::atomic_prop_set& observableAtoms { observable.atoms() };
-    return spot::formula_to_bdd(SpotUtils::andAtoms(observableAtoms), m_graph->get_dict(), m_graph);
-}
-
-PPL::dimension_type OmnidirectionalPolyhedralAbstraction::spaceDimension() const
-{
-    return m_spaceDimension;
-}
-
 PowersetConstSharedPtr OmnidirectionalPolyhedralAbstraction::points(const unsigned state) const
 {
-    assert(static_cast<int>(state) < totalStates() && "State is out of range!");
+    PolyhedralAbstraction::assertThatStateIsInRange(state);
 
     const std::variant<TileNode, TripleTileNode>& variant { m_tileNodes.at(state) };
 
@@ -103,7 +83,7 @@ PowersetConstSharedPtr OmnidirectionalPolyhedralAbstraction::points(const unsign
 
 const Observable& OmnidirectionalPolyhedralAbstraction::observable(const unsigned state) const
 {
-    assert(static_cast<int>(state) < totalStates() && "State is out of range!");
+    PolyhedralAbstraction::assertThatStateIsInRange(state);
 
     const std::variant<TileNode, TripleTileNode>& variant { m_tileNodes.at(state) };
 
@@ -111,50 +91,4 @@ const Observable& OmnidirectionalPolyhedralAbstraction::observable(const unsigne
         return std::get<TileNode>(variant).observable();
 
     return std::get<TripleTileNode>(variant).observable();
-}
-
-int OmnidirectionalPolyhedralAbstraction::totalStates() const
-{
-    return static_cast<int>(m_graph->num_states());
-}
-
-int OmnidirectionalPolyhedralAbstraction::totalEdges() const
-{
-    return static_cast<int>(m_graph->num_edges());
-}
-
-OmnidirectionalPolyhedralAbstraction::EdgeIterator OmnidirectionalPolyhedralAbstraction::successors(const unsigned state)
-{
-    assert(static_cast<int>(state) < totalStates() && "State is out of range!");
-
-    return m_graph->out(state);
-}
-
-bool OmnidirectionalPolyhedralAbstraction::hasSuccessors(const unsigned state)
-{
-    assert(static_cast<int>(state) < totalStates() && "State is out of range!");
-
-    auto edgeStorages { m_graph->out(state) };
-    return edgeStorages.begin() != edgeStorages.end();
-}
-
-int OmnidirectionalPolyhedralAbstraction::countSuccessors(const unsigned state)
-{
-    const EdgeIterator& edgeIterator { m_graph->out(state) };
-    return std::distance(edgeIterator.begin(), edgeIterator.end());
-}
-
-spot::const_twa_graph_ptr OmnidirectionalPolyhedralAbstraction::twa() const
-{
-    return m_graph;
-}
-
-int OmnidirectionalPolyhedralAbstraction::initialState() const
-{
-    return static_cast<int>(m_graph->get_init_state_number());
-}
-
-void OmnidirectionalPolyhedralAbstraction::printDotFormat(std::ostream& os) const
-{
-    spot::print_dot(os, m_graph);
 }

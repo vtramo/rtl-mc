@@ -6,6 +6,33 @@ struct "std::hash<Observable>" as ObservableHash {
 }
 
 package abstractions {
+        abstract PolyhedralAbstraction {
+            --type aliases--
+            +using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
+            --data members--
+            #m_polyhedralSystem: PolyhedralSystemConstSharedPtr
+            #m_graph: spot::twa_graph_ptr
+            #m_spaceDimension: PPL::dimension_type
+            --constructors--
+            +PolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
+            +virtual ~PolyhedralAbstraction() = default
+            --member functions--
+            +virtual points(unsigned state): PowersetConstSharedPtr
+            +virtual observable(unsigned state): const Observable&
+            +virtual initialState(): unsigned
+            +virtual totalStates(): unsigned
+            +virtual totalEdges(): unsigned
+            +virtual successors(const unsigned state): EdgeIterator
+            +virtual hasSuccessors(const unsigned state): bool
+            +virtual countSuccessors(const unsigned state): int
+            +virtual spaceDimension(): PPL::dimension_type
+            +virtual twa(): spot::const_twa_graph_ptr
+            +printDotFormat(std::ostream& os): void
+            #virtual initializeGraph(): void
+            #virtual observableAsBdd(const Observable& observable): bdd
+            #virtual assertThatStateIsInRange(const unsigned state): void
+        }
+
         package general {
             class ObservablePatch {
                 --data members--
@@ -92,33 +119,18 @@ package abstractions {
 
             class GeneralPolyhedralAbstraction {
                 --type aliases--
-                using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
+                using GeneralPolyhedralAbstractionConstSharedPtr = std::shared_ptr<GeneralPolyhedralAbstraction>
                 --data members--
-                -m_graph: spot::twa_graph_ptr
-                -m_sufficientHorizon: int
                 -m_nodeByState: std::unordered_map<unsigned, ObservableTraversalNode>
-                -m_spaceDimension: PPL::dimension_type
                 --constructors--
-                +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, int totalStatesFiniteAutomaton)
+                +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
+                +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::vector<Observable>&& observables, int maxObservablePatchSequenceLength)
                 --member function--
                 +points(unsigned state): PowersetConstSharedPtr
                 +observable(unsigned state): const Observable&
-                +spaceDimension(): PPL::dimension_type
-                +sufficientHorizon(): int
-                +initialState(): int
-                +totalStates(): int
-                +totalEdges(): int
-                +successors(unsigned state): EdgeIterator
-                +hasSuccessors(unsigned state): bool
-                +countSuccessors(unsigned state): int
-                +twa(): spot::const_twa_graph_ptr
-                +printDotFormat(std::ostream& os): void
-                -computeSufficientHorizon(int totalStatesFiniteAutomaton, const std::vector<Observable>& observables): void
-                -initializeGraph(spot::bdd_dict_ptr bddDict): void
-                -buildAbstraction(std::vector<Observable>&& observables, const Poly&): void
+                -buildAbstraction(int maxObservablePatchSequenceLength, std::vector<Observable>&& observables): void
                 -createStates(const ObservableTraversalNode& singTravNode, const ObservableTraversalNode& openTravNode): SingOpenStatePair
                 -createEdges(SingOpenStatePair singOpenStatePair, const SingOpenStatePair& adjSingOpenStatePair): void
-                -observableAsBdd(const Observable& observable): bdd
                 -advanceByOne(const ObservablePatchSequence& observablePatchSequence): ObservablePatchSequence
             }
 
@@ -140,6 +152,7 @@ package abstractions {
             GeneralPolyhedralAbstraction ..> ObservablePatchSequence
             GeneralPolyhedralAbstraction --> "*" ObservableTraversalNode
             GeneralPolyhedralAbstraction ..> SingOpenStatePair
+            GeneralPolyhedralAbstraction --|> PolyhedralAbstraction
     }
 
 
@@ -232,28 +245,15 @@ package abstractions {
 
         class OmnidirectionalPolyhedralAbstraction {
             --type aliases--
-            using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
+            using OmnidirectionalPolyhedralAbstractionConstSharedPtr = std::shared_ptr<OmnidirectionalPolyhedralAbstraction>;
             --data members--
-            -m_graph: spot::twa_graph_ptr
             -m_tileNodes: std::unordered_map<unsigned, std::variant<TileNode, TripleTileNode>>
-            -m_spaceDimension: PPL::dimension_type
             --constructors--
             +OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
             --member functions--
             +observable(unsigned state): const Observable&
             +points(unsigned state): PowersetConstSharedPtr
-            +initialState(): int
-            +totalStates(): int
-            +totalEdges(): int
-            +successors(unsigned state): EdgeIterator
-            +hasSuccessors(unsigned state): bool
-            +countSuccessors(unsigned state): int
-            +spaceDimension(): PPL::dimension_type
-            +twa(): spot::const_twa_graph_ptr
-            +printDotFormat(std::ostream& os): void
             -buildAbstraction(std::vector<Tile>&& tiles): void
-            -initializeGraph(spot::bdd_dict_ptr bddDict): void
-            -observableAsBdd(const Observable& observable): bdd
             -processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile): void
             -getStateByTileOrCreate(const Tile& tile, std::unordered_map<Tile, unsigned>& stateByTile): unsigned
             --static functions--
@@ -270,6 +270,7 @@ package abstractions {
         TileExtractor --> "0..1" Observable
         OmnidirectionalPolyhedralAbstraction --> "*" TileNode
         OmnidirectionalPolyhedralAbstraction --> "*" TripleTileNode
+        OmnidirectionalPolyhedralAbstraction --|> PolyhedralAbstraction
     }
 }
 @enduml
