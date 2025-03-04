@@ -4,6 +4,7 @@ observables_system_tests_source_files = [
     polyhedral_system_source_files,
     ppl_utils_source_files,
     operators_source_files,
+    observable_patch_cartesian_product_source_files,
     spot_utils_source_files
 ]
 

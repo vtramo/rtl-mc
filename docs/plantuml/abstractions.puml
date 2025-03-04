@@ -13,7 +13,7 @@ package abstractions {
                 -m_patch: const Poly&
                 -m_hashcode: std::size_t
                 --constructors--
-                +ObservablePatch(Observable observable, const Poly& patch)
+                +ObservablePatch(const Observable& observable, const Poly& patch)
                 +ObservablePatch(const ObservablePatch& other)
                 +ObservablePatch(ObservablePatch&& other)
                 --member functions--

@@ -7,7 +7,7 @@
 class ObservablePatch
 {
 public:
-    ObservablePatch(Observable observable, const Poly& patch)
+    ObservablePatch(const Observable& observable, const Poly& patch)
         : m_patch { patch }
         , m_observable { observable }
     {
