@@ -105,16 +105,17 @@ package abstractions {
 
             class SingOpenStatePair {
                 --data members--
-                -m_singState: std::optional<int>
-                -m_openState: std::optional<int>
+                -m_singState: std::optional<unsigned>
+                -m_openState: std::optional<unsigned>
                 --constructors--
-                +SingOpenStatePair(int state, bool isSing)
-                +SingOpenStatePair(int singState, int openState)
+                +SingOpenStatePair(unsigned state, bool isSing)
+                +SingOpenStatePair(unsigned singState, unsigned openState)
+                +SingOpenStatePair() = default
                 --member functions--
                 +containsSingState(): bool
                 +containsOpenState(): bool
-                +singState(): int
-                +openState(): int
+                +singState(): unsigned
+                +openState(): unsigned
             }
 
             GeneralPolyhedralAbstraction ..> ObservablePatchSequence

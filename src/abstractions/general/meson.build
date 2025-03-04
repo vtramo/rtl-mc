@@ -12,6 +12,7 @@ general_abstraction_source_files = [
     current_source_dir / 'GeneralPolyhedralAbstraction.h',
     current_source_dir / 'GeneralPolyhedralAbstraction.cpp',
     current_source_dir / 'ObservableTraversalNode.h',
+    current_source_dir / 'SingOpenStatePair.h',
 ]
 
 abstractions_source_files += general_abstraction_source_files + observable_patch_cartesian_product_source_files
