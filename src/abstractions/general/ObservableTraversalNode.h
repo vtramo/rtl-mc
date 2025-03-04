@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ppl_utils.h"
 #include "Observable.h"
 #include "ObservablePatchSequence.h"
 #include "traversal.h"
@@ -9,7 +8,7 @@
 class ObservableTraversalNode
 {
 public:
-    ObservableTraversalNode(ObservablePatchSequence sequence, const Poly& preFlow, bool isSing = false)
+    ObservableTraversalNode(const ObservablePatchSequence& sequence, const Poly& preFlow, const bool isSing = false)
         : m_isSing { isSing }
     {
         if (sequence.isEmpty())
@@ -20,6 +19,8 @@ public:
         computeObservable(sequence);
         computeTravPoints(sequence, preFlow);
     }
+
+    ObservableTraversalNode() = default;
 
     [[nodiscard]] const Observable& observable() const { return m_observable; }
     [[nodiscard]] PowersetConstSharedPtr travPoints() const { return m_travPoints; }

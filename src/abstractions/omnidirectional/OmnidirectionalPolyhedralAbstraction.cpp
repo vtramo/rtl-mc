@@ -1,22 +1,25 @@
-#include "OmnidirectionalPolyhedralAbstraction.h"
-
 #include <spot/twa/formula2bdd.hh>
 #include <spot/twaalgos/dot.hh>
 
+#include "OmnidirectionalPolyhedralAbstraction.h"
 #include "TileExtractor.h"
 
 OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
+    : m_spaceDimension { polyhedralSystem->spaceDimension() }
 {
     if (!polyhedralSystem->isOmnidirectionalFlow())
         throw std::invalid_argument("To construct an OmnidirectionalPolyhedralAbstraction, the flow must be omnidirectional!");
 
-    std::vector observables { polyhedralSystem->generateObservables() };
-
-    TileExtractor tileExtractor {};
-    std::vector tiles { tileExtractor.extractTiles(observables) };
-
+    std::vector tiles { extractTilesFromPolyhedralSystem(polyhedralSystem) };
     initializeGraph(polyhedralSystem->bddDict());
     buildAbstraction(std::move(tiles));
+}
+
+std::vector<Tile> OmnidirectionalPolyhedralAbstraction::extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem)
+{
+    std::vector observables { polyhedralSystem->generateObservables() };
+    TileExtractor tileExtractor {};
+    return tileExtractor.extractTiles(observables);
 }
 
 void OmnidirectionalPolyhedralAbstraction::initializeGraph(spot::bdd_dict_ptr bddDict)
@@ -79,6 +82,11 @@ bdd OmnidirectionalPolyhedralAbstraction::observableAsBdd(const Observable& obse
 {
     const spot::atomic_prop_set& observableAtoms { observable.atoms() };
     return spot::formula_to_bdd(SpotUtils::andAtoms(observableAtoms), m_graph->get_dict(), m_graph);
+}
+
+PPL::dimension_type OmnidirectionalPolyhedralAbstraction::spaceDimension() const
+{
+    return m_spaceDimension;
 }
 
 PowersetConstSharedPtr OmnidirectionalPolyhedralAbstraction::points(const unsigned state) const

@@ -21,6 +21,8 @@ package system {
         +isEmpty(): bool
         +totalAtoms(): int
         +totalPatches(): int
+        +begin(): Powerset::const_iterator
+        +end(): Powerset::const_iterator
         +spaceDimension(): PPL::dimension_type
         +hashcode(): std::size_t
         -computeHashCode(): void

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <spot/tl/apcollect.hh>
 #include <variant>
 #include "TileNode.h"
 #include "TripleTileNode.h"
@@ -24,6 +23,7 @@ public:
     [[nodiscard]] EdgeIterator successors(unsigned state);
     [[nodiscard]] bool hasSuccessors(unsigned state);
     [[nodiscard]] int countSuccessors(unsigned state);
+    [[nodiscard]] PPL::dimension_type spaceDimension() const;
     [[nodiscard]] spot::const_twa_graph_ptr twa() const;
 
     void printDotFormat(std::ostream& os) const;
@@ -31,10 +31,13 @@ public:
 private:
     spot::twa_graph_ptr m_graph {};
     std::unordered_map<unsigned, std::variant<TileNode, TripleTileNode>> m_tileNodes {};
+    PPL::dimension_type m_spaceDimension {};
 
     void buildAbstraction(std::vector<Tile>&& tiles);
     void initializeGraph(spot::bdd_dict_ptr bddDict);
     unsigned getStateByTileOrCreate(const Tile& tile, std::unordered_map<Tile, unsigned>& stateByTile);
     bdd observableAsBdd(const Observable& observable);
     void processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile);
+
+    static std::vector<Tile> extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem);
 };

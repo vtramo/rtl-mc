@@ -9,7 +9,14 @@
 class ObservablePatchSequence
 {
 public:
-    ObservablePatchSequence(std::vector<ObservablePatch> sequence, const PPL::dimension_type spaceDimension)
+    ObservablePatchSequence(const std::vector<ObservablePatch>& sequence, const PPL::dimension_type spaceDimension)
+        : m_sequence { sequence }
+        , m_spaceDimension { spaceDimension }
+    {
+        computeHashCode();
+    }
+
+    ObservablePatchSequence(std::vector<ObservablePatch>&& sequence, const PPL::dimension_type spaceDimension)
         : m_sequence { std::move(sequence) }
         , m_spaceDimension { spaceDimension }
     {
