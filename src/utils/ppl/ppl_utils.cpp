@@ -143,6 +143,15 @@ namespace PPLUtils {
         return result;
     }
 
+    PowersetUniquePtr fusion(const Powerset& a, const Poly& b)
+    {
+        assert(a.space_dimension() == b.space_dimension());
+
+        PowersetUniquePtr result { std::make_unique<Powerset>(a) };
+        result->add_disjunct(b);
+        return result;
+    }
+
     PowersetUniquePtr fusion(const PowersetConstUniquePtr & a, const PowersetConstUniquePtr & b) {
         assert(a->space_dimension() == b->space_dimension());
 

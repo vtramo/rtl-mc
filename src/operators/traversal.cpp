@@ -112,11 +112,10 @@ PowersetSharedPtr traversalPlus(const ObservablePatchSequenceSlice slice, const 
         advancedSliceByOne.isEmpty()
             ? firstObservableInterpretation
             : PPLUtils::fusion(
-                **advancedSliceByOne.firstObservableInterpretation(),
-                *firstObservableInterpretation
+                *firstObservableInterpretation,
+                (*advancedSliceByOne.firstObservablePatch())->patch()
               )
     };
     PowersetUniquePtr reachPlusResult { reachPlus(*reachObservableInterpretation, *traversalZeroResult, preFlow) };
-
     return PPLUtils::intersect(firstObservablePatch->patch(), std::move(*reachPlusResult));
 }

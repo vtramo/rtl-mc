@@ -42,6 +42,7 @@ namespace PPLUtils {
     PowersetUniquePtr fusion(const std::vector<PowersetConstSharedPtr>& powersets);
     PowersetUniquePtr fusion(const PowersetConstUniquePtr& a, const PowersetConstUniquePtr& b);
     PowersetUniquePtr fusion(const Powerset& a, const Powerset& b);
+    PowersetUniquePtr fusion(const Powerset& a, const Poly& b);
     PowersetUniquePtr fusion(const std::vector<PowersetConstSharedPtr>& powersets);
     void fusion(Powerset& a, const Powerset& b);
     PowersetUniquePtr fusion(const Poly& a, const Poly& b);
