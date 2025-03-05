@@ -20,6 +20,7 @@ utils_dir = 'utils'
 mcsolvers_dir = 'mcsolvers'
 onthefly_dir = 'onthefly'
 abstraction_dir = 'abstractions'
+omnidirectional_dir = 'omnidirectional'
 include_directories = [
   include_directories('.'),
   include_directories(src_dir / utils_dir),
@@ -27,7 +28,8 @@ include_directories = [
   include_directories(src_dir / utils_dir / 'spot'),
   include_directories(src_dir / system_dir),
   include_directories(src_dir / abstraction_dir),
-  include_directories(src_dir / abstraction_dir / 'omnidirectional'),
+  include_directories(src_dir / abstraction_dir / omnidirectional_dir),
+  include_directories(src_dir / abstraction_dir / omnidirectional_dir / 'tilextractor'),
   include_directories(src_dir / abstraction_dir / 'general'),
   include_directories(src_dir / 'discretisation'),
   include_directories(src_dir / 'operators'),
