@@ -12,7 +12,10 @@ using OmnidirectionalPolyhedralAbstractionConstSharedPtr = std::shared_ptr<Omnid
 class OmnidirectionalPolyhedralAbstraction: public PolyhedralAbstraction
 {
 public:
-    explicit OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem);
+    explicit OmnidirectionalPolyhedralAbstraction(
+        PolyhedralSystemConstSharedPtr polyhedralSystem,
+        std::string_view name = "OmnidirectionalPolyhedralAbstraction"
+    );
 
     [[nodiscard]] const Observable& observable(unsigned state) const override;
     [[nodiscard]] PowersetConstSharedPtr points(unsigned state) const override;

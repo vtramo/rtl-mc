@@ -24,6 +24,7 @@ private:
     friend class BackwardNFA;
     friend class DiscreteFiniteLtlFormula;
     friend class FiniteLtlAutomaton;
+    friend class LtlAutomaton;
     friend DiscreteLtlFormula discretiseToLtl(spot::formula&& formula);
 
     DiscreteLtlFormula() = default;

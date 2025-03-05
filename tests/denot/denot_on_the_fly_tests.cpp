@@ -37,7 +37,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
     {
         DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
+        std::cerr << "exit" << std::endl;
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -61,7 +62,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -85,7 +86,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -109,7 +110,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -133,7 +134,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -157,7 +158,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -181,7 +182,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -205,7 +206,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -229,7 +230,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -253,7 +254,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -296,7 +297,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
     {
         DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -320,7 +321,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -344,7 +345,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -368,7 +369,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -392,7 +393,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -416,7 +417,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -440,7 +441,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -464,7 +465,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -488,7 +489,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
@@ -512,7 +513,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
             ).f).toLtl()
         };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {

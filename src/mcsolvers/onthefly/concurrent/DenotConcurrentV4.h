@@ -8,7 +8,7 @@
 class DenotConcurrentV4: public Denot
 {
 public:
-    DenotConcurrentV4(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
+    DenotConcurrentV4(const PolyhedralSystemConstSharedPtr polyhedralSystem, BackwardNFAConstSharedPtr backwardNfa)
       : m_polyhedralSystem { polyhedralSystem }
       , m_backwardNfa { backwardNfa }
     {
@@ -22,7 +22,7 @@ private:
     int m_iterations { };
     PPL::dimension_type m_spaceDimension { };
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
-    const BackwardNFA& m_backwardNfa {};
+    BackwardNFAConstSharedPtr m_backwardNfa {};
 
     PowersetUniquePtr denot(
         int state,

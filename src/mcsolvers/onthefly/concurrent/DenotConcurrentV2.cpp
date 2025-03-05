@@ -6,9 +6,9 @@ PowersetUniquePtr DenotConcurrentV2::run()
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
-    for (const int finalState: m_backwardNfa.finalStates())
+    for (const int finalState: m_backwardNfa->acceptingStates())
     {
-        const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
+        const StateDenotation& finalStateDenotation { m_backwardNfa->stateDenotation(finalState) };
 
         PowersetConstSharedPtr denotationFinalState { finalStateDenotation.denotation() };
         PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
@@ -41,10 +41,10 @@ PowersetUniquePtr DenotConcurrentV2::denot(
     assert(X.space_dimension() == m_polyhedralSystem->spaceDimension());
     assert(X.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
-    const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
+    const StateDenotation& stateDenotation { m_backwardNfa->stateDenotation(state) };
     assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
 
-    if (m_backwardNfa.isInitialState(state))
+    if (m_backwardNfa->isInitialState(state))
     {
         return std::make_unique<Powerset>(X);
     }
@@ -55,10 +55,10 @@ PowersetUniquePtr DenotConcurrentV2::denot(
     }
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
-    for (const auto& edgePredecessor: m_backwardNfa.predecessors(state))
+    for (const auto& edgePredecessor: m_backwardNfa->successors(state))
     {
         int predecessor { static_cast<int>(edgePredecessor.dst) };
-        const StateDenotation& predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
+        const StateDenotation& predecessorStateDenotation { m_backwardNfa->stateDenotation(predecessor) };
 
         Powerset& visitedPowerset { getVisitedPowerset(V, predecessor) };
         assert(visitedPowerset.space_dimension() == m_polyhedralSystem->spaceDimension());

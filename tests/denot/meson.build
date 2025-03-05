@@ -13,7 +13,7 @@ denot_on_the_fly_src_files = [
 denot_on_the_fly_exe = executable(
     'denot_on_the_fly',
     denot_on_the_fly_src_files,
-    dependencies : [spot_dep, catch2_dep, catch2_with_main_dep, ppl_dep, gmp_dep, antlr4_runtime_dep, spdlog],
+    dependencies : [spot_dep, catch2_dep, catch2_with_main_dep, ppl_dep, gmp_dep, antlr4_runtime_dep, spdlog_dep],
     include_directories : include_directories
 )
 

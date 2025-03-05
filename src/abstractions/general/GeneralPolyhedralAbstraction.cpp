@@ -8,17 +8,18 @@
 GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
     PolyhedralSystemConstSharedPtr polyhedralSystem,
     std::vector<Observable>&& observables,
-    const int maxObservablePatchSequenceLength
-) : PolyhedralAbstraction { polyhedralSystem }
+    const int maxObservablePatchSequenceLength,
+    const std::string_view name
+) : PolyhedralAbstraction(polyhedralSystem, name)
 {
-    PolyhedralAbstraction::initializeGraph();
     buildAbstraction(maxObservablePatchSequenceLength, std::move(observables));
 }
 
-GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
-    : PolyhedralAbstraction { polyhedralSystem }
+GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
+    PolyhedralSystemConstSharedPtr polyhedralSystem,
+    const std::string_view name
+) : PolyhedralAbstraction(polyhedralSystem, name)
 {
-    PolyhedralAbstraction::initializeGraph();
     std::vector observables { m_polyhedralSystem->generateObservables() };
     std::size_t totalObservables { observables.size() };
     buildAbstraction(totalObservables, std::move(observables));
@@ -94,18 +95,18 @@ SingOpenStatePair GeneralPolyhedralAbstraction::createStates(
 
     if (!singTravNode.isEmpty() && !openTravNode.isEmpty())
     {
-        unsigned singState { m_graph->new_state() };
-        unsigned openState { m_graph->new_state() };
+        unsigned singState { m_automaton->new_state() };
+        unsigned openState { m_automaton->new_state() };
         return SingOpenStatePair { singState, openState };
     }
 
     if (!singTravNode.isEmpty())
     {
-        unsigned singState { m_graph->new_state() };
+        unsigned singState { m_automaton->new_state() };
         return SingOpenStatePair { singState, true };
     }
 
-    unsigned openState { m_graph->new_state() };
+    unsigned openState { m_automaton->new_state() };
     return SingOpenStatePair { openState, false };
 }
 
@@ -119,12 +120,12 @@ void GeneralPolyhedralAbstraction::createEdges(const SingOpenStatePair singOpenS
 
         if (singOpenStatePair.containsSingState())
         {
-            m_graph->new_acc_edge(singOpenStatePair.singState(), adjSingState, adjSingStateObservableBdd);
+            m_automaton->new_acc_edge(singOpenStatePair.singState(), adjSingState, adjSingStateObservableBdd);
         }
 
         if (singOpenStatePair.containsOpenState())
         {
-            m_graph->new_acc_edge(singOpenStatePair.openState(), adjSingState, adjSingStateObservableBdd);
+            m_automaton->new_acc_edge(singOpenStatePair.openState(), adjSingState, adjSingStateObservableBdd);
         }
     }
 
@@ -136,12 +137,12 @@ void GeneralPolyhedralAbstraction::createEdges(const SingOpenStatePair singOpenS
 
         if (singOpenStatePair.containsSingState())
         {
-            m_graph->new_acc_edge(singOpenStatePair.singState(), adjOpenState, adjSingStateObservableBdd);
+            m_automaton->new_acc_edge(singOpenStatePair.singState(), adjOpenState, adjSingStateObservableBdd);
         }
 
         if (singOpenStatePair.containsOpenState())
         {
-            m_graph->new_acc_edge(singOpenStatePair.openState(), adjOpenState, adjSingStateObservableBdd);
+            m_automaton->new_acc_edge(singOpenStatePair.openState(), adjOpenState, adjSingStateObservableBdd);
         }
     }
 }

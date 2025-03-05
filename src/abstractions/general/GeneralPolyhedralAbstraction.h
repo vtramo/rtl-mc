@@ -12,12 +12,16 @@ class GeneralPolyhedralAbstraction: public PolyhedralAbstraction
 public:
     using GeneralPolyhedralAbstractionConstSharedPtr = std::shared_ptr<GeneralPolyhedralAbstraction>;
 
-    explicit GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem);
+    explicit GeneralPolyhedralAbstraction(
+        PolyhedralSystemConstSharedPtr polyhedralSystem,
+        std::string_view name = "GeneralPolyhedralAbstraction"
+    );
 
     GeneralPolyhedralAbstraction(
         PolyhedralSystemConstSharedPtr polyhedralSystem,
         std::vector<Observable>&& observables,
-        int maxObservablePatchSequenceLength
+        int maxObservablePatchSequenceLength,
+        std::string_view name = "GeneralPolyhedralAbstraction"
     );
 
     [[nodiscard]] PowersetConstSharedPtr points(unsigned state) const override;

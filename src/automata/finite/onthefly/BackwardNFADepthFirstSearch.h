@@ -1,22 +1,23 @@
 #pragma once
 
 #include <spot/twaalgos/reachiter.hh>
+#include "BackwardNFA.h"
 
 class BackwardNFA;
 
 class BackwardNFADepthFirstSearch: protected spot::twa_reachable_iterator_depth_first
 {
 public:
-    explicit BackwardNFADepthFirstSearch(const BackwardNFA& backwardNfa);
+    explicit BackwardNFADepthFirstSearch(BackwardNFAConstSharedPtr backwardNfa);
 
     void operator() ();
     void run() final;
-    virtual bool wantState(int state) const;
-    virtual void processState(int state);
-    virtual void processEdge(int src, int dst);
+    virtual bool wantState(unsigned state) const;
+    virtual void processState(unsigned state);
+    virtual void processEdge(unsigned src, unsigned dst);
 
 protected:
-    const BackwardNFA* m_backwardNfa {};
+    BackwardNFAConstSharedPtr m_backwardNfa {};
 
 private:
     bool want_state(const spot::state* state) const final;

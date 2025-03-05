@@ -7,11 +7,12 @@
 class DenotOnTheFly: public Denot
 {
 public:
-    DenotOnTheFly(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
+    DenotOnTheFly(const PolyhedralSystemConstSharedPtr polyhedralSystem, BackwardNFAConstSharedPtr backwardNfa)
       : m_polyhedralSystem { polyhedralSystem }
       , m_backwardNfa { backwardNfa }
     {
-        m_maxRecursionDepth = backwardNfa.maxRecursiveDepth();
+        const auto& stats { m_backwardNfa->stats() };
+        m_maxRecursionDepth = 1 + stats.nfaConstructionStats.totalNumberPatches * 2;
     }
     ~DenotOnTheFly() override = default;
 
@@ -22,7 +23,7 @@ public:
 private:
     int m_iterations { };
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
-    const BackwardNFA& m_backwardNfa {};
+    BackwardNFAConstSharedPtr m_backwardNfa {};
     int m_maxRecursionDepth {};
 
     PowersetUniquePtr denot(

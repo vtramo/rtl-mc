@@ -8,9 +8,9 @@ PowersetUniquePtr DenotConcurrentV4::run()
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
-    for (const int finalState: m_backwardNfa.finalStates())
+    for (const int finalState: m_backwardNfa->acceptingStates())
     {
-        const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
+        const StateDenotation& finalStateDenotation { m_backwardNfa->stateDenotation(finalState) };
 
         PowersetConstSharedPtr denotationFinalState { finalStateDenotation.denotation() };
         PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
@@ -36,21 +36,21 @@ PowersetUniquePtr DenotConcurrentV4::denot(
     const bool isSing
 )
 {
-    if (m_backwardNfa.isInitialState(state))
+    if (m_backwardNfa->isInitialState(state))
         return std::make_unique<Powerset>(X);
 
-    const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
+    const StateDenotation& stateDenotation { m_backwardNfa->stateDenotation(state) };
     if (!stateDenotation.isSingular())
         addDisjunct(V, state, P);
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_spaceDimension, PPL::EMPTY) };
-    if (!m_backwardNfa.hasPredecessors(state))
+    if (!m_backwardNfa->hasSuccessors(state))
         return result;
 
-    const int totalPredecessors { m_backwardNfa.countPredecessors(state) };
+    const int totalPredecessors { m_backwardNfa->countSuccessors(state) };
     std::vector<std::pair<int, ReachPair>> predecessorReachPairs {};
     predecessorReachPairs.reserve(totalPredecessors * 2);
-    for (auto edgePredecessor: m_backwardNfa.predecessors(state))
+    for (auto edgePredecessor: m_backwardNfa->successors(state))
     {
         const int predecessor { static_cast<int>(edgePredecessor.dst) };
         const auto& predecessorVisitedPatches { getVisitedPatches(V, predecessor) };
@@ -103,7 +103,7 @@ std::pair<int, ReachPairs> DenotConcurrentV4::computeReachPairs(
     const Poly& X
 ) const
 {
-    const StateDenotation& predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
+    const StateDenotation& predecessorStateDenotation { m_backwardNfa->stateDenotation(predecessor) };
     PowersetUniquePtr A { PPLUtils::minus(*predecessorStateDenotation.denotation(), predecessorVisitedPatches) };
 
     ReachPairs reachPairs {

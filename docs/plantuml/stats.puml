@@ -6,7 +6,7 @@ package stats {
         -translationFormulaIntoTgba: TranslationFormulaIntoTgbaStats
         -translationTgbaIntoNfaStats: NfaStats
         -nfaOptimizations: NfaStats
-        -backwardNfaConstructionStats: BackwardNFAConstructionStats
+        -backwardNfaConstructionStats: FiniteAutomatonConstructionStats
     }
 
     struct TranslationFormulaIntoTgbaStats {
@@ -27,7 +27,7 @@ package stats {
         -sccInfo: std::optional<spot::scc_info>
     }
 
-    struct BackwardNFAConstructionStats {
+    struct FiniteAutomatonConstructionStats {
         --data members--
         -executionTimeSeconds: double
         -totalInitialStates: int
@@ -36,7 +36,7 @@ package stats {
         -totalFinalStates: int
         -maxNumberPatches: int
         -totalNumberPatches: int
-        -maxRecursiveDepth: int
+        -maxRecursiveDepthOnTheFly: int
         -sccInfo: std::optional<spot::scc_info>
     }
 
@@ -87,7 +87,7 @@ package stats {
     StatsFormatter --> "1" AutomatonStats
     StatsFormatter --> "1" DenotStats
     AutomatonStats #---> "1" TranslationFormulaIntoTgbaStats
-    AutomatonStats #---> "1" BackwardNFAConstructionStats
+    AutomatonStats #---> "1" FiniteAutomatonConstructionStats
     AutomatonStats #---> "2" NfaStats
 }
 

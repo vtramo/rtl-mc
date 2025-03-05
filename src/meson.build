@@ -4,7 +4,7 @@ gmpxx_dep = dependency('gmpxx', version: '>=6.3.0')
 antlr4_runtime_dep = dependency('antlr4-runtime', version: '>=4.13.0')
 spot_dep = dependency('libspot', version: '>=2.12.1')
 argparse_dep = dependency('argparse', fallback : ['argparse'], version: '>=3.1')
-spdlog = dependency('spdlog', fallback : ['spdlog'], version: '>=1.15.0')
+spdlog_dep = dependency('spdlog', fallback : ['spdlog'], version: '>=1.15.0')
 
 add_project_arguments('-DSPOT_WANT_STRONG_X', language: 'cpp')
 add_project_arguments('-DPPL_THREAD_SAFE=1', language: 'cpp')
@@ -22,7 +22,7 @@ project_dependencies = [
     antlr4_runtime_dep,
     spot_dep,
     argparse_dep,
-    spdlog
+    spdlog_dep
 ]
 
 project_source_files = ['main.cpp']

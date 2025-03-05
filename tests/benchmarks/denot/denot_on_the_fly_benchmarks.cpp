@@ -33,7 +33,12 @@ TEST_CASE("Denot on the fly benchmark GAP")
 
     DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(And({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-    BackwardNFA backwardNfa { discreteLtlFormula, std::move(polyhedralSystemFormulaDenotationMap), spot::postprocessor::optimization_level::High };
+    BackwardNFAConstSharedPtr backwardNfa {
+        BackwardNFA::buildAutomaton(
+            std::move(discreteLtlFormula),
+            std::move(polyhedralSystemFormulaDenotationMap)
+        )
+    };
     DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
     BENCHMARK("k=50")

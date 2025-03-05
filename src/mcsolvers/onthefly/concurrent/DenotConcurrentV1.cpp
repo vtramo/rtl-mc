@@ -4,16 +4,16 @@
 
 PowersetUniquePtr DenotConcurrentV1::run()
 {
-    const int totalFinalStates { m_backwardNfa.totalFinalStates() };
+    const int totalAcceptingStates { static_cast<int>(m_backwardNfa->totalAcceptingStates()) };
     constexpr int minPerThread { 1 };
-    const int maxThreads { (totalFinalStates + minPerThread - 1) / minPerThread };
+    const int maxThreads { (totalAcceptingStates + minPerThread - 1) / minPerThread };
     const int hardwareThreads { static_cast<int>(std::thread::hardware_concurrency()) };
     const int numThreads { std::min(hardwareThreads != 0 ? hardwareThreads : 2, maxThreads) };
-    const int finalStatesPerThread { totalFinalStates / numThreads };
+    const int finalStatesPerThread { totalAcceptingStates / numThreads };
 
     std::cout << "num threads: " << numThreads << std::endl;
     std::cout << "finalStatesPerThread: " << finalStatesPerThread << std::endl;
-    std::cout << "totalFinalStates: " << totalFinalStates << std::endl;
+    std::cout << "totalAcceptingStates: " << totalAcceptingStates << std::endl;
 
     std::vector results(numThreads, Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY });
     std::vector<std::thread> threads {};
@@ -25,7 +25,7 @@ PowersetUniquePtr DenotConcurrentV1::run()
         auto task {
             PPL::make_threadable(
                 std::bind(
-                    &DenotConcurrentV1::processFinalStates, this,
+                    &DenotConcurrentV1::processAcceptingStates, this,
                     start, end, std::ref(results[i]))
                 )
         };
@@ -34,7 +34,7 @@ PowersetUniquePtr DenotConcurrentV1::run()
     }
 
     std::cout << "final thread\n" << std::endl;
-    processFinalStates(start, totalFinalStates - 1, std::ref(results[numThreads - 1]));
+    processAcceptingStates(start, totalAcceptingStates - 1, std::ref(results[numThreads - 1]));
 
     for (auto& thread: threads)
         thread.join();
@@ -45,13 +45,13 @@ PowersetUniquePtr DenotConcurrentV1::run()
     return finalResult;
 }
 
-void DenotConcurrentV1::processFinalStates(const int start, const int end, Powerset& result)
+void DenotConcurrentV1::processAcceptingStates(const int start, const int end, Powerset& result)
 {
     for (int i = start; i < end; ++i)
     {
-        assert(i >= 0 && i < static_cast<int>(m_denotationFinalStates.size()) && "Final state index is out of range");
-        const int finalState { m_denotationFinalStates[i].first };
-        PowersetConstSharedPtr denotationFinalState { m_denotationFinalStates[i].second };
+        assert(i >= 0 && i < static_cast<int>(m_denotationAcceptingStates.size()) && "Accepting state index is out of range");
+        const int finalState { m_denotationAcceptingStates[i].first };
+        PowersetConstSharedPtr denotationFinalState { m_denotationAcceptingStates[i].second };
         for (Powerset::const_iterator patchesIt { denotationFinalState->begin() }; patchesIt != denotationFinalState->end(); ++patchesIt)
         {
             std::unordered_map<int, Powerset> V {};
@@ -74,20 +74,20 @@ Powerset DenotConcurrentV1::denot(
     assert(X.space_dimension() == m_polyhedralSystem->spaceDimension());
     assert(X.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
-    const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
+    const StateDenotation& stateDenotation { m_backwardNfa->stateDenotation(state) };
     assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
 
-    if (m_backwardNfa.isInitialState(state))
+    if (m_backwardNfa->isInitialState(state))
         return Powerset { X };
 
     if (!stateDenotation.isSingular())
         addDisjunct(V, state, P);
 
     Powerset result { m_polyhedralSystem->spaceDimension(), PPL::EMPTY };
-    for (const auto& edgePredecessor: m_backwardNfa.predecessors(state))
+    for (const auto& edgePredecessor: m_backwardNfa->successors(state))
     {
         int predecessor { static_cast<int>(edgePredecessor.dst) };
-        const StateDenotation& predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
+        const StateDenotation& predecessorStateDenotation { m_backwardNfa->stateDenotation(predecessor) };
         Powerset& visitedPowerset { getVisitedPowerset(V, predecessor) };
         assert(visitedPowerset.space_dimension() == m_polyhedralSystem->spaceDimension());
 

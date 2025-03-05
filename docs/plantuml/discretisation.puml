@@ -24,6 +24,12 @@ package discretisation {
         -DiscreteLtlFormula(spot::formula&& formula)
         --member functions--
         +formula() : spot::formula&
+        --friends--
+        -friend class BackwardNFA
+        -friend class DiscreteFiniteLtlFormula
+        -friend class FiniteLtlAutomaton
+        -friend class LtlAutomaton
+        -friend DiscreteLtlFormula discretiseToLtl(spot::formula&& formula)
         --static functions--
         -{static} discretise(spot::formula&& formula) : DiscreteLtlFormula
         -{static} discretiseFromFiniteLtl(spot::formula&& formula) : DiscreteLtlFormula

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
-#include <spot/twa/formula2bdd.hh>
 
 #include "spot_utils.h"
 #include "ppl_output.h"

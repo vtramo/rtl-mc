@@ -6,7 +6,7 @@
 class Tile
 {
 public:
-    Tile(Observable observable, PowersetSharedPtr patches)
+    Tile(Observable observable, PowersetConstSharedPtr patches)
         : m_observable { observable }
         , m_patches { patches }
     {

@@ -6,9 +6,9 @@ PowersetUniquePtr DenotConcurrentV3::run()
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
-    for (const int finalState: m_backwardNfa.finalStates())
+    for (const int finalState: m_backwardNfa->acceptingStates())
     {
-        const StateDenotation& finalStateDenotation { m_backwardNfa.stateDenotation(finalState) };
+        const StateDenotation& finalStateDenotation { m_backwardNfa->stateDenotation(finalState) };
 
         PowersetConstSharedPtr denotationFinalState { finalStateDenotation.denotation() };
         PowersetUniquePtr finalStateResult { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
@@ -41,23 +41,23 @@ PowersetUniquePtr DenotConcurrentV3::denot(
     assert(X.space_dimension() == m_polyhedralSystem->spaceDimension());
     assert(X.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
-    const StateDenotation& stateDenotation { m_backwardNfa.stateDenotation(state) };
+    const StateDenotation& stateDenotation { m_backwardNfa->stateDenotation(state) };
     assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
 
-    if (m_backwardNfa.isInitialState(state))
+    if (m_backwardNfa->isInitialState(state))
         return std::make_unique<Powerset>(X);
 
     if (!stateDenotation.isSingular())
         addDisjunct(V, state, P);
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
-    if (!m_backwardNfa.hasPredecessors(state))
+    if (!m_backwardNfa->hasSuccessors(state))
         return result;
 
     insertEmptyPredecessorVisitedPowersetsIfNotExist(V, state);
 
-    const int totalPredecessors { m_backwardNfa.countPredecessors(state) };
-    BackwardNFA::EdgeIterator edgeIterator { m_backwardNfa.predecessors(state) };
+    const int totalPredecessors { m_backwardNfa->countSuccessors(state) };
+    BackwardNFA::EdgeIterator edgeIterator { m_backwardNfa->successors(state) };
     const int myPredecessor { static_cast<int>(edgeIterator.begin()->dst) };
     std::vector<std::future<std::pair<int, ReachPairs>>> reachPairFutures {};
     if (totalPredecessors > 1)
@@ -149,7 +149,7 @@ std::pair<int, ReachPairs> DenotConcurrentV3::computeReachPairs(
     const Poly& X
 ) const
 {
-    const StateDenotation& predecessorStateDenotation { m_backwardNfa.stateDenotation(predecessor) };
+    const StateDenotation& predecessorStateDenotation { m_backwardNfa->stateDenotation(predecessor) };
 
     assert(predecessorVisitedRegion.space_dimension() == m_polyhedralSystem->spaceDimension());
 
@@ -168,7 +168,7 @@ std::pair<int, ReachPairs> DenotConcurrentV3::computeReachPairs(
 
 void DenotConcurrentV3::insertEmptyPredecessorVisitedPowersetsIfNotExist(std::unordered_map<int, Powerset>& V, const int state) const
 {
-    for (auto edgePredecessor: m_backwardNfa.predecessors(state))
+    for (auto edgePredecessor: m_backwardNfa->successors(state))
     {
         const int predecessor { static_cast<int>(edgePredecessor.dst) };
         V.try_emplace(predecessor, Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY });

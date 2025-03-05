@@ -1,10 +1,9 @@
 #include "BackwardNFADepthFirstSearch.h"
-#include "BackwardNFA.h"
 
-BackwardNFADepthFirstSearch::BackwardNFADepthFirstSearch(const BackwardNFA& backwardNfa)
-    : twa_reachable_iterator_depth_first(backwardNfa.twa())
+BackwardNFADepthFirstSearch::BackwardNFADepthFirstSearch(BackwardNFAConstSharedPtr backwardNfa)
+    : twa_reachable_iterator_depth_first(backwardNfa->twa())
 {
-    m_backwardNfa = &backwardNfa;
+    m_backwardNfa = backwardNfa;
 }
 
 void BackwardNFADepthFirstSearch::operator() ()
@@ -17,22 +16,20 @@ void BackwardNFADepthFirstSearch::run()
     spot::twa_reachable_iterator_depth_first::run();
 }
 
-bool BackwardNFADepthFirstSearch::wantState([[maybe_unused]] int state) const {
+bool BackwardNFADepthFirstSearch::wantState([[maybe_unused]] unsigned state) const {
     return true;
 }
 
-void BackwardNFADepthFirstSearch::processState([[maybe_unused]] int state) {
-    return;
+void BackwardNFADepthFirstSearch::processState([[maybe_unused]] const unsigned state) {
 }
 
-void BackwardNFADepthFirstSearch::processEdge([[maybe_unused]] int src, [[maybe_unused]] int dst)
+void BackwardNFADepthFirstSearch::processEdge([[maybe_unused]] const unsigned src, [[maybe_unused]] const unsigned dst)
 {
-    return;
 }
 
 bool BackwardNFADepthFirstSearch::want_state(const spot::state* state) const
 {
-    int stateId { static_cast<int>(m_backwardNfa->m_backwardNfa->state_number(state)) };
+    unsigned stateId { m_backwardNfa->m_automaton->state_number(state) };
     if (m_backwardNfa->m_dummyInitialState == stateId)
         return true;
     return wantState(stateId);
@@ -40,7 +37,7 @@ bool BackwardNFADepthFirstSearch::want_state(const spot::state* state) const
 
 void BackwardNFADepthFirstSearch::process_state(const spot::state* s, [[maybe_unused]] int n, [[maybe_unused]] spot::twa_succ_iterator* si)
 {
-    int stateId { static_cast<int>(m_backwardNfa->m_backwardNfa->state_number(s)) };
+    unsigned stateId { m_backwardNfa->m_automaton->state_number(s) };
     if (m_backwardNfa->m_dummyInitialState == stateId)
         return;
     processState(stateId);
@@ -54,13 +51,13 @@ void BackwardNFADepthFirstSearch::process_link(
     [[maybe_unused]] const spot::twa_succ_iterator* si
 )
 {
-    int srcStateId { static_cast<int>(m_backwardNfa->m_backwardNfa->state_number(in_s)) };
-    int dstStateId { static_cast<int>(m_backwardNfa->m_backwardNfa->state_number(out_s)) };
+    unsigned srcStateId { m_backwardNfa->m_automaton->state_number(in_s) };
+    unsigned dstStateId { m_backwardNfa->m_automaton->state_number(out_s) };
     if (srcStateId == m_backwardNfa->m_dummyInitialState) return;
     processEdge(srcStateId, dstStateId);
 }
 
-void BackwardNFADepthFirstSearch::push(const spot::state* s, int sn)
+void BackwardNFADepthFirstSearch::push(const spot::state* s, const int sn)
 {
     spot::twa_reachable_iterator_depth_first::push(s, sn);
 }

@@ -1,14 +1,14 @@
 #include "OmnidirectionalPolyhedralAbstraction.h"
-
 #include "TileExtractorFast.h"
 
-OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
-    : PolyhedralAbstraction { polyhedralSystem }
+OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(
+    PolyhedralSystemConstSharedPtr polyhedralSystem,
+    const std::string_view name
+)
+    : PolyhedralAbstraction(polyhedralSystem, name)
 {
     if (!polyhedralSystem->isOmnidirectionalFlow())
         throw std::invalid_argument("To construct an OmnidirectionalPolyhedralAbstraction, the flow must be omnidirectional!");
-
-    PolyhedralAbstraction::initializeGraph();
 
     std::vector tiles { extractTilesFromPolyhedralSystem(polyhedralSystem) };
     buildAbstraction(std::move(tiles));
@@ -43,7 +43,7 @@ void OmnidirectionalPolyhedralAbstraction::processTriple(
     TripleTileNode qTripleTileNode { tile1, tile2, tile3 };
     if (qTripleTileNode.isEmpty()) return;
 
-    unsigned qState { m_graph->new_state() };
+    unsigned qState { m_automaton->new_state() };
     m_tileNodes.insert(std::make_pair(qState, qTripleTileNode));
 
     unsigned pState { getStateByTileOrCreate(tile1, stateByTile) };
@@ -53,8 +53,8 @@ void OmnidirectionalPolyhedralAbstraction::processTriple(
     m_tileNodes.insert(std::make_pair(pState, pTileNode));
     m_tileNodes.insert(std::make_pair(rState, rTileNode));
 
-    m_graph->new_acc_edge(pState, qState, observableAsBdd(qTripleTileNode.observable()));
-    m_graph->new_acc_edge(qState, rState, observableAsBdd(rTileNode.observable()));
+    m_automaton->new_acc_edge(pState, qState, observableAsBdd(qTripleTileNode.observable()));
+    m_automaton->new_acc_edge(qState, rState, observableAsBdd(rTileNode.observable()));
 }
 
 unsigned OmnidirectionalPolyhedralAbstraction::getStateByTileOrCreate(
@@ -65,7 +65,7 @@ unsigned OmnidirectionalPolyhedralAbstraction::getStateByTileOrCreate(
     if (stateByTile.count(tile))
         return stateByTile[tile];
 
-    unsigned s { m_graph->new_state() };
+    unsigned s { m_automaton->new_state() };
     stateByTile[tile] = s;
     return s;
 }

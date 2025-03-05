@@ -1,145 +1,108 @@
 #include "FiniteSynchronousProduct.h"
 
+#include <spot/twaalgos/reachiter.hh>
+
 FiniteSynchronousProduct::FiniteSynchronousProduct(
     FiniteLtlAutomatonConstSharedPtr nfa,
-    OmnidirectionalPolyhedralAbstractionConstSharedPtr abstraction
-)
-    : m_nfa { nfa }
-    , m_abstraction { abstraction }
+    OmnidirectionalPolyhedralAbstractionConstSharedPtr abstraction,
+    const std::string_view name
+) : Automaton(name)
+  , m_nfa { nfa }
+  , m_abstraction { abstraction }
 {
-    spot::const_twa_graph_ptr automatonTwa { nfa->twa() };
-    spot::const_twa_graph_ptr abstractionTwa { abstraction->twa() };
-    m_synchronousProduct = spot::product(automatonTwa, abstractionTwa);
-    m_productStatePair = m_synchronousProduct->get_named_prop<spot::product_states>("product-states");
     buildAutomaton();
 }
 
 void FiniteSynchronousProduct::buildAutomaton()
 {
-    class CollectStatePropertiesDfs: public spot::twa_reachable_iterator_depth_first
+    m_automaton = std::make_shared<spot::twa_graph>(m_nfa->twa()->get_dict());
+    m_automaton->prop_state_acc(spot::trival { true });
+    m_automaton->set_acceptance(m_nfa->twa()->get_acceptance());
+    m_productStatePair = std::vector<std::pair<unsigned, unsigned>>(m_nfa->totalStates() * m_abstraction->totalStates());
+    std::vector stateProductByPair(m_nfa->totalStates(), std::vector(m_abstraction->totalStates(), -1));
+
+    for (unsigned nfaState { 0 }; nfaState < m_nfa->totalStates(); ++nfaState)
     {
-    public:
-        explicit CollectStatePropertiesDfs(FiniteSynchronousProduct* finiteSynchronousProduct)
-            : twa_reachable_iterator_depth_first(finiteSynchronousProduct->twa())
+        for (unsigned abstractionState { 0 }; abstractionState < m_abstraction->totalStates(); ++abstractionState)
         {
-            m_finiteSynchronousProduct = finiteSynchronousProduct;
+            if (stateDenotationContainsAbstractionPoints(nfaState, abstractionState))
+            {
+                unsigned productState { m_automaton->new_state() };
+                m_productStatePair[productState] = std::make_pair(nfaState, abstractionState);
+                stateProductByPair[nfaState][abstractionState] = productState;
+                if (m_nfa->isInitialState(nfaState)) m_initialStates.insert(productState);
+                if (m_nfa->isAcceptingState(nfaState)) m_acceptingStates.insert(productState);
+            }
         }
+    }
 
-        void process_state(const spot::state* state, const int _, spot::twa_succ_iterator* __) override
+    for (unsigned productState { 0 }; productState < m_automaton->num_states(); ++productState)
+    {
+        auto [nfaState, abstractionState] = m_productStatePair[productState];
+        for (auto nfaEdge: m_nfa->successors(nfaState))
         {
-            unsigned productStateNumber { m_finiteSynchronousProduct->twa()->state_number(state) };
-            auto [nfaState, abstractionState] { m_finiteSynchronousProduct->m_productStatePair->at(productStateNumber) };
-
-            PowersetConstSharedPtr productStateDenotation { m_finiteSynchronousProduct->m_abstraction->points(abstractionState) };
-            m_finiteSynchronousProduct->m_denotationByState[productStateNumber] = productStateDenotation;
-
-            if (m_finiteSynchronousProduct->m_nfa->isInitialState(nfaState))
-                m_finiteSynchronousProduct->m_initialStates.insert(productStateNumber);
-
-            if (m_finiteSynchronousProduct->m_nfa->isFinalState(nfaState))
-                m_finiteSynchronousProduct->m_finalStates.insert(productStateNumber);
+            for (auto abstractionEdge: m_abstraction->successors(abstractionState))
+            {
+                int productStateSuccessor { stateProductByPair[nfaEdge.dst][abstractionEdge.dst] };
+                if (productStateSuccessor != -1)
+                {
+                    m_automaton->new_edge(productState, productStateSuccessor, nfaEdge.cond, nfaEdge.acc);
+                }
+            }
         }
-
-    protected:
-        void pop() override
-        {
-            spot::twa_reachable_iterator_depth_first::pop();
-        }
-
-    private:
-        FiniteSynchronousProduct* m_finiteSynchronousProduct {};
-    };
-
-    CollectStatePropertiesDfs collectInitialFinalDenotationStatesDfs { this };
-    collectInitialFinalDenotationStatesDfs.run();
+    }
 }
 
-int FiniteSynchronousProduct::totalStates() const
+bool FiniteSynchronousProduct::stateDenotationContainsAbstractionPoints(
+    const unsigned nfaState,
+    const unsigned abstractionState
+)
 {
-    return static_cast<int>(m_synchronousProduct->num_states());
+    const auto& nfaStateDenotation { m_nfa->stateDenotation(nfaState) };
+    return nfaStateDenotation.denotation()->contains(*m_abstraction->points(abstractionState));
 }
 
-int FiniteSynchronousProduct::totalFinalStates() const
+unsigned FiniteSynchronousProduct::totalAcceptingStates() const
 {
-    return m_finalStates.size();
+    return m_acceptingStates.size();
 }
 
-int FiniteSynchronousProduct::totalInitialStates() const
+unsigned FiniteSynchronousProduct::totalInitialStates() const
 {
     return m_initialStates.size();
 }
 
-int FiniteSynchronousProduct::totalEdges() const
-{
-    return static_cast<int>(m_synchronousProduct->num_edges());
-}
-
-const std::unordered_set<int>& FiniteSynchronousProduct::initialStates() const
+const std::unordered_set<unsigned>& FiniteSynchronousProduct::initialStates() const
 {
     return m_initialStates;
 }
 
-bool FiniteSynchronousProduct::isInitialState(const unsigned state) const
+unsigned FiniteSynchronousProduct::isInitialState(const unsigned state) const
 {
     return m_initialStates.count(state);
 }
 
-bool FiniteSynchronousProduct::isFinalState(const unsigned state) const
+bool FiniteSynchronousProduct::isAcceptingState(const unsigned state) const
 {
-    return m_finalStates.count(state) > 0;
+    return m_acceptingStates.count(state) > 0;
 }
 
-const std::unordered_set<int>& FiniteSynchronousProduct::finalStates() const
+const std::unordered_set<unsigned>& FiniteSynchronousProduct::acceptingStates() const
 {
-    return m_finalStates;
-}
-
-bool FiniteSynchronousProduct::hasSuccessors(const unsigned state) const
-{
-    assert(static_cast<int>(state) < totalStates() && "State is out of range!");
-
-    auto edgeStorages { m_synchronousProduct->out(state) };
-    return edgeStorages.begin() != edgeStorages.end();
-}
-
-FiniteSynchronousProduct::EdgeIterator FiniteSynchronousProduct::successors(const unsigned state) const
-{
-    assert(static_cast<int>(state) < totalStates() && "State is out of range!");
-
-    return m_synchronousProduct->out(state);
-}
-
-int FiniteSynchronousProduct::countSuccessors(const unsigned state) const
-{
-    const EdgeIterator& edgeIterator { m_synchronousProduct->out(state) };
-    return std::distance(edgeIterator.begin(), edgeIterator.end());
+    return m_acceptingStates;
 }
 
 PowersetConstSharedPtr FiniteSynchronousProduct::points(const unsigned state) const
 {
-    assert(static_cast<int>(state) < totalStates() && "State is out of range!");
+    assertThatStateIsInRange(state);
 
-    return m_denotationByState.at(state);
+    const auto [nfaState, abstractionState] { m_productStatePair[state] };
+    return m_abstraction->points(abstractionState);
 }
 
-std::pair<int, int> FiniteSynchronousProduct::productStatePair(const unsigned state) const
+std::pair<unsigned, unsigned> FiniteSynchronousProduct::productStatePair(const unsigned state) const
 {
-    assert(static_cast<int>(state) < totalStates() && "State is out of range!");
+    assertThatStateIsInRange(state);
 
-    return m_productStatePair->at(state);
-}
-
-void FiniteSynchronousProduct::printDotFormat(std::ostream& os) const
-{
-    spot::print_dot(os, m_synchronousProduct);
-}
-
-spot::const_twa_graph_ptr FiniteSynchronousProduct::twa()
-{
-    return m_synchronousProduct;
-}
-
-spot::twa_graph_ptr FiniteSynchronousProduct::transpose() const
-{
-    return SpotUtils::transpose(m_synchronousProduct);
+    return m_productStatePair.at(state);
 }

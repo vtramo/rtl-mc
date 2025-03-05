@@ -19,7 +19,7 @@ BackwardNFAPermutator::PermutedBackwardNFAIterator::PermutedBackwardNFAIterator(
 
 BackwardNFAPermutator::PermutedBackwardNFAIterator::PermutedBackwardNFAIterator(
     const BackwardNFAPermutator& backwardNfaPermutator,
-    std::vector<int> states
+    std::vector<unsigned> states
 )
     : m_backwardNfaPermutator { backwardNfaPermutator }
     , m_permutedStates { states }
@@ -67,7 +67,7 @@ int BackwardNFAPermutator::PermutedBackwardNFAIterator::totalPermutations() cons
     return m_totalPermutations;
 }
 
-const std::unordered_map<int, int>& BackwardNFAPermutator::PermutedBackwardNFAIterator::permutationMap()
+const std::unordered_map<unsigned, unsigned>& BackwardNFAPermutator::PermutedBackwardNFAIterator::permutationMap()
 {
     return m_permutationMap;
 }
@@ -98,14 +98,14 @@ BackwardNFAPermutator::PermutedBackwardNFAIterator BackwardNFAPermutator::Permut
     return retVal;
 }
 
-std::unordered_map<int, int> BackwardNFAPermutator::PermutedBackwardNFAIterator::createPermutationMap() const
+std::unordered_map<unsigned, unsigned> BackwardNFAPermutator::PermutedBackwardNFAIterator::createPermutationMap() const
 {
-    std::unordered_map<int, int> permutation {};
-    int totalStates { static_cast<int>(m_originalStates.size()) };
+    std::unordered_map<unsigned, unsigned> permutation {};
+    unsigned totalStates { static_cast<unsigned>(m_originalStates.size()) };
     permutation.reserve(totalStates);
-    for (int i { 0 }; i < totalStates; ++i) {
-        const int state { m_originalStates[i] };
-        const int replacingState { m_permutedStates[i] };
+    for (unsigned i { 0 }; i < totalStates; ++i) {
+        const unsigned state { m_originalStates[i] };
+        const unsigned replacingState { m_permutedStates[i] };
         permutation[state] = replacingState;
     }
     return permutation;
@@ -136,16 +136,16 @@ bool BackwardNFAPermutator::PermutedBackwardNFAIterator::operator!= (const Permu
 }
 
 BackwardNFAPermutator::PermutedBackwardNFAIterator BackwardNFAPermutator::generatePermutations(
-    const std::unordered_set<int>& states
+    const std::unordered_set<unsigned>& states
 ) const
 {
     checkStates(states);
-    std::vector<int> statesVector(states.size());
+    std::vector<unsigned> statesVector(states.size());
     std::copy(states.begin(), states.end(), statesVector.begin());
     return PermutedBackwardNFAIterator { *this, statesVector };
 }
 
-void BackwardNFAPermutator::checkStates(const std::unordered_set<int>& states) const
+void BackwardNFAPermutator::checkStates(const std::unordered_set<unsigned>& states) const
 {
     if (states.size() < 2)
         throw std::invalid_argument("You must specify at least two states!");
@@ -155,7 +155,7 @@ void BackwardNFAPermutator::checkStates(const std::unordered_set<int>& states) c
         if (m_backwardNfa.isInitialState(state))
             throw std::invalid_argument(fmt::format("You can't replace an initial state! (state: {})", state));
 
-        if (state < 0 || state >= m_backwardNfa.totalStates())
+        if (state >= m_backwardNfa.totalStates())
         {
             throw std::invalid_argument(
                 fmt::format(
@@ -168,18 +168,18 @@ void BackwardNFAPermutator::checkStates(const std::unordered_set<int>& states) c
     }
 }
 
-std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(const std::unordered_map<int, int>& swapStatesMap) const
+std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(const std::unordered_map<unsigned, unsigned>& swapStateMap) const
 {
-    return swapStates(swapStatesMap, true);
+    return swapStates(swapStateMap, true);
 }
 
-std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(std::unordered_map<int, int>&& swapStateMap) const
+std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(std::unordered_map<unsigned, unsigned>&& swapStateMap) const
 {
     return swapStates(swapStateMap);
 }
 
 std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(
-    const std::unordered_map<int, int>& permutationStates,
+    const std::unordered_map<unsigned, unsigned>& permutationStates,
     const bool checkSwap
 ) const
 {
@@ -192,46 +192,46 @@ std::unique_ptr<BackwardNFA> BackwardNFAPermutator::swapStates(
     const spot::bdd_dict_ptr backwardNfaDict { std::make_shared<spot::bdd_dict>() };
     permutedTwa = std::make_shared<spot::twa_graph>(backwardNfaDict);
     permutedTwa->prop_state_acc(spot::trival { true });
-    permutedTwa->set_acceptance(m_backwardNfa.m_backwardNfa->get_acceptance());
-    permutedTwa->new_states(m_backwardNfa.m_backwardNfa->num_states());
+    permutedTwa->set_acceptance(m_backwardNfa.m_automaton->get_acceptance());
+    permutedTwa->new_states(m_backwardNfa.m_automaton->num_states());
 
-    std::unordered_set<int> initialStates {};
-    std::unordered_set<int> finalStates {};
-    std::unordered_map<int, StateDenotation> stateDenotationById {};
+    std::unordered_set<unsigned> initialStates {};
+    std::unordered_set<unsigned> finalStates {};
+    std::unordered_map<unsigned, StateDenotation> stateDenotationById {};
     stateDenotationById.reserve(m_backwardNfa.totalStates());
-    for (int state { 0 }; state < m_backwardNfa.totalStates(); state++)
+    for (unsigned state { 0 }; state < m_backwardNfa.totalStates(); state++)
     {
-        int targetState { replacingState(state, permutationStates, inversePermutationStates) };
+        unsigned targetState { replacingState(state, permutationStates, inversePermutationStates) };
         StateDenotation stateDenotation { m_backwardNfa.m_stateDenotationById.at(targetState) };
         stateDenotationById.emplace(state, stateDenotation);
         if (m_backwardNfa.isInitialState(targetState)) initialStates.insert(state);
-        const bool isFinalState { m_backwardNfa.isFinalState(targetState) };
+        const bool isFinalState { m_backwardNfa.isAcceptingState(targetState) };
         if (isFinalState) finalStates.insert(state);
-        for (auto& edge: m_backwardNfa.predecessors(targetState))
+        for (auto& edge: m_backwardNfa.successors(targetState))
         {
             const int predecessor { static_cast<int>(edge.dst) };
-            const int replacingPredecessor { replacingState(predecessor, permutationStates, inversePermutationStates) };
+            const unsigned replacingPredecessor { replacingState(predecessor, permutationStates, inversePermutationStates) };
             permutedTwa->new_acc_edge(state, replacingPredecessor, bdd_true(), isFinalState);
         }
     }
 
-    const int dummyInitialState { m_backwardNfa.m_dummyInitialState };
+    const unsigned dummyInitialState { m_backwardNfa.m_dummyInitialState };
     for (const int finalState: finalStates)
         permutedTwa->new_acc_edge(dummyInitialState, finalState, bdd_true(), false);
     permutedTwa->set_init_state(dummyInitialState);
 
     std::unique_ptr permutedBackwardNfa { std::make_unique<BackwardNFA>(m_backwardNfa) };
-    permutedBackwardNfa->m_backwardNfa = permutedTwa;
+    permutedBackwardNfa->m_automaton = permutedTwa;
     permutedBackwardNfa->m_initialStates = initialStates;
-    permutedBackwardNfa->m_finalStates = finalStates;
+    permutedBackwardNfa->m_acceptingStates = finalStates;
     permutedBackwardNfa->m_stateDenotationById = stateDenotationById;
     return permutedBackwardNfa;
 }
 
-int BackwardNFAPermutator::replacingState(
-    const int state,
-    const std::unordered_map<int, int>& swapStateMap,
-    const std::unordered_map<int, int>& inverseSwapStateMap
+unsigned BackwardNFAPermutator::replacingState(
+    const unsigned state,
+    const std::unordered_map<unsigned, unsigned>& swapStateMap,
+    const std::unordered_map<unsigned, unsigned>& inverseSwapStateMap
 )
 {
     return swapStateMap.count(state) == 1
@@ -241,14 +241,14 @@ int BackwardNFAPermutator::replacingState(
             : state;
 }
 
-void BackwardNFAPermutator::checkSwapStateMapValidity(const std::unordered_map<int, int>& swapStateMap) const
+void BackwardNFAPermutator::checkSwapStateMapValidity(const std::unordered_map<unsigned, unsigned>& swapStateMap) const
 {
     for (const auto& [state, replacingState]: swapStateMap)
     {
         if (m_backwardNfa.isInitialState(state))
             throw std::invalid_argument(fmt::format("You can't replace an initial state! (state: {})", state));
 
-        if (state < 0 || state >= m_backwardNfa.totalStates())
+        if (state >= m_backwardNfa.totalStates())
         {
             throw std::invalid_argument(
                 fmt::format(
@@ -259,7 +259,7 @@ void BackwardNFAPermutator::checkSwapStateMapValidity(const std::unordered_map<i
             );
         }
 
-        if (replacingState < 0 || replacingState >= m_backwardNfa.totalStates())
+        if (replacingState >= m_backwardNfa.totalStates())
         {
             throw std::invalid_argument(
                 fmt::format(
@@ -283,9 +283,10 @@ void BackwardNFAPermutator::checkSwapStateMapValidity(const std::unordered_map<i
     }
 }
 
-std::unordered_map<int, int> BackwardNFAPermutator::invertSwapStateMap(const std::unordered_map<int, int>& swapStateMap)
+std::unordered_map<unsigned, unsigned> BackwardNFAPermutator::invertSwapStateMap(
+    const std::unordered_map<unsigned, unsigned>& swapStateMap)
 {
-    std::unordered_map<int, int> inverseSwapStateMap {};
+    std::unordered_map<unsigned, unsigned> inverseSwapStateMap {};
     inverseSwapStateMap.reserve(swapStateMap.size());
     for (auto [key, value]: swapStateMap)
         inverseSwapStateMap[value] = key;

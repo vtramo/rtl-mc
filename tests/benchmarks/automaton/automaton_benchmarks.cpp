@@ -22,6 +22,6 @@ TEST_CASE("Automaton construction benchmarks", "[benchmark][automaton]")
     BENCHMARK("Automaton construction benchmark 1")
     {
         PolyhedralSystemFormulaDenotationMap PolyhedralSystemLabelDenotationMap { polyhedralSystemPtr };
-        BackwardNFA backwardNfa { discretisedLtlFormula, std::move(PolyhedralSystemLabelDenotationMap) };
+        BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(discretisedLtlFormula, std::move(PolyhedralSystemLabelDenotationMap)) };
     };
 }

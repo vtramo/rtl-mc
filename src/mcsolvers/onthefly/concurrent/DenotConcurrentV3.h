@@ -9,9 +9,9 @@
 class DenotConcurrentV3: public Denot
 {
 public:
-    DenotConcurrentV3(const PolyhedralSystemConstSharedPtr polyhedralSystem, const BackwardNFA& backwardNfa)
-      : m_polyhedralSystem { polyhedralSystem }
-    , m_backwardNfa { backwardNfa }
+    DenotConcurrentV3(const PolyhedralSystemConstSharedPtr polyhedralSystem, BackwardNFAConstSharedPtr backwardNfa)
+        : m_polyhedralSystem { polyhedralSystem }
+        , m_backwardNfa { backwardNfa }
     {}
     ~DenotConcurrentV3() override = default;
 
@@ -20,7 +20,7 @@ public:
 private:
     int m_iterations { };
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
-    const BackwardNFA& m_backwardNfa {};
+    BackwardNFAConstSharedPtr m_backwardNfa {};
 
     PowersetUniquePtr denot(
         int state,

@@ -7,31 +7,22 @@ struct "std::hash<Observable>" as ObservableHash {
 
 package abstractions {
         abstract PolyhedralAbstraction {
-            --type aliases--
-            +using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
             --data members--
             #m_polyhedralSystem: PolyhedralSystemConstSharedPtr
-            #m_graph: spot::twa_graph_ptr
             #m_spaceDimension: PPL::dimension_type
             --constructors--
-            +PolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
+            +PolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::string_view name)
             +virtual ~PolyhedralAbstraction() = default
             --member functions--
             +virtual points(unsigned state): PowersetConstSharedPtr
             +virtual observable(unsigned state): const Observable&
             +virtual initialState(): unsigned
-            +virtual totalStates(): unsigned
-            +virtual totalEdges(): unsigned
-            +virtual successors(const unsigned state): EdgeIterator
-            +virtual hasSuccessors(const unsigned state): bool
-            +virtual countSuccessors(const unsigned state): int
             +virtual spaceDimension(): PPL::dimension_type
-            +virtual twa(): spot::const_twa_graph_ptr
-            +printDotFormat(std::ostream& os): void
-            #virtual initializeGraph(): void
             #virtual observableAsBdd(const Observable& observable): bdd
-            #virtual assertThatStateIsInRange(const unsigned state): void
         }
+        abstract Automaton {}
+
+        PolyhedralAbstraction --|> Automaton
 
         package general {
             class ObservablePatch {
@@ -123,11 +114,9 @@ package abstractions {
                 --data members--
                 -m_nodeByState: std::unordered_map<unsigned, ObservableTraversalNode>
                 --constructors--
-                +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
-                +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::vector<Observable>&& observables, int maxObservablePatchSequenceLength)
+                +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::string_view name = "GeneralPolyhedralAbstraction")
+                +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::vector<Observable>&& observables, int maxObservablePatchSequenceLength, std::string_view name = "GeneralPolyhedralAbstraction")
                 --member function--
-                +points(unsigned state): PowersetConstSharedPtr
-                +observable(unsigned state): const Observable&
                 -buildAbstraction(int maxObservablePatchSequenceLength, std::vector<Observable>&& observables): void
                 -createStates(const ObservableTraversalNode& singTravNode, const ObservableTraversalNode& openTravNode): SingOpenStatePair
                 -createEdges(SingOpenStatePair singOpenStatePair, const SingOpenStatePair& adjSingOpenStatePair): void
@@ -166,7 +155,7 @@ package abstractions {
             --constructors--
             +Tile(const Tile& other)
             +Tile(Tile&& other)
-            +Tile(Observable observable, PowersetSharedPtr patches)
+            +Tile(Observable observable, PowersetConstSharedPtr patches)
             +Tile(Observable observable, const Powerset& patches)
             --member functions--
             +observable(): const Observable&
@@ -212,8 +201,36 @@ package abstractions {
                 -initializePartialTileList(const Observable& observable)
             }
 
+            class TileExtractorFast {
+                --data members--
+                 -m_powersetLinkedList: PowersetLinkedList
+                --constructors--
+                 +TileExtractorFast()
+                --member functions--
+                -buildPowersetLinkedList(const Observable& observable)
+                --static functions--
+                {static}-bool merge(const PowersetLinkedList::NodePtr& i, const PowersetLinkedList::NodePtr& j)
+            }
+
+            struct PowersetLinkedList {
+                --type aliases--
+                using NodePtr = std::shared_ptr<Node>
+                --data members--
+                #head: NodePtr
+            }
+
+            struct Node {
+                --data members--
+                -powerset: PowersetSharedPtr
+                -next: NodePtr
+                -prev: NodePtr
+            }
+
             TileExtractorComplex --|> TileExtractor
             TileExtractorList --|> TileExtractor
+            TileExtractorFast --|> TileExtractor
+            TileExtractorFast +--> PowersetLinkedList
+            PowersetLinkedList --> "*" Node
         }
 
         class TileNode {
@@ -266,10 +283,8 @@ package abstractions {
             --data members--
             -m_tileNodes: std::unordered_map<unsigned, std::variant<TileNode, TripleTileNode>>
             --constructors--
-            +OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
+            +OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::string_view name)
             --member functions--
-            +observable(unsigned state): const Observable&
-            +points(unsigned state): PowersetConstSharedPtr
             -buildAbstraction(std::vector<Tile>&& tiles): void
             -processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile): void
             -getStateByTileOrCreate(const Tile& tile, std::unordered_map<Tile, unsigned>& stateByTile): unsigned

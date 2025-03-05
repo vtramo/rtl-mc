@@ -33,21 +33,21 @@ struct AutomatonStats
         int totalFinalStates {};
     };
 
-    struct BackwardNFAConstructionStats
+    struct FiniteAutomatonConstructionStats
     {
         double executionTimeSeconds {};
         int totalInitialStates {};
         int totalStates {};
         int totalEdges {};
-        int totalFinalStates {};
+        int totalAcceptingStates {};
         int maxNumberPatches {};
         int totalNumberPatches {};
-        int maxRecursiveDepth {};
+        int maxRecursiveDepthOnTheFly {};
         std::optional<spot::scc_info> sccInfo {};
     };
 
     TranslationFormulaIntoTgbaStats translationFormulaIntoTgba {};
     NfaStats translationTgbaIntoNfaStats {};
     NfaStats nfaOptimizations {};
-    BackwardNFAConstructionStats backwardNfaConstructionStats {};
+    FiniteAutomatonConstructionStats nfaConstructionStats {};
 };
