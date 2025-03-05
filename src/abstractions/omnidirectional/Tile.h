@@ -10,6 +10,7 @@ public:
         : m_observable { observable }
         , m_patches { patches }
     {
+        assert(m_observable.interpretation()->contains(*m_patches));
         computeClosurePatches();
         computeHashCode();
     }
@@ -18,6 +19,7 @@ public:
         : m_observable { observable }
         , m_patches { std::make_shared<Powerset>(patches) }
     {
+        assert(m_observable.interpretation()->contains(*m_patches));
         computeClosurePatches();
         computeHashCode();
     }
