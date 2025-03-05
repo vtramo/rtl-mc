@@ -413,4 +413,23 @@ namespace PPLUtils {
         }
         return std::make_unique<Poly>(strictConstraints);
     }
+
+    PowersetUniquePtr border(const Poly& p, const Poly& q)
+    {
+        Poly closureP { p };
+        closureP.topological_closure_assign();
+
+        Poly closureQ { q };
+        closureQ.topological_closure_assign();
+
+        PolyUniquePtr pIntersectClosureQ { PPLUtils::intersect(p, closureQ) };
+        PolyUniquePtr qIntersectClosureP { PPLUtils::intersect(q, std::move(closureP)) };
+        return PPLUtils::fusion(*pIntersectClosureQ, *qIntersectClosureP);
+    }
+
+    bool areAdjacent(const Poly& p, const Poly& q)
+    {
+        PowersetUniquePtr borderPQ { border(p, q) };
+        return !borderPQ->is_empty();
+    }
 }

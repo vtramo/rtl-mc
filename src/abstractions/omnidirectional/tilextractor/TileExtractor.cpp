@@ -77,7 +77,7 @@ Tile TileExtractor::findFirstTile()
             if (otherPatch == currentPatch) continue;
             if (m_patchesIdInFirstTile.count(patchId)) continue;
 
-            if (areAdjacent(otherPatch, currentPatch))
+            if (PPLUtils::areAdjacent(otherPatch, currentPatch))
             {
                 tilePatches->add_disjunct(otherPatch);
                 todoPatches.push(otherPatch);
@@ -124,7 +124,7 @@ std::vector<Tile> TileExtractor::findRemainingTiles()
             todoPatches.pop();
             for (auto otherPatchIterator { globalTodoPatches.begin() }; otherPatchIterator != globalTodoPatches.end();)
             {
-                if (areAdjacent(*otherPatchIterator, currentTodoPatch))
+                if (PPLUtils::areAdjacent(*otherPatchIterator, currentTodoPatch))
                 {
                     tilePatches->add_disjunct(*otherPatchIterator);
                     todoPatches.push(*otherPatchIterator);
@@ -138,23 +138,4 @@ std::vector<Tile> TileExtractor::findRemainingTiles()
     }
 
     return tiles;
-}
-
-PowersetUniquePtr TileExtractor::border(const Poly& p, const Poly& q)
-{
-    Poly closureP { p };
-    closureP.topological_closure_assign();
-
-    Poly closureQ { q };
-    closureQ.topological_closure_assign();
-
-    PolyUniquePtr pIntersectClosureQ { PPLUtils::intersect(p, closureQ) };
-    PolyUniquePtr qIntersectClosureP { PPLUtils::intersect(q, std::move(closureP)) };
-    return PPLUtils::fusion(*pIntersectClosureQ, *qIntersectClosureP);
-}
-
-bool TileExtractor::areAdjacent(const Poly& p, const Poly& q)
-{
-    PowersetUniquePtr borderPQ { border(p, q) };
-    return !borderPQ->is_empty();
 }
