@@ -182,21 +182,38 @@ package abstractions {
             +operator<< (std::ostream& os, const Tile& tile): std::ostream&
         }
 
-        class TileExtractor {
-             --data members--
-             -m_currentObservable: const Observable*
-             -m_patchesIndexesInFirstTile: std::unordered_set<int>
-             --constructors--
-             +TileExtractor()
-             --member functions--
-             +extractTiles(const std::vector<Observable>& observables): std::vector<Tile>
-             +extractTiles(const Observable& observable): std::vector<Tile>
-             -findFirstTile(): Tile
-             -collectPatchesNotInFirstTile(): std::list<std::reference_wrapper<const Poly>>
-             -findRemainingTiles(): std::vector<Tile>
-             --static functions--
-             {static} -border(const Poly& p, const Poly& q): PowersetUniquePtr
-             {static} -areAdjacent(const Poly& p, const Poly& q): bool
+        package tilextractor {
+            abstract TileExtractor {
+                --destructors--
+                virtual ~TileExtractor() = default
+                --member functions--
+                +virtual std::vector<Tile> extractTiles(const std::vector<Observable>& observables)
+                +virtual std::vector<Tile> extractTiles(const Observable& observable) = 0
+            }
+
+            class TileExtractorComplex {
+                 --data members--
+                 -m_currentObservable: const Observable*
+                 -m_patchesIndexesInFirstTile: std::unordered_set<int>
+                 --constructors--
+                 +TileExtractorComplex()
+                 --member functions--
+                 -findFirstTile(): Tile
+                 -collectPatchesNotInFirstTile(): std::list<std::reference_wrapper<const Poly>>
+                 -findRemainingTiles(): std::vector<Tile>
+            }
+
+            class TileExtractorList {
+                 --data members--
+                 -m_partialTileList: std::list<PowersetSharedPtr>
+                 --constructors--
+                 +TileExtractorList()
+                 --member functions--
+                -initializePartialTileList(const Observable& observable)
+            }
+
+            TileExtractorComplex --|> TileExtractor
+            TileExtractorList --|> TileExtractor
         }
 
         class TileNode {
