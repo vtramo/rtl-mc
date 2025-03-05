@@ -1,6 +1,5 @@
 #include "BackwardNFAPermutator.h"
 
-#include <catch2/generators/catch_generators.hpp>
 
 BackwardNFAPermutator::BackwardNFAPermutator(const BackwardNFA& backwardNfa)
     : m_backwardNfa { backwardNfa }
