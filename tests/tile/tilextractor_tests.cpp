@@ -1,3 +1,4 @@
+#include <TileExtractorFast.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
@@ -64,6 +65,28 @@ TEST_CASE("Extract Tiles from Observables")
             TileExtractorList tileExtractorList {};
             std::vector tiles { tileExtractorList.extractTiles(observables) };
 
+            REQUIRE(tiles.size() == 2);
+            REQUIRE_THAT(
+                tiles,
+                Catch::Matchers::UnorderedEquals(
+                    std::vector {
+                        Tile {
+                            Observable { AP({"p"}), intersect(p, notQ), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                            p
+                        },
+                        Tile {
+                            Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                            q
+                        },
+                    }
+                )
+            );
+        }
+
+        SECTION("TileExtractorFast")
+        {
+            TileExtractorFast tileExtractorFast {};
+            std::vector tiles { tileExtractorFast.extractTiles(observables) };
 
             REQUIRE(tiles.size() == 2);
             REQUIRE_THAT(
@@ -151,6 +174,19 @@ TEST_CASE("Extract Tiles from Observables")
                 Catch::Matchers::UnorderedEquals(std::vector { expectedTile1, expectedTile2 })
             );
         }
+
+        SECTION("TileExtractorFast")
+        {
+            TileExtractorFast tileExtractorFast {};
+            std::vector tiles { tileExtractorFast.extractTiles(observable) };
+
+
+            REQUIRE(tiles.size() == 2);
+            REQUIRE_THAT(
+                tiles,
+                Catch::Matchers::UnorderedEquals(std::vector { expectedTile1, expectedTile2 })
+            );
+        }
     }
 
     SECTION(
@@ -223,6 +259,25 @@ TEST_CASE("Extract Tiles from Observables")
         {
             TileExtractorList tileExtractorList {};
             std::vector tiles { tileExtractorList.extractTiles(observable) };
+
+
+            REQUIRE(tiles.size() == 5);
+            REQUIRE_THAT(
+                tiles,
+                Catch::Matchers::UnorderedEquals(std::vector {
+                    expectedTile1,
+                    expectedTile2,
+                    expectedTile3,
+                    expectedTile4,
+                    expectedTile5
+                })
+            );
+        }
+
+        SECTION("TileExtractorFast")
+        {
+            TileExtractorFast tileExtractorFast {};
+            std::vector tiles { tileExtractorFast.extractTiles(observable) };
 
 
             REQUIRE(tiles.size() == 5);

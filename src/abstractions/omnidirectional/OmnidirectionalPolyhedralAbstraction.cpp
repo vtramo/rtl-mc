@@ -1,8 +1,6 @@
 #include "OmnidirectionalPolyhedralAbstraction.h"
 
-#include <TileExtractorList.h>
-
-#include "TileExtractorComplex.h"
+#include "TileExtractorFast.h"
 
 OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem)
     : PolyhedralAbstraction { polyhedralSystem }
@@ -19,7 +17,7 @@ OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(Polyh
 std::vector<Tile> OmnidirectionalPolyhedralAbstraction::extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem)
 {
     std::vector observables { polyhedralSystem->generateObservables() };
-    TileExtractorList tileExtractor {};
+    TileExtractorFast tileExtractor {};
     return tileExtractor.extractTiles(observables);
 }
 
