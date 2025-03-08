@@ -130,7 +130,7 @@ TEST_CASE("Interior")
     SECTION(
         "{ x + y + z + k >= -2 - j - z & x + y <= 2 & x >= -1 & x <= 1 & y >= -2 & y <= 2 & j = 1 } "
         "SHOULD BE "
-        "{ x + y + 2*z + k + j > -2 & -x - y > -2 & x > -1 & -x > -1 & y > -2 & -y > -2 }"
+        "false"
     )
     {
         Poly poly {
@@ -144,22 +144,41 @@ TEST_CASE("Interior")
                 { j == 1 },
             })
         };
-        Poly expectedPolyInterior {
-            PPLUtils::poly({
-                { x + y + 2*z + k + j > -2 },
-                { -x - y > -2 },
-                { x > -1 },
-                { -x > -1 },
-                { y > -2 },
-                { -y > -2 },
-            })
-        };
+        Poly expectedPolyInterior { 5, PPL::EMPTY };
 
         PolyUniquePtr polyInterior { PPLUtils::interior(poly) };
 
         INFO("Poly: " + PPLUtils::toString(poly));
         INFO("Expected Poly Interior: " + PPLUtils::toString(expectedPolyInterior));
         INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
+        REQUIRE(*polyInterior == expectedPolyInterior);
+    }
+
+    SECTION(
+        "{ x + y >= -2 & x + y <= 2 & x >= -1 & x <= 1 & y >= -2 & y <= 2 & z = 1 } "
+        "SHOULD BE "
+        "false"
+    )
+    {
+        Poly poly {
+            PPLUtils::poly({
+                { x + y >= -2 },
+                { x + y <= 2 },
+                { x >= -1 },
+                { x <= 1 },
+                { y >= -2 },
+                { y <= 2 },
+                { z == 1 },
+            }, 3)
+        };
+        Poly expectedPolyInterior { 3, PPL::EMPTY };
+
+        PolyUniquePtr polyInterior { PPLUtils::interior(poly) };
+
+        INFO("Poly: " + PPLUtils::toString(poly));
+        INFO("Expected Poly Interior: " + PPLUtils::toString(expectedPolyInterior));
+        INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
+        REQUIRE(polyInterior->space_dimension() == 3);
         REQUIRE(*polyInterior == expectedPolyInterior);
     }
 }

@@ -305,6 +305,30 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         REQUIRE((*stayAtomInterpretation)->interpretation() == *intersect(stayInterpretation, polyhedralSystem.invariant()));
     }
 
+    SECTION("Parse GAP Experiment")
+    {
+        PolyhedralSystemSharedPtr polyhedralSystem {
+            std::make_shared<PolyhedralSystem>(
+                std::move(
+                    *parsePolyhedralSystem(
+                        "Inv ( { a >= 0 & b >= 0 } )"
+                        "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
+                        "p { a >= b + 1 }"
+                        "q { b >= a + 1 }"
+                        "t0 { t = 0 }"
+                        "t1 { t <= 10 }"
+                    )
+                )
+            )
+        };
+
+        REQUIRE(polyhedralSystem->spaceDimension() == 3);
+        REQUIRE(polyhedralSystem->totalAtoms() == 4);
+        REQUIRE(!polyhedralSystem->isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem->isMovementForced());
+        REQUIRE(!polyhedralSystem->isBoundedInvariant());
+        REQUIRE(polyhedralSystem->isClosedFlow());
+    }
 }
 
 TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]")

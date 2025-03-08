@@ -396,31 +396,20 @@ namespace PPLUtils {
 
     PolyUniquePtr interior(const Poly& poly)
     {
-        PPL::Constraint_System constraints { poly.constraints() };
-        PPL::Constraint_System strictConstraints {};
-        for (auto constraint: constraints)
-        {
-            switch (constraint.type())
-            {
-            case Parma_Polyhedra_Library::Constraint::EQUALITY:
-                break;
-            case Parma_Polyhedra_Library::Constraint::STRICT_INEQUALITY:
-                strictConstraints.insert(constraint);
-                break;
-            case Parma_Polyhedra_Library::Constraint::NONSTRICT_INEQUALITY:
-                PPL::GMP_Integer inhomogeneousTerm { -constraint.inhomogeneous_term() };
-                PPL::Linear_Expression expression {};
-                for (PPL::dimension_type dim { 0 }; dim < constraint.space_dimension(); ++dim)
-                {
-                    PPL::Variable variable { dim };
-                    expression += constraint.coefficient(variable) * variable;
-                }
-                Parma_Polyhedra_Library::Constraint strictConstraint { expression > inhomogeneousTerm };
-                strictConstraints.insert(strictConstraint);
-                break;
-            }
-        }
-        return std::make_unique<Poly>(strictConstraints);
+        Powerset universe { poly.space_dimension(), PPL::UNIVERSE };
+
+        Powerset polyClosure { poly };
+        polyClosure.topological_closure_assign();
+
+        universe.difference_assign(polyClosure);
+        universe.topological_closure_assign();
+        universe.intersection_assign(polyClosure);
+
+        Powerset result { poly };
+        result.difference_assign(universe);
+
+        if (result.is_empty()) return std::make_unique<Poly>(poly.space_dimension(), PPL::EMPTY);
+        return std::make_unique<Poly>(result.begin()->pointset());
     }
 
     PowersetUniquePtr border(const Poly& p, const Poly& q)
