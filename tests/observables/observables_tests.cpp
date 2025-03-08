@@ -151,6 +151,60 @@ TEST_CASE("Generate observables")
             );
         }
     }
+
+    SECTION("GAP Experiment k=1 t=10")
+    {
+        PolyhedralSystemSharedPtr polyhedralSystem {
+            std::make_shared<PolyhedralSystem>(
+                std::move(
+                    *parsePolyhedralSystem(
+                        "Inv ( { a >= 0 & b >= 0 } )"
+                        "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
+                        "p { a >= b + 1 }"
+                        "q { b >= a + 1 }"
+                        "t0 { t = 0 }"
+                        "t1 { t <= 10 }"
+                    )
+                )
+            )
+        };
+        const Powerset& p { (*polyhedralSystem->getAtomInterpretation("p"))->interpretation() };
+        const Powerset& q { (*polyhedralSystem->getAtomInterpretation("q"))->interpretation() };
+        const Powerset& t0 { (*polyhedralSystem->getAtomInterpretation("t0"))->interpretation() };
+        const Powerset& t1 { (*polyhedralSystem->getAtomInterpretation("t1"))->interpretation() };
+        const Powerset& notP { (*polyhedralSystem->getAtomInterpretation("p"))->notInterpretation() };
+        const Powerset& notQ { (*polyhedralSystem->getAtomInterpretation("q"))->notInterpretation() };
+        const Powerset& not_t0 { (*polyhedralSystem->getAtomInterpretation("t0"))->notInterpretation() };
+        const Powerset& not_t1 { (*polyhedralSystem->getAtomInterpretation("t1"))->notInterpretation() };
+
+        constexpr bool filteringEmptyObservables { false };
+        std::vector observables { polyhedralSystem->generateObservables(filteringEmptyObservables) };
+
+        REQUIRE(observables.size() == 15);
+        REQUIRE(allObservablesAreDisjoint(observables));
+        REQUIRE_THAT(
+            observables,
+            Catch::Matchers::UnorderedEquals(
+                std::vector{
+                    Observable { AP({"p"}), intersect({ p, notQ, not_t0, not_t1 }),         PPLOutput::toString(*intersect({ p, notQ, not_t0, not_t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"q"}), intersect({ notP, q, not_t0, not_t1 }),         PPLOutput::toString(*intersect({ notP, q, not_t0, not_t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"t0"}), intersect({ notP, notQ, t0, not_t1 }),         PPLOutput::toString(*intersect({ notP, notQ, t0, not_t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"t1"}), intersect({ notP, notQ, not_t0, t1 }),         PPLOutput::toString(*intersect({ notP, notQ, not_t0, t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"p", "q"}), intersect({ p, q, not_t0, not_t1 }),       PPLOutput::toString(*intersect({ p, q, not_t0, not_t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"p", "t0"}), intersect({ p, notQ, t0, not_t1 }),       PPLOutput::toString(*intersect({ p, notQ, t0, not_t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"p", "t1"}), intersect({ p, notQ, not_t0, t1 }),       PPLOutput::toString(*intersect({ p, notQ, not_t0, t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"q", "t1"}), intersect({ notP, q, not_t0, t1 }),       PPLOutput::toString(*intersect({ notP, q, not_t0, t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"q", "t0"}), intersect({ t0, q, notP, not_t1 }),       PPLOutput::toString(*intersect({ t0, q, not_t0, not_t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"t0", "t1"}), intersect({ notP, notQ, t0, t1 }),       PPLOutput::toString(*intersect({ notP, notQ, t0, t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"p", "q", "t0"}), intersect({ p, q, t0, not_t1 }),     PPLOutput::toString(*intersect({ p, q, t0, not_t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"p", "q", "t1"}), intersect({ p, q, not_t0, t1 }),     PPLOutput::toString(*intersect({ p, q, not_t0, t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"p", "t0", "t1"}), intersect({ p, notQ, t0, t1 }),     PPLOutput::toString(*intersect({ p, notQ, t0, t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"q", "t0", "t1"}), intersect({ notP, q, t0, t1 }),     PPLOutput::toString(*intersect({ notP, q, t0, t1 }), polyhedralSystem->symbolTable()) },
+                    Observable { AP({"p", "q", "t0", "t1"}), intersect({ p, q, t0, t1 }),   PPLOutput::toString(*intersect({ p, q, t0, t1 }), polyhedralSystem->symbolTable()) },
+                }
+            )
+        );
+    }
 }
 
 bool allObservablesAreDisjoint(const std::vector<Observable>& observables)
