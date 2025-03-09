@@ -325,6 +325,7 @@ package automata {
                      bool anyOption = false,
                      std::string_view name = "PolyhedralBuchiLtlAutomaton"
                 ) : PolyhedralBuchiLtlAutomatonConstSharedPtr
+                {static} +collectAcceptingStates(spot::const_twa_graph_ptr twaGraph): std::unordered_map<unsigned>
             }
         }
 

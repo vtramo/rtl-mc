@@ -322,8 +322,8 @@ std::unordered_set<unsigned> PolyhedralLtlAutomaton::killAcceptingStates(const s
         if (graph->state_is_accepting(nfaState))
         {
             acceptingStates.insert(nfaState);
-            // graph->kill_state(nfaState);
-            // graph->new_acc_edge(nfaState, nfaState, bdd_false(), true);
+            graph->kill_state(nfaState);
+            graph->new_acc_edge(nfaState, nfaState, bdd_false(), true);
         }
     }
     Log::log(Verbosity::veryVerbose, "[{} - Kill Accepting States] Accepting states: [{}].", m_name, fmt::join(acceptingStates, ", "));
