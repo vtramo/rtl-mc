@@ -110,46 +110,5 @@ inline PowersetSharedPtr omnidirectionalFiniteTimeSemanticsSolver(
         transposedSynchronousProduct->set_init_state(finalState);
         dfs.run();
     }
-    const Powerset universe { polyhedralSystem->spaceDimension(), PPL::UNIVERSE };
-    PowersetSharedPtr result2 { reachPlus(universe, *result, polyhedralSystem->preFlow()) };
     return result;
-}
-
-inline int maxPatches(const std::vector<Observable>& observables)
-{
-    int maxPatches {};
-
-    for (const Observable& observable: observables)
-    {
-        maxPatches = std::max(maxPatches, observable.totalPatches());
-    }
-
-    return maxPatches;
-}
-
-inline PowersetSharedPtr generalFiniteTimeSemanticsSolver(
-    PolyhedralSystemSharedPtr polyhedralSystem,
-    spot::formula rtlFormula,
-    const AutomatonOptimizationFlags optimizationFlags
-)
-{
-    DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(std::move(rtlFormula)).toLtl() };
-    PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-    PolyhedralFiniteLtlAutomatonConstSharedPtr finiteLtlAutomaton {
-        buildPolyhedralFiniteLtlAutomaton(
-            std::move(discreteLtlFormula),
-            polyhedralSystemFormulaDenotationMap,
-            optimizationFlags
-        )
-    };
-    std::vector observables { polyhedralSystem->generateObservables() };
-    const unsigned sufficientHorizon { 2 * finiteLtlAutomaton->totalStates() * maxPatches(observables) };
-    GeneralPolyhedralAbstraction generalPolyhedralAbstraction {
-        polyhedralSystem,
-        std::move(observables),
-        static_cast<int>(sufficientHorizon)
-    };
-
-    generalPolyhedralAbstraction.printDotFormat(std::cout);
-    return {};
 }

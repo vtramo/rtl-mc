@@ -2,7 +2,6 @@
 
 #include "PolyhedralSystem.h"
 #include "DiscreteLtlFormula.h"
-#include "DiscreteFiniteLtlFormula.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "PolyhedralBuchiLtlAutomaton.h"
 #include "AutomatonOptimizationFlags.h"
@@ -26,11 +25,24 @@ inline PowersetSharedPtr omnidirectionalInfiniteTimeSemanticsSolver(
             optimizationFlags
         )
     };
-    std::cout<< "emptiness: " <<  spot::generic_emptiness_check(buchiLtlAutomaton->twa()) << std::endl;
-    buchiLtlAutomaton->printDotFormat(std::cout);
-    spot::emptiness_check_ptr explicit_se05_search = spot::explicit_se05_search(buchiLtlAutomaton->twa());
+    auto abstraction { std::make_shared<OmnidirectionalPolyhedralAbstraction>(polyhedralSystem) };
+    auto synchronousProduct { std::make_shared<PolyhedralSynchronousProductAutomaton>(buchiLtlAutomaton, abstraction) };
+    std::cout<< "emptiness: " <<  spot::generic_emptiness_check(synchronousProduct->twa()) << std::endl;
+    synchronousProduct->printDotFormat(std::cout);
+    spot::emptiness_check_ptr explicit_se05_search = spot::explicit_se05_search(synchronousProduct->twa());
     spot::emptiness_check_result_ptr emptiness_check_result_ptr = explicit_se05_search->check();
-    std::cout<< "emptiness2: " <<  *emptiness_check_result_ptr->accepting_run() << std::endl;
+    while (emptiness_check_result_ptr != nullptr)
+    {
+        spot::twa_run_ptr twa_run_ptr = emptiness_check_result_ptr->accepting_run();
+        for (spot::twa_run::step prefix : twa_run_ptr->prefix)
+        {
+            const spot::state* state = prefix.s;
+            unsigned stateNumber { buchiLtlAutomaton->twa()->state_number(state) };
+            std::cout << "stateNumber: " << stateNumber << std::endl;
+        }
+        std::cout << std::endl;
+        emptiness_check_result_ptr = explicit_se05_search->check();
+    }
 
     return std::make_shared<Powerset>(PPL::EMPTY);
 }
