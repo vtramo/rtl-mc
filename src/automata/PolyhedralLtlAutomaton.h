@@ -82,7 +82,7 @@ protected:
     void initializeAutomaton() override;
     virtual void buildAutomaton(const spot::const_twa_graph_ptr& twaGraph, const std::unordered_set<unsigned>& acceptingStates);
     virtual StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& twaGraph, const bdd& guard);
-    virtual bdd stateLabelsAsBdd(unsigned outEdgeState) const;
+    virtual bdd stateLabelsAsBdd(unsigned state) const;
     virtual void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr twaGraph);
     virtual void createNewEdge(unsigned srcState, unsigned dstState);
     virtual void purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr twaGraph, std::unordered_set<unsigned>& acceptingStates);

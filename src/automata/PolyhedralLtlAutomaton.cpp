@@ -51,6 +51,7 @@ void PolyhedralLtlAutomaton::initializeAutomaton()
     m_automaton = std::make_shared<spot::twa_graph>(polyhedralSystem.bddDict());
     m_automaton->prop_state_acc(spot::trival { true });
     m_automaton->set_acceptance(spot::acc_cond {spot::acc_cond::acc_code::buchi()});
+    assert(m_automaton->prop_state_acc().is_true());
 }
 
 PolyhedralLtlAutomaton::~PolyhedralLtlAutomaton()
@@ -206,9 +207,9 @@ StateDenotation PolyhedralLtlAutomaton::extractStateDenotationFromEdgeGuard(
     return StateDenotation { std::move(formulaPossiblyWithSing), powerset, containsSing };
 }
 
-bdd PolyhedralLtlAutomaton::stateLabelsAsBdd(const unsigned outEdgeState) const
+bdd PolyhedralLtlAutomaton::stateLabelsAsBdd(const unsigned state) const
 {
-    const StateDenotation& outStateDenotation { m_stateDenotationById.at(outEdgeState) };
+    const StateDenotation& outStateDenotation { m_stateDenotationById.at(state) };
     spot::atomic_prop_set labels { outStateDenotation.labels() };
     return { spot::formula_to_bdd(SpotUtils::andAtoms(labels), m_automaton->get_dict(), m_automaton) };
 }
@@ -235,16 +236,14 @@ void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::tw
 
 void PolyhedralLtlAutomaton::createNewEdge(const unsigned srcState, const unsigned dstState)
 {
+    const bool isSrcAccepting { m_acceptingStates.count(srcState) == 1 };
+    bdd labels { stateLabelsAsBdd(srcState) };
+    m_automaton->new_acc_edge(srcState, dstState, labels, isSrcAccepting);
     const bool isDstAccepting { m_acceptingStates.count(dstState) == 1 };
-    bdd labels { stateLabelsAsBdd(dstState) };
-    m_automaton->new_edge(srcState, dstState, labels);
-    if (isDstAccepting)
+    if (isDstAccepting && !m_automaton->state_is_accepting(dstState))
     {
-        auto dstEdgesIterator { m_automaton->out(dstState) };
-        if (dstEdgesIterator.begin() == dstEdgesIterator.end())
-        {
-            m_automaton->new_acc_edge(dstState, dstState, bdd_false(), isDstAccepting);
-        }
+        m_automaton->new_acc_edge(dstState, dstState, bdd_false(), true);
+        assert(m_automaton->state_is_accepting(dstState));
     }
 }
 
@@ -323,8 +322,8 @@ std::unordered_set<unsigned> PolyhedralLtlAutomaton::killAcceptingStates(const s
         if (graph->state_is_accepting(nfaState))
         {
             acceptingStates.insert(nfaState);
-            graph->kill_state(nfaState);
-            graph->new_acc_edge(nfaState, nfaState, bdd_false(), true);
+            // graph->kill_state(nfaState);
+            // graph->new_acc_edge(nfaState, nfaState, bdd_false(), true);
         }
     }
     Log::log(Verbosity::veryVerbose, "[{} - Kill Accepting States] Accepting states: [{}].", m_name, fmt::join(acceptingStates, ", "));

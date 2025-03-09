@@ -81,8 +81,14 @@ BackwardNFAConstSharedPtr BackwardNFA::buildAutomaton(
 void BackwardNFA::createNewEdge(const unsigned srcState, const unsigned dstState)
 {
     const bool isDstAccepting { m_acceptingStates.count(dstState) == 1 };
-    bdd labels { stateLabelsAsBdd(srcState) };
+    bdd labels { stateLabelsAsBdd(dstState) };
     m_automaton->new_acc_edge(dstState, srcState, labels, isDstAccepting);
+    const bool isSrcAccepting { m_acceptingStates.count(srcState) == 1 };
+    if (isSrcAccepting && !m_automaton->state_is_accepting(srcState))
+    {
+        m_automaton->new_acc_edge(srcState, srcState, bdd_false(), true);
+        assert(m_automaton->state_is_accepting(srcState));
+    }
 }
 
 void BackwardNFA::purgeUnreachableStates()
