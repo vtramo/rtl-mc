@@ -412,6 +412,44 @@ namespace PPLUtils {
         return std::make_unique<Poly>(result.begin()->pointset());
     }
 
+    PolyUniquePtr interiorFast(const Poly& poly)
+    {
+        Parma_Polyhedra_Library::Constraint_System polyConstraintSystem { poly.constraints() };
+        if (polyConstraintSystem.has_equalities())
+        {
+            return std::make_unique<Poly>(poly.space_dimension(), PPL::EMPTY);
+        }
+
+        PPL::Constraint_System constraints { polyConstraintSystem };
+        PPL::Constraint_System strictConstraints {};
+        strictConstraints.set_space_dimension(poly.space_dimension());
+
+        for (auto constraint: constraints)
+        {
+            switch (constraint.type())
+            {
+            case Parma_Polyhedra_Library::Constraint::EQUALITY:
+                break;
+            case Parma_Polyhedra_Library::Constraint::STRICT_INEQUALITY:
+                strictConstraints.insert(constraint);
+                break;
+            case Parma_Polyhedra_Library::Constraint::NONSTRICT_INEQUALITY:
+                PPL::GMP_Integer inhomogeneousTerm { -constraint.inhomogeneous_term() };
+                PPL::Linear_Expression expression {};
+                for (PPL::dimension_type dim { 0 }; dim < constraint.space_dimension(); ++dim)
+                {
+                    PPL::Variable variable { dim };
+                    expression += constraint.coefficient(variable) * variable;
+                }
+                Parma_Polyhedra_Library::Constraint strictConstraint { expression > inhomogeneousTerm };
+                strictConstraints.insert(strictConstraint);
+                break;
+            }
+        }
+
+        return std::make_unique<Poly>(strictConstraints);
+    }
+
     PowersetUniquePtr border(const Poly& p, const Poly& q)
     {
         Poly closureP { p };
