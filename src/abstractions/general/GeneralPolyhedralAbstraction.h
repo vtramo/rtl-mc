@@ -20,7 +20,7 @@ public:
     GeneralPolyhedralAbstraction(
         PolyhedralSystemConstSharedPtr polyhedralSystem,
         std::vector<Observable>&& observables,
-        int maxObservablePatchSequenceLength,
+        unsigned maxObservablePatchSequenceLength,
         std::string_view name = "GeneralPolyhedralAbstraction"
     );
 
@@ -29,7 +29,7 @@ public:
 private:
     std::unordered_map<unsigned, ObservableTraversalNode> m_nodeByState {};
 
-    void buildAbstraction(int maxObservablePatchSequenceLength, std::vector<Observable>&& observables);
+    void buildAbstraction(unsigned maxObservablePatchSequenceLength, std::vector<Observable>&& observables);
     SingOpenStatePair createStates(const ObservableTraversalNode& singTravNode, const ObservableTraversalNode& openTravNode);
     void createEdges(SingOpenStatePair singOpenStatePair, const SingOpenStatePair& adjSingOpenStatePair);
     ObservablePatchSequence advanceByOne(const ObservablePatchSequence& observablePatchSequence);

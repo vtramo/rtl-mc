@@ -8,7 +8,7 @@
 GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
     PolyhedralSystemConstSharedPtr polyhedralSystem,
     std::vector<Observable>&& observables,
-    const int maxObservablePatchSequenceLength,
+    const unsigned maxObservablePatchSequenceLength,
     const std::string_view name
 ) : PolyhedralAbstraction(polyhedralSystem, name)
 {
@@ -25,7 +25,7 @@ GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
     buildAbstraction(totalObservables, std::move(observables));
 }
 
-void GeneralPolyhedralAbstraction::buildAbstraction(const int maxObservablePatchSequenceLength, std::vector<Observable>&& observables)
+void GeneralPolyhedralAbstraction::buildAbstraction(const unsigned maxObservablePatchSequenceLength, std::vector<Observable>&& observables)
 {
     const Poly& preFlow { m_polyhedralSystem->preFlow() };
 
