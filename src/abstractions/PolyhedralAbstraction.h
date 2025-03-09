@@ -1,11 +1,13 @@
 #pragma once
 
 #include <spot/twa/formula2bdd.hh>
-#include <spot/twaalgos/dot.hh>
 
 #include "ObservableTraversalNode.h"
 #include "PolyhedralSystem.h"
 #include "Automaton.h"
+
+class PolyhedralAbstraction;
+using PolyhedralAbstractionConstSharedPtr = std::shared_ptr<PolyhedralAbstraction>;
 
 class PolyhedralAbstraction: public Automaton
 {

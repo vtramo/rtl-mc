@@ -34,6 +34,7 @@ package automata {
     abstract PolyhedralLtlAutomaton
     {
         --type aliases--
+        +using PolyhedralLtlAutomatonConstSharedPtr = std::shared_ptr<PolyhedralLtlAutomaton>
         -using RenumberingContextVoidPtr = void*
         --data members--
         #m_initialStates: std::unordered_set<unsigned>

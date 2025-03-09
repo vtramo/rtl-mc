@@ -2,16 +2,18 @@
 
 package product {
     abstract Automaton {}
-    class FiniteSynchronousProduct {
+    class PolyhedralSynchronousProductAutomaton {
+        --type aliases--
+        +using PolyhedralSynchronousProductAutomatonConstSharedPtr = std::shared_ptr<PolyhedralSynchronousProductAutomaton>
         -- data members --
         -m_productStatePair: spot::product_states*
-        -m_nfa: PolyhedralFiniteLtlAutomatonConstSharedPtr
-        -m_abstraction: OmnidirectionalPolyhedralAbstractionConstSharedPtr
+        -m_ltlAutomaton: PolyhedralLtlAutomatonConstSharedPtr
+        -m_abstraction: PolyhedralAbstractionConstSharedPtr
         -m_denotationByState: std::unordered_map<int, PowersetConstSharedPtr>
         -m_initialStates: std::unordered_set<int>
         -m_acceptingStates: std::unordered_set<int>
         -- constructors --
-        +FiniteSynchronousProduct(PolyhedralFiniteLtlAutomatonConstSharedPtr nfa, OmnidirectionalPolyhedralAbstractionConstSharedPtr abstraction)
+        +PolyhedralSynchronousProductAutomaton(PolyhedralLtlAutomatonConstSharedPtr nfa, PolyhedralAbstractionConstSharedPtr abstraction)
         -- member functions --
         +points(state: unsigned) : PowersetConstSharedPtr
         +productStatePair(state: unsigned) : std::pair<int, int>
@@ -21,8 +23,8 @@ package product {
         -stateDenotationContainsAbstractionPoints(unsigned nfaState, unsigned abstractionState)
     }
 
-    FiniteSynchronousProduct --> "1" PolyhedralFiniteLtlAutomaton
-    FiniteSynchronousProduct --> "1" OmnidirectionalPolyhedralAbstraction
-    FiniteSynchronousProduct --|> Automaton
+    PolyhedralSynchronousProductAutomaton --> "1" PolyhedralLtlAutomaton
+    PolyhedralSynchronousProductAutomaton --> "1" PolyhedralAbstraction
+    PolyhedralSynchronousProductAutomaton --|> Automaton
 }
 @enduml

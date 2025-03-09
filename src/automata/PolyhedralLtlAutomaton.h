@@ -8,6 +8,9 @@
 #include "StateDenotation.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
 
+class PolyhedralLtlAutomaton;
+using PolyhedralLtlAutomatonConstSharedPtr = std::shared_ptr<PolyhedralLtlAutomaton>;
+
 class PolyhedralLtlAutomaton: public Automaton
 {
 public:

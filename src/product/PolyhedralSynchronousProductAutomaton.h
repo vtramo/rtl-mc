@@ -2,16 +2,19 @@
 
 #include <spot/twaalgos/product.hh>
 
-#include "PolyhedralFiniteLtlAutomaton.h"
-#include "OmnidirectionalPolyhedralAbstraction.h"
+#include "PolyhedralLtlAutomaton.h"
+#include "PolyhedralAbstraction.h"
 
-class FiniteSynchronousProduct: public Automaton
+class PolyhedralSynchronousProductAutomaton;
+using PolyhedralSynchronousProductAutomatonConstSharedPtr = std::shared_ptr<PolyhedralSynchronousProductAutomaton>;
+
+class PolyhedralSynchronousProductAutomaton: public Automaton
 {
 public:
-    FiniteSynchronousProduct(
-        PolyhedralFiniteLtlAutomatonConstSharedPtr nfa,
-        OmnidirectionalPolyhedralAbstractionConstSharedPtr abstraction,
-        std::string_view name = "FiniteSynchronousProduct"
+    PolyhedralSynchronousProductAutomaton(
+        PolyhedralLtlAutomatonConstSharedPtr ltlAutomaton,
+        PolyhedralAbstractionConstSharedPtr abstraction,
+        std::string_view name = "PolyhedralSynchronousProductAutomaton"
     );
 
     [[nodiscard]] unsigned isInitialState(unsigned state) const override;
@@ -25,8 +28,8 @@ public:
 
 private:
     spot::product_states m_productStatePair {};
-    PolyhedralFiniteLtlAutomatonConstSharedPtr m_nfa {};
-    OmnidirectionalPolyhedralAbstractionConstSharedPtr m_abstraction {};
+    PolyhedralLtlAutomatonConstSharedPtr m_ltlAutomaton {};
+    PolyhedralAbstractionConstSharedPtr m_abstraction {};
     std::unordered_set<unsigned> m_initialStates {};
     std::unordered_set<unsigned> m_acceptingStates {};
 
