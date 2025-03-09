@@ -19,8 +19,8 @@ public:
     [[nodiscard]] unsigned totalStates() const override;
     [[nodiscard]] unsigned isInitialState(unsigned state) const override;
     [[nodiscard]] bool isAcceptingState(unsigned state) const override;
-    [[nodiscard]] const std::unordered_set<unsigned>& initialStates() const;
-    [[nodiscard]] const std::unordered_set<unsigned>& acceptingStates() const;
+    [[nodiscard]] virtual const std::unordered_set<unsigned>& initialStates() const;
+    [[nodiscard]] virtual const std::unordered_set<unsigned>& acceptingStates() const;
     [[nodiscard]] int countSuccessors(unsigned state) const override;
     [[nodiscard]] const StateDenotation& stateDenotation(unsigned state) const;
     [[nodiscard]] const AutomatonStats& stats() const;

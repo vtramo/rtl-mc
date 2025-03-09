@@ -186,8 +186,9 @@ void PolyhedralLtlAutomaton::buildAutomaton(
     }
 
     assert(m_stateDenotationById.size() == m_automaton->num_states());
-    purgeUnreachableStates();
 
+    createDummyInitialStateWithEdgesToInitialStates();
+    purgeUnreachableStates();
     onConstructionCompleted(timer.elapsedInSeconds());
 }
 
@@ -237,7 +238,7 @@ void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::tw
 void PolyhedralLtlAutomaton::createNewEdge(const unsigned srcState, const unsigned dstState)
 {
     const bool isSrcAccepting { m_acceptingStates.count(srcState) == 1 };
-    bdd labels { stateLabelsAsBdd(srcState) };
+    bdd labels { stateLabelsAsBdd(dstState) };
     m_automaton->new_acc_edge(srcState, dstState, labels, isSrcAccepting);
     const bool isDstAccepting { m_acceptingStates.count(dstState) == 1 };
     if (isDstAccepting && !m_automaton->state_is_accepting(dstState))
@@ -286,7 +287,6 @@ void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSecond
 
 void PolyhedralLtlAutomaton::purgeUnreachableStates()
 {
-    createDummyInitialStateWithEdgesToInitialStates();
     spot::twa_graph::shift_action renumberNfaAcceptingStates { &renumberOrRemoveStatesAfterPurge };
     RenumberingContext renumberingContext { &m_initialStates, &m_acceptingStates, &m_stateDenotationById, &m_dummyInitialState };
     m_automaton->purge_unreachable_states(&renumberNfaAcceptingStates, &renumberingContext);
@@ -298,7 +298,7 @@ void PolyhedralLtlAutomaton::createDummyInitialStateWithEdgesToInitialStates()
     m_automaton->set_init_state(m_dummyInitialState);
     for (const unsigned initialState: m_initialStates)
     {
-        m_automaton->new_edge(m_dummyInitialState, initialState, bdd_true());
+        m_automaton->new_edge(m_dummyInitialState, initialState, stateLabelsAsBdd(initialState));
         m_dummyInitialEdges++;
     }
 }

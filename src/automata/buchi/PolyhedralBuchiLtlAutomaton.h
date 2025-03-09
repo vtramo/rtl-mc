@@ -18,6 +18,10 @@ public:
         std::string_view name = "PolyhedralBuchiLtlAutomaton"
     );
 
+    [[nodiscard]] unsigned totalInitialStates() const override;
+    [[nodiscard]] unsigned isInitialState(unsigned state) const override;
+    [[nodiscard]] const std::unordered_set<unsigned>& initialStates() const override;
+
 protected:
     PolyhedralBuchiLtlAutomaton();
 
