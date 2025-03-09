@@ -42,9 +42,7 @@ spot::formula applyAlternationSingOpenObservablesOneStep(spot::formula&& formula
 {
     return And({
                 std::move(formula),
-                alternationSingOpenObservablesOneStep(),
-                alive(),
-                aliveUntilGNotAlive(),
+                alternationSingOpenObservablesOneStep()
             });
 }
 

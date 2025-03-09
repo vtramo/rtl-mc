@@ -2,14 +2,14 @@
 
 #include <spot/twaalgos/product.hh>
 
-#include "FiniteLtlAutomaton.h"
+#include "PolyhedralFiniteLtlAutomaton.h"
 #include "OmnidirectionalPolyhedralAbstraction.h"
 
 class FiniteSynchronousProduct: public Automaton
 {
 public:
     FiniteSynchronousProduct(
-        FiniteLtlAutomatonConstSharedPtr nfa,
+        PolyhedralFiniteLtlAutomatonConstSharedPtr nfa,
         OmnidirectionalPolyhedralAbstractionConstSharedPtr abstraction,
         std::string_view name = "FiniteSynchronousProduct"
     );
@@ -25,11 +25,12 @@ public:
 
 private:
     spot::product_states m_productStatePair {};
-    FiniteLtlAutomatonConstSharedPtr m_nfa {};
+    PolyhedralFiniteLtlAutomatonConstSharedPtr m_nfa {};
     OmnidirectionalPolyhedralAbstractionConstSharedPtr m_abstraction {};
     std::unordered_set<unsigned> m_initialStates {};
     std::unordered_set<unsigned> m_acceptingStates {};
 
+    void initializeAutomaton() override;
     void buildAutomaton();
     bool stateDenotationContainsAbstractionPoints(unsigned nfaState, unsigned abstractionState);
 };

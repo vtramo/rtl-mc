@@ -8,7 +8,7 @@ BackwardNFA::BackwardNFA(
     const DiscreteLtlFormula& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
-): FiniteLtlAutomaton(
+): PolyhedralFiniteLtlAutomaton(
     discreteLtlFormula,
     std::move(polyhedralSystemLabelDenotationMap),
     name
@@ -20,7 +20,7 @@ BackwardNFA::BackwardNFA(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
-): FiniteLtlAutomaton(
+): PolyhedralFiniteLtlAutomaton(
         std::move(discreteLtlFormula),
         std::move(polyhedralSystemLabelDenotationMap),
         name
@@ -28,7 +28,7 @@ BackwardNFA::BackwardNFA(
 {
 }
 
-BackwardNFA::BackwardNFA(const BackwardNFA& other): FiniteLtlAutomaton(other)
+BackwardNFA::BackwardNFA(const BackwardNFA& other): PolyhedralFiniteLtlAutomaton(other)
 {
 }
 
@@ -73,7 +73,7 @@ BackwardNFAConstSharedPtr BackwardNFA::buildAutomaton(
     backwardNfa->eraseInitialEdgesWithEmptyDenotation(nfa);
     std::unordered_set nfaAcceptingStates { backwardNfa->killAcceptingStates(nfa) };
     backwardNfa->purgeUnreachableStatesThenRenumberAcceptingStates(nfa, nfaAcceptingStates);
-    backwardNfa->FiniteLtlAutomaton::buildAutomaton(nfa, nfaAcceptingStates);
+    backwardNfa->PolyhedralLtlAutomaton::buildAutomaton(nfa, nfaAcceptingStates);
 
     return backwardNfa;
 }

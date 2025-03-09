@@ -1,6 +1,7 @@
 #include "logger.h"
 #include "interface.h"
 #include "omnidirectional_finite_solver.h"
+#include "omnidirectional_infinite_solver.h"
 
 int main(const int argc, char *argv[])
 {
@@ -15,6 +16,6 @@ int main(const int argc, char *argv[])
             : rtlMcProgram.rtlFormula()
     };
 
-    auto result { omnidirectionalFiniteTimeSemanticsSolver(polyhedralSystem, rtlFormula, rtlMcProgram.automatonOptimizationFlags()) };
+    auto result { omnidirectionalInfiniteTimeSemanticsSolver(polyhedralSystem, rtlFormula, rtlMcProgram.automatonOptimizationFlags()) };
     std::cout << PPLOutput::toString(*result, polyhedralSystem->symbolTable()) << '\n';
 }

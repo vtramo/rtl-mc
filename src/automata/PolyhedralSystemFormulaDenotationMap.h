@@ -23,8 +23,7 @@ private:
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
     std::unordered_map<FormulaId, std::tuple<PowersetConstSharedPtr, FormulaToString>> m_powersetByFormula {};
 
-    friend class BackwardNFA;
-    friend class FiniteLtlAutomaton;
+    friend class PolyhedralLtlAutomaton;
     PolyhedralSystemFormulaDenotationMap() = default;
 
     PowersetConstSharedPtr computeFormulaDenotation(const spot::formula& formula);

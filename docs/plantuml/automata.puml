@@ -31,24 +31,51 @@ package automata {
         #virtual assertThatStateIsInRange(const unsigned state): void
     }
 
-    abstract LtlAutomaton {
+    abstract PolyhedralLtlAutomaton
+    {
+        --type aliases--
+        -using RenumberingContextVoidPtr = void*
         --data members--
-        #m_optimizationLevel: spot::postprocessor::optimization_level
+        #m_initialStates: std::unordered_set<unsigned>
+        #m_acceptingStates: std::unordered_set<unsigned>
+        # m_dummyInitialState: unsigned
+        #m_dummyInitialEdges: unsigned
+        #m_stateDenotationById: std::unordered_map<unsigned, StateDenotation>
+        #m_formulaDenotationMap: PolyhedralSystemFormulaDenotationMap
+        #m_automatonStats: AutomatonStats
         #m_discreteLtlFormula: DiscreteLtlFormula
-        #m_translationStats: AutomatonStats::TranslationFormulaIntoTgbaStats
+        #m_optimizationLevel: spot::postprocessor::optimization_level
         --constructors--
-        +LtlAutomaton(std::string_view name, const DiscreteLtlFormula& discreteLtlFormula)
-        +LtlAutomaton(std::string_view name, DiscreteLtlFormula&& discreteLtlFormula)
-        +LtlAutomaton(std::string_view name, spot::twa_graph_ptr automaton, DiscreteLtlFormula&& discreteLtlFormula)
+        #PolyhedralLtlAutomaton(const PolyhedralLtlAutomaton& other)
+        #PolyhedralLtlAutomaton()
+        #PolyhedralLtlAutomaton(std::string_view name, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap, const DiscreteLtlFormula& discreteLtlFormula)
+        #PolyhedralLtlAutomaton(std::string_view name, PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap, DiscreteLtlFormula&& discreteLtlFormula)
         --member functions--
         +virtual formula(): const DiscreteLtlFormula&
         +virtual optimizationLevel(): spot::postprocessor::optimization_level
+        +virtual initialStates() : const std::unordered_set<int>&
+        +virtual acceptingStates() : const std::unordered_set<int>&
+        +stateDenotation(int state) : const StateDenotation&
+        +spaceDimension(int state) : PPL::dimension_type
+        +stats() : AutomatonStats
+        #buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates) : void
+        #extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
+        #virtual createNewEdge(unsigned srcState, unsigned dstState): void
+        #virtual purgeUnreachableStates() : void
+        #convertToNfa(spot::twa_graph_ptr tgba) : spot::twa_graph_ptr
+        #eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nf) : void
+        #purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaAcceptingStates) : void
+        #stateLabelsAsBdd(unsigned outEdgeState) : bdd
+        #createDummyInitialStateWithEdgesToInitialStates() : void
+        #updatePatchStats(int totPatches) : void
+        #setNfaStats(double executionTimeSeconds) : void
+        #logNfaConstruction(double executionTimeSecond) : void
+        #killAcceptingStates(const spot::twa_graph_ptr& graph) : std::unordered_set<unsigned>
         #virtual spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption)
     }
 
-    LtlAutomaton --|> Automaton
-    FiniteLtlAutomaton --|> Automaton
-    BackwardNFA --|> FiniteLtlAutomaton
+    PolyhedralLtlAutomaton --|> Automaton
+    PolyhedralFiniteLtlAutomaton --|> PolyhedralLtlAutomaton
 
     class PolyhedralSystemFormulaDenotationMap
     {
@@ -71,8 +98,7 @@ package automata {
         -getAtomInterpretation(const spot::formula& formula) : const AtomInterpretation*
         -void saveFormulaDenotation(const spot::formula& formula, PowersetConstSharedPtr denotation) : void
         --friends--
-        friend class BackwardNFA
-        friend class FiniteLtlAutomaton
+        friend class PolyhedralLtlAutomaton
         --operators--
         +operator<< (std::ostream& out, PolyhedralSystemFormulaDenotationMap& polyhedralSystemFormulaDenotationMap) : std::ostream&
     }
@@ -99,68 +125,42 @@ package automata {
         +print(std::ostream& ostream, const PolyhedralSystemSymbolTable& symbolTable) : void
     }
 
+    struct RenumberingContext
+    {
+        --data members--
+        m_initialStates : std::unordered_set<unsigned>*
+        m_acceptingStates : std::unordered_set<unsigned>*
+        m_stateDenotationById : std::unordered_map<unsigned, StateDenotation>*
+        m_dummyInitialState : unsigned*
+        --constructors--
+        RenumberingContext(std::unordered_set<unsigned>* initialStates, std::unordered_set<unsigned>* acceptingStates, std::unordered_map<unsigned, StateDenotation>*, unsigned* dummyInitialState)
+        explicit RenumberingContext(std::unordered_set<unsigned>* acceptingStates)
+    }
+
     package finite
     {
-        class FiniteLtlAutomaton
+        class PolyhedralFiniteLtlAutomaton
         {
-            -- type aliases --
-            +using FiniteLtlAutomatonConstSharedPtr = std::shared_ptr<FiniteLtlAutomaton>
-            -using RenumberingContextVoidPtr = void*
-            -- data members --
-            #m_initialStates: std::unordered_set<int>
-            #m_acceptingStates: std::unordered_set<int>
-            #m_dummyInitialState : unsigned
-            #m_dummyInitialEdges : unsigned
-            #m_stateDenotationById : std::unordered_map<int, StateDenotation>
-            #m_formulaDenotationMap: PolyhedralSystemFormulaDenotationMap
-            #m_automatonStats: AutomatonStats
-            #m_maxRecursiveDepth: int
+            --type aliases--
+            using PolyhedralFiniteLtlAutomatonConstSharedPtr = std::shared_ptr<const PolyhedralFiniteLtlAutomaton>
             -- constructors --
-            +FiniteLtlAutomaton(const FiniteLtlAutomaton& other)
-            #FiniteLtlAutomaton() = default
-            #FiniteLtlAutomaton(const DiscreteLtlFormula&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
-            #FiniteLtlAutomaton(DiscreteLtlFormula&&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
-            -- member functions --
-            +initialStates() : const std::unordered_set<int>&
-            +acceptingStates() : const std::unordered_set<int>&
-            +stateDenotation(int state) : const StateDenotation&
-            +stats() : AutomatonStats
-            #buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates) : void
-            #extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
-            #virtual createNewEdge(unsigned srcState, unsigned dstState): void
-            #virtual purgeUnreachableStates() : void
-            #convertToNfa(spot::twa_graph_ptr tgba) : spot::twa_graph_ptr
-            #eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nf) : void
-            #purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaAcceptingStates) : void
-            #stateLabelsAsBdd(unsigned outEdgeState) : bdd
-            #createDummyInitialStateWithEdgesToInitialStates() : void
-            #updateMaxNumberOfPatchesStats(int totPatches) : void
-            #setNfaStats(double executionTimeSeconds, int totalPatches) : void
-            #logNfaConstruction(double executionTimeSecond) : void
-            #killAcceptingStates(const spot::twa_graph_ptr& graph) : std::unordered_set<unsigned>
+            +PolyhedralFiniteLtlAutomaton(const PolyhedralFiniteLtlAutomaton& other)
+            #PolyhedralFiniteLtlAutomaton() = default
+            #PolyhedralFiniteLtlAutomaton(const DiscreteLtlFormula&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
+            #PolyhedralFiniteLtlAutomaton(DiscreteLtlFormula&&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
+            --member functions--
+            #convertToNfa(spot::twa_graph_ptr tgba): spot::twa_graph_ptr
+            #setNfaStats((double executionTimeSecond): void
             -- static functions --
             {static} +buildAutomaton(
                  DiscreteLtlFormula&& discreteLtlFormula,
                  PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
                  spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High,
                  bool anyOption = false,
-                 std::string_view name = "FiniteLtlAutomaton"
-            ) : FiniteLtlAutomatonConstSharedPtr
-            {static} #renumberOrRemoveStatesAfterPurge(newst: const std::vector<unsigned>&, renumberingContextVoidPtr: RenumberingContextVoidPtr) : void
+                 std::string_view name = "PolyhedralFiniteLtlAutomaton"
+            ) : PolyhedralFiniteLtlAutomatonConstSharedPtr
             -- operators --
             +operator<< (out: std::ostream&, finiteLtlAutomaton: const FiniteLtlAutomaton&) : std::ostream&
-        }
-
-        struct RenumberingContext
-        {
-            --data members--
-            m_initialStates : std::unordered_set<unsigned>*
-            m_acceptingStates : std::unordered_set<unsigned>*
-            m_stateDenotationById : std::unordered_map<unsigned, StateDenotation>*
-            m_dummyInitialState : unsigned*
-            --constructors--
-            RenumberingContext(std::unordered_set<unsigned>* initialStates, std::unordered_set<unsigned>* acceptingStates, std::unordered_map<unsigned, StateDenotation>*, unsigned* dummyInitialState)
-            explicit RenumberingContext(std::unordered_set<unsigned>* acceptingStates)
         }
 
         package onthefly {
@@ -297,19 +297,44 @@ package automata {
                 -friend class BackwardNFAPermutator
             }
 
+            BackwardNFA --|> PolyhedralFiniteLtlAutomaton
             BackwardNFAPermutator "1" *-- "1" PermutedBackwardNFAIterator
             BackwardNFAPermutator *--> "1" BackwardNFA
-            BackwardNFA #--> RenumberingContext
             twa_reachable_iterator_depth_first #--> "*" stack_item
             BackwardNFADepthFirstSearch --|> twa_reachable_iterator_depth_first
         }
 
-        FiniteLtlAutomaton *--> "*" StateDenotation
-        FiniteLtlAutomaton --|> LtlAutomaton
-        FiniteLtlAutomaton --> "1" PolyhedralSystemFormulaDenotationMap
-        FiniteLtlAutomaton --> "1" twa_graph_ptr
-        FiniteLtlAutomaton --> "1" formula
-        LtlAutomaton --|> Automaton
+        package buchi {
+            class PolyhedralBuchiLtlAutomaton
+            {
+                --type aliases--
+                using PolyhedralBuchiLtlAutomatonConstSharedPtr = std::shared_ptr<const PolyhedralBuchiLtlAutomaton>
+                -- constructors --
+                +PolyhedralBuchiLtlAutomaton(const PolyhedralBuchiLtlAutomaton& other)
+                #PolyhedralBuchiLtlAutomaton() = default
+                #PolyhedralBuchiLtlAutomaton(const DiscreteLtlFormula&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
+                #PolyhedralBuchiLtlAutomaton(DiscreteLtlFormula&&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
+                --member functions--
+                #convertToNfa(spot::twa_graph_ptr tgba): spot::twa_graph_ptr
+                #setNfaStats((double executionTimeSecond): void
+                -- static functions --
+                {static} +buildAutomaton(
+                     DiscreteLtlFormula&& discreteLtlFormula,
+                     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
+                     spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High,
+                     bool anyOption = false,
+                     std::string_view name = "PolyhedralBuchiLtlAutomaton"
+                ) : PolyhedralBuchiLtlAutomatonConstSharedPtr
+            }
+        }
+
+        PolyhedralLtlAutomaton #--> RenumberingContext
+        PolyhedralFiniteLtlAutomaton *--> "*" StateDenotation
+        PolyhedralFiniteLtlAutomaton --|> PolyhedralLtlAutomaton
+        PolyhedralFiniteLtlAutomaton --> "1" PolyhedralSystemFormulaDenotationMap
+        PolyhedralFiniteLtlAutomaton --> "1" twa_graph_ptr
+        PolyhedralFiniteLtlAutomaton --> "1" formula
+        PolyhedralLtlAutomaton --|> Automaton
     }
 }
 @enduml

@@ -7,7 +7,7 @@
 #include "DiscreteLtlFormula.h"
 #include "DiscreteFiniteLtlFormula.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
-#include "FiniteLtlAutomaton.h"
+#include "PolyhedralFiniteLtlAutomaton.h"
 #include "AutomatonOptimizationFlags.h"
 #include "FiniteSynchronousProduct.h"
 #include "GeneralPolyhedralAbstraction.h"
@@ -22,8 +22,8 @@ inline PowersetSharedPtr omnidirectionalFiniteTimeSemanticsSolver(
     auto abstraction { std::make_shared<OmnidirectionalPolyhedralAbstraction>(polyhedralSystem) };
     DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(std::move(rtlFormula)).toLtl() };
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-    FiniteLtlAutomatonConstSharedPtr finiteLtlAutomaton {
-        buildFiniteLtlAutomaton(
+    PolyhedralFiniteLtlAutomatonConstSharedPtr finiteLtlAutomaton {
+        buildPolyhedralFiniteLtlAutomaton(
             std::move(discreteLtlFormula),
             polyhedralSystemFormulaDenotationMap,
             optimizationFlags
@@ -135,8 +135,8 @@ inline PowersetSharedPtr generalFiniteTimeSemanticsSolver(
 {
     DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(std::move(rtlFormula)).toLtl() };
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-    FiniteLtlAutomatonConstSharedPtr finiteLtlAutomaton {
-        buildFiniteLtlAutomaton(
+    PolyhedralFiniteLtlAutomatonConstSharedPtr finiteLtlAutomaton {
+        buildPolyhedralFiniteLtlAutomaton(
             std::move(discreteLtlFormula),
             polyhedralSystemFormulaDenotationMap,
             optimizationFlags

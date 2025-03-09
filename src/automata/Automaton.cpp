@@ -8,6 +8,7 @@
 
 Automaton::Automaton()
 {
+    Automaton::initializeAutomaton();
 }
 
 Automaton::Automaton(const std::string_view name)
@@ -91,8 +92,8 @@ void Automaton::printDotFormat(std::ostream& os) const
 
 void Automaton::initializeAutomaton()
 {
-    const spot::bdd_dict_ptr nfaDict { std::make_shared<spot::bdd_dict>() };
-    m_automaton = std::make_shared<spot::twa_graph>(nfaDict);
+    const spot::bdd_dict_ptr dict { std::make_shared<spot::bdd_dict>() };
+    m_automaton = std::make_shared<spot::twa_graph>(dict);
     m_automaton->prop_state_acc(spot::trival { true });
     m_automaton->set_acceptance(spot::acc_cond::acc_code::t());
 }

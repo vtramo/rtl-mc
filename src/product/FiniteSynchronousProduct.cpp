@@ -3,7 +3,7 @@
 #include <spot/twaalgos/reachiter.hh>
 
 FiniteSynchronousProduct::FiniteSynchronousProduct(
-    FiniteLtlAutomatonConstSharedPtr nfa,
+    PolyhedralFiniteLtlAutomatonConstSharedPtr nfa,
     OmnidirectionalPolyhedralAbstractionConstSharedPtr abstraction,
     const std::string_view name
 ) : Automaton(name)
@@ -15,9 +15,8 @@ FiniteSynchronousProduct::FiniteSynchronousProduct(
 
 void FiniteSynchronousProduct::buildAutomaton()
 {
-    m_automaton = std::make_shared<spot::twa_graph>(m_nfa->twa()->get_dict());
-    m_automaton->prop_state_acc(spot::trival { true });
-    m_automaton->set_acceptance(m_nfa->twa()->get_acceptance());
+    FiniteSynchronousProduct::initializeAutomaton();
+
     m_productStatePair = std::vector<std::pair<unsigned, unsigned>>(m_nfa->totalStates() * m_abstraction->totalStates());
     std::vector stateProductByPair(m_nfa->totalStates(), std::vector(m_abstraction->totalStates(), -1));
 
@@ -51,6 +50,13 @@ void FiniteSynchronousProduct::buildAutomaton()
             }
         }
     }
+}
+
+void FiniteSynchronousProduct::initializeAutomaton()
+{
+    m_automaton = std::make_shared<spot::twa_graph>(m_nfa->twa()->get_dict());
+    m_automaton->prop_state_acc(spot::trival { true });
+    m_automaton->set_acceptance(m_nfa->twa()->get_acceptance());
 }
 
 bool FiniteSynchronousProduct::stateDenotationContainsAbstractionPoints(

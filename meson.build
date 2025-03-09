@@ -22,6 +22,7 @@ onthefly_dir = 'onthefly'
 abstraction_dir = 'abstractions'
 omnidirectional_dir = 'omnidirectional'
 finite_dir = 'finite'
+buchi_dir = 'buchi'
 include_directories = [
   include_directories('.'),
   include_directories(src_dir / utils_dir),
@@ -36,6 +37,7 @@ include_directories = [
   include_directories(src_dir / 'operators'),
   include_directories(src_dir / 'product'),
   include_directories(src_dir / automata_dir),
+  include_directories(src_dir / automata_dir / 'buchi'),
   include_directories(src_dir / automata_dir / finite_dir),
   include_directories(src_dir / automata_dir / finite_dir / 'onthefly'),
   include_directories(src_dir / parser_dir),

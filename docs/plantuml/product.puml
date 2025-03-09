@@ -1,16 +1,17 @@
 @startuml
 
 package product {
+    abstract Automaton {}
     class FiniteSynchronousProduct {
         -- data members --
         -m_productStatePair: spot::product_states*
-        -m_nfa: FiniteLtlAutomatonConstSharedPtr
+        -m_nfa: PolyhedralFiniteLtlAutomatonConstSharedPtr
         -m_abstraction: OmnidirectionalPolyhedralAbstractionConstSharedPtr
         -m_denotationByState: std::unordered_map<int, PowersetConstSharedPtr>
         -m_initialStates: std::unordered_set<int>
         -m_acceptingStates: std::unordered_set<int>
         -- constructors --
-        +FiniteSynchronousProduct(nfa: FiniteLtlAutomatonConstSharedPtr, abstraction: OmnidirectionalPolyhedralAbstractionConstSharedPtr)
+        +FiniteSynchronousProduct(PolyhedralFiniteLtlAutomatonConstSharedPtr nfa, OmnidirectionalPolyhedralAbstractionConstSharedPtr abstraction)
         -- member functions --
         +points(state: unsigned) : PowersetConstSharedPtr
         +productStatePair(state: unsigned) : std::pair<int, int>
@@ -20,7 +21,7 @@ package product {
         -stateDenotationContainsAbstractionPoints(unsigned nfaState, unsigned abstractionState)
     }
 
-    FiniteSynchronousProduct --> "1" FiniteLtlAutomaton
+    FiniteSynchronousProduct --> "1" PolyhedralFiniteLtlAutomaton
     FiniteSynchronousProduct --> "1" OmnidirectionalPolyhedralAbstraction
     FiniteSynchronousProduct --|> Automaton
 }

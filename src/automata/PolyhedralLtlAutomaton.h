@@ -1,18 +1,17 @@
 #pragma once
 
-#include "LtlAutomaton.h"
-#include "AutomatonStats.h"
-#include "PolyhedralSystemFormulaDenotationMap.h"
+#include <spot/twaalgos/postproc.hh>
+
+#include "Automaton.h"
 #include "DiscreteLtlFormula.h"
+#include "AutomatonStats.h"
 #include "StateDenotation.h"
+#include "PolyhedralSystemFormulaDenotationMap.h"
 
-class FiniteLtlAutomaton;
-using FiniteLtlAutomatonConstSharedPtr = std::shared_ptr<FiniteLtlAutomaton>;
-
-class FiniteLtlAutomaton: public LtlAutomaton
+class PolyhedralLtlAutomaton: public Automaton
 {
 public:
-    FiniteLtlAutomaton(const FiniteLtlAutomaton& other);
+    ~PolyhedralLtlAutomaton() override;
 
     [[nodiscard]] unsigned totalInitialStates() const override;
     [[nodiscard]] unsigned totalEdges() const override;
@@ -23,17 +22,11 @@ public:
     [[nodiscard]] const std::unordered_set<unsigned>& initialStates() const;
     [[nodiscard]] const std::unordered_set<unsigned>& acceptingStates() const;
     [[nodiscard]] int countSuccessors(unsigned state) const override;
-    [[nodiscard]] const DiscreteLtlFormula& formula() const override;
     [[nodiscard]] const StateDenotation& stateDenotation(unsigned state) const;
     [[nodiscard]] const AutomatonStats& stats() const;
-
-    static FiniteLtlAutomatonConstSharedPtr buildAutomaton(
-        DiscreteLtlFormula&& discreteLtlFormula,
-        PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
-        spot::postprocessor::optimization_level optimizationLevel = spot::postprocessor::optimization_level::High,
-        bool anyOption = false,
-        std::string_view name = "FiniteLtlAutomaton"
-    );
+    [[nodiscard]] virtual const DiscreteLtlFormula& formula() const;
+    [[nodiscard]] virtual spot::postprocessor::optimization_level optimizationLevel() const;
+    [[nodiscard]] PPL::dimension_type spaceDimension() const;
 
 protected:
     std::unordered_set<unsigned> m_initialStates {};
@@ -43,23 +36,21 @@ protected:
     std::unordered_map<unsigned, StateDenotation> m_stateDenotationById {};
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
     AutomatonStats m_automatonStats {};
-    int m_maxRecursiveDepth {};
+    DiscreteLtlFormula m_discreteLtlFormula {};
+    spot::postprocessor::optimization_level m_optimizationLevel {};
 
-    FiniteLtlAutomaton();
-
-    explicit FiniteLtlAutomaton(
+    PolyhedralLtlAutomaton();
+    explicit PolyhedralLtlAutomaton(const PolyhedralLtlAutomaton& other);
+    explicit PolyhedralLtlAutomaton(
         const DiscreteLtlFormula& discreteLtlFormula,
         PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
-        std::string_view name = "FiniteLtlAutomaton"
+        std::string_view name
     );
-
-    explicit FiniteLtlAutomaton(
+    explicit PolyhedralLtlAutomaton(
         DiscreteLtlFormula&& discreteLtlFormula,
         PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
-        std::string_view name = "FiniteLtlAutomaton"
+        std::string_view name
     );
-
-    friend std::ostream& operator<< (std::ostream& out, const FiniteLtlAutomaton& nfa);
 
     using RenumberingContextVoidPtr = void*;
     struct RenumberingContext
@@ -86,21 +77,21 @@ protected:
         unsigned* m_dummyInitialState {};
     };
 
-    void initializeAutomaton() override;
-    void buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<unsigned>& nfaAcceptingStates);
-    StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard);
-    void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nfa);
-    void createDummyInitialStateWithEdgesToInitialStates();
-    virtual void createNewEdge(unsigned srcState, unsigned dstState);
-    void purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr nfa, std::unordered_set<unsigned>& nfaAcceptingStates);
-    void logNfaConstruction(double executionTimeSeconds);
-    virtual void purgeUnreachableStates();
-    std::unordered_set<unsigned> killAcceptingStates(const spot::twa_graph_ptr& graph);
-    bdd stateLabelsAsBdd(unsigned outEdgeState) const;
-    spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption) override;
-    spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
-    void updateMaxNumberOfPatchesStats(int totPatches);
-    void setNfaStats(double executionTimeSeconds, int totalPatches);
+    friend std::ostream& operator<< (std::ostream& out, const PolyhedralLtlAutomaton& automaton);
 
+    void initializeAutomaton() override;
+    virtual void buildAutomaton(const spot::const_twa_graph_ptr& twaGraph, const std::unordered_set<unsigned>& acceptingStates);
+    virtual StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& twaGraph, const bdd& guard);
+    virtual bdd stateLabelsAsBdd(unsigned outEdgeState) const;
+    virtual void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr twaGraph);
+    virtual void createNewEdge(unsigned srcState, unsigned dstState);
+    virtual void purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr twaGraph, std::unordered_set<unsigned>& acceptingStates);
+    virtual void onConstructionCompleted(double executionTimeSeconds);
+    virtual void logConstructionCompleted(double executionTimeSeconds);
+    virtual void purgeUnreachableStates();
+    void createDummyInitialStateWithEdgesToInitialStates();
+    void updatePatchStats(int totPatches);
+    virtual std::unordered_set<unsigned> killAcceptingStates(const spot::twa_graph_ptr& graph);
+    virtual spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption);
     static void renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr);
 };

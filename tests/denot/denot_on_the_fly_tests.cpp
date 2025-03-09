@@ -38,7 +38,6 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
         DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
-        std::cerr << "exit" << std::endl;
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
 
         Powerset expectedResult {
