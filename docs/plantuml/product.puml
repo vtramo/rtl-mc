@@ -23,7 +23,8 @@ package product {
         +acceptingStates(): const std::unordered_set<unsigned>&
         +spaceDimension(): PPL::dimension_type
         -buildAutomaton() : void
-        -stateDenotationContainsAbstractionPoints(unsigned ltlAutomatonState, unsigned abstractionState)
+        -stateDenotationContainsAbstractionPoints(unsigned ltlAutomatonState, unsigned abstractionState) : bool
+        -createDummyInitialStateWithEdgesToInitialStates() : void
     }
 
     PolyhedralSynchronousProductAutomaton --> "1" PolyhedralLtlAutomaton

@@ -20,36 +20,38 @@ void PolyhedralSynchronousProductAutomaton::buildAutomaton()
     m_productStatePair = std::vector<std::pair<unsigned, unsigned>>(m_ltlAutomaton->totalStates() * m_abstraction->totalStates());
     std::vector stateProductByPair(m_ltlAutomaton->totalStates(), std::vector(m_abstraction->totalStates(), -1));
 
-    for (unsigned nfaState { 0 }; nfaState < m_ltlAutomaton->totalStates(); ++nfaState)
+    for (unsigned ltlAutomatonState { 0 }; ltlAutomatonState < m_ltlAutomaton->totalStates(); ++ltlAutomatonState)
     {
         for (unsigned abstractionState { 0 }; abstractionState < m_abstraction->totalStates(); ++abstractionState)
         {
-            if (stateDenotationContainsAbstractionPoints(nfaState, abstractionState))
+            if (stateDenotationContainsAbstractionPoints(ltlAutomatonState, abstractionState))
             {
                 unsigned productState { m_automaton->new_state() };
-                m_productStatePair[productState] = std::make_pair(nfaState, abstractionState);
-                stateProductByPair[nfaState][abstractionState] = productState;
-                if (m_ltlAutomaton->isInitialState(nfaState)) m_initialStates.insert(productState);
-                if (m_ltlAutomaton->isAcceptingState(nfaState)) m_acceptingStates.insert(productState);
+                m_productStatePair[productState] = std::make_pair(ltlAutomatonState, abstractionState);
+                stateProductByPair[ltlAutomatonState][abstractionState] = productState;
+                if (m_ltlAutomaton->isInitialState(ltlAutomatonState)) m_initialStates.insert(productState);
+                if (m_ltlAutomaton->isAcceptingState(ltlAutomatonState)) m_acceptingStates.insert(productState);
             }
         }
     }
 
     for (unsigned productState { 0 }; productState < m_automaton->num_states(); ++productState)
     {
-        auto [nfaState, abstractionState] = m_productStatePair[productState];
-        for (auto nfaEdge: m_ltlAutomaton->successors(nfaState))
+        auto [ltlAutomatonState, abstractionState] = m_productStatePair[productState];
+        for (auto edge: m_ltlAutomaton->successors(ltlAutomatonState))
         {
             for (auto abstractionEdge: m_abstraction->successors(abstractionState))
             {
-                int productStateSuccessor { stateProductByPair[nfaEdge.dst][abstractionEdge.dst] };
+                int productStateSuccessor { stateProductByPair[edge.dst][abstractionEdge.dst] };
                 if (productStateSuccessor != -1)
                 {
-                    m_automaton->new_edge(productState, productStateSuccessor, nfaEdge.cond, nfaEdge.acc);
+                    m_automaton->new_edge(productState, productStateSuccessor, edge.cond, edge.acc);
                 }
             }
         }
     }
+
+    createDummyInitialStateWithEdgesToInitialStates();
 }
 
 void PolyhedralSynchronousProductAutomaton::initializeAutomaton()
@@ -60,12 +62,12 @@ void PolyhedralSynchronousProductAutomaton::initializeAutomaton()
 }
 
 bool PolyhedralSynchronousProductAutomaton::stateDenotationContainsAbstractionPoints(
-    const unsigned nfaState,
+    const unsigned ltlAutomatonState,
     const unsigned abstractionState
 )
 {
-    const auto& nfaStateDenotation { m_ltlAutomaton->stateDenotation(nfaState) };
-    return nfaStateDenotation.denotation()->contains(*m_abstraction->points(abstractionState));
+    const auto& ltlAutomatonStateDenotation { m_ltlAutomaton->stateDenotation(ltlAutomatonState) };
+    return ltlAutomatonStateDenotation.denotation()->contains(*m_abstraction->points(abstractionState));
 }
 
 unsigned PolyhedralSynchronousProductAutomaton::totalAcceptingStates() const
@@ -102,7 +104,7 @@ PowersetConstSharedPtr PolyhedralSynchronousProductAutomaton::points(const unsig
 {
     assertThatStateIsInRange(state);
 
-    const auto [nfaState, abstractionState] { m_productStatePair[state] };
+    const auto [ltlAutomatonState, abstractionState] { m_productStatePair[state] };
     return m_abstraction->points(abstractionState);
 }
 
@@ -116,4 +118,17 @@ std::pair<unsigned, unsigned> PolyhedralSynchronousProductAutomaton::productStat
 PPL::dimension_type PolyhedralSynchronousProductAutomaton::spaceDimension() const
 {
     return m_abstraction->spaceDimension();
+}
+
+void PolyhedralSynchronousProductAutomaton::createDummyInitialStateWithEdgesToInitialStates()
+{
+    unsigned dummyInitialState { m_automaton->new_state() };
+    m_automaton->set_init_state(dummyInitialState);
+    for (const unsigned initialState: m_initialStates)
+    {
+        auto [ltlAutomatonState, abstractionState] { m_productStatePair[initialState] };
+        const Observable& observable { m_abstraction->observable(abstractionState) };
+        bdd observableAsBdd { m_abstraction->observableAsBdd(observable) };
+        m_automaton->new_edge(dummyInitialState, initialState, observableAsBdd);
+    }
 }

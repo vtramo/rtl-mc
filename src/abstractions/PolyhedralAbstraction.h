@@ -33,6 +33,8 @@ protected:
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
     PPL::dimension_type m_spaceDimension {};
 
+    friend class PolyhedralSynchronousProductAutomaton;
+
     void initializeAutomaton() override
     {
         m_automaton = std::make_shared<spot::twa_graph>(m_polyhedralSystem->bddDict());

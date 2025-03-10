@@ -38,6 +38,8 @@ inline PowersetSharedPtr omnidirectionalInfiniteTimeSemanticsSolver(
 
         const spot::state* initialState { prefixStepIterator->s };
         const unsigned initialStateNumber { synchronousProduct->twa()->state_number(initialState) };
+        assert(synchronousProduct->isInitialState(initialStateNumber));
+
         PowersetConstSharedPtr initialStatePoints { synchronousProduct->points(initialStateNumber) };
         PPLUtils::fusion(*result, *initialStatePoints);
 

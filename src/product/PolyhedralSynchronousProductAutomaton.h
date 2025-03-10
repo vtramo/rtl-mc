@@ -36,5 +36,6 @@ private:
 
     void initializeAutomaton() override;
     void buildAutomaton();
-    bool stateDenotationContainsAbstractionPoints(unsigned nfaState, unsigned abstractionState);
+    bool stateDenotationContainsAbstractionPoints(unsigned ltlAutomatonState, unsigned abstractionState);
+    void createDummyInitialStateWithEdgesToInitialStates();
 };

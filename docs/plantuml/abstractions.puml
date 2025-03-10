@@ -21,6 +21,8 @@ package abstractions {
             +virtual initialState(): unsigned
             +virtual spaceDimension(): PPL::dimension_type
             #virtual observableAsBdd(const Observable& observable): bdd
+            --friends--
+            friend class PolyhedralSynchronousProductAutomaton
         }
         abstract Automaton {}
 
