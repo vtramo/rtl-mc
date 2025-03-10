@@ -25,6 +25,7 @@ public:
     [[nodiscard]] const std::unordered_set<unsigned>& acceptingStates() const;
     [[nodiscard]] PowersetConstSharedPtr points(unsigned state) const;
     [[nodiscard]] std::pair<unsigned, unsigned> productStatePair(unsigned state) const;
+    [[nodiscard]] PPL::dimension_type spaceDimension() const;
 
 private:
     spot::product_states m_productStatePair {};

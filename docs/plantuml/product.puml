@@ -2,6 +2,8 @@
 
 package product {
     abstract Automaton {}
+    abstract PolyhedralAbstraction {}
+    abstract PolyhedralLtlAutomaton {}
     class PolyhedralSynchronousProductAutomaton {
         --type aliases--
         +using PolyhedralSynchronousProductAutomatonConstSharedPtr = std::shared_ptr<PolyhedralSynchronousProductAutomaton>
@@ -13,14 +15,15 @@ package product {
         -m_initialStates: std::unordered_set<int>
         -m_acceptingStates: std::unordered_set<int>
         -- constructors --
-        +PolyhedralSynchronousProductAutomaton(PolyhedralLtlAutomatonConstSharedPtr nfa, PolyhedralAbstractionConstSharedPtr abstraction)
+        +PolyhedralSynchronousProductAutomaton(PolyhedralLtlAutomatonConstSharedPtr ltlAutomaton, PolyhedralAbstractionConstSharedPtr abstraction)
         -- member functions --
         +points(state: unsigned) : PowersetConstSharedPtr
         +productStatePair(state: unsigned) : std::pair<int, int>
         +initialStates(): const std::unordered_set<unsigned>&
         +acceptingStates(): const std::unordered_set<unsigned>&
+        +spaceDimension(): PPL::dimension_type
         -buildAutomaton() : void
-        -stateDenotationContainsAbstractionPoints(unsigned nfaState, unsigned abstractionState)
+        -stateDenotationContainsAbstractionPoints(unsigned ltlAutomatonState, unsigned abstractionState)
     }
 
     PolyhedralSynchronousProductAutomaton --> "1" PolyhedralLtlAutomaton

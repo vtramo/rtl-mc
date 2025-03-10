@@ -112,3 +112,8 @@ std::pair<unsigned, unsigned> PolyhedralSynchronousProductAutomaton::productStat
 
     return m_productStatePair.at(state);
 }
+
+PPL::dimension_type PolyhedralSynchronousProductAutomaton::spaceDimension() const
+{
+    return m_abstraction->spaceDimension();
+}

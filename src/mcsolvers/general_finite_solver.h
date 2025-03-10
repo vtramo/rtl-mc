@@ -9,6 +9,8 @@
 #include "PolyhedralFiniteLtlAutomaton.h"
 #include "automata_builder.h"
 #include "GeneralPolyhedralAbstraction.h"
+#include "PolyhedralSynchronousProductAutomaton.h"
+#include "ExistentialDenotationFiniteSemanticsDfs.h"
 
 inline int maxPatches(const std::vector<Observable>& observables)
 {
@@ -39,11 +41,14 @@ inline PowersetSharedPtr generalFiniteTimeSemanticsSolver(
     };
     std::vector observables { polyhedralSystem->generateObservables() };
     const unsigned sufficientHorizon { 2 * finiteLtlAutomaton->totalStates() * maxPatches(observables) };
-    GeneralPolyhedralAbstraction generalPolyhedralAbstraction {
-        polyhedralSystem,
-        std::move(observables),
-        static_cast<int>(sufficientHorizon)
+    auto abstraction {
+        std::make_shared<GeneralPolyhedralAbstraction>(
+            polyhedralSystem,
+            std::move(observables),
+            sufficientHorizon
+        )
     };
-
-    return std::make_shared<Powerset>(PPL::EMPTY);
+    auto polyhedralSynchronousProduct { std::make_shared<PolyhedralSynchronousProductAutomaton>(finiteLtlAutomaton, abstraction) };
+    ExistentialDenotationFiniteSemanticsDfs dfs { polyhedralSynchronousProduct };
+    return dfs.run();
 }
