@@ -73,6 +73,7 @@ namespace PPLUtils {
 
     Poly poly(std::vector<PPL::Constraint> && constraints, const PPL::dimension_type polyDimension) {
         PPL::Constraint_System constraintSystem {};
+        constraintSystem.set_space_dimension(polyDimension);
 
         for (PPL::Constraint & constraint : constraints) {
             PPL::Constraint con {};
@@ -80,9 +81,7 @@ namespace PPLUtils {
             constraintSystem.insert(con);
         }
 
-        Poly poly { polyDimension, PPL::EMPTY };
-        poly.add_constraints(constraintSystem);
-        return poly;
+        return Poly { constraintSystem };
     }
 
     Powerset powerset(const std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra) {
@@ -394,7 +393,7 @@ namespace PPLUtils {
         return false;
     }
 
-    PolyUniquePtr interior(const Poly& poly)
+    PolyUniquePtr interiorGeometric(const Poly& poly)
     {
         Powerset universe { poly.space_dimension(), PPL::UNIVERSE };
 
@@ -412,7 +411,7 @@ namespace PPLUtils {
         return std::make_unique<Poly>(result.begin()->pointset());
     }
 
-    PolyUniquePtr interiorFast(const Poly& poly)
+    PolyUniquePtr interior(const Poly& poly)
     {
         const PPL::Constraint_System& polyConstraintSystem { poly.constraints() };
         if (polyConstraintSystem.has_equalities())
@@ -441,6 +440,62 @@ namespace PPLUtils {
         }
 
         return std::make_unique<Poly>(strictConstraints);
+    }
+
+    PolyUniquePtr removeSingleVariableZeroEqualityConstraints(const Poly& poly)
+    {
+        const PPL::Constraint_System& polyConstraintSystem { poly.constraints() };
+        if (!polyConstraintSystem.has_equalities())
+        {
+            return std::make_unique<Poly>(poly);
+        }
+
+        PPL::Constraint_System newConstraints {};
+        newConstraints.set_space_dimension(poly.space_dimension());
+
+        for (auto constraint: polyConstraintSystem)
+        {
+            if (isSingleVariableZeroEqualityConstraint(constraint))
+            {
+                continue;
+            }
+
+            newConstraints.insert(constraint);
+        }
+
+        return newConstraints.empty()
+            ? std::make_unique<Poly>(poly.space_dimension(), PPL::EMPTY)
+            : std::make_unique<Poly>(newConstraints);
+    }
+
+    bool isSingleVariableZeroEqualityConstraint(const PPL::Constraint& constraint)
+    {
+        const auto& expression { constraint.expression() };
+        if (!constraint.is_equality() || expression.inhomogeneous_term() != 0)
+        {
+            return false;
+        }
+
+        bool nonZeroCoefficientFound { false };
+        for (PPL::dimension_type dim { 0 }; dim < constraint.space_dimension(); ++dim)
+        {
+            PPL::GMP_Integer varCoefficient { expression.coefficient(PPL::Variable { dim }) };
+            if (varCoefficient != 0)
+            {
+                if (nonZeroCoefficientFound) return false;
+                nonZeroCoefficientFound = true;
+            }
+        }
+
+        return nonZeroCoefficientFound;
+    }
+
+    bool isOmnidirectionalFlow(const Poly& flow)
+    {
+        PolyUniquePtr flowNoSingleVarZeroCons { PPLUtils::removeSingleVariableZeroEqualityConstraints(flow) };
+        PolyUniquePtr interiorFlowNoSingleVarZeroCons { PPLUtils::interior(*flowNoSingleVarZeroCons) };
+        Poly zeroPoint { PPLUtils::zeroPoint(flow.space_dimension()) };
+        return interiorFlowNoSingleVarZeroCons->contains(zeroPoint);
     }
 
     PowersetUniquePtr border(const Poly& p, const Poly& q)

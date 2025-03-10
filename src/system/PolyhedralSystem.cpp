@@ -206,11 +206,11 @@ void PolyhedralSystem::computePreFlow()
 
 void PolyhedralSystem::evaluateFlowProperties()
 {
-    const Poly zeroPoint { PPLUtils::zeroPoint(spaceDimension()) };
+    m_isOmnidirectionalFlow = PPLUtils::isOmnidirectionalFlow(m_flow);
+
+    Poly zeroPoint { PPLUtils::zeroPoint(spaceDimension()) };
     Poly closureFlow { m_flow };
     closureFlow.topological_closure_assign();
-    PolyUniquePtr interiorFlow { PPLUtils::interiorFast(m_flow) };
-    m_isOmnidirectionalFlow = interiorFlow->contains(zeroPoint);
     m_isMovementForced = !closureFlow.contains(zeroPoint);
 }
 
