@@ -35,7 +35,7 @@ void GeneralPolyhedralAbstraction::buildAbstraction(const unsigned maxObservable
     };
 
     std::unordered_map<int, std::unordered_map<ObservablePatchSequence, SingOpenStatePair>> singOpenStatePairBySequence {};
-    for (int k { 1 }; k <= maxObservablePatchSequenceLength; ++k)
+    for (unsigned k { 1 }; k <= maxObservablePatchSequenceLength; ++k)
     {
         std::vector kObservableCombinations {
             combinations<Observable>(
