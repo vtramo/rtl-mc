@@ -57,25 +57,8 @@ PolyhedralBuchiLtlAutomatonConstSharedPtr PolyhedralBuchiLtlAutomaton::buildAuto
     std::unordered_set acceptingStates { finiteLtlAutomaton->collectAcceptingStates(formulaTgba) };
     finiteLtlAutomaton->purgeUnreachableStatesThenRenumberAcceptingStates(formulaTgba, acceptingStates);
     finiteLtlAutomaton->PolyhedralLtlAutomaton::buildAutomaton(formulaTgba, acceptingStates);
-    finiteLtlAutomaton->m_initialStates.clear();
-    finiteLtlAutomaton->m_initialStates.insert(finiteLtlAutomaton->m_automaton->get_init_state_number());
 
     return finiteLtlAutomaton;
-}
-
-const std::unordered_set<unsigned>& PolyhedralBuchiLtlAutomaton::initialStates() const
-{
-    return m_initialStates;
-}
-
-unsigned PolyhedralBuchiLtlAutomaton::totalInitialStates() const
-{
-    return totalStates() == 0 ? 0 : 1;
-}
-
-unsigned PolyhedralBuchiLtlAutomaton::isInitialState(const unsigned state) const
-{
-    return m_automaton->get_init_state_number() == state;
 }
 
 std::unordered_set<unsigned> PolyhedralBuchiLtlAutomaton::collectAcceptingStates(spot::const_twa_graph_ptr twaGraph)
