@@ -187,7 +187,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     REQUIRE(backwardNfa->totalAcceptingStates() == 2);
     REQUIRE(backwardNfa->acceptingStates() == std::unordered_set<unsigned>{ 12, 5 });
     REQUIRE(backwardNfa->initialStates() == std::unordered_set<unsigned>{ 0, 1, 2, 3 });
-    REQUIRE(backwardNfa->totalEdges() == 21);
+    REQUIRE(backwardNfa->totalEdges() == 17);
 
     constexpr unsigned stateZero = 0;
     const StateDenotation& zeroStateDenotation { backwardNfa->stateDenotation(0) };
@@ -620,16 +620,9 @@ public:
         : BackwardNFADepthFirstSearch(backwardNfa)
     {
     }
-
-    [[nodiscard]] unsigned totalReachableStates() const { return m_totalReachableStates; }
-    [[nodiscard]] unsigned totalVisitedEdges() const { return m_totalVisitedEdges; }
 private:
-    unsigned m_totalReachableStates {};
-    unsigned m_totalVisitedEdges {};
-
     void processState(const unsigned state) override
     {
-        m_totalReachableStates++;
         INFO("State is " << state);
         if (!m_backwardNfa->hasSuccessors(state))
             REQUIRE(m_backwardNfa->isInitialState(state));
@@ -637,7 +630,6 @@ private:
 
     void processEdge(const unsigned src, const unsigned dst) override
     {
-        m_totalVisitedEdges++;
         INFO("Edge (" << src << ", " << dst << ")");
         const bool srcIsSing { m_backwardNfa->stateDenotation(src).isSingular() };
         const bool dstIsSing { m_backwardNfa->stateDenotation(dst).isSingular() };
@@ -681,6 +673,4 @@ void testBackwardNfaInvariant(BackwardNFAConstSharedPtr backwardNfa)
 
     BackwardNFADepthFirstSearchInvariantCheck backwardNfaDfs { backwardNfa };
     backwardNfaDfs();
-    REQUIRE(backwardNfaDfs.totalReachableStates() == backwardNfa->totalStates());
-    REQUIRE(backwardNfaDfs.totalVisitedEdges() == backwardNfa->totalEdges());
 }

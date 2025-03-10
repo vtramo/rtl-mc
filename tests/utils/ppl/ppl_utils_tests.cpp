@@ -26,9 +26,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -49,9 +49,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -72,9 +72,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -95,9 +95,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -118,9 +118,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -141,9 +141,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -163,9 +163,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -186,9 +186,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -209,9 +209,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -246,9 +246,9 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
@@ -283,11 +283,187 @@ TEST_CASE("Interior")
             REQUIRE(*polyInterior == expectedPolyInterior);
         }
 
-        SECTION("interiorFast")
+        SECTION("interiorGeometric")
         {
-            PolyUniquePtr polyInterior { PPLUtils::interiorFast(poly) };
+            PolyUniquePtr polyInterior { PPLUtils::interiorGeometric(poly) };
             INFO("Poly Interior: " + PPLUtils::toString(*polyInterior));
             REQUIRE(*polyInterior == expectedPolyInterior);
+        }
+    }
+}
+
+TEST_CASE("removeSingleVariableZeroEqualityConstraints")
+{
+    PPL::Variable x { 0 };
+    PPL::Variable y { 1 };
+    PPL::Variable z { 2 };
+    PPL::Variable k { 3 };
+    PPL::Variable j { 4 };
+
+    SECTION("{ x = 0 } should be false")
+    {
+        Poly poly { PPLUtils::poly({ x == 0 }) };
+        Poly expectedPoly { poly.space_dimension(), PPL::EMPTY };
+
+        PolyUniquePtr result { PPLUtils::removeSingleVariableZeroEqualityConstraints(poly) };
+
+        INFO("Poly: " + PPLUtils::toString(poly));
+        INFO("Expected poly: " + PPLUtils::toString(expectedPoly));
+        INFO("Result: " + PPLUtils::toString(*result));
+        REQUIRE(result->space_dimension() == 1);
+        REQUIRE(*result == expectedPoly);
+    }
+
+    SECTION("{ x = 0 & y = 0 & z = 0 } should be false")
+    {
+        Poly poly { PPLUtils::poly({ x == 0, y == 0, z == 0 }) };
+        Poly expectedPoly { poly.space_dimension(), PPL::EMPTY };
+
+        PolyUniquePtr result { PPLUtils::removeSingleVariableZeroEqualityConstraints(poly) };
+
+        INFO("Poly: " + PPLUtils::toString(poly));
+        INFO("Expected poly: " + PPLUtils::toString(expectedPoly));
+        INFO("Result: " + PPLUtils::toString(*result));
+        REQUIRE(result->space_dimension() == 3);
+        REQUIRE(*result == expectedPoly);
+    }
+
+    SECTION("{ x = 0 } should be false")
+    {
+        Poly poly { PPLUtils::poly({ x == 0 }) };
+        Poly expectedPoly { poly.space_dimension(), PPL::EMPTY };
+
+        PolyUniquePtr result { PPLUtils::removeSingleVariableZeroEqualityConstraints(poly) };
+
+        INFO("Poly: " + PPLUtils::toString(poly));
+        INFO("Expected poly: " + PPLUtils::toString(expectedPoly));
+        INFO("Result: " + PPLUtils::toString(*result));
+        REQUIRE(result->space_dimension() == 1);
+        REQUIRE(*result == expectedPoly);
+    }
+
+    SECTION("{ x = 0 & y = 0 & z = 0 & k = 0 & j = 0} should be false")
+    {
+        Poly poly { PPLUtils::poly({ x == 0, y == 0, z == 0, k == 0, j == 0 }) };
+        Poly expectedPoly { poly.space_dimension(), PPL::EMPTY };
+
+        PolyUniquePtr result { PPLUtils::removeSingleVariableZeroEqualityConstraints(poly) };
+
+        INFO("Poly: " + PPLUtils::toString(poly));
+        INFO("Expected poly: " + PPLUtils::toString(expectedPoly));
+        INFO("Result: " + PPLUtils::toString(*result));
+        REQUIRE(result->space_dimension() == 5);
+        REQUIRE(*result == expectedPoly);
+    }
+
+    SECTION(
+        "{ x + y >= -2 & x + y <= 2 & x >= -1 & x <= 1 & y >= -2 & y <= 2 & z = 1 }\n"
+        "SHOULD BE\n"
+        "{ x + y >= -2 & x + y <= 2 & x >= -1 & x <= 1 & y >= -2 & y <= 2 & z = 1 }"
+    )
+    {
+        Poly poly { PPLUtils::poly({ x + y >= -2, x + y <= 2, x >= -1, x <= 1, y >= -2, y <= 2, z == 1 }) };
+        Poly expectedPoly { poly };
+
+        PolyUniquePtr result { PPLUtils::removeSingleVariableZeroEqualityConstraints(poly) };
+
+        INFO("Poly: " + PPLUtils::toString(poly));
+        INFO("Expected poly: " + PPLUtils::toString(expectedPoly));
+        INFO("Result: " + PPLUtils::toString(*result));
+        REQUIRE(result->space_dimension() == 3);
+        REQUIRE(*result == expectedPoly);
+    }
+
+
+    SECTION(
+        "{ x = 0 & y <= 1 & y >= -1 }\n"
+        "SHOULD BE\n"
+        "{ y <= 1 & y >= -1 }"
+    )
+    {
+        Poly poly { PPLUtils::poly({ x == 0, y <= 1, y >= -1 }) };
+        Poly expectedPoly { PPLUtils::poly({ y <= 1, y >= -1 }) };
+
+        PolyUniquePtr result { PPLUtils::removeSingleVariableZeroEqualityConstraints(poly) };
+
+        INFO("Poly: " + PPLUtils::toString(poly));
+        INFO("Expected poly: " + PPLUtils::toString(expectedPoly));
+        INFO("Result: " + PPLUtils::toString(*result));
+        REQUIRE(result->space_dimension() == 2);
+        REQUIRE(*result == expectedPoly);
+    }
+
+    SECTION(
+        "{ x == 0, y <= 1, y >= -1, z == 0 }\n"
+        "SHOULD BE\n"
+        "{ y <= 1, y >= -1 }"
+    )
+    {
+        Poly poly { PPLUtils::poly({ x == 0, y <= 1, y >= -1, z == 0 }) };
+        Poly expectedPoly { PPLUtils::poly({ y <= 1, y >= -1 }, 3) };
+
+        PolyUniquePtr result { PPLUtils::removeSingleVariableZeroEqualityConstraints(poly) };
+
+        INFO("Poly: " + PPLUtils::toString(poly));
+        INFO("Expected poly: " + PPLUtils::toString(expectedPoly));
+        INFO("Result: " + PPLUtils::toString(*result));
+        REQUIRE(result->space_dimension() == 3);
+        REQUIRE(*result == expectedPoly);
+    }
+}
+
+TEST_CASE("isOmnidirectionalFlow")
+{
+    PPL::Variable x { 0 };
+    PPL::Variable y { 1 };
+    PPL::Variable z { 2 };
+    PPL::Variable k { 3 };
+    PPL::Variable j { 4 };
+
+    SECTION("Non-omnidirectional flows")
+    {
+        SECTION("{ x = 0 } is NOT an omnidirectional flow")
+        {
+            Poly poly { PPLUtils::poly({ x == 0 }) };
+
+            INFO("Poly: " + PPLUtils::toString(poly));
+            REQUIRE(!PPLUtils::isOmnidirectionalFlow(poly));
+        }
+
+        SECTION("{ x = 0 & y = 0 & z = 0 } is NOT an omnidirectional flow")
+        {
+            Poly poly { PPLUtils::poly({ x == 0, y == 0, z == 0 }) };
+
+            INFO("Poly: " + PPLUtils::toString(poly));
+            REQUIRE(!PPLUtils::isOmnidirectionalFlow(poly));
+        }
+
+        SECTION("{ x + y >= -2 & x + y <= 2 & x >= -1 & x <= 1 & y >= -2 & y <= 2 & z = 1 } is NOT an omnidirectional flow")
+        {
+            Poly poly { PPLUtils::poly({ x + y >= -2, x + y <= 2, x >= -1, x <= 1, y >= -2, y <= 2, z == 1 }) };
+
+            INFO("Poly: " + PPLUtils::toString(poly));
+            REQUIRE(!PPLUtils::isOmnidirectionalFlow(poly));
+        }
+    }
+
+    SECTION("Omnidirectional flows")
+    {
+        SECTION("{ x = 0 & y <= 1 & y >= -1 } is an omnidirectional flow")
+        {
+            Poly poly { PPLUtils::poly({ x == 0, y <= 1, y >= -1 }) };
+
+            INFO("Poly: " + PPLUtils::toString(poly));
+            REQUIRE(PPLUtils::isOmnidirectionalFlow(poly));
+        }
+
+        SECTION("{ x = 0 & y <= 1 & y >= -1 & z = 0 } is an omnidirectional flow")
+        {
+            Poly poly { PPLUtils::poly({ x == 0, y <= 1, y >= -1, z == 0 }) };
+            REQUIRE(poly.space_dimension() == 3);
+
+            INFO("Poly: " + PPLUtils::toString(poly));
+            REQUIRE(PPLUtils::isOmnidirectionalFlow(poly));
         }
     }
 }
