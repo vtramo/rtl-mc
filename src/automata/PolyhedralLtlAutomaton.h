@@ -35,7 +35,7 @@ protected:
     std::unordered_set<unsigned> m_initialStates {};
     std::unordered_set<unsigned> m_acceptingStates {};
     unsigned m_dummyInitialState {};
-    unsigned m_dummyInitialEdges {};
+    unsigned m_dummyEdges {};
     std::unordered_map<unsigned, StateDenotation> m_stateDenotationById {};
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
     AutomatonStats m_automatonStats {};

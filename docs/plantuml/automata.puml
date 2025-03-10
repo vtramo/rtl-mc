@@ -39,8 +39,8 @@ package automata {
         --data members--
         #m_initialStates: std::unordered_set<unsigned>
         #m_acceptingStates: std::unordered_set<unsigned>
-        # m_dummyInitialState: unsigned
-        #m_dummyInitialEdges: unsigned
+        #m_dummyInitialState: unsigned
+        #m_dummyEdges: unsigned
         #m_stateDenotationById: std::unordered_map<unsigned, StateDenotation>
         #m_formulaDenotationMap: PolyhedralSystemFormulaDenotationMap
         #m_automatonStats: AutomatonStats

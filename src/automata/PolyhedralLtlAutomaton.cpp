@@ -16,7 +16,7 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(const PolyhedralLtlAutomaton& oth
     , m_initialStates { other.m_initialStates }
     , m_acceptingStates { other.m_acceptingStates }
     , m_dummyInitialState { other.m_dummyInitialState }
-    , m_dummyInitialEdges { other.m_dummyInitialEdges }
+    , m_dummyEdges { other.m_dummyEdges }
     , m_stateDenotationById { other.m_stateDenotationById }
     , m_formulaDenotationMap { other.m_formulaDenotationMap }
     , m_automatonStats { other.m_automatonStats }
@@ -75,7 +75,7 @@ unsigned PolyhedralLtlAutomaton::totalInitialStates() const
 
 unsigned PolyhedralLtlAutomaton::totalEdges() const
 {
-    return m_automaton->num_edges() - m_dummyInitialEdges;
+    return m_automaton->num_edges() - m_dummyEdges;
 }
 
 unsigned PolyhedralLtlAutomaton::totalAcceptingStates() const
@@ -85,7 +85,7 @@ unsigned PolyhedralLtlAutomaton::totalAcceptingStates() const
 
 unsigned PolyhedralLtlAutomaton::totalStates() const
 {
-    static constexpr int DUMMY_INITIAL_STATE { 1 };
+    static constexpr unsigned DUMMY_INITIAL_STATE { 1 };
     return m_automaton->num_states() - DUMMY_INITIAL_STATE;
 }
 
@@ -244,6 +244,7 @@ void PolyhedralLtlAutomaton::createNewEdge(const unsigned srcState, const unsign
     if (isDstAccepting && !m_automaton->state_is_accepting(dstState))
     {
         m_automaton->new_acc_edge(dstState, dstState, bdd_false(), true);
+        ++m_dummyEdges;
         assert(m_automaton->state_is_accepting(dstState));
     }
 }
@@ -299,7 +300,7 @@ void PolyhedralLtlAutomaton::createDummyInitialStateWithEdgesToInitialStates()
     for (const unsigned initialState: m_initialStates)
     {
         m_automaton->new_edge(m_dummyInitialState, initialState, stateLabelsAsBdd(initialState));
-        m_dummyInitialEdges++;
+        m_dummyEdges++;
     }
 }
 

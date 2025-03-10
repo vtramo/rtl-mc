@@ -87,6 +87,7 @@ void BackwardNFA::createNewEdge(const unsigned srcState, const unsigned dstState
     if (isSrcAccepting && !m_automaton->state_is_accepting(srcState))
     {
         m_automaton->new_acc_edge(srcState, srcState, bdd_false(), true);
+        ++m_dummyEdges;
         assert(m_automaton->state_is_accepting(srcState));
     }
 }
@@ -108,7 +109,7 @@ void BackwardNFA::createDummyInitialStateWithEdgesToReachableAcceptingStates()
         if (isInitialState(acceptingState) || hasSuccessors(acceptingState))
         {
             m_automaton->new_edge(m_dummyInitialState, acceptingState, bdd_true());
-            m_dummyInitialEdges++;
+            ++m_dummyEdges;
         }
     }
 }
