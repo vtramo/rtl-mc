@@ -9,6 +9,7 @@
 #include "Verbosity.h"
 #include "AutomatonOptimizationFlags.h"
 #include "OutputFormat.h"
+#include "Semantics.h"
 
 using namespace SpotUtils;
 
@@ -47,10 +48,12 @@ public:
     [[nodiscard]] Verbosity verbosityLevel() const { return m_verbosityLevel; }
     [[nodiscard]] OutputFormat outputFormat() const { return m_outputFormat; }
     [[nodiscard]] std::string statsFormat() const { return m_statsFormat; }
+    [[nodiscard]] Semantics semantics() const { return m_semantics; }
 
 private:
     argparse::ArgumentParser m_rtlMcProgram {};
 
+    Semantics m_semantics {};
     std::string m_polyhedralSystemFilename {};
     std::string m_rtlFilename {};
     PolyhedralSystemSharedPtr m_polyhedralSystem {};
@@ -96,18 +99,45 @@ private:
             .help("NO GAP experiment with k alternating steps and max time t. Example: --nogap 2 20.")
             .scan<'i', int>();
 
-        auto& semantic { m_rtlMcProgram.add_mutually_exclusive_group() };
-        semantic.add_argument("--existential")
+        auto& existentialOrUniversal { m_rtlMcProgram.add_mutually_exclusive_group() };
+        existentialOrUniversal.add_argument("--existential")
             .help("compute the set of points from which there exists a trajectory that satisfies φ (default)")
             .flag()
             .store_into(m_existential);
-        semantic.add_argument("--universal")
+        existentialOrUniversal.add_argument("--universal")
             .help("compute the set of points from which every trajectory satisfies φ")
             .flag()
             .store_into(m_universal);
 
+        auto& semantics { m_rtlMcProgram.add_mutually_exclusive_group() };
+        semantics.add_argument("--fin")
+            .help("this semantics considers only finite-time trajectories (default). It is "
+                "suitable to properties that are positively verified as soon as a prefix of a"
+                "trajectory satisfies them, such as reachability properties.")
+            .action([&](const auto&)
+            {
+                m_semantics = Semantics::fin;
+            });
+        semantics.add_argument("--inf")
+            .help("this semantics considers only infinite-time trajectories. "
+                "It is suitable to non-terminating properties, such as liveness or fairness "
+                "properties.")
+            .action([&](const auto&)
+            {
+                m_semantics = Semantics::inf;
+            });
+        semantics.add_argument("--may")
+            .help("this semantics considers all trajectories that "
+                "are either infinite-time, or end in a may-exit point, i.e., a point tht is "
+                "on the boundary of the invariant and from which at least one admissible "
+                "direction exits from the invariant.")
+            .action([&](const auto&)
+            {
+                m_semantics = Semantics::may;
+            });
+
         m_rtlMcProgram.add_argument("--mc")
-            .help("Check if a given point x ∈ ℝⁿ is the source of a trajectory in the polyhedral system that satisfies the temporal formula φ. "
+            .help("check if a given point x ∈ ℝⁿ is the source of a trajectory in the polyhedral system that satisfies the temporal formula φ. "
                       "For --existential, checks if some trajectory from the point satisfies φ. "
                       "For --universal, checks if all trajectories from the point satisfy φ. "
                       "Specify all system variables with rational values (e.g., [x=1/3, y=-2/3, z=1]).")
