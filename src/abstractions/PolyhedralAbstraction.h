@@ -7,7 +7,8 @@
 #include "Automaton.h"
 
 class PolyhedralAbstraction;
-using PolyhedralAbstractionConstSharedPtr = std::shared_ptr<PolyhedralAbstraction>;
+using PolyhedralAbstractionConstSharedPtr = std::shared_ptr<const PolyhedralAbstraction>;
+using PolyhedralAbstractionSharedPtr = std::shared_ptr<PolyhedralAbstraction>;
 
 class PolyhedralAbstraction: public Automaton
 {
@@ -42,7 +43,7 @@ protected:
         m_automaton->set_acceptance(spot::acc_cond::acc_code::t());
     }
 
-    virtual bdd observableAsBdd(const Observable& observable)
+    virtual bdd observableAsBdd(const Observable& observable) const
     {
         const spot::atomic_prop_set& observableAtoms { observable.atoms() };
         return spot::formula_to_bdd(SpotUtils::andAtoms(observableAtoms), m_automaton->get_dict(), m_automaton);

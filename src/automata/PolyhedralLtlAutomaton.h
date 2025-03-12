@@ -9,7 +9,8 @@
 #include "PolyhedralSystemFormulaDenotationMap.h"
 
 class PolyhedralLtlAutomaton;
-using PolyhedralLtlAutomatonConstSharedPtr = std::shared_ptr<PolyhedralLtlAutomaton>;
+using PolyhedralLtlAutomatonConstSharedPtr = std::shared_ptr<const PolyhedralLtlAutomaton>;
+using PolyhedralLtlAutomatonSharedPtr = std::shared_ptr<PolyhedralLtlAutomaton>;
 
 class PolyhedralLtlAutomaton: public Automaton
 {

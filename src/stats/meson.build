@@ -6,6 +6,6 @@ stats_source_file = [
     current_source_dir / 'RtlFormulaStats.h',
     current_source_dir / 'DiscretisationStats.h',
     current_source_dir / 'StatsFormatter.h',
-    current_source_dir / 'collectors.h',
+    current_source_dir / 'stats_collectors.h',
 ]
 project_source_files += stats_source_file

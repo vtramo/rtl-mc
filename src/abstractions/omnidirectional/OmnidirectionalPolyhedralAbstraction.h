@@ -7,7 +7,9 @@
 #include "PolyhedralAbstraction.h"
 
 class OmnidirectionalPolyhedralAbstraction;
-using OmnidirectionalPolyhedralAbstractionConstSharedPtr = std::shared_ptr<OmnidirectionalPolyhedralAbstraction>;
+using OmnidirectionalPolyhedralAbstractionConstSharedPtr = std::shared_ptr<const OmnidirectionalPolyhedralAbstraction>;
+using OmnidirectionalPolyhedralAbstractionSharedPtr = std::shared_ptr<OmnidirectionalPolyhedralAbstraction>;
+using OmnidirectionalPolyhedralAbstractionUniquePtr = std::unique_ptr<OmnidirectionalPolyhedralAbstraction>;
 
 class OmnidirectionalPolyhedralAbstraction: public PolyhedralAbstraction
 {

@@ -3,10 +3,10 @@
 #include <spot/twaalgos/reachiter.hh>
 #include "PolyhedralSynchronousProductAutomaton.h"
 
-class ExistentialDenotationFiniteSemanticsDfs
+class FiniteSemanticsDfs
 {
 public:
-    explicit ExistentialDenotationFiniteSemanticsDfs(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProduct)
+    explicit FiniteSemanticsDfs(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProduct)
         : m_transposedSynchronousProduct { synchronousProduct->transpose() }
     {
         m_synchronousProduct = synchronousProduct;
@@ -44,7 +44,7 @@ private:
     class Dfs : public spot::twa_reachable_iterator_depth_first
     {
     public:
-        explicit Dfs(const spot::const_twa_ptr& a, ExistentialDenotationFiniteSemanticsDfs* parent)
+        explicit Dfs(const spot::const_twa_ptr& a, FiniteSemanticsDfs* parent)
             : twa_reachable_iterator_depth_first(a)
             , m_parent { parent }
         {
@@ -58,7 +58,7 @@ private:
                 m_parent->addInitialStateDenotationToResult(productStateNumber);
         }
     protected:
-        ExistentialDenotationFiniteSemanticsDfs* m_parent {};
+        FiniteSemanticsDfs* m_parent {};
     };
 
     void addInitialStateDenotationToResult(const unsigned state)

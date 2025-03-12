@@ -9,7 +9,7 @@
 #include "AutomatonOptimizationFlags.h"
 #include "PolyhedralSynchronousProductAutomaton.h"
 #include "GeneralPolyhedralAbstraction.h"
-#include "ExistentialDenotationFiniteSemanticsDfs.h"
+#include "FiniteSemanticsDfs.h"
 #include "automata_builder.h"
 
 inline PowersetSharedPtr omnidirectionalFiniteTimeSemanticsSolver(
@@ -30,6 +30,6 @@ inline PowersetSharedPtr omnidirectionalFiniteTimeSemanticsSolver(
     };
 
     auto polyhedralSynchronousProduct { std::make_shared<PolyhedralSynchronousProductAutomaton>(finiteLtlAutomaton, abstraction) };
-    ExistentialDenotationFiniteSemanticsDfs dfs { polyhedralSynchronousProduct };
+    FiniteSemanticsDfs dfs { polyhedralSynchronousProduct };
     return dfs.run();
 }

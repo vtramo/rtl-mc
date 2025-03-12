@@ -4,6 +4,7 @@
 #include "PolyhedralSystem.h"
 #include "RtlFormulaStats.h"
 #include "DiscretisationStats.h"
+#include "DiscreteLtlFormula.h"
 #include "Denot.h"
 #include "DenotStats.h"
 #include <spot/tl/length.hh>
@@ -16,7 +17,7 @@ inline PolyhedralSystemStats collectPolyhedralSystemStats(const PolyhedralSystem
     };
 }
 
-inline RtlFormulaStats collectRtlfStats(const spot::formula& rtlf)
+inline RtlFormulaStats collectRtlStats(const spot::formula& rtlf)
 {
     return {
         static_cast<int>(std::unique_ptr<spot::atomic_prop_set>(spot::atomic_prop_collect(rtlf))->size()),

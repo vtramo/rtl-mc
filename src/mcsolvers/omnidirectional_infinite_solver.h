@@ -27,7 +27,7 @@ inline PowersetSharedPtr omnidirectionalInfiniteTimeSemanticsSolver(
     auto abstraction { std::make_shared<OmnidirectionalPolyhedralAbstraction>(polyhedralSystem) };
     auto synchronousProduct { std::make_shared<PolyhedralSynchronousProductAutomaton>(buchiLtlAutomaton, abstraction) };
 
-    PowersetSharedPtr result { std::make_shared<Powerset>(polyhedralSystem->spaceDimension(), PPL::EMPTY) };
+    PowersetSharedPtr result { std::make_shared<Powerset>(synchronousProduct->spaceDimension(), PPL::EMPTY) };
     spot::emptiness_check_ptr explicitSe05Search { spot::explicit_se05_search(synchronousProduct->twa()) };
     spot::emptiness_check_result_ptr emptinessCheckResult { explicitSe05Search->check() };
     while (emptinessCheckResult != nullptr)

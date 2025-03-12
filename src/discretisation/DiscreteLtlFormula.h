@@ -24,15 +24,14 @@ public:
         return DiscreteLtlFormula { applyFiniteAlternationSingOpenObservablesOneStep(std::move(discretisedLtlFormula)) };
     }
     const spot::formula& formula() const { return m_discreteLtlFormula; }
+
+    DiscreteLtlFormula() = default;
 private:
     spot::formula m_discreteLtlFormula {};
 
-    friend class BackwardNFA;
-    friend class DiscreteFiniteLtlFormula;
-    friend class PolyhedralLtlAutomaton;
     friend DiscreteLtlFormula discretiseToLtl(spot::formula&& formula);
+    friend class DiscreteFiniteLtlFormula;
 
-    DiscreteLtlFormula() = default;
     explicit DiscreteLtlFormula(spot::formula&& formula)
         : m_discreteLtlFormula { std::move(formula) }
     {

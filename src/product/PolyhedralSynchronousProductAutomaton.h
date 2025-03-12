@@ -6,7 +6,8 @@
 #include "PolyhedralAbstraction.h"
 
 class PolyhedralSynchronousProductAutomaton;
-using PolyhedralSynchronousProductAutomatonConstSharedPtr = std::shared_ptr<PolyhedralSynchronousProductAutomaton>;
+using PolyhedralSynchronousProductAutomatonConstSharedPtr = std::shared_ptr<const PolyhedralSynchronousProductAutomaton>;
+using PolyhedralSynchronousProductAutomatonSharedPtr = std::shared_ptr<PolyhedralSynchronousProductAutomaton>;
 
 class PolyhedralSynchronousProductAutomaton: public Automaton
 {

@@ -1,11 +1,10 @@
 #include <spdlog/spdlog.h>
-#include <spot/twaalgos/postproc.hh>
 
 #include "interface.h"
 #include "Timer.h"
 #include "logger.h"
 #include "Verbosity.h"
-#include "collectors.h"
+#include "stats_collectors.h"
 #include "StatsFormatter.h"
 #include "spot_utils.h"
 #include "DenotOnTheFly.h"
@@ -14,6 +13,7 @@
 #include "DenotConcurrentV1.h"
 #include "DiscreteFiniteLtlFormula.h"
 #include "ppl_output.h"
+#include "automata_builder.h"
 
 int onlyOnTheFlyDenotInterface(const int argc, char *argv[])
 {
@@ -31,12 +31,12 @@ int onlyOnTheFlyDenotInterface(const int argc, char *argv[])
     Log::log(Verbosity::verbose, "[Polyhedral System]\n{}", *polyhedralSystem);
     PolyhedralSystemStats polyhedralSystemStats { collectPolyhedralSystemStats(*polyhedralSystem) };
 
-    Log::log(Verbosity::verbose, "[RTLf Formula] Formula: {}.", rtlFormula);
-    RtlFormulaStats rtlfFormulaStats { collectRtlfStats(rtlFormula) };
-    Log::log(Verbosity::verbose, "[RTLf Formula] Total atomic propositions: {}.", rtlfFormulaStats.totalAtomicPropositions);
-    Log::log(Verbosity::verbose, "[RTLf Formula] Length: {}.\n", rtlfFormulaStats.length);
+    Log::log(Verbosity::verbose, "[RTL Formula] Formula: {}.", rtlFormula);
+    RtlFormulaStats rtlFormulaStats { collectRtlStats(rtlFormula) };
+    Log::log(Verbosity::verbose, "[RTL Formula] Total atomic propositions: {}.", rtlFormulaStats.totalAtomicPropositions);
+    Log::log(Verbosity::verbose, "[RTL Formula] Length: {}.\n", rtlFormulaStats.length);
 
-    Log::log(Verbosity::verbose, ">>> RTLf formula discretisation started.");
+    Log::log(Verbosity::verbose, ">>> RTL formula discretisation started.");
     Timer timer {};
 
     DiscreteLtlFormula discreteLtlFormula {
@@ -106,7 +106,7 @@ int onlyOnTheFlyDenotInterface(const int argc, char *argv[])
         case OutputFormat::stats:
             StatsFormatter statsFormatter {
                 std::move(polyhedralSystemStats),
-                std::move(rtlfFormulaStats),
+                std::move(rtlFormulaStats),
                 std::move(discretisationStats),
                 AutomatonStats { backwardNfa->stats() },
                 std::move(denotStats)
@@ -126,24 +126,6 @@ int onlyOnTheFlyDenotInterface(const int argc, char *argv[])
     }
 
     return 0;
-}
-
-BackwardNFAConstSharedPtr buildBackwardNfa(
-    DiscreteLtlFormula&& discreteLtlFormula,
-    PolyhedralSystemFormulaDenotationMap&& polyhedralSystemFormulaDenotationMap,
-    const AutomatonOptimizationFlags optimizationFlags
-)
-{
-    spot::postprocessor::optimization_level optimizationLevel {};
-    if (optimizationFlags.low) optimizationLevel = spot::postprocessor::optimization_level::Low;
-    if (optimizationFlags.medium) optimizationLevel = spot::postprocessor::optimization_level::Medium;
-    if (optimizationFlags.high) optimizationLevel = spot::postprocessor::optimization_level::High;
-    return BackwardNFA::buildAutomaton(
-        std::move(discreteLtlFormula),
-        std::move(polyhedralSystemFormulaDenotationMap),
-        optimizationLevel,
-        optimizationFlags.any
-    );
 }
 
 std::unique_ptr<Denot> createDenot(
