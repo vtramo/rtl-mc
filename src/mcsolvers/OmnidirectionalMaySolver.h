@@ -25,6 +25,7 @@ public:
         PowersetConstSharedPtr infiniteResult { infiniteSolver.run() };
 
         preprocessPolyhedralSystem();
+        preprocessRtlFormula();
 
         OmnidirectionalFiniteSolver finiteSolver { m_polyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation };
         PowersetConstSharedPtr finiteResult { finiteSolver.run() };
@@ -32,8 +33,16 @@ public:
         return PPLUtils::fusion(*finiteResult, *infiniteResult);
     }
 protected:
-    void preprocessRtlFormula() override {}
-    double discretiseRtlFormula() override { return 0; }
+    void preprocessRtlFormula() override
+    {
+        m_rtlFormula = And({ m_rtlFormula, F(And({ ap("brink"), ap("last") })) });
+    }
+
+    double discretiseRtlFormula() override
+    {
+        return 0;
+    }
+
     void preprocessPolyhedralSystem() override
     {
         addBrinkAtomInPolyhedralSystem();
