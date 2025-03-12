@@ -492,10 +492,9 @@ namespace PPLUtils {
 
     bool isOmnidirectionalFlow(const Poly& flow)
     {
-        PolyUniquePtr flowNoSingleVarZeroCons { PPLUtils::removeSingleVariableZeroEqualityConstraints(flow) };
-        PolyUniquePtr interiorFlowNoSingleVarZeroCons { PPLUtils::interior(*flowNoSingleVarZeroCons) };
+        PolyUniquePtr interiorFlow { PPLUtils::interior(flow) };
         Poly zeroPoint { PPLUtils::zeroPoint(flow.space_dimension()) };
-        return interiorFlowNoSingleVarZeroCons->contains(zeroPoint);
+        return interiorFlow->contains(zeroPoint);
     }
 
     PowersetUniquePtr border(const Poly& p, const Poly& q)

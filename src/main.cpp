@@ -44,14 +44,20 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
-        else
+        else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
+            throw std::runtime_error("Not implemented yet");
             solver = std::make_unique<GeneralInfiniteSolver>(
                 polyhedralSystem,
                 rtlFormula,
                 automatonOptimizationFlags,
                 isUniversalDenotation
             );
+        }
+        else
+        {
+            spdlog::error("Undecidable");
+            exit(1);
         }
         break;
     case Semantics::may:
@@ -64,7 +70,7 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
-        else
+        else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
             throw std::runtime_error("Not implemented yet");
         }

@@ -445,21 +445,38 @@ TEST_CASE("isOmnidirectionalFlow")
             INFO("Poly: " + PPLUtils::toString(poly));
             REQUIRE(!PPLUtils::isOmnidirectionalFlow(poly));
         }
+
+        SECTION("{ x = 0 & y <= 1 & y >= -1 } is NOT an omnidirectional flow")
+        {
+            Poly poly { PPLUtils::poly({ x == 0, y <= 1, y >= -1 }) };
+
+            INFO("Poly: " + PPLUtils::toString(poly));
+            REQUIRE(!PPLUtils::isOmnidirectionalFlow(poly));
+        }
+
+        SECTION("{ x = 0 & y <= 1 & y >= -1 & z = 0 } is NOT an omnidirectional flow")
+        {
+            Poly poly { PPLUtils::poly({ x == 0, y <= 1, y >= -1, z == 0 }) };
+            REQUIRE(poly.space_dimension() == 3);
+
+            INFO("Poly: " + PPLUtils::toString(poly));
+            REQUIRE(!PPLUtils::isOmnidirectionalFlow(poly));
+        }
     }
 
     SECTION("Omnidirectional flows")
     {
-        SECTION("{ x = 0 & y <= 1 & y >= -1 } is an omnidirectional flow")
+        SECTION("{ x <= 1 & x >= -1 & y <= 1 & y >= -1 } is an omnidirectional flow")
         {
-            Poly poly { PPLUtils::poly({ x == 0, y <= 1, y >= -1 }) };
+            Poly poly { PPLUtils::poly({ x <= 1, x >= -1, y <= 1, y >= -1 }) };
 
             INFO("Poly: " + PPLUtils::toString(poly));
             REQUIRE(PPLUtils::isOmnidirectionalFlow(poly));
         }
 
-        SECTION("{ x = 0 & y <= 1 & y >= -1 & z = 0 } is an omnidirectional flow")
+        SECTION("{ x <= 1 & x >= -1 & y <= 1 & y >= -1 & z <= 1 & z >= -1 } is an omnidirectional flow")
         {
-            Poly poly { PPLUtils::poly({ x == 0, y <= 1, y >= -1, z == 0 }) };
+            Poly poly { PPLUtils::poly({ x <= 1, x >= -1, y <= 1, y >= -1, z <= 1, z >= -1 }) };
             REQUIRE(poly.space_dimension() == 3);
 
             INFO("Poly: " + PPLUtils::toString(poly));
