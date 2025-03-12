@@ -69,9 +69,20 @@ int main(const int argc, char *argv[])
             throw std::runtime_error("Not implemented yet");
         }
         break;
-        break;
     case Semantics::must:
-        throw std::runtime_error("Not implemented yet");
+        if (polyhedralSystem->isOmnidirectionalFlow())
+        {
+            solver = std::make_unique<OmnidirectionalInfiniteSolver>(
+                polyhedralSystem,
+                rtlFormula,
+                automatonOptimizationFlags,
+                isUniversalDenotation
+            );
+        }
+        else
+        {
+            throw std::runtime_error("Not implemented yet");
+        }
         break;
     }
 
