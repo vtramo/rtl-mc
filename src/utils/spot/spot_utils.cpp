@@ -5,6 +5,7 @@
 #include <spot/tl/randomltl.hh>
 #include <spot/twa/formula2bdd.hh>
 #include <spot/twa/twagraph.hh>
+#include <spot/tl/nenoform.hh>
 
 namespace SpotUtils
 {
@@ -420,6 +421,9 @@ namespace SpotUtils
         if (!formula.is_ltl_formula())
             throw std::invalid_argument("Spot formula is not a LTL formula");
 
+        if (!formula.is_in_nenoform())
+            formula = spot::negative_normal_form(formula);
+
         bool isNonRecurrent { true };
 
         formula.traverse([&isNonRecurrent] (const spot::formula& child)
@@ -429,7 +433,8 @@ namespace SpotUtils
                             if (child.is(spot::op::G))
                             {
                                 isNonRecurrent = child[0].is_boolean();
-                            } else if (child.is(spot::op::R))
+                            }
+                            else if (child.is(spot::op::R))
                             {
                                 isNonRecurrent = child[1].is_boolean();
                             }
