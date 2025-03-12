@@ -12,14 +12,19 @@
 
 using namespace SpotUtils;
 
+class Solver;
+using SolverUniquePtr = std::unique_ptr<Solver>;
+
 class Solver
 {
 public:
+    virtual ~Solver() = default;
+
     Solver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        AutomatonOptimizationFlags automatonOptimizationFlags,
-        bool universalDenotation = false
+        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const bool universalDenotation = false
     )
       : m_polyhedralSystem { polyhedralSystem }
       , m_rtlFormula { rtlFormula }
@@ -32,7 +37,7 @@ public:
         return run();
     }
 
-    virtual PowersetSharedPtr run();
+    virtual PowersetSharedPtr run() = 0;
 
     [[nodiscard]] PolyhedralSystemStats polyhedralSystemStats() const { return m_polyhedralSystemStats; }
     [[nodiscard]] RtlFormulaStats rtlFormulaStats() const { return m_rtlFormulaStats; }
@@ -48,7 +53,7 @@ protected:
     DiscreteLtlFormula m_discreteLtlFormula {};
     DiscretisationStats m_discretisationStats {};
 
-    virtual void preprocessPolyhedralSystem();
+    virtual void preprocessPolyhedralSystem() {}
     virtual void preprocessRtlFormula()
     {
         m_rtlFormula =
@@ -71,8 +76,8 @@ protected:
         Log::log(Verbosity::verbose, "[RTL Formula] Length: {}.\n", m_rtlFormulaStats.length);
     }
 
-    virtual double discretiseRtlFormula();
-    virtual void logAndCollectDiscretisationStats(double discretisationExecutionTimeSeconds)
+    virtual double discretiseRtlFormula() = 0;
+    virtual void logAndCollectDiscretisationStats(const double discretisationExecutionTimeSeconds)
     {
         m_discretisationStats = collectDiscretisationStats(m_discreteLtlFormula, discretisationExecutionTimeSeconds);
         Log::log(Verbosity::verbose, "[Discrete LTL formula] Formula: {}.", m_discreteLtlFormula);

@@ -18,6 +18,8 @@ public:
       : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
     {}
 
+    virtual ~GeneralFiniteSolver() = default;
+
     PowersetSharedPtr run() override
     {
         preprocessPolyhedralSystem();

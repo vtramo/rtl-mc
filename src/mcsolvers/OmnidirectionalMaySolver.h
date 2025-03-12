@@ -11,11 +11,13 @@ public:
     OmnidirectionalMaySolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        AutomatonOptimizationFlags automatonOptimizationFlags,
-        bool universalDenotation = false
+        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const bool universalDenotation = false
     )
       : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
     {}
+
+    ~OmnidirectionalMaySolver() override = default;
 
     PowersetSharedPtr run() override
     {
@@ -30,11 +32,8 @@ public:
         return PPLUtils::fusion(*finiteResult, *infiniteResult);
     }
 protected:
-    void preprocessRtlFormula() override
-    {
-
-    }
-
+    void preprocessRtlFormula() override {}
+    double discretiseRtlFormula() override { return 0; }
     void preprocessPolyhedralSystem() override
     {
         addBrinkAtomInPolyhedralSystem();
@@ -48,4 +47,6 @@ protected:
         PowersetUniquePtr brinkInterpretation { reach0(invariant, *invariantComplement, m_polyhedralSystem->preFlow()) };
         m_polyhedralSystem->addAtomInterpretation(brink, *brinkInterpretation);
     }
+
+    void constructPolyhedralLtlAutomaton() override {}
 };

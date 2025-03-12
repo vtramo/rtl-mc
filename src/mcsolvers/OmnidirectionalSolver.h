@@ -9,12 +9,13 @@ public:
     OmnidirectionalSolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        AutomatonOptimizationFlags automatonOptimizationFlags,
-        bool universalDenotation = false
+        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const bool universalDenotation = false
     )
       : ExplicitSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
     {}
 
+    ~OmnidirectionalSolver() override = default;
 protected:
 
     void constructPolyhedralAbstraction() override

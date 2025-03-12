@@ -113,3 +113,9 @@ void BackwardNFA::createDummyInitialStateWithEdgesToReachableAcceptingStates()
         }
     }
 }
+
+void BackwardNFA::onConstructionCompleted(const double executionTimeSeconds)
+{
+    logConstructionCompleted(executionTimeSeconds);
+    setNfaStats(executionTimeSeconds);
+}

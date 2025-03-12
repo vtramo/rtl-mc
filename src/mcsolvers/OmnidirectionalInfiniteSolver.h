@@ -4,7 +4,6 @@
 #include "Timer.h"
 #include "automata_builder.h"
 #include "infinite_semantics_emptiness.h"
-#include <spot/twaalgos/se05.hh>
 
 class OmnidirectionalInfiniteSolver: public OmnidirectionalSolver
 {
@@ -12,11 +11,13 @@ public:
     OmnidirectionalInfiniteSolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        AutomatonOptimizationFlags automatonOptimizationFlags,
-        bool universalDenotation = false
+        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const bool universalDenotation = false
     )
       : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
     {}
+
+    ~OmnidirectionalInfiniteSolver() override = default;
 
     PowersetSharedPtr run() override
     {
@@ -36,7 +37,6 @@ public:
         return explicitSe05Search(m_polyhedralSynchronousProduct);
     }
 protected:
-
     double discretiseRtlFormula() override
     {
         Log::log(Verbosity::verbose, ">>> RTL formula discretisation started.");

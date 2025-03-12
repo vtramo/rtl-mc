@@ -11,11 +11,13 @@ public:
     GeneralInfiniteSolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        AutomatonOptimizationFlags automatonOptimizationFlags,
-        bool universalDenotation = false
+        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const bool universalDenotation = false
     )
       : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
     {}
+
+    ~GeneralInfiniteSolver() override = default;
 
     PowersetSharedPtr run() override
     {

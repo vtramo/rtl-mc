@@ -15,12 +15,14 @@ public:
     FiniteOnTheFlySolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        AutomatonOptimizationFlags automatonOptimizationFlags,
-        bool universalDenotation = false,
-        bool concurrent = false
+        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const bool universalDenotation = false,
+        const bool concurrent = false
     ) : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
       , m_concurrent { concurrent }
     {}
+
+    ~FiniteOnTheFlySolver() override = default;
 
     [[nodiscard]] DenotStats denotStats() const { return m_denotStats; }
 
@@ -34,6 +36,8 @@ public:
 
         const double discretisationExecutionTimeSeconds { discretiseRtlFormula() };
         logAndCollectDiscretisationStats(discretisationExecutionTimeSeconds);
+
+        constructBackwardFiniteLtlAutomaton();
 
         return startDenotAlgorithm();
     }
@@ -75,7 +79,6 @@ protected:
     {
         Log::log(Verbosity::verbose, ">>> Denot algorithm started.");
         Timer timer {};
-
 
         std::unique_ptr<Denot> denotUniquePtr { createDenotAlgorithm() };
         Denot& denot { *denotUniquePtr };

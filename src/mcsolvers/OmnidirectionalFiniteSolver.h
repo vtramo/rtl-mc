@@ -1,6 +1,5 @@
 #pragma once
 
-#include "OmnidirectionalPolyhedralAbstraction.h"
 #include "OmnidirectionalSolver.h"
 #include "automata_builder.h"
 #include "FiniteSemanticsDfs.h"
@@ -12,11 +11,13 @@ public:
     OmnidirectionalFiniteSolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        AutomatonOptimizationFlags automatonOptimizationFlags,
-        bool universalDenotation = false
+        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const bool universalDenotation = false
     )
       : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
     {}
+
+    ~OmnidirectionalFiniteSolver() override = default;
 
     PowersetSharedPtr run() override
     {
