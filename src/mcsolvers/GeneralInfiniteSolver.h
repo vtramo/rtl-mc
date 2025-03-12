@@ -1,9 +1,8 @@
 #pragma once
 
+#include <FiniteOnTheFlySolver.h>
+
 #include "GeneralSolver.h"
-#include "automata_builder.h"
-#include "Timer.h"
-#include "infinite_semantics_emptiness.h"
 
 class GeneralInfiniteSolver: public GeneralSolver
 {
@@ -15,46 +14,93 @@ public:
         const bool universalDenotation = false
     )
       : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
-    {}
+    {
+        bool isClosedFlow { m_polyhedralSystem->isClosedFlow() };
+        bool isNonRecurrentRtl { SpotUtils::isNonRecurrent(m_rtlFormula) };
+        if (!isClosedFlow || !isNonRecurrentRtl)
+        {
+            std::string errorMessage = "Error initializing GeneralInfiniteSolver: ";
+
+            if (!isClosedFlow)
+            {
+                errorMessage += "The flow of the polyhedral system is not closed. ";
+            }
+
+            if (!isNonRecurrentRtl)
+            {
+                errorMessage += "The provided RTL formula is recurrent.";
+            }
+
+            throw std::runtime_error(errorMessage);
+        }
+    }
 
     ~GeneralInfiniteSolver() override = default;
 
     PowersetSharedPtr run() override
     {
         preprocessPolyhedralSystem();
-        logPolyhedralSystemAndCollectStats();
-
         preprocessRtlFormula();
-        logRtlFormulaAndCollectStats();
 
-        constructPolyhedralLtlAutomaton();
-        constructPolyhedralAbstraction();
-        constructSynchronousProductAutomaton();
+        SolverUniquePtr solver {};
+        if (m_polyhedralSystem->isOmnidirectionalFlow())
+        {
+            solver = std::make_unique<OmnidirectionalFiniteSolver>(
+                m_polyhedralSystem,
+                m_rtlFormula,
+                m_automatonOptimizationFlags,
+                m_universalDenotation
+            );
+        }
+        else
+        {
+            solver = std::make_unique<FiniteOnTheFlySolver>(
+                m_polyhedralSystem,
+                m_rtlFormula,
+                m_automatonOptimizationFlags,
+                m_universalDenotation
+            );
+        }
 
-        const double discretisationExecutionTimeSeconds { discretiseRtlFormula() };
-        logAndCollectDiscretisationStats(discretisationExecutionTimeSeconds);
-
-        return explicitSe05Search(m_polyhedralSynchronousProduct);
+        return solver->run();
     }
 protected:
-
-    double discretiseRtlFormula() override
+    void preprocessPolyhedralSystem() override
     {
-        Log::log(Verbosity::verbose, ">>> RTL formula discretisation started.");
-        Timer timer {};
-        m_discreteLtlFormula = DiscreteLtlFormula::discretiseInfinite(std::move(m_rtlFormula));
-        const double discretisationExecutionTimeSeconds { timer.elapsedInSeconds() };
-        Log::log(Verbosity::verbose, "<<< Discretisation completed. Elapsed time: {} s.", discretisationExecutionTimeSeconds);
-        return discretisationExecutionTimeSeconds;
+        addStayAtomInPolyhedralSystem();
     }
 
-    void constructPolyhedralLtlAutomaton() override
+    void addStayAtomInPolyhedralSystem()
     {
-        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { m_polyhedralSystem };
-        m_ltlAutomaton = buildPolyhedralBuchiLtlAutomaton(
-            std::move(m_discreteLtlFormula),
-            polyhedralSystemFormulaDenotationMap,
-            m_automatonOptimizationFlags
-        );
+        PowersetUniquePtr stayInterpretation { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
+
+        if (!m_polyhedralSystem->isOmnidirectionalFlow())
+        {
+            std::vector observables { m_polyhedralSystem->generateObservables() };
+
+            for (Observable observable: observables)
+            {
+                PowersetConstSharedPtr observableInterpretation { observable.interpretation() };
+                for (auto patch { observableInterpretation->begin() }; patch != observableInterpretation->end(); ++patch)
+                {
+                    PolyUniquePtr patchCone { PPLUtils::cone(patch->pointset()) };
+                    PolyUniquePtr patchConeIntersectFlow { PPLUtils::intersect(*patchCone, m_polyhedralSystem->flow()) };
+                    if (!patchConeIntersectFlow->is_empty())
+                    {
+                        stayInterpretation->add_disjunct(patch->pointset());
+                    }
+                }
+            }
+        }
+
+        m_polyhedralSystem->addAtomInterpretation(ap("stay"), *stayInterpretation);
     }
+
+    void preprocessRtlFormula() override
+    {
+        m_rtlFormula = And({ m_rtlFormula, F(And({ ap("stay"), ap("last") }))});
+    }
+
+    double discretiseRtlFormula() override { return 0; }
+    void constructPolyhedralLtlAutomaton() override {}
 };

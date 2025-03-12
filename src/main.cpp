@@ -56,7 +56,13 @@ int main(const int argc, char *argv[])
         }
         else
         {
-            spdlog::error("Undecidable");
+            spdlog::error(
+                "Model-checking problem for infinite-time semantics: The problem can be solved under the following conditions:\n"
+                "- Omnidirectional Flow: the interior of the polyhedral system's flow contains the origin, with no restrictions on the formula.\n"
+                "- Non-Recurrent RTL Formula and Closed Flow: the formula is non-recurrent and the flow of the polyhedral system is closed.\n"
+                "When these conditions are not satisfied, the problem remains open and unsolved."
+            );
+
             exit(1);
         }
         break;
