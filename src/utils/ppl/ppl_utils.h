@@ -47,18 +47,25 @@ namespace PPLUtils {
     void fusion(Powerset& a, const Powerset& b);
     PowersetUniquePtr fusion(const Poly& a, const Poly& b);
 
+    PPL::Linear_Expression zeroPointLinearExpression(PPL::dimension_type spaceDimension);
     Poly zeroPoint(PPL::dimension_type spaceDimension);
     Poly point(PPL::Linear_Expression pointLinearExpression);
     bool haveSameSpaceDimension(const PPL::Variable& x, const PPL::Variable& y);
 
     bool containsDisjunct(const Powerset& powerset, const Poly& disjunct);
+
     PolyUniquePtr interior(const Poly& poly);
     PolyUniquePtr interiorGeometric(const Poly& poly);
-    bool isSingleVariableZeroEqualityConstraint(const PPL::Constraint& constraint);
-    PolyUniquePtr removeSingleVariableZeroEqualityConstraints(const Poly& poly);
-    bool isOmnidirectionalFlow(const Poly& flow);
     PowersetUniquePtr border(const Poly& p, const Poly& q);
     PowersetUniquePtr border(const Powerset& p, const Powerset& q);
+
     bool areAdjacent(const Poly& p, const Poly& q);
     bool areAdjacent(const Powerset& p, const Powerset& q);
+
+    bool isSingleVariableZeroEqualityConstraint(const PPL::Constraint& constraint);
+    PolyUniquePtr removeSingleVariableZeroEqualityConstraints(const Poly& poly);
+
+    bool isOmnidirectionalFlow(const Poly& flow);
+
+    PolyUniquePtr cone(const Poly& poly);
 }

@@ -371,10 +371,16 @@ namespace PPLUtils {
     }
 
     Poly zeroPoint(const PPL::dimension_type spaceDimension) {
+        PPL::Linear_Expression zeroPointLinearExpression { PPLUtils::zeroPointLinearExpression(spaceDimension) };
+        return PPLUtils::point(zeroPointLinearExpression);
+    }
+
+    PPL::Linear_Expression zeroPointLinearExpression(const PPL::dimension_type spaceDimension)
+    {
         PPL::Linear_Expression zeroPointLinearExpression {};
         for (PPL::dimension_type dim = 0; dim < spaceDimension; ++dim)
             zeroPointLinearExpression += 0 * PPL::Variable { dim };
-        return PPLUtils::point(zeroPointLinearExpression);
+        return zeroPointLinearExpression;
     }
 
     Poly point(PPL::Linear_Expression pointLinearExpression)
@@ -533,5 +539,20 @@ namespace PPLUtils {
     {
         PowersetUniquePtr borderPQ { border(p, q) };
         return !borderPQ->is_empty();
+    }
+
+    PolyUniquePtr cone(const Poly& poly)
+    {
+        const PPL::Generator_System& generatorSystem { poly.generators() };
+
+        PPL::Generator_System cone {};
+        for (const PPL::Generator& generator: generatorSystem)
+            if (generator.is_ray())
+                cone.insert(generator);
+
+        PPL::Generator origin { PPL::point(zeroPointLinearExpression(poly.space_dimension())) };
+        cone.insert(origin);
+
+        return std::make_unique<Poly>(cone);
     }
 }
