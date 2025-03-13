@@ -8,12 +8,26 @@
 
 using namespace SpotUtils;
 
-inline std::pair<spot::formula, PowersetUniquePtr> brink(PolyhedralSystemConstSharedPtr polyhedralSystem)
+enum class BrinkSemantics
+{
+    may,
+    must
+};
+
+inline std::pair<spot::formula, PowersetUniquePtr> brinkMay(PolyhedralSystemConstSharedPtr polyhedralSystem)
 {
     spot::formula brink { ap("brink") };
     const Powerset& invariant { polyhedralSystem->invariant() };
     PowersetUniquePtr invariantComplement { PPLUtils::complement(invariant) };
     PowersetUniquePtr brinkInterpretation { reach0(invariant, *invariantComplement, polyhedralSystem->preFlow()) };
+    return std::make_pair<spot::formula, PowersetUniquePtr>(std::move(brink), std::move(brinkInterpretation));
+}
+
+inline std::pair<spot::formula, PowersetUniquePtr> brinkMust(PolyhedralSystemConstSharedPtr polyhedralSystem)
+{
+    spot::formula brink { ap("brink") };
+    const Powerset& invariant { polyhedralSystem->invariant() };
+    PowersetUniquePtr brinkInterpretation { PPLUtils::minus(invariant, *reachPlus(invariant, invariant, polyhedralSystem->preFlow())) };
     return std::make_pair<spot::formula, PowersetUniquePtr>(std::move(brink), std::move(brinkInterpretation));
 }
 

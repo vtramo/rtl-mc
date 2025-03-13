@@ -11,16 +11,25 @@ public:
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
         const bool universalDenotation = false,
-        const bool concurrent = false
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent)
+        const bool concurrent = false,
+        const BrinkSemantics brinkSemantics = BrinkSemantics::may,
+        const bool discretiseRtlfDirectToLtl = false
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl)
+      , m_brinkSemantics { brinkSemantics }
     {}
 
     ~BrinkFiniteOnTheFlySolver() override = default;
 protected:
+    BrinkSemantics m_brinkSemantics {};
 
     void preprocessPolyhedralSystem() override
     {
-        const auto& [brinkAtom, brinkInterpretation] { brink(m_polyhedralSystem) };
+        const auto& [brinkAtom, brinkInterpretation]
+        {
+            m_brinkSemantics == BrinkSemantics::may
+                ? brinkMay(m_polyhedralSystem)
+                : brinkMust(m_polyhedralSystem)
+        };
         m_polyhedralSystem->addAtomInterpretation(brinkAtom, *brinkInterpretation);
     }
 

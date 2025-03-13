@@ -14,8 +14,11 @@ public:
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
         const bool universalDenotation = false,
-        const bool concurrent = false
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent)
+        const bool concurrent = false,
+        const BrinkSemantics brinkSemantics = BrinkSemantics::may,
+        const bool discretiseRtlfDirectToLtl = false
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl)
+      , m_brinkSemantics { brinkSemantics }
     {
         PolyhedralSystemSharedPtr stayPolyhedralSystem { m_polyhedralSystem };
         PolyhedralSystemSharedPtr brinkPolyhedralSystem { std::make_shared<PolyhedralSystem>(*m_polyhedralSystem) };
@@ -31,7 +34,7 @@ public:
         PolyhedralSystemSharedPtr brinkPolyhedralSystem { std::make_shared<PolyhedralSystem>(*m_polyhedralSystem) };
 
         StayFiniteOnTheFlySolver staySolver { stayPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent };
-        BrinkFiniteOnTheFlySolver brinkSolver { brinkPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent };
+        BrinkFiniteOnTheFlySolver brinkSolver { brinkPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent, m_brinkSemantics };
 
         PowersetConstSharedPtr stayResult { staySolver.run() };
         PowersetConstSharedPtr brinkResult { brinkSolver.run() };
@@ -40,5 +43,6 @@ public:
     }
 protected:
     std::shared_ptr<StayFiniteOnTheFlySolver> m_staySolver {};
+    BrinkSemantics m_brinkSemantics {};
     std::shared_ptr<BrinkFiniteOnTheFlySolver> m_brinkSolver {};
 };

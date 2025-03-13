@@ -110,7 +110,8 @@ int main(const int argc, char *argv[])
                 rtlFormula,
                 automatonOptimizationFlags,
                 isUniversalDenotation,
-                rtlMcProgram.concurrent()
+                rtlMcProgram.concurrent(),
+                BrinkSemantics::may
             );
         }
         else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
@@ -122,7 +123,8 @@ int main(const int argc, char *argv[])
                 rtlFormula,
                 automatonOptimizationFlags,
                 isUniversalDenotation,
-                rtlMcProgram.concurrent()
+                rtlMcProgram.concurrent(),
+                BrinkSemantics::may
             );
         }
         else
@@ -159,7 +161,8 @@ int main(const int argc, char *argv[])
                 rtlFormula,
                 automatonOptimizationFlags,
                 isUniversalDenotation,
-                rtlMcProgram.concurrent()
+                rtlMcProgram.concurrent(),
+                BrinkSemantics::must
             );
         }
         else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
@@ -171,7 +174,8 @@ int main(const int argc, char *argv[])
                 rtlFormula,
                 automatonOptimizationFlags,
                 isUniversalDenotation,
-                rtlMcProgram.concurrent()
+                rtlMcProgram.concurrent(),
+                BrinkSemantics::must
             );
         }
         else
@@ -192,7 +196,7 @@ int main(const int argc, char *argv[])
     PowersetSharedPtr result {
         isUniversalDenotation
             ? PPLUtils::minus(polyhedralSystem->invariant(), *solver->run())
-            : *solver->run()
+            : solver->run()
     };
 
     showResult(rtlMcProgram, polyhedralSystem, result);
