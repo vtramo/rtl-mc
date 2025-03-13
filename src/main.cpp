@@ -1,8 +1,8 @@
 #include "logger.h"
 #include "stats_collectors.h"
 #include "brink_stay_atoms.h"
-#include "interface.h"
 #include "Semantics.h"
+#include "RtlMcProgram.h"
 #include "Solver.h"
 #include "OmnidirectionalInfiniteSolver.h"
 #include "OmnidirectionalMaySolver.h"
@@ -29,17 +29,35 @@ int main(const int argc, char *argv[])
     switch (semantics)
     {
     case Semantics::fin:
-        solver = std::make_unique<FiniteOnTheFlySolver>(
-            polyhedralSystem,
-            rtlFormula,
-            automatonOptimizationFlags,
-            isUniversalDenotation,
-            rtlMcProgram.concurrent()
-        );
+        if (polyhedralSystem->isOmnidirectionalFlow())
+        {
+            Log::log(Verbosity::verbose, "[Semantics] Finite-time semantics, omnidirectional flow.");
+
+            solver = std::make_unique<OmnidirectionalFiniteSolver>(
+                polyhedralSystem,
+                rtlFormula,
+                automatonOptimizationFlags,
+                isUniversalDenotation
+            );
+        }
+        else
+        {
+            Log::log(Verbosity::verbose, "[Semantics] Finite-time semantics, on-the-fly algorithm.");
+
+            solver = std::make_unique<FiniteOnTheFlySolver>(
+                polyhedralSystem,
+                rtlFormula,
+                automatonOptimizationFlags,
+                isUniversalDenotation,
+                rtlMcProgram.concurrent()
+            );
+        }
         break;
     case Semantics::inf:
         if (polyhedralSystem->isOmnidirectionalFlow())
         {
+            Log::log(Verbosity::verbose, "[Semantics] Infinite-time semantics, omnidirectional flow.");
+
             solver = std::make_unique<OmnidirectionalInfiniteSolver>(
                 polyhedralSystem,
                 rtlFormula,
@@ -49,7 +67,8 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
-            // add stay poi formula & F(stay & last) e risolvi usando on-the-fly finite
+            Log::log(Verbosity::verbose, "[Semantics] Infinite-time semantics, non-recurrent RTL and closed flow.");
+
             solver = std::make_unique<StayFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
@@ -73,6 +92,8 @@ int main(const int argc, char *argv[])
     case Semantics::may:
         if (polyhedralSystem->isOmnidirectionalFlow())
         {
+            Log::log(Verbosity::verbose, "[Semantics] May semantics, omnidirectional flow.");
+
             solver = std::make_unique<OmnidirectionalMaySolver>(
                 polyhedralSystem,
                 rtlFormula,
@@ -82,7 +103,8 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->isMovementForced() && polyhedralSystem->isBoundedInvariant())
         {
-            // add brink poi formula & F(brink & last) e risolvi usando on-the-fly finite
+            Log::log(Verbosity::verbose, "[Semantics] May semantics, forced motion and bounded invariant.");
+
             solver = std::make_unique<BrinkFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
@@ -93,9 +115,8 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
-            // add brink poi formula & F(brink & last) e risolvi usando on-the-fly finite
-            // unito
-            // add stay poi formula & F(stay & last) e risolvi usando on-the-fly finite
+            Log::log(Verbosity::verbose, "[Semantics] May semantics, non-recurrent RTL and closed flow.");
+
             solver = std::make_unique<BrinkStayFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
@@ -120,6 +141,8 @@ int main(const int argc, char *argv[])
     case Semantics::must:
         if (polyhedralSystem->isOmnidirectionalFlow())
         {
+            Log::log(Verbosity::verbose, "[Semantics] Must semantics, omnidirectional flow.");
+
             solver = std::make_unique<OmnidirectionalInfiniteSolver>(
                 polyhedralSystem,
                 rtlFormula,
@@ -129,7 +152,8 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->isMovementForced() && polyhedralSystem->isBoundedInvariant())
         {
-            // add brink poi formula & F(brink & last) e risolvi usando on-the-fly finite
+            Log::log(Verbosity::verbose, "[Semantics] Must semantics, forced motion and bounded invariant.");
+
             solver = std::make_unique<BrinkFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
@@ -140,9 +164,8 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
-            // add brink poi formula & F(brink & last) e risolvi usando on-the-fly finite
-            // unito
-            // add stay poi formula & F(stay & last) e risolvi usando on-the-fly finite
+            Log::log(Verbosity::verbose, "[Semantics] Must semantics, non-recurrent RTL and closed flow.");
+
             solver = std::make_unique<BrinkStayFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
@@ -171,7 +194,6 @@ int main(const int argc, char *argv[])
 
 void showResult(const RtlMcProgram& rtlMcProgram, PolyhedralSystemConstSharedPtr polyhedralSystem, PowersetSharedPtr result)
 {
-    std::cerr << "showResult" << std::endl;
     switch (rtlMcProgram.outputFormat())
     {
     case OutputFormat::normal:
