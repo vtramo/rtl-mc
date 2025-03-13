@@ -189,7 +189,13 @@ int main(const int argc, char *argv[])
         break;
     }
 
-    showResult(rtlMcProgram, polyhedralSystem, solver->run());
+    PowersetSharedPtr result {
+        isUniversalDenotation
+            ? PPLUtils::minus(polyhedralSystem->invariant(), *solver->run())
+            : *solver->run()
+    };
+
+    showResult(rtlMcProgram, polyhedralSystem, result);
 }
 
 void showResult(const RtlMcProgram& rtlMcProgram, PolyhedralSystemConstSharedPtr polyhedralSystem, PowersetSharedPtr result)
