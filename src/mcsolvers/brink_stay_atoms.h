@@ -46,10 +46,10 @@ inline std::pair<spot::formula, PowersetUniquePtr> stay(PolyhedralSystemConstSha
 
 inline spot::formula eventuallyBrinkAndLast(const spot::formula& formula)
 {
-    return And({ formula, F(And({ ap("brink"), spot::constants::g_last }))});
+    return And({ formula, F(And({ ap("brink"), ap("last") }))});
 }
 
 inline spot::formula eventuallyStayAndLast(const spot::formula& formula)
 {
-    return And({ formula, F(And({ ap("stay"), spot::constants::g_last }))});
+    return And({ formula, F(And({ ap("stay"), ap("last") }))});
 }

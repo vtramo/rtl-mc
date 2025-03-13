@@ -66,6 +66,10 @@ spot::formula toDiscretisedLtlFormula(spot::formula&& formula)
 {
     switch (formula.kind())
     {
+    case spot::op::ap:
+        return formula == ap("last")
+            ? spot::constants::g_lastFinite
+            : formula;
     case spot::op::X:
         return dsctX(std::move(formula));
     case spot::op::F:
@@ -92,6 +96,10 @@ spot::formula toDiscretisedFormula(spot::formula&& formula)
 {
     switch (formula.kind())
     {
+    case spot::op::ap:
+        return formula == ap("last")
+            ? spot::constants::g_last
+            : formula;
     case spot::op::X:
         return dscX(std::move(formula));
     case spot::op::F:
