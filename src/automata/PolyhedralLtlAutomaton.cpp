@@ -75,6 +75,8 @@ unsigned PolyhedralLtlAutomaton::totalInitialStates() const
 
 unsigned PolyhedralLtlAutomaton::totalEdges() const
 {
+    const unsigned numEdges { m_automaton->num_edges() };
+    if (numEdges == 0) return 0;
     return m_automaton->num_edges() - m_dummyEdges;
 }
 
