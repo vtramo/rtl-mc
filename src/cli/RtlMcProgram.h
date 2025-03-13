@@ -143,7 +143,7 @@ private:
                 std::optional<Semantics> semantics = toSemantics(semanticsString);
                 if (!semantics)
                 {
-                    spdlog::error("Invalid semantics. Supported semantics are: {fin, inf, may, must}.", semanticsString);
+                    spdlog::error("Invalid semantics. Supported semantics are: {fin, inf, may, must}.");
                     exit(1);
                 }
                 m_semantics = *semantics;
