@@ -1,12 +1,15 @@
 #include "logger.h"
 #include "stats_collectors.h"
+#include "brink_stay_atoms.h"
 #include "interface.h"
 #include "Semantics.h"
 #include "Solver.h"
 #include "OmnidirectionalInfiniteSolver.h"
 #include "OmnidirectionalMaySolver.h"
-#include "GeneralInfiniteSolver.h"
 #include "FiniteOnTheFlySolver.h"
+#include "BrinkStayFiniteOnTheFlySolver.h"
+#include "BrinkFiniteOnTheFlySolver.h"
+#include "StayFiniteOnTheFlySolver.h"
 
 void showResult(const RtlMcProgram& rtlMcProgram, PolyhedralSystemConstSharedPtr polyhedralSystem, PowersetSharedPtr result);
 
@@ -46,12 +49,13 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
-            throw std::runtime_error("Not implemented yet");
-            solver = std::make_unique<GeneralInfiniteSolver>(
+            // add stay poi formula & F(stay & last) e risolvi usando on-the-fly finite
+            solver = std::make_unique<StayFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
                 automatonOptimizationFlags,
-                isUniversalDenotation
+                isUniversalDenotation,
+                rtlMcProgram.concurrent()
             );
         }
         else
@@ -76,9 +80,41 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
+        else if (polyhedralSystem->isMovementForced() && polyhedralSystem->isBoundedInvariant())
+        {
+            // add brink poi formula & F(brink & last) e risolvi usando on-the-fly finite
+            solver = std::make_unique<BrinkFiniteOnTheFlySolver>(
+                polyhedralSystem,
+                rtlFormula,
+                automatonOptimizationFlags,
+                isUniversalDenotation,
+                rtlMcProgram.concurrent()
+            );
+        }
         else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
-            throw std::runtime_error("Not implemented yet");
+            // add brink poi formula & F(brink & last) e risolvi usando on-the-fly finite
+            // unito
+            // add stay poi formula & F(stay & last) e risolvi usando on-the-fly finite
+            solver = std::make_unique<BrinkStayFiniteOnTheFlySolver>(
+                polyhedralSystem,
+                rtlFormula,
+                automatonOptimizationFlags,
+                isUniversalDenotation,
+                rtlMcProgram.concurrent()
+            );
+        }
+        else
+        {
+            spdlog::error(
+                "Model-checking problem for may semantics: The problem can be solved under the following conditions:\n"
+                "- Omnidirectional Flow: the interior of the polyhedral system's flow contains the origin, with no restrictions on the formula.\n"
+                "- Non-Recurrent RTL Formula and Closed Flow: the formula is non-recurrent and the flow of the polyhedral system is closed.\n"
+                "- Forced Motion and Bounded Invariant.\n"
+                "When these conditions are not satisfied, the problem remains open and unsolved."
+            );
+
+            exit(1);
         }
         break;
     case Semantics::must:
@@ -91,9 +127,41 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
+        else if (polyhedralSystem->isMovementForced() && polyhedralSystem->isBoundedInvariant())
+        {
+            // add brink poi formula & F(brink & last) e risolvi usando on-the-fly finite
+            solver = std::make_unique<BrinkFiniteOnTheFlySolver>(
+                polyhedralSystem,
+                rtlFormula,
+                automatonOptimizationFlags,
+                isUniversalDenotation,
+                rtlMcProgram.concurrent()
+            );
+        }
+        else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
+        {
+            // add brink poi formula & F(brink & last) e risolvi usando on-the-fly finite
+            // unito
+            // add stay poi formula & F(stay & last) e risolvi usando on-the-fly finite
+            solver = std::make_unique<BrinkStayFiniteOnTheFlySolver>(
+                polyhedralSystem,
+                rtlFormula,
+                automatonOptimizationFlags,
+                isUniversalDenotation,
+                rtlMcProgram.concurrent()
+            );
+        }
         else
         {
-            throw std::runtime_error("Not implemented yet");
+            spdlog::error(
+                "Model-checking problem for must semantics: The problem can be solved under the following conditions:\n"
+                "- Omnidirectional Flow: the interior of the polyhedral system's flow contains the origin, with no restrictions on the formula.\n"
+                "- Non-Recurrent RTL Formula and Closed Flow: the formula is non-recurrent and the flow of the polyhedral system is closed.\n"
+                "- Forced Motion and Bounded Invariant.\n"
+                "When these conditions are not satisfied, the problem remains open and unsolved."
+            );
+
+            exit(1);
         }
         break;
     }
@@ -103,6 +171,7 @@ int main(const int argc, char *argv[])
 
 void showResult(const RtlMcProgram& rtlMcProgram, PolyhedralSystemConstSharedPtr polyhedralSystem, PowersetSharedPtr result)
 {
+    std::cerr << "showResult" << std::endl;
     switch (rtlMcProgram.outputFormat())
     {
     case OutputFormat::normal:

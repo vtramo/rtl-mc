@@ -8,11 +8,14 @@ mc_solvers_source_files = [
     current_source_dir / 'FiniteOnTheFlySolver.h',
     current_source_dir / 'ExplicitSolver.h',
     current_source_dir / 'OmnidirectionalSolver.h',
+    current_source_dir / 'OmnidirectionalMaySolver.h',
     current_source_dir / 'OmnidirectionalFiniteSolver.h',
     current_source_dir / 'FiniteSemanticsDfs.h',
     current_source_dir / 'GeneralSolver.h',
     current_source_dir / 'GeneralFiniteSolver.h',
-    current_source_dir / 'GeneralInfiniteSolver.h',
+    current_source_dir / 'BrinkFiniteOnTheFlySolver.h',
+    current_source_dir / 'StayFiniteOnTheFlySolver.h',
+    current_source_dir / 'BrinkStayFiniteOnTheFlySolver.h',
 ]
 
 subdir('onthefly')

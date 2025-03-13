@@ -4,7 +4,6 @@
 #include "automata_builder.h"
 #include "DenotConcurrentV1.h"
 #include "DenotOnTheFly.h"
-#include "Solver.h"
 #include "Timer.h"
 
 using namespace SpotUtils;

@@ -3,7 +3,7 @@
 #include "OmnidirectionalSolver.h"
 #include "OmnidirectionalInfiniteSolver.h"
 #include "OmnidirectionalFiniteSolver.h"
-#include "reach.h"
+#include "brink_stay_atoms.h"
 
 class OmnidirectionalMaySolver: public OmnidirectionalSolver
 {
@@ -35,7 +35,7 @@ public:
 protected:
     void preprocessRtlFormula() override
     {
-        m_rtlFormula = And({ m_rtlFormula, F(And({ ap("brink"), ap("last") })) });
+        m_rtlFormula = eventuallyBrinkAndLast(m_rtlFormula);
     }
 
     double discretiseRtlFormula() override
@@ -50,11 +50,8 @@ protected:
 
     virtual void addBrinkAtomInPolyhedralSystem()
     {
-        spot::formula brink { ap("brink") };
-        const Powerset& invariant { m_polyhedralSystem->invariant() };
-        PowersetUniquePtr invariantComplement { PPLUtils::complement(invariant) };
-        PowersetUniquePtr brinkInterpretation { reach0(invariant, *invariantComplement, m_polyhedralSystem->preFlow()) };
-        m_polyhedralSystem->addAtomInterpretation(brink, *brinkInterpretation);
+        const auto& [brinkAtom, brinkInterpretation] { brink(m_polyhedralSystem) };
+        m_polyhedralSystem->addAtomInterpretation(brinkAtom, *brinkInterpretation);
     }
 
     void constructPolyhedralLtlAutomaton() override {}
