@@ -27,8 +27,6 @@ public:
 
     PowersetSharedPtr run() override
     {
-        logPolyhedralSystemAndCollectStats();
-
         PolyhedralSystemSharedPtr stayPolyhedralSystem { m_polyhedralSystem };
         PolyhedralSystemSharedPtr brinkPolyhedralSystem { std::make_shared<PolyhedralSystem>(*m_polyhedralSystem) };
 
