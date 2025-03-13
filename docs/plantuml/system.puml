@@ -67,6 +67,7 @@ package system {
         -m_bddDict : spot::bdd_dict_ptr
         --constructors--
         +PolyhedralSystem()
+        +PolyhedralSystem(const PolyhedralSystem&)
         +PolyhedralSystem(PolyhedralSystem&&)
         -PolyhedralSystem(const Powerset& invariant, const Poly& flow, const std::unordered_map<spot::formula, AtomInterpretation>& denotation, const PolyhedralSystemSymbolTable& symbolTable)
         -PolyhedralSystem(Powerset&& invariant, Poly&& flow, std::unordered_map<spot::formula, AtomInterpretation>&& denotation, PolyhedralSystemSymbolTable&& symbolTable)

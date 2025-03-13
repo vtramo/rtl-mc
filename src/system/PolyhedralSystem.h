@@ -47,7 +47,7 @@ public:
 
     [[nodiscard]] static PolyhedralSystemBuilder builder();
 
-    PolyhedralSystem(const PolyhedralSystem&) = delete;
+    PolyhedralSystem(const PolyhedralSystem&) = default;
     PolyhedralSystem& operator= (const PolyhedralSystem&) = delete;
     PolyhedralSystem(PolyhedralSystem&&) noexcept;
 
