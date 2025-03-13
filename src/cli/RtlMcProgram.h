@@ -246,7 +246,7 @@ private:
     {
         m_rtlMcProgram
             .add_argument("-c", "--concurrent")
-            .help("Concurrent execution.")
+            .help("Enable concurrent execution (highly experimental). This option is only effective with the on-the-fly algorithm for finite semantics. It has no effect when using other algorithms.")
             .flag()
             .store_into(m_concurrent);
     }
