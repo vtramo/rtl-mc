@@ -6,7 +6,7 @@
 
 class DiscreteFiniteLtlFormula {
 public:
-    static DiscreteFiniteLtlFormula discretise(spot::formula&& formula) {
+    static DiscreteFiniteLtlFormula discretiseRtlFinite(spot::formula&& formula) {
         spot::formula discreteLtlFormula { toDiscretisedFormula(std::move(formula)) };
         return DiscreteFiniteLtlFormula { applyFiniteAlternationSingOpenObservables(std::move(discreteLtlFormula)) };
     }
@@ -15,8 +15,6 @@ public:
 
 private:
     spot::formula m_discreteFiniteLtlFormula {};
-
-    friend DiscreteFiniteLtlFormula discretise(spot::formula&& formula);
 
     DiscreteFiniteLtlFormula() = default;
     explicit DiscreteFiniteLtlFormula(spot::formula&& formula)

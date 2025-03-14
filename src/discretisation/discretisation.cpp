@@ -22,7 +22,6 @@ namespace
     spot::formula dscW(spot::formula&& formula);
 
     spot::formula finiteAlternationSingOpenObservablesOneStep();
-    spot::formula alternationSingOpenObservablesOneStep();
     spot::formula finiteAlternationSingOpenObservables();
     spot::formula alternationSingOpenObservables();
 }
@@ -36,14 +35,6 @@ spot::formula applyFiniteAlternationSingOpenObservablesOneStep(spot::formula&& f
                 aliveUntilGNotAlive(),
             });
 
-}
-
-spot::formula applyAlternationSingOpenObservablesOneStep(spot::formula&& formula)
-{
-    return And({
-                std::move(formula),
-                alternationSingOpenObservablesOneStep()
-            });
 }
 
 spot::formula applyFiniteAlternationSingOpenObservables(spot::formula&& formula)
@@ -256,11 +247,6 @@ namespace
     spot::formula finiteAlternationSingOpenObservablesOneStep()
     {
         return spot::constants::g_finiteAlternationSingOpenObservablesOneStep;
-    }
-
-    spot::formula alternationSingOpenObservablesOneStep()
-    {
-        return spot::constants::g_alternationSingOpenObservablesOneStep;
     }
 
     spot::formula finiteAlternationSingOpenObservables()

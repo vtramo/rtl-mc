@@ -10,7 +10,7 @@ package discretisation {
         +formula() : spot::formula&
         +toLtl() : DiscreteLtlFormula
         --static functions--
-        -{static} discretise(spot::formula&& formula) : DiscreteFiniteLtlFormula
+        -{static} discretiseRtlFinite(spot::formula&& formula) : DiscreteFiniteLtlFormula
         --operators--
         -operator== (const DiscreteFiniteLtlFormula& discreteFormula, const spot::formula& formula) : bool
         -operator<< (std::ostream& os, const DiscreteFiniteLtlFormula& formula) : std :: ostream&
@@ -25,13 +25,10 @@ package discretisation {
         --member functions--
         +formula() : spot::formula&
         --friends--
-        -friend class BackwardNFA
         -friend class DiscreteFiniteLtlFormula
-        -friend class PolyhedralLtlAutomaton
-        -friend DiscreteLtlFormula discretiseToLtl(spot::formula&& formula)
         --static functions--
-        -{static} discretise(spot::formula&& formula) : DiscreteLtlFormula
-        -{static} discretiseFromFiniteLtl(spot::formula&& formula) : DiscreteLtlFormula
+        -{static} discretiseRtl(spot::formula&& formula) : DiscreteLtlFormula
+        -{static} discretiseRtlFinite(spot::formula&& formula) : DiscreteLtlFormula
         --operators--
         -operator== (const DiscreteLtlFormula& discreteLtlFormula, const spot::formula& formula) : bool
         -operator<< (std::ostream& os, const DiscreteLtlFormula& formula) : std :: ostream&

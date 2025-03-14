@@ -3,7 +3,6 @@
 
 spot::formula toDiscretisedLtlFormula(spot::formula&& formula);
 spot::formula applyFiniteAlternationSingOpenObservablesOneStep(spot::formula&& formula);
-spot::formula applyAlternationSingOpenObservablesOneStep(spot::formula&& formula);
 
 spot::formula toDiscretisedFormula(spot::formula&& formula);
 spot::formula applyFiniteAlternationSingOpenObservables(spot::formula&& formula);
