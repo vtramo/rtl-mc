@@ -16,6 +16,7 @@ namespace spot::constants {
 
     inline const formula g_lastFinite { Not(X(alive())) }; // !Xalive
 
+    // Finite-time semantics with alive property.
     inline const formula g_finiteAlternationSingOpenObservablesOneStep {
         spot::parse_infix_psl(
             "G( !alive | ((sing <-> X(alive & !sing)) | !Xalive) ) &"
@@ -23,15 +24,9 @@ namespace spot::constants {
         ).f
     };
 
-    inline const formula g_alternationSingOpenObservablesOneStep {
-        spot::parse_infix_psl(
-            "G( !alive | ((sing <-> X(alive & !sing)) | !Xalive) )"
-        ).f
-    };
-
-
     inline const formula g_last { spot::parse_infix_psl("!X[!] true").f }; // !X[!] true
 
+    // Finite-time semantics.
     inline const formula g_finiteAlternationSingOpenObservables {
         spot::parse_infix_psl(
             "G((sing <-> X[!]!sing) | !X[!] true) &"
@@ -39,9 +34,17 @@ namespace spot::constants {
         ).f
     };
 
+
+    // inline const formula g_alternationSingOpenObservables {
+    //     spot::parse_infix_psl(
+    //         "G((sing <-> X!sing) | !X[!] true)"
+    //     ).f
+    // };
+
+    // Infinite-time semantics.
     inline const formula g_alternationSingOpenObservables {
         spot::parse_infix_psl(
-            "G((sing <-> X[!]!sing) | !X[!] true)"
+            "G((sing <-> X!sing))"
         ).f
     };
 }
