@@ -15,14 +15,14 @@ TEST_CASE("Discretisation benchmarks", "[benchmark][discretisation]")
     {
         REQUIRE(parsedFormula.errors.empty());
         spot::formula formulaFiniteLtl { parsedFormula.f };
-        DiscreteLtlFormula::discretiseFromFiniteLtl(std::move(formulaFiniteLtl));
+        DiscreteLtlFormula::discretiseRtlFinite(std::move(formulaFiniteLtl));
     };
 
     BENCHMARK("RTLf to LTL (spot)")
     {
         REQUIRE(parsedFormula.errors.empty());
         spot::formula formulaFiniteLtl { parsedFormula.f };
-        DiscreteFiniteLtlFormula discreteFormula { DiscreteFiniteLtlFormula::discretise(std::move(formulaFiniteLtl)) };
+        DiscreteFiniteLtlFormula discreteFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(std::move(formulaFiniteLtl)) };
         DiscreteLtlFormula __ { discreteFormula.toLtl() };
     };
 }

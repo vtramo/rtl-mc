@@ -11,7 +11,7 @@ TEST_CASE("Automaton construction benchmarks", "[benchmark][automaton]")
 {
     std::string formulaStr { readTestFileAsString("automaton-formula-benchmark-1.txt") };
     spot::parsed_formula parsedFormula { spot::parse_infix_psl(formulaStr) };
-    DiscreteLtlFormula discretisedLtlFormula { DiscreteLtlFormula::discretiseFromFiniteLtl(std::move(parsedFormula.f)) };
+    DiscreteLtlFormula discretisedLtlFormula { DiscreteLtlFormula::discretiseRtlFinite(std::move(parsedFormula.f)) };
     REQUIRE(parsedFormula.errors.empty());
 
     std::istringstream polyhedralSystemInput { readTestFileAsString("automaton-polyhedral-system-benchmark-1.txt") };

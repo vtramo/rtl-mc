@@ -35,7 +35,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=1")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
@@ -55,7 +55,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=2")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p)))"
             ).f).toLtl()
@@ -79,7 +79,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=3")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q))))"
             ).f).toLtl()
@@ -103,7 +103,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=4")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p)))))"
             ).f).toLtl()
@@ -127,7 +127,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=5")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q))))))"
             ).f).toLtl()
@@ -151,7 +151,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=6")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p)))))))"
             ).f).toLtl()
@@ -175,7 +175,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=7")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q))))))))"
             ).f).toLtl()
@@ -199,7 +199,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=8")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q & F(p)))))))))"
             ).f).toLtl()
@@ -223,7 +223,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=9")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q))))))))))"
             ).f).toLtl()
@@ -247,7 +247,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
     SECTION("GAP k=10")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q & F(p)))))))))))"
             ).f).toLtl()
@@ -294,7 +294,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=1")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f).toLtl() };
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(discreteLtlFormula), std::move(polyhedralSystemFormulaDenotationMap)) };
         DenotOnTheFly denot { polyhedralSystem, backwardNfa };
@@ -314,7 +314,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=2")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p)))"
             ).f).toLtl()
@@ -338,7 +338,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=3")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q))))"
             ).f).toLtl()
@@ -362,7 +362,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=4")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p)))))"
             ).f).toLtl()
@@ -386,7 +386,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=5")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q))))))"
             ).f).toLtl()
@@ -410,7 +410,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=6")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p)))))))"
             ).f).toLtl()
@@ -434,7 +434,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=7")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q))))))))"
             ).f).toLtl()
@@ -458,7 +458,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=8")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q & F(p)))))))))"
             ).f).toLtl()
@@ -482,7 +482,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=9")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q))))))))))"
             ).f).toLtl()
@@ -506,7 +506,7 @@ TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 
     SECTION("NO GAP k=10")
     {
-        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretise(
+        DiscreteLtlFormula discreteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(
             spot::parse_infix_psl(
                 "t0 & G(t1) & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q & F(p & F(q & F(p)))))))))))"
             ).f).toLtl()
