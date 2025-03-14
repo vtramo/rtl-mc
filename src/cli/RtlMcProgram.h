@@ -181,7 +181,8 @@ private:
     void addDirectLtlArgument()
     {
         m_rtlMcProgram.add_argument("--direct-ltl")
-                      .help("discretise the RTL formula directly into LTL in a single step.")
+                      .help("Discretise the RTLf formula directly into LTL in a single step, improving performance (experimental).\n"
+                            "This option is only effective for finite semantics.")
                       .flag()
                       .store_into(m_directLtl);
     }
@@ -246,7 +247,7 @@ private:
     {
         m_rtlMcProgram
             .add_argument("-c", "--concurrent")
-            .help("Enable concurrent execution (highly experimental). This option is only effective with the on-the-fly algorithm for finite semantics. It has no effect when using other algorithms.")
+            .help("Enable concurrent execution (highly experimental). This option is only effective with the on-the-fly algorithm for finite semantics.")
             .flag()
             .store_into(m_concurrent);
     }
