@@ -50,7 +50,7 @@ protected:
 
     virtual void addBrinkAtomInPolyhedralSystem()
     {
-        const auto& [brinkAtom, brinkInterpretation] { brink(m_polyhedralSystem) };
+        const auto& [brinkAtom, brinkInterpretation] { brinkMay(m_polyhedralSystem) };
         m_polyhedralSystem->addAtomInterpretation(brinkAtom, *brinkInterpretation);
     }
 

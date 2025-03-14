@@ -16,9 +16,11 @@ public:
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
         const bool universalDenotation = false,
-        const bool concurrent = false
+        const bool concurrent = false,
+        const bool discretiseRtlfDirectToLtl = false
     ) : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
       , m_concurrent { concurrent }
+      , m_discretiseRtlfDirectToLtl { discretiseRtlfDirectToLtl }
     {}
 
     ~FiniteOnTheFlySolver() override = default;
@@ -44,6 +46,7 @@ protected:
     BackwardNFAConstSharedPtr m_backwardNfa {};
     DenotStats m_denotStats {};
     bool m_concurrent {};
+    bool m_discretiseRtlfDirectToLtl {};
 
     void preprocessPolyhedralSystem() override {}
 
@@ -51,7 +54,9 @@ protected:
     {
         Log::log(Verbosity::verbose, ">>> RTL formula discretisation started.");
         Timer timer {};
-        m_discreteLtlFormula = DiscreteLtlFormula::discretiseFromFiniteLtl(std::move(m_rtlFormula));
+        m_discreteLtlFormula = m_discretiseRtlfDirectToLtl
+            ? DiscreteLtlFormula::discretiseRtlFinite(std::move(m_rtlFormula))
+            : DiscreteFiniteLtlFormula::discretiseRtlFinite(std::move(m_rtlFormula)).toLtl();
         const double discretisationExecutionTimeSeconds { timer.elapsedInSeconds() };
         Log::log(Verbosity::verbose, "<<< Discretisation completed. Elapsed time: {} s.", discretisationExecutionTimeSeconds);
         return discretisationExecutionTimeSeconds;
@@ -79,7 +84,7 @@ protected:
         Log::log(Verbosity::verbose, ">>> Denot algorithm started.");
         Timer timer {};
 
-        std::unique_ptr<Denot> denotUniquePtr { createDenotAlgorithm() };
+        std::unique_ptr denotUniquePtr { createDenotAlgorithm() };
         Denot& denot { *denotUniquePtr };
 
         PowersetUniquePtr denotResult {

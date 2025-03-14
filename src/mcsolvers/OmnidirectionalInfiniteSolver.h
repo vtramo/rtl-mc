@@ -41,7 +41,7 @@ protected:
     {
         Log::log(Verbosity::verbose, ">>> RTL formula discretisation started.");
         Timer timer {};
-        m_discreteLtlFormula = DiscreteLtlFormula::discretiseInfinite(std::move(m_rtlFormula));
+        m_discreteLtlFormula = DiscreteLtlFormula::discretiseRtl(std::move(m_rtlFormula));
         const double discretisationExecutionTimeSeconds { timer.elapsedInSeconds() };
         Log::log(Verbosity::verbose, "<<< Discretisation completed. Elapsed time: {} s.", discretisationExecutionTimeSeconds);
         return discretisationExecutionTimeSeconds;
