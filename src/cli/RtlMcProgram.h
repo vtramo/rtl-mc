@@ -137,7 +137,7 @@ private:
 
     void addSemanticsArgument()
     {
-        m_rtlMcProgram.add_argument("-s", "--semantics")
+        m_rtlMcProgram.add_argument("--semantics")
             .action([&](const std::string& semanticsString)
             {
                 std::optional<Semantics> semantics = toSemantics(semanticsString);
@@ -166,7 +166,7 @@ private:
     {
         m_rtlMcProgram.add_argument("--mc")
                       .help(
-                          "Check if a given point x ∈ ℝⁿ is the source of a trajectory in the polyhedral system \n"
+                          "Check if a given point x ∈ ℚⁿ is the source of a trajectory in the polyhedral system \n"
                           "that satisfies the temporal formula φ. \n"
                           "For --existential, checks if some trajectory from the point satisfies φ. \n"
                           "For --universal, checks if all trajectories from the point satisfy φ. \n"
@@ -182,7 +182,7 @@ private:
     {
         m_rtlMcProgram.add_argument("--direct-ltl")
                       .help("Discretise the RTLf formula directly into LTL in a single step, improving performance (experimental).\n"
-                            "This option is only effective for finite semantics.")
+                            "This option is only effective for finite-time semantics.")
                       .flag()
                       .store_into(m_directLtl);
     }

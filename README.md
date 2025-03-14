@@ -30,7 +30,7 @@ If you have Docker installed...
    --nogap           NO GAP experiment with k alternating steps and max time t. Example: --nogap 2 20. [nargs: 2]
    --existential     Compute the set of points from which there exists a trajectory that satisfies φ (default).
    --universal       Compute the set of points from which every trajectory satisfies φ.
-   -s, --semantics   E.g. --semantics=fin. Possible semantics:
+   --semantics       E.g. --semantics=fin. Possible semantics:
                      > fin:   Considers only finite-time trajectories (default).
                               Suitable for properties that are positively verified as soon as a prefix of the trajectory satisfies them,
                               such as reachability properties.
