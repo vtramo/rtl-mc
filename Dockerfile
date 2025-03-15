@@ -87,6 +87,7 @@ RUN meson setup  \
     -Denable_tests=false  \
     -Ddebug=false  \
     -Dgenerate_parser=true  \
+    -Denable_profiling=false  \
     buildDir
 RUN meson compile -C buildDir -v
 
