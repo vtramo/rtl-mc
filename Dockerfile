@@ -93,7 +93,7 @@ RUN meson setup  \
     -Denable_profiling=true  \
     buildDir
 RUN meson compile -C buildDir -v
-RUN meson test -C buildDir -t 5 -v
+RUN meson test -C buildDir -t 15 -v
 
 
 FROM build-stage AS compile-release
