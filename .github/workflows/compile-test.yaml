@@ -1,0 +1,43 @@
+name: Compile and test
+
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+      - 'Dockerfile'
+      - 'meson_options.txt'
+      - 'meson.build'
+      - 'src/**'
+      - 'tests/**'
+      - 'subprojects/**'
+  pull_request:
+
+jobs:
+  compile-test:
+    name: Compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Meson
+        run: sudo apt install meson
+
+      - name: Setup
+        run: meson setup -Ddebug=true -Denable_tests=true -Dgenerate_parser=true -Denable_profiling=false build
+
+      - name: Compile
+        run: meson compile -C build
+
+      - name: Run all tests (with valgrind)
+        run: |
+          meson --wrap='valgrind --leak-check=full --error-exitcode=1' \
+            test -C build \
+            --verbose \
+            --timeout-multiplier 5
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test_job
+          path: build/meson-logs/testlog.txt
+
