@@ -53,7 +53,7 @@ RUN mkdir antlr4-cpp-runtime-${ANTLR4_VERSION}-source && cd antlr4-cpp-runtime-$
 
 # ANTLR4 CLI
 RUN apt-get install -y python3-pip=24.0+dfsg-1ubuntu1.1 && python3 -m pip install --break-system-packages 'antlr4-tools==0.2.1'
-RUN apt-get install -y openjdk-11-jdk=11.0.25+9-1ubuntu1~24.04
+RUN apt-get install -y openjdk-11-jdk
 
 # antlr4-runtime.pc
 RUN mkdir -p /usr/local/lib/pkgconfig && \
