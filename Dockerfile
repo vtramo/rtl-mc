@@ -80,6 +80,23 @@ COPY src src
 COPY subprojects subprojects
 COPY meson.build meson.build
 COPY meson_options.txt meson_options.txt
+
+
+FROM build-stage AS compile-test
+RUN apt-get install -y valgrind
+COPY tests tests
+RUN meson setup  \
+    --errorlogs  \
+    -Denable_tests=true  \
+    -Ddebug=true  \
+    -Dgenerate_parser=true  \
+    -Denable_profiling=true  \
+    buildDir
+RUN meson compile -C buildDir -v
+RUN meson test -C buildDir -t 5 -v
+
+
+FROM build-stage AS compile-release
 RUN meson setup  \
     --optimization 3  \
     --errorlogs  \
@@ -100,12 +117,12 @@ RUN find / -regextype posix-extended -regex ".*/lib/.*libgmp.*\.(a|so).*" -exec 
 RUN find / -regextype posix-extended -regex ".*/lib/.*libgmpxx\.(a|so)\.*" -exec mv {} /libs/ \;
 RUN find / -regextype posix-extended -regex ".*/lib/.*libbddx\.(a|so).*" -exec mv {} /libs/ \;
 
-# Final Stage
+
 FROM ubuntu:${UBUNTU_VERSION}
 
-COPY --from=build-stage /lib-path-dir.txt /lib-path-dir.txt
-COPY --from=build-stage /libs /libs
+COPY --from=compile-release /lib-path-dir.txt /lib-path-dir.txt
+COPY --from=compile-release /libs /libs
 RUN LIB_PATH_DIR=$(cat /lib-path-dir.txt) && mkdir -p ${LIB_PATH_DIR} && mv /libs/* ${LIB_PATH_DIR}
-COPY --from=build-stage /project/buildDir/src/rtl-mc /usr/local/bin
+COPY --from=compile-release /project/buildDir/src/rtl-mc /usr/local/bin
 
 ENTRYPOINT ["rtl-mc"]
