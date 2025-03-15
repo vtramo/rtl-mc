@@ -1,14 +1,14 @@
-#include "parsertlf.h"
+#include "parsertl.h"
 #include "spot_utils.h"
 #include <spot/tl/parse.hh>
 
-static RtlfParsingResult toRtlfParsingResult(spot::parse_error_list&& spotErrors);
+static RtlParsingResult toRtlfParsingResult(spot::parse_error_list&& spotErrors);
 
 using namespace SpotUtils;
 
-RtlfParsingResult parseRtlf(const std::string_view rtlf)
+RtlParsingResult parseRtl(const std::string_view rtl)
 {
-    spot::parsed_formula parsedFormula { spot::parse_infix_psl(std::string { rtlf }) };
+    spot::parsed_formula parsedFormula { spot::parse_infix_psl(std::string { rtl }) };
     spot::parse_error_list spotErrors { parsedFormula.errors };
 
     if (!spotErrors.empty())
@@ -19,15 +19,15 @@ RtlfParsingResult parseRtlf(const std::string_view rtlf)
     spot::formula rtlfFormula { std::move(parsedFormula.f) };
     if (!rtlfFormula.is_ltl_formula())
     {
-        return RtlfParsingResult::notLtlFormula(std::move(rtlfFormula));
+        return RtlParsingResult::notLtlFormula(std::move(rtlfFormula));
     }
 
-    return RtlfParsingResult::ok(std::move(rtlfFormula));
+    return RtlParsingResult::ok(std::move(rtlfFormula));
 }
 
-RtlfParsingResult parseRtlf(const std::string_view rtlf, const spot::atomic_prop_set& allowedAtomicPropositions)
+RtlParsingResult parseRtl(const std::string_view rtl, const spot::atomic_prop_set& allowedAtomicPropositions)
 {
-    RtlfParsingResult rtlfParsingResult { parseRtlf(rtlf) };
+    RtlParsingResult rtlfParsingResult { parseRtl(rtl) };
     if (!rtlfParsingResult)
     {
         return rtlfParsingResult;
@@ -45,7 +45,7 @@ RtlfParsingResult parseRtlf(const std::string_view rtlf, const spot::atomic_prop
 }
 
 
-static RtlfParsingResult toRtlfParsingResult(spot::parse_error_list&& spotErrors)
+static RtlParsingResult toRtlfParsingResult(spot::parse_error_list&& spotErrors)
 {
     std::vector<ParserError> parserErrors {};
     parserErrors.reserve(spotErrors.size());
@@ -57,5 +57,5 @@ static RtlfParsingResult toRtlfParsingResult(spot::parse_error_list&& spotErrors
             return ParserError { std::move(spotError) };
         });
 
-    return RtlfParsingResult::withParserErrors(std::move(parserErrors));
+    return RtlParsingResult::withParserErrors(std::move(parserErrors));
 }

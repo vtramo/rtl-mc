@@ -5,7 +5,7 @@
 
 #include "ParserError.h"
 
-class RtlfParsingResult
+class RtlParsingResult
 {
 public:
     [[nodiscard]] bool ok() const { return !hasParserErrors() && isLtl() && !isUsingIllegalAtoms(); }
@@ -25,19 +25,19 @@ public:
 
     [[nodiscard]] bool operator!() const { return !ok(); }
 
-    [[nodiscard]] static RtlfParsingResult ok(spot::formula&& rtlf)
+    [[nodiscard]] static RtlParsingResult ok(spot::formula&& rtlf)
     {
-        return RtlfParsingResult{std::move(rtlf), {}, {}, true};
+        return RtlParsingResult{std::move(rtlf), {}, {}, true};
     }
 
-    [[nodiscard]] static RtlfParsingResult withParserErrors(std::vector<ParserError>&& parserErrors)
+    [[nodiscard]] static RtlParsingResult withParserErrors(std::vector<ParserError>&& parserErrors)
     {
-        return RtlfParsingResult{std::move(parserErrors)};
+        return RtlParsingResult{std::move(parserErrors)};
     }
 
-    [[nodiscard]] static RtlfParsingResult notLtlFormula(spot::formula&& rtlf)
+    [[nodiscard]] static RtlParsingResult notLtlFormula(spot::formula&& rtlf)
     {
-        return RtlfParsingResult{std::move(rtlf), false};
+        return RtlParsingResult{std::move(rtlf), false};
     }
 
 private:
@@ -46,9 +46,9 @@ private:
     std::vector<spot::formula> m_illegalAtoms {};
     const bool m_isLtl { false };
 
-    friend RtlfParsingResult parseRtlf(std::string_view rtlf, const spot::atomic_prop_set& allowedAtomicPropositions);
+    friend RtlParsingResult parseRtl(std::string_view rtl, const spot::atomic_prop_set& allowedAtomicPropositions);
 
-    RtlfParsingResult(
+    RtlParsingResult(
         std::optional<spot::formula>&& rtlf,
         std::vector<ParserError>&& parserErrors,
         std::vector<spot::formula>&& illegalAtoms,
@@ -61,26 +61,26 @@ private:
     {
     }
 
-    explicit RtlfParsingResult(std::vector<ParserError>&& parserErrors)
-        : RtlfParsingResult({}, std::move(parserErrors), {}, false)
+    explicit RtlParsingResult(std::vector<ParserError>&& parserErrors)
+        : RtlParsingResult({}, std::move(parserErrors), {}, false)
     {
     }
 
-    explicit RtlfParsingResult(
+    explicit RtlParsingResult(
         spot::formula&& rtlf,
         const bool isLtl = false
-    ) : RtlfParsingResult(std::move(rtlf), {}, {}, isLtl)
+    ) : RtlParsingResult(std::move(rtlf), {}, {}, isLtl)
     {
     }
 
-    explicit RtlfParsingResult(
+    explicit RtlParsingResult(
         std::vector<spot::formula>&& forbiddenAtoms,
         const bool isLtl = true
-    ) : RtlfParsingResult({}, {}, std::move(forbiddenAtoms), isLtl)
+    ) : RtlParsingResult({}, {}, std::move(forbiddenAtoms), isLtl)
     {
     }
 
-    explicit RtlfParsingResult(spot::formula&& rtlf) : RtlfParsingResult(std::move(rtlf), {}, {}, false)
+    explicit RtlParsingResult(spot::formula&& rtlf) : RtlParsingResult(std::move(rtlf), {}, {}, false)
     {
     }
 
@@ -90,7 +90,7 @@ private:
     }
 };
 
-inline std::ostream& operator<< (std::ostream& os, RtlfParsingResult& result)
+inline std::ostream& operator<< (std::ostream& os, RtlParsingResult& result)
 {
     if (result.ok())
         return os << *result;

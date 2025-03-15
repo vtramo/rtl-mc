@@ -39,10 +39,10 @@ antlr4_error_listeners = [
 ]
 
 subdir('system')
-subdir('rtlf')
+subdir('rtl')
 subdir('mc')
 
 polyhedral_system_parser_source_files += [common_parser_source_files, antlr4_error_listeners]
-rtlf_parser_source_files += [common_parser_source_files]
+rtl_parser_source_files += [common_parser_source_files]
 mc_point_parser_source_files += [common_parser_source_files]
 project_source_files += common_parser_source_files + antlr4_error_listeners

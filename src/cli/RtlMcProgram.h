@@ -1,11 +1,11 @@
 #pragma once
 
 #include <argparse/argparse.hpp>
-#include "RtlfParsingResult.h"
+#include "RtlParsingResult.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
 #include "mcparser.h"
-#include "parsertlf.h"
+#include "parsertl.h"
 #include "Verbosity.h"
 #include "AutomatonOptimizationFlags.h"
 #include "OutputFormat.h"
@@ -332,7 +332,7 @@ private:
         std::string rtlf{buffer.str()};
         rtlfFile.close();
 
-        RtlfParsingResult rtlfParsingResult{parseRtlf(rtlf, m_polyhedralSystem->atoms())};
+        RtlParsingResult rtlfParsingResult{parseRtl(rtlf, m_polyhedralSystem->atoms())};
         if (!rtlfParsingResult.ok())
         {
             std::cerr << "Error while parsing RTLf formula (file " << m_rtlFilename << ").\n";

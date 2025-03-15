@@ -1,7 +1,7 @@
 @startuml
 
 package parser {
-    !include parser-rtlf.puml
+    !include parser-rtl.puml
     !include parser-system.puml
     !include parser-mc.puml
 

@@ -1,0 +1,46 @@
+@startuml parser-rtl
+package rtl {
+    class RtlParsingResult {
+        --data members--
+        -m_isLtl : const bool
+        -m_parserErrors : const std::vector<ParserError>
+        -m_illegalAtoms : std::vector<spot::formula>
+        -m_rtl : std::optional<spot::formula>
+        --constructors--
+        -RtlParsingResult(std::optional<spot::formula>&& rtl, std::vector<ParserError>&& parserErrors, std::vector<spot::formula>&& illegalAtoms, const bool isLtl)
+        -RtlParsingResult(std::vector<ParserError>&& parserErrors)
+        -RtlParsingResult(spot::formula&& rtl, const bool isLtl)
+        -RtlParsingResult(std::vector<spot::formula>&& forbiddenAtoms, const bool isLtl)
+        -RtlParsingResult(spot::formula&& rtl)
+        --methods--
+        +hasParserErrors() : bool
+        +isLtl() : bool
+        +isUsingIllegalAtoms() : bool
+        +ok() : bool
+        +illegalAtoms() : spot::atomic_prop_vector
+        +parserErrors() : std::vector<ParserError>
+        -setIllegalAtoms(std::vector<spot::formula>&& illegalAtoms) : void
+        --operators--
+        +operator!() : bool
+        +operator*() : spot :: formula&
+        --friends--
+        -parseRtl(const std::string_view rtl, const spot::atomic_prop_set& allowedAtomicPropositions): RtlParsingResult
+        --static functions--
+        +{static} notLtlFormula(spot::formula&& rtl) : RtlParsingResult
+        +{static} ok(spot::formula&& rtl) : RtlParsingResult
+        +{static} withParserErrors(std::vector<ParserError>&& parserErrors) : RtlParsingResult
+    }
+
+    object parsertl_h_cpp {
+        +parseRtl(std::string_view rtl): RtlParsingResult
+        +parseRtl(const std::string_view rtl, const spot::atomic_prop_set& allowedAtomicPropositions): RtlParsingResult
+        -toRtlParsingResult(spot::parse_error_list&& spotErrors): RtlParsingResult
+    }
+}
+
+class spot::formula {}
+
+RtlParsingResult --> "0..1" spot::formula
+parsertl_h_cpp ...> RtlParsingResult : create
+
+@enduml
