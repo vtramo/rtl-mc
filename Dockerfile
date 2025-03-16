@@ -76,15 +76,11 @@ RUN wget -q -O - https://www.lrde.epita.fr/repo/debian.gpg | apt-key add - && \
     apt-get install -y spot=${SPOT_VERSION}.0-1 libspot-dev=${SPOT_VERSION}.0-1
 
 WORKDIR /project
-COPY src src
-COPY subprojects subprojects
-COPY meson.build meson.build
-COPY meson_options.txt meson_options.txt
+COPY . .
 
 
 FROM build-stage AS compile-test
 RUN apt-get install -y valgrind
-COPY tests tests
 RUN meson setup  \
     --errorlogs  \
     -Denable_tests=true  \
