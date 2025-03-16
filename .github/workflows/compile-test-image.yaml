@@ -1,4 +1,4 @@
-name: Compile -> Test -> Build Docker Image -> Push Docker Image
+name: Compile & Test & Push
 
 on:
   push:
@@ -36,6 +36,7 @@ jobs:
       - name: Compile and Test
         uses: docker/build-push-action@v6
         with:
+          pull: true
           push: true
           tags: vtramo/rtl-mc:build-${{ github.sha }}
           cache-from: type=gha
