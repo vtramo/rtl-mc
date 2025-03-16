@@ -8,4 +8,4 @@ parse_system_tests_exe = executable(
 # Copy test files into build directory
 configure_file(input: 'polyhedral-system-test-1.txt', output: 'polyhedral-system-test-1.txt', copy: true)
 
-test('system-parser', parse_system_tests_exe, suite: ['parser'], workdir: meson.current_source_dir())
+test('system-parser', parse_system_tests_exe, workdir: meson.current_source_dir())

@@ -22,12 +22,12 @@ public:
 
     [[nodiscard]] const Poly& flow() const;
     [[nodiscard]] const Poly& preFlow() const;
-    [[nodiscard]] bool isOmnidirectionalFlow() const;
-    [[nodiscard]] bool isClosedFlow() const;
+    [[nodiscard]] bool hasOmnidirectionalFlow() const;
+    [[nodiscard]] bool hasClosedFlow() const;
     [[nodiscard]] bool isMovementForced() const;
 
     [[nodiscard]] const Powerset& invariant() const;
-    [[nodiscard]] bool isBoundedInvariant() const;
+    [[nodiscard]] bool hasBoundedInvariant() const;
 
     [[nodiscard]] const PolyhedralSystemSymbolTable& symbolTable() const;
     [[nodiscard]] const spot::atomic_prop_set& atoms() const;
@@ -56,7 +56,7 @@ public:
 private:
     Powerset m_invariant { 0, PPL::EMPTY };
     Poly m_flow { 0, PPL::EMPTY };
-    bool m_isOmnidirectionalFlow { false };
+    bool m_hasOmnidirectionalFlow { false };
     bool m_isMovementForced { false };
     Poly m_preFlow { 0, PPL::EMPTY };
     spot::bdd_dict_ptr m_bddDict {};

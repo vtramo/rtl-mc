@@ -1,4 +1,5 @@
 #include "TileExtractorFast.h"
+#include "adjacency.h"
 
 std::vector<Tile> TileExtractorFast::extractTiles(const std::vector<Observable>& observables)
 {
@@ -84,7 +85,7 @@ bool TileExtractorFast::merge(const PowersetLinkedList::NodePtr& i, const Powers
 {
     assert(i != nullptr && j != nullptr);
 
-    if (PPLUtils::areAdjacent(*i->powerset, *j->powerset))
+    if (areAdjacent(*i->powerset, *j->powerset))
     {
         PPLUtils::fusion(*j->powerset, *i->powerset);
         return true;

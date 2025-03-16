@@ -27,7 +27,7 @@ TEST_CASE("Extract Tiles from Observables")
         };
         REQUIRE(polyhedralSystemParsingResult.ok());
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
 
         const Powerset& p { (*polyhedralSystem.getAtomInterpretation("p"))->interpretation() };
         const Powerset& q { (*polyhedralSystem.getAtomInterpretation("q"))->interpretation() };

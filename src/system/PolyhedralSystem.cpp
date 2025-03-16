@@ -7,6 +7,8 @@
 #include "PolyhedralSystem.h"
 #include "ppl_output.h"
 #include "systemparser.h"
+#include "reflection.h"
+#include "omnidirectional.h"
 
 const Poly& PolyhedralSystem::flow() const
 {
@@ -18,12 +20,12 @@ const Poly& PolyhedralSystem::preFlow() const
     return m_preFlow;
 }
 
-bool PolyhedralSystem::isOmnidirectionalFlow() const
+bool PolyhedralSystem::hasOmnidirectionalFlow() const
 {
-    return m_isOmnidirectionalFlow;
+    return m_hasOmnidirectionalFlow;
 }
 
-bool PolyhedralSystem::isClosedFlow() const
+bool PolyhedralSystem::hasClosedFlow() const
 {
     return m_flow.is_topologically_closed();
 }
@@ -38,7 +40,7 @@ const Powerset& PolyhedralSystem::invariant() const
     return m_invariant;
 }
 
-bool PolyhedralSystem::isBoundedInvariant() const
+bool PolyhedralSystem::hasBoundedInvariant() const
 {
     return m_invariant.is_bounded();
 }
@@ -164,7 +166,7 @@ PolyhedralSystem::PolyhedralSystem(
 }
 
 PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
-    : m_isOmnidirectionalFlow { polyhedralSystem.m_isOmnidirectionalFlow }
+    : m_hasOmnidirectionalFlow { polyhedralSystem.m_hasOmnidirectionalFlow }
     , m_isMovementForced { polyhedralSystem.m_isMovementForced }
     , m_bddDict { std::move(polyhedralSystem.m_bddDict) }
     , m_denotation { std::move(polyhedralSystem.m_denotation) }
@@ -186,7 +188,7 @@ PolyhedralSystem& PolyhedralSystem::operator= (PolyhedralSystem&& polyhedralSyst
     m_invariant.m_swap(polyhedralSystem.m_invariant);
     m_preFlow.m_swap(polyhedralSystem.m_preFlow);
     m_symbolTable = std::move(polyhedralSystem.m_symbolTable);
-    m_isOmnidirectionalFlow = polyhedralSystem.m_isOmnidirectionalFlow;
+    m_hasOmnidirectionalFlow = polyhedralSystem.m_hasOmnidirectionalFlow;
     m_isMovementForced = polyhedralSystem.m_isMovementForced;
     m_bddDict = std::move(polyhedralSystem.m_bddDict);
     m_minimizeConstraintsOutput = polyhedralSystem.m_minimizeConstraintsOutput;
@@ -199,14 +201,14 @@ PolyhedralSystem& PolyhedralSystem::operator= (PolyhedralSystem&& polyhedralSyst
 void PolyhedralSystem::computePreFlow()
 {
     Poly preFlow { m_flow };
-    m_preFlow.m_swap(PPLUtils::reflectionAffineImage(preFlow));
+    m_preFlow.m_swap(reflectionAffineImage(preFlow));
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
 }
 
 void PolyhedralSystem::evaluateFlowProperties()
 {
-    m_isOmnidirectionalFlow = PPLUtils::isOmnidirectionalFlow(m_flow);
+    m_hasOmnidirectionalFlow = isOmnidirectionalFlow(m_flow);
 
     Poly zeroPoint { PPLUtils::zeroPoint(spaceDimension()) };
     Poly closureFlow { m_flow };

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <spot_constants.h>
-
+#include "spot_constants.h"
 #include "PolyhedralSystem.h"
 #include "reach.h"
 #include "spot_utils.h"
+#include "cone.h"
 
 using namespace SpotUtils;
 
@@ -36,7 +36,7 @@ inline std::pair<spot::formula, PowersetUniquePtr> stay(PolyhedralSystemConstSha
     spot::formula stay { ap("stay") };
     PowersetUniquePtr stayInterpretation { std::make_unique<Powerset>(polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
-    if (!polyhedralSystem->isOmnidirectionalFlow())
+    if (!polyhedralSystem->hasOmnidirectionalFlow())
     {
         std::vector observables { polyhedralSystem->generateObservables() };
 
@@ -45,7 +45,7 @@ inline std::pair<spot::formula, PowersetUniquePtr> stay(PolyhedralSystemConstSha
             PowersetConstSharedPtr observableInterpretation { observable.interpretation() };
             for (auto patch { observableInterpretation->begin() }; patch != observableInterpretation->end(); ++patch)
             {
-                PolyUniquePtr patchCone { PPLUtils::cone(patch->pointset()) };
+                PolyUniquePtr patchCone { cone(patch->pointset()) };
                 PolyUniquePtr patchConeIntersectFlow { PPLUtils::intersect(*patchCone, polyhedralSystem->flow()) };
                 if (!patchConeIntersectFlow->is_empty())
                 {

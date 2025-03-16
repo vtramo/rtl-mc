@@ -2,8 +2,9 @@
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
 
-#include "traversal.h"
+#include "traverse.h"
 #include "spot_utils.h"
+#include "reflection.h"
 #include "Observable.h"
 
 using namespace PPLUtils;
@@ -68,7 +69,7 @@ TEST_CASE(
 
         SECTION("Traversal Zero should return ( { x >= 1 & x <= 2 & y = 3 } )")
         {
-            PowersetSharedPtr traversalZeroResult { traversalZero(sequence, preFlow) };
+            PowersetSharedPtr traversalZeroResult { traverseZero(sequence, preFlow) };
             Powerset expectedResult { powerset({{ x >= 1, x <= 2, y == 3 }}) };
             INFO("Traversal Zero Result: " + PPLUtils::toString(*traversalZeroResult));
             INFO("Expected Result: " + PPLUtils::toString(expectedResult));
@@ -77,7 +78,7 @@ TEST_CASE(
 
         SECTION("Traversal Plus should return ( { x >= 1 & -x + y > 1 & -y >= -3 } )")
         {
-            PowersetSharedPtr traversalPlusResult { traversalPlus(sequence, preFlow) };
+            PowersetSharedPtr traversalPlusResult { traversePlus(sequence, preFlow) };
             Powerset expectedResult { powerset({{ x >= 1, -x + y > 1, -y >= -3 }}) };
             INFO("Traversal Plus Result: " + PPLUtils::toString(*traversalPlusResult));
             INFO("Expected Result: " + PPLUtils::toString(expectedResult));
@@ -104,7 +105,7 @@ TEST_CASE(
 
         SECTION("Traversal Zero should return ( { x >= 1 & x <= 2 & y = 3 } )")
         {
-            PowersetSharedPtr traversalZeroResult { traversalZero(sequence, preFlow) };
+            PowersetSharedPtr traversalZeroResult { traverseZero(sequence, preFlow) };
             Powerset expectedResult { powerset({{ x >= 1, x <= 2, y == 3 }}) };
             INFO("Traversal Zero Result: " + PPLUtils::toString(*traversalZeroResult));
             INFO("Expected Result: " + PPLUtils::toString(expectedResult));
@@ -113,7 +114,7 @@ TEST_CASE(
 
         SECTION("Traversal Plus should return ( { x >= 1 & -x + y >= 1 & y <= 3 } )")
         {
-            PowersetSharedPtr traversalPlusResult { traversalPlus(sequence, preFlow) };
+            PowersetSharedPtr traversalPlusResult { traversePlus(sequence, preFlow) };
             Powerset expectedResult { powerset({{ x >= 1, -x + y >= 1, y <= 3 }}) };
             INFO("Traversal Zero Result: " + PPLUtils::toString(*traversalPlusResult));
             INFO("Expected Result: " + PPLUtils::toString(expectedResult));
@@ -140,7 +141,7 @@ TEST_CASE(
 
         SECTION("Traversal Zero should return ( { x >= 2 & x < 3 & y == 4 } )")
         {
-            PowersetSharedPtr traversalZeroResult { traversalZero(sequence, preFlow) };
+            PowersetSharedPtr traversalZeroResult { traverseZero(sequence, preFlow) };
             Powerset expectedResult { powerset({{ x >= 2, x < 3, y == 4 }}) };
             INFO("Traversal Zero Result: " + PPLUtils::toString(*traversalZeroResult));
             INFO("Expected Result: " + PPLUtils::toString(expectedResult));
@@ -149,11 +150,11 @@ TEST_CASE(
 
         SECTION("Traversal Plus should return ( { -x + y >= 1 & -y >= -4 & y > 3 & x - y >= -2 } )")
         {
-            PowersetSharedPtr traversalPlusResult { traversalPlus(sequence, preFlow) };
+            PowersetSharedPtr traversalPlusResult { traversePlus(sequence, preFlow) };
             Powerset expectedResult { powerset({{ -x + y >= 1, -y >= -4, y > 3, x - y >= -2 }}) };
             INFO("Traversal Plus Result: " + PPLUtils::toString(*traversalPlusResult));
             INFO("Expected Result: " + PPLUtils::toString(expectedResult));
-            REQUIRE(*traversalPlus(sequence, preFlow) == expectedResult);
+            REQUIRE(*traversePlus(sequence, preFlow) == expectedResult);
         }
     }
 }

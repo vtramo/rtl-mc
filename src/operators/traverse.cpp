@@ -1,4 +1,4 @@
-#include "traversal.h"
+#include "traverse.h"
 
 ObservablePatchSequenceSlice::ObservablePatchSequenceSlice(
     const ObservablePatchSequence& observablePatchSequence,
@@ -57,7 +57,7 @@ unsigned ObservablePatchSequenceSlice::endIndex() const
     return m_endIndex;
 }
 
-PowersetSharedPtr traversalZero(const ObservablePatchSequence& sequence, const Poly& preFlow)
+PowersetSharedPtr traverseZero(const ObservablePatchSequence& sequence, const Poly& preFlow)
 {
     if (sequence.isEmpty())
     {
@@ -67,10 +67,10 @@ PowersetSharedPtr traversalZero(const ObservablePatchSequence& sequence, const P
     constexpr unsigned sliceStartIndex { 0 };
     const unsigned sliceEndIndex { static_cast<unsigned>(sequence.totalPatches() - 1) };
     ObservablePatchSequenceSlice slice { sequence, sliceStartIndex, sliceEndIndex };
-    return traversalZero(slice, preFlow);
+    return traverseZero(slice, preFlow);
 }
 
-PowersetSharedPtr traversalZero(const ObservablePatchSequenceSlice slice, const Poly& preFlow)
+PowersetSharedPtr traverseZero(const ObservablePatchSequenceSlice slice, const Poly& preFlow)
 {
     if (slice.isEmpty())
     {
@@ -79,11 +79,11 @@ PowersetSharedPtr traversalZero(const ObservablePatchSequenceSlice slice, const 
 
     const ObservablePatch* firstObservablePatch { *slice.firstObservablePatch() };
     const Poly& firstPatch { firstObservablePatch->patch() };
-    PowersetSharedPtr traversalPlusResult { traversalPlus(slice.advanceStartIndexByOne(), preFlow) };
+    PowersetSharedPtr traversalPlusResult { traversePlus(slice.advanceStartIndexByOne(), preFlow) };
     return reach0(firstPatch, *traversalPlusResult, preFlow);
 }
 
-PowersetSharedPtr traversalPlus(const ObservablePatchSequence& sequence, const Poly& preFlow)
+PowersetSharedPtr traversePlus(const ObservablePatchSequence& sequence, const Poly& preFlow)
 {
     if (sequence.isEmpty())
     {
@@ -93,10 +93,10 @@ PowersetSharedPtr traversalPlus(const ObservablePatchSequence& sequence, const P
     constexpr unsigned sliceStartIndex { 0 };
     const unsigned sliceEndIndex { static_cast<unsigned>(sequence.totalPatches() - 1) };
     ObservablePatchSequenceSlice slice { sequence, sliceStartIndex, sliceEndIndex };
-    return traversalPlus(slice, preFlow);
+    return traversePlus(slice, preFlow);
 }
 
-PowersetSharedPtr traversalPlus(const ObservablePatchSequenceSlice slice, const Poly& preFlow)
+PowersetSharedPtr traversePlus(const ObservablePatchSequenceSlice slice, const Poly& preFlow)
 {
     if (slice.isEmpty())
     {
@@ -104,7 +104,7 @@ PowersetSharedPtr traversalPlus(const ObservablePatchSequenceSlice slice, const 
     }
 
     ObservablePatchSequenceSlice advancedSliceByOne { slice.advanceStartIndexByOne() };
-    PowersetSharedPtr traversalZeroResult { traversalZero(advancedSliceByOne, preFlow) };
+    PowersetSharedPtr traversalZeroResult { traverseZero(advancedSliceByOne, preFlow) };
 
     const ObservablePatch* firstObservablePatch { *slice.firstObservablePatch() };
     PowersetConstSharedPtr firstObservableInterpretation { firstObservablePatch->observableInterpretation() };

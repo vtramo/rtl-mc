@@ -1,4 +1,5 @@
 #include "TileExtractorList.h"
+#include "adjacency.h"
 
 std::vector<Tile> TileExtractorList::extractTiles(const std::vector<Observable>& observables)
 {
@@ -33,7 +34,7 @@ std::vector<Tile> TileExtractorList::extractTiles(const Observable& observable)
         do
         {
             PowersetSharedPtr cursorPartialTile { *cursor };
-            if (PPLUtils::areAdjacent(*headPartialTile, *cursorPartialTile))
+            if (areAdjacent(*headPartialTile, *cursorPartialTile))
             {
                 cursor = m_partialTileList.erase(cursor);
                 PPLUtils::fusion(*headPartialTile, *cursorPartialTile);

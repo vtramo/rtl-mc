@@ -7,7 +7,7 @@ OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(
 )
     : PolyhedralAbstraction(polyhedralSystem, name)
 {
-    if (!polyhedralSystem->isOmnidirectionalFlow())
+    if (!polyhedralSystem->hasOmnidirectionalFlow())
         throw std::invalid_argument("To construct an OmnidirectionalPolyhedralAbstraction, the flow must be omnidirectional!");
 
     std::vector tiles { extractTilesFromPolyhedralSystem(polyhedralSystem) };

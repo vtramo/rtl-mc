@@ -57,7 +57,7 @@ package system {
     class PolyhedralSystem {
         --data members--
         -m_flow : Poly
-        -m_isOmnidirectionalFlow : bool
+        -m_hasOmnidirectionalFlow : bool
         -m_isMovementForced : bool
         -m_preFlow : Poly
         -m_symbolTable : PolyhedralSystemSymbolTable
@@ -75,12 +75,12 @@ package system {
         +spaceDimension() : PPL::dimension_type
         +flow() : Poly&
         +preFlow() : Poly&
-        +isOmnidirectionalFlow() : bool
+        +hasOmnidirectionalFlow() : bool
         +isMovementForced() : bool
-        +isClosedFlow() : bool
+        +hasClosedFlow() : bool
         +symbolTable() : PolyhedralSystemSymbolTable&
         +invariant() : Powerset&
-        +isBoundedInvariant() : bool
+        +hasBoundedInvariant() : bool
         +totalAtoms() : int
         +containsAtom(spot::formula atom): bool
         +containsAtom(std::string_view atom): bool

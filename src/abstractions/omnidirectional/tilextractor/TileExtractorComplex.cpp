@@ -2,6 +2,7 @@
 #include <unordered_set>
 
 #include "TileExtractorComplex.h"
+#include "adjacency.h"
 
 TileExtractorComplex::TileExtractorComplex(): m_currentObservable {}
 {
@@ -64,7 +65,7 @@ Tile TileExtractorComplex::findFirstTile()
             if (otherPatch == currentPatch) continue;
             if (m_patchesIndexesInFirstTile.count(patchId)) continue;
 
-            if (PPLUtils::areAdjacent(otherPatch, currentPatch))
+            if (areAdjacent(otherPatch, currentPatch))
             {
                 tilePatches->add_disjunct(otherPatch);
                 todoPatches.push(otherPatch);
@@ -111,7 +112,7 @@ std::vector<Tile> TileExtractorComplex::findRemainingTiles()
             todoPatches.pop();
             for (auto otherPatchIterator { globalTodoPatches.begin() }; otherPatchIterator != globalTodoPatches.end();)
             {
-                if (PPLUtils::areAdjacent(*otherPatchIterator, currentTodoPatch))
+                if (areAdjacent(*otherPatchIterator, currentTodoPatch))
                 {
                     tilePatches->add_disjunct(*otherPatchIterator);
                     todoPatches.push(*otherPatchIterator);

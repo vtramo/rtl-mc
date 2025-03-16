@@ -24,8 +24,8 @@ private:
     const unsigned m_endIndex {};
 };
 
-PowersetSharedPtr traversalZero(const ObservablePatchSequence& sequence, const Poly& preFlow);
-PowersetSharedPtr traversalZero(ObservablePatchSequenceSlice slice, const Poly& preFlow);
+PowersetSharedPtr traverseZero(const ObservablePatchSequence& sequence, const Poly& preFlow);
+PowersetSharedPtr traverseZero(ObservablePatchSequenceSlice slice, const Poly& preFlow);
 
-PowersetSharedPtr traversalPlus(const ObservablePatchSequence& sequence, const Poly& preFlow);
-PowersetSharedPtr traversalPlus(ObservablePatchSequenceSlice slice, const Poly& preFlow);
+PowersetSharedPtr traversePlus(const ObservablePatchSequence& sequence, const Poly& preFlow);
+PowersetSharedPtr traversePlus(ObservablePatchSequenceSlice slice, const Poly& preFlow);

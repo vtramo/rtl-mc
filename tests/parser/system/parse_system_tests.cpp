@@ -27,10 +27,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
         REQUIRE(polyhedralSystem.spaceDimension() == 2);
         REQUIRE(polyhedralSystem.totalAtoms() == 2);
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Building PolyhedralSystem with 'Inv' constraint first")
@@ -49,10 +49,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
         REQUIRE(polyhedralSystem.spaceDimension() == 2);
         REQUIRE(polyhedralSystem.totalAtoms() == 2);
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Building PolyhedralSystem using '>>' operator with input stream")
@@ -68,10 +68,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         REQUIRE(polyhedralSystem.spaceDimension() == 2);
         REQUIRE(polyhedralSystem.totalAtoms() == 2);
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Building PolyhedralSystem with 'Flow' last in input stream")
@@ -88,10 +88,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         REQUIRE(polyhedralSystem.spaceDimension() == 2);
         REQUIRE(polyhedralSystem.totalAtoms() == 3);
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Building PolyhedralSystem with multiple constraints and atoms (3 dimensions & 4 atoms)")
@@ -109,10 +109,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         REQUIRE(polyhedralSystem.spaceDimension() == 3);
         REQUIRE(polyhedralSystem.totalAtoms() == 4);
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Flow not closed, not omnidirectional, and forced movement")
@@ -130,10 +130,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         REQUIRE(polyhedralSystem.spaceDimension() == 3);
         REQUIRE(polyhedralSystem.totalAtoms() == 4);
-        REQUIRE(!polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(!polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(!polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(!polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Is bounded invariant")
@@ -151,10 +151,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         REQUIRE(polyhedralSystem.spaceDimension() == 3);
         REQUIRE(polyhedralSystem.totalAtoms() == 4);
-        REQUIRE(!polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(!polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(polyhedralSystem.isMovementForced());
-        REQUIRE(polyhedralSystem.isBoundedInvariant());
-        REQUIRE(!polyhedralSystem.isClosedFlow());
+        REQUIRE(polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(!polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Building a complex PolyhedralSystem with multiple constraints and atoms (6 dimensions & 11 atoms)")
@@ -179,10 +179,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         REQUIRE(polyhedralSystem.spaceDimension() == 6);
         REQUIRE(polyhedralSystem.totalAtoms() == 11);
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Parse a PolyhedralSystem spec then compare with the expected PolyhedralSystem")
@@ -222,15 +222,15 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         REQUIRE(expectedPolyhedralSystem.spaceDimension() == polyhedralSystem.spaceDimension());
         REQUIRE(expectedPolyhedralSystem == polyhedralSystem);
 
-        REQUIRE(expectedPolyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(expectedPolyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!expectedPolyhedralSystem.isMovementForced());
-        REQUIRE(!expectedPolyhedralSystem.isBoundedInvariant());
-        REQUIRE(expectedPolyhedralSystem.isClosedFlow());
+        REQUIRE(!expectedPolyhedralSystem.hasBoundedInvariant());
+        REQUIRE(expectedPolyhedralSystem.hasClosedFlow());
 
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Read a PolyhedralSystem from a file")
@@ -244,10 +244,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         REQUIRE(polyhedralSystem.spaceDimension() == 6);
         REQUIRE(polyhedralSystem.totalAtoms() == 11);
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
     }
 
     SECTION("Parse a PolyhedralSystem spec then add new atomic proposition (stay)")
@@ -286,15 +286,15 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
         REQUIRE(expectedPolyhedralSystem.spaceDimension() == polyhedralSystem.spaceDimension());
         REQUIRE(expectedPolyhedralSystem == polyhedralSystem);
 
-        REQUIRE(expectedPolyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(expectedPolyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!expectedPolyhedralSystem.isMovementForced());
-        REQUIRE(!expectedPolyhedralSystem.isBoundedInvariant());
-        REQUIRE(expectedPolyhedralSystem.isClosedFlow());
+        REQUIRE(!expectedPolyhedralSystem.hasBoundedInvariant());
+        REQUIRE(expectedPolyhedralSystem.hasClosedFlow());
 
-        REQUIRE(polyhedralSystem.isOmnidirectionalFlow());
+        REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         REQUIRE(!polyhedralSystem.isMovementForced());
-        REQUIRE(!polyhedralSystem.isBoundedInvariant());
-        REQUIRE(polyhedralSystem.isClosedFlow());
+        REQUIRE(!polyhedralSystem.hasBoundedInvariant());
+        REQUIRE(polyhedralSystem.hasClosedFlow());
 
         spot::formula stay { ap("stay") };
         Powerset stayInterpretation { powerset({{ x - y >= 3 }, { x - y <= 6 }}) };
@@ -324,10 +324,10 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         REQUIRE(polyhedralSystem->spaceDimension() == 3);
         REQUIRE(polyhedralSystem->totalAtoms() == 4);
-        REQUIRE(!polyhedralSystem->isOmnidirectionalFlow());
+        REQUIRE(!polyhedralSystem->hasOmnidirectionalFlow());
         REQUIRE(polyhedralSystem->isMovementForced());
-        REQUIRE(!polyhedralSystem->isBoundedInvariant());
-        REQUIRE(polyhedralSystem->isClosedFlow());
+        REQUIRE(!polyhedralSystem->hasBoundedInvariant());
+        REQUIRE(polyhedralSystem->hasClosedFlow());
     }
 }
 

@@ -33,32 +33,6 @@ namespace PPLUtils {
         return iss.str();
     }
 
-    Poly & reflectionAffineImage(Poly & polyhedron) {
-        const PPL::dimension_type spaceDimension { polyhedron.space_dimension() };
-
-        for (PPL::dimension_type dim {}; dim < spaceDimension; ++dim) {
-            const PPL::Variable variable { dim };
-            polyhedron.affine_image(variable, -variable);
-        }
-
-        assert(polyhedron.space_dimension() == spaceDimension);
-
-        return polyhedron;
-    }
-
-    Powerset & reflectionAffineImage(Powerset & powerset) {
-        const PPL::dimension_type spaceDimension { powerset.space_dimension() };
-
-        for (PPL::dimension_type dim {}; dim < spaceDimension; ++dim) {
-            const PPL::Variable variable { dim };
-            powerset.affine_image(variable, -variable);
-        }
-
-        assert(powerset.space_dimension() == spaceDimension);
-
-        return powerset;
-    }
-
     Poly poly(std::vector<PPL::Constraint> && constraints) {
         PPL::Constraint_System constraintSystem {};
 
@@ -399,55 +373,6 @@ namespace PPLUtils {
         return false;
     }
 
-    PolyUniquePtr interiorGeometric(const Poly& poly)
-    {
-        Powerset universe { poly.space_dimension(), PPL::UNIVERSE };
-
-        Powerset polyClosure { poly };
-        polyClosure.topological_closure_assign();
-
-        universe.difference_assign(polyClosure);
-        universe.topological_closure_assign();
-        universe.intersection_assign(polyClosure);
-
-        Powerset result { poly };
-        result.difference_assign(universe);
-
-        if (result.is_empty()) return std::make_unique<Poly>(poly.space_dimension(), PPL::EMPTY);
-        return std::make_unique<Poly>(result.begin()->pointset());
-    }
-
-    PolyUniquePtr interior(const Poly& poly)
-    {
-        const PPL::Constraint_System& polyConstraintSystem { poly.constraints() };
-        if (polyConstraintSystem.has_equalities())
-        {
-            return std::make_unique<Poly>(poly.space_dimension(), PPL::EMPTY);
-        }
-
-        PPL::Constraint_System strictConstraints {};
-        strictConstraints.set_space_dimension(poly.space_dimension());
-
-        for (auto constraint: polyConstraintSystem)
-        {
-            switch (constraint.type())
-            {
-            case PPL::Constraint::EQUALITY:
-                break;
-            case PPL::Constraint::STRICT_INEQUALITY:
-                strictConstraints.insert(constraint);
-                break;
-            case PPL::Constraint::NONSTRICT_INEQUALITY:
-                PPL::Linear_Expression expression { constraint.expression() };
-                PPL::Constraint strictConstraint { expression > 0 };
-                strictConstraints.insert(strictConstraint);
-                break;
-            }
-        }
-
-        return std::make_unique<Poly>(strictConstraints);
-    }
-
     PolyUniquePtr removeSingleVariableZeroEqualityConstraints(const Poly& poly)
     {
         const PPL::Constraint_System& polyConstraintSystem { poly.constraints() };
@@ -494,65 +419,5 @@ namespace PPLUtils {
         }
 
         return nonZeroCoefficientFound;
-    }
-
-    bool isOmnidirectionalFlow(const Poly& flow)
-    {
-        PolyUniquePtr interiorFlow { PPLUtils::interior(flow) };
-        Poly zeroPoint { PPLUtils::zeroPoint(flow.space_dimension()) };
-        return interiorFlow->contains(zeroPoint);
-    }
-
-    PowersetUniquePtr border(const Poly& p, const Poly& q)
-    {
-        Poly closureP { p };
-        closureP.topological_closure_assign();
-
-        Poly closureQ { q };
-        closureQ.topological_closure_assign();
-
-        PolyUniquePtr pIntersectClosureQ { PPLUtils::intersect(p, closureQ) };
-        PolyUniquePtr qIntersectClosureP { PPLUtils::intersect(q, std::move(closureP)) };
-        return PPLUtils::fusion(*pIntersectClosureQ, *qIntersectClosureP);
-    }
-
-    bool areAdjacent(const Poly& p, const Poly& q)
-    {
-        PowersetUniquePtr borderPQ { border(p, q) };
-        return !borderPQ->is_empty();
-    }
-
-    PowersetUniquePtr border(const Powerset& p, const Powerset& q)
-    {
-        Powerset closureP { p };
-        closureP.topological_closure_assign();
-
-        Powerset closureQ { q };
-        closureQ.topological_closure_assign();
-
-        PowersetConstUniquePtr pIntersectClosureQ { PPLUtils::intersect(p, closureQ) };
-        PowersetConstUniquePtr qIntersectClosureP { PPLUtils::intersect(q, std::move(closureP)) };
-        return PPLUtils::fusion(*pIntersectClosureQ, *qIntersectClosureP);
-    }
-
-    bool areAdjacent(const Powerset& p, const Powerset& q)
-    {
-        PowersetUniquePtr borderPQ { border(p, q) };
-        return !borderPQ->is_empty();
-    }
-
-    PolyUniquePtr cone(const Poly& poly)
-    {
-        const PPL::Generator_System& generatorSystem { poly.generators() };
-
-        PPL::Generator_System cone {};
-        for (const PPL::Generator& generator: generatorSystem)
-            if (generator.is_ray())
-                cone.insert(generator);
-
-        PPL::Generator origin { PPL::point(zeroPointLinearExpression(poly.space_dimension())) };
-        cone.insert(origin);
-
-        return std::make_unique<Poly>(cone);
     }
 }

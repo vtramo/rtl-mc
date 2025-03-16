@@ -35,6 +35,7 @@ include_directories = [
   include_directories(src_dir / abstraction_dir / 'general'),
   include_directories(src_dir / 'discretisation'),
   include_directories(src_dir / 'operators'),
+  include_directories(src_dir / 'geometry'),
   include_directories(src_dir / 'product'),
   include_directories(src_dir / automata_dir),
   include_directories(src_dir / automata_dir / 'buchi'),

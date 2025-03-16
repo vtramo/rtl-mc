@@ -15,9 +15,6 @@ namespace PPLUtils {
     std::string toString(const Poly& poly);
     std::string toString(const Powerset& powerset);
 
-    Poly& reflectionAffineImage(Poly& polyhedron);
-    Powerset& reflectionAffineImage(Powerset& powerset);
-
     Poly poly(std::vector<PPL::Constraint>&& constraints);
     Powerset powerset(std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra);
     Powerset powerset(std::initializer_list<std::initializer_list<PPL::Constraint>> polyhedra, PPL::dimension_type powersetDimension);
@@ -54,18 +51,6 @@ namespace PPLUtils {
 
     bool containsDisjunct(const Powerset& powerset, const Poly& disjunct);
 
-    PolyUniquePtr interior(const Poly& poly);
-    PolyUniquePtr interiorGeometric(const Poly& poly);
-    PowersetUniquePtr border(const Poly& p, const Poly& q);
-    PowersetUniquePtr border(const Powerset& p, const Powerset& q);
-
-    bool areAdjacent(const Poly& p, const Poly& q);
-    bool areAdjacent(const Powerset& p, const Powerset& q);
-
     bool isSingleVariableZeroEqualityConstraint(const PPL::Constraint& constraint);
     PolyUniquePtr removeSingleVariableZeroEqualityConstraints(const Poly& poly);
-
-    bool isOmnidirectionalFlow(const Poly& flow);
-
-    PolyUniquePtr cone(const Poly& poly);
 }

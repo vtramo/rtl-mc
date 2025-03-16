@@ -2,7 +2,7 @@
 
 #include "Observable.h"
 #include "ObservablePatchSequence.h"
-#include "traversal.h"
+#include "traverse.h"
 #include "spot_utils.h"
 
 class ObservableTraversalNode
@@ -53,7 +53,7 @@ private:
     void computeTravPoints(const ObservablePatchSequence& sequence, const Poly& preFlow)
     {
         m_travPoints = m_isSing
-            ? traversalZero(sequence, preFlow)
-            : traversalPlus(sequence, preFlow);
+            ? traverseZero(sequence, preFlow)
+            : traversePlus(sequence, preFlow);
     }
 };

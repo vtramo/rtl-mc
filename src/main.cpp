@@ -29,7 +29,7 @@ int main(const int argc, char *argv[])
     switch (semantics)
     {
     case Semantics::fin:
-        if (polyhedralSystem->isOmnidirectionalFlow())
+        if (polyhedralSystem->hasOmnidirectionalFlow())
         {
             Log::log(Verbosity::verbose, "[Semantics] Finite-time semantics, omnidirectional flow.");
 
@@ -54,7 +54,7 @@ int main(const int argc, char *argv[])
         }
         break;
     case Semantics::inf:
-        if (polyhedralSystem->isOmnidirectionalFlow())
+        if (polyhedralSystem->hasOmnidirectionalFlow())
         {
             Log::log(Verbosity::verbose, "[Semantics] Infinite-time semantics, omnidirectional flow.");
 
@@ -65,7 +65,7 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
-        else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] Infinite-time semantics, non-recurrent RTL and closed flow.");
 
@@ -90,7 +90,7 @@ int main(const int argc, char *argv[])
         }
         break;
     case Semantics::may:
-        if (polyhedralSystem->isOmnidirectionalFlow())
+        if (polyhedralSystem->hasOmnidirectionalFlow())
         {
             Log::log(Verbosity::verbose, "[Semantics] May semantics, omnidirectional flow.");
 
@@ -101,7 +101,7 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
-        else if (polyhedralSystem->isMovementForced() && polyhedralSystem->isBoundedInvariant())
+        else if (polyhedralSystem->isMovementForced() && polyhedralSystem->hasBoundedInvariant())
         {
             Log::log(Verbosity::verbose, "[Semantics] May semantics, forced motion and bounded invariant.");
 
@@ -114,7 +114,7 @@ int main(const int argc, char *argv[])
                 BrinkSemantics::may
             );
         }
-        else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] May semantics, non-recurrent RTL and closed flow.");
 
@@ -141,7 +141,7 @@ int main(const int argc, char *argv[])
         }
         break;
     case Semantics::must:
-        if (polyhedralSystem->isOmnidirectionalFlow())
+        if (polyhedralSystem->hasOmnidirectionalFlow())
         {
             Log::log(Verbosity::verbose, "[Semantics] Must semantics, omnidirectional flow.");
 
@@ -152,7 +152,7 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
-        else if (polyhedralSystem->isMovementForced() && polyhedralSystem->isBoundedInvariant())
+        else if (polyhedralSystem->isMovementForced() && polyhedralSystem->hasBoundedInvariant())
         {
             Log::log(Verbosity::verbose, "[Semantics] Must semantics, forced motion and bounded invariant.");
 
@@ -165,7 +165,7 @@ int main(const int argc, char *argv[])
                 BrinkSemantics::must
             );
         }
-        else if (polyhedralSystem->isClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] Must semantics, non-recurrent RTL and closed flow.");
 
