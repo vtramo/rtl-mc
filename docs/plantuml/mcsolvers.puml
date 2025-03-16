@@ -17,5 +17,237 @@ package mcsolvers {
         --operators--
         +operator() (): PowersetUniquePtr
     }
+
+    abstract class Solver {
+        --type aliases--
+        +using SolverUniquePtr = std::unique_ptr<Solver>
+        --data members--
+        #m_polyhedralSystem: PolyhedralSystemSharedPtr
+        #m_rtlFormula: spot::formula
+        #m_universalDenotation: bool
+        #m_polyhedralSystemStats: PolyhedralSystemStats
+        #m_automatonOptimizationFlags: AutomatonOptimizationFlags
+        #m_rtlFormulaStats: RtlFormulaStats
+        #m_discreteLtlFormula: DiscreteLtlFormula
+        #m_discretisationStats: DiscretisationStats
+        --constructors--
+        +Solver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +virtual ~Solver() = default
+        --member functions--
+        +virtual run() = 0: PowersetSharedPtr
+        +polyhedralSystemStats() : PolyhedralSystemStats
+        +rtlFormulaStats() : RtlFormulaStats
+        +discretisationStats() : DiscretisationStats
+        #virtual preprocessPolyhedralSystem() = 0: void
+        #virtual preprocessRtlFormula(): void
+        #virtual logPolyhedralSystemAndCollectStats(): void
+        #virtual logRtlFormulaAndCollectStats(): void
+        #virtual discretiseRtlFormula() = 0: double
+        #virtual logAndCollectDiscretisationStats(double discretisationExecutionTimeSeconds): void
+        --operators--
+        +operator() () : PowersetSharedPtr
+    }
+
+    class FiniteOnTheFlySolver {
+        --data members--
+        #m_backwardNfa: BackwardNFAConstSharedPtr
+        #m_denotStats: DenotStats
+        #m_concurrent: bool
+        #m_discretiseRtlfDirectToLtl: bool
+        --constructors--
+        +FiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, spot::formula rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false)
+        +~FiniteOnTheFlySolver() override
+        --member functions--
+        +denotStats(): DenotStats
+        +run() override: PowersetSharedPtr
+        #preprocessPolyhedralSystem() override
+        #discretiseRtlFormula() override : double
+        #constructBackwardFiniteLtlAutomaton()
+        #startDenotAlgorithm() : PowersetUniquePtr
+        #createDenotAlgorithm() : std::unique_ptr<Denot>
+    }
+
+    class StayFiniteOnTheFlySolver {
+        --constructors--
+        +StayFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
+        +~StayFiniteOnTheFlySolver() override
+        --member functions--
+        #preprocessPolyhedralSystem() override: void
+        #preprocessRtlFormula() override: double
+    }
+    
+    class BrinkFiniteOnTheFlySolver {
+        --data members--
+        #m_brinkSemantics: BrinkSemantics
+        --constructors--
+        +BrinkFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
+        +~BrinkFiniteOnTheFlySolver() override
+        --member functions--
+        #preprocessPolyhedralSystem() override: void
+        #preprocessRtlFormula() override: double
+    }
+
+    class BrinkStayFiniteOnTheFlySolver {
+        --data members--
+        #m_staySolver: std::shared_Ptr<StayFiniteOnTheFlySolver>
+        #m_brinkSolver: std::shared_Ptr<BrinkFiniteOnTheFlySolver>
+        #m_brinkSemantics: BrinkSemantics
+        --constructors--
+        +BrinkStayFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
+        +~BrinkStayFiniteOnTheFlySolver() override
+        --member functions--
+        #run() override: PowersetSharedPtr
+        #preprocessPolyhedralSystem() override: void
+        #preprocessRtlFormula() override: double
+    }
+
+    StayFiniteOnTheFlySolver --|> FiniteOnTheFlySolver
+    BrinkFiniteOnTheFlySolver --|> FiniteOnTheFlySolver
+    BrinkFiniteOnTheFlySolver --> "1" BrinkSemantics
+    BrinkStayFiniteOnTheFlySolver --|> FiniteOnTheFlySolver
+    BrinkStayFiniteOnTheFlySolver --> "1" StayFiniteOnTheFlySolver
+    BrinkStayFiniteOnTheFlySolver --> "1" BrinkFiniteOnTheFlySolver
+    BrinkStayFiniteOnTheFlySolver --> "1" BrinkSemantics
+
+    enum BrinkSemantics {
+        may
+        must
+    }
+
+    abstract ExplicitSolver {
+        --data members--
+        #m_polyhedralAbstraction: PolyhedralAbstractionSharedPtr
+        #m_ltlAutomaton: PolyhedralLtlAutomatonSharedPtr
+        #m_polyhedralSynchronousProduct: PolyhedralSynchronousProductAutomatonSharedPtr
+        --constructors--
+        +ExplicitSolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +~ExplicitSolver() override
+        --member functions--
+        #virtual constructPolyhedralAbstraction() = 0: void
+        #virtual constructPolyhedralLtlAutomaton() = 0: void
+        #virtual constructSynchronousProductAutomaton(): void
+    }
+
+    abstract GeneralSolver {
+        --constructors--
+        +GeneralSolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +virtual ~GeneralSolver() = default
+        --member functions--
+        #constructPolyhedralAbstraction() override: void
+        #virtual maxPatches(const std::vector<Observable>& observables): int
+    }
+
+    class GeneralFiniteSolver {
+        --constructors--
+        +GeneralFiniteSolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +~GeneralFiniteSolver() override
+        --member functions--
+        +run() override: PowersetSharedPtr
+        #discretiseRtlFormula() override: void
+        #constructPolyhedralLtlAutomaton() override: void
+        #virtual runFiniteSemanticsDfs(): PowersetSharedPtr
+        --protected data members--
+        #m_dfs: std::unique_ptr<FiniteSemanticsDfs>
+    }
+
+    class FiniteSemanticsDfs {
+        --data members--
+        -m_transposedSynchronousProduct: spot::twa_graph_ptr
+        -m_synchronousProduct: PolyhedralSynchronousProductAutomatonConstSharedPtr
+        -m_result: PowersetSharedPtr
+        --constructors--
+        +FiniteSemanticsDfs(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProduct)
+        --member functions--
+        +run(): PowersetSharedPtr
+        +result(): PowersetSharedPtr
+    }
+
+    FiniteOnTheFlySolver ...> FiniteSemanticsDfs: use
+
+    class Dfs {
+        --data members--
+        #m_parent: FiniteSemanticsDfs*
+        --constructors--
+        +Dfs(const spot::const_twa_ptr& a, FiniteSemanticsDfs* parent)
+        --member functions--
+        +process_state(const spot::state* state, const int _, spot::twa_succ_iterator* __) override: void
+        #addInitialStateDenotationToResult(unsigned state): void
+    }
+
+    Dfs --|> spot::twa_reachable_iterator_depth_first
+    FiniteSemanticsDfs #--> Dfs
+
+    class GeneralFiniteSolver {
+        --constructors--
+        +GeneralFiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +~GeneralFiniteSolver() override
+        --member functions--
+        +run(): PowersetSharedPtr
+        #discretiseRtlFormula() override: double
+        #constructPolyhedralLtlAutomaton() override: void
+        #virtual runFiniteSemanticsDfs(): PowersetSharedPtr
+    }
+
+    GeneralFiniteSolver --|> GeneralSolver
+    GeneralFiniteSolver ...> FiniteSemanticsDfs: use
+    GeneralSolver --|> ExplicitSolver
+    ExplicitSolver --|> Solver
+    FiniteOnTheFlySolver --|> Solver
+    FiniteOnTheFlySolver ..> DenotOnTheFly
+
+
+    abstract OmnidirectionalSolver {
+        --constructors--
+        +OmnidirectionalSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +~OmnidirectionalSolver() override
+        --member functions--
+        #constructPolyhedralAbstraction() override: void
+    }
+
+    class OmnidirectionalFiniteSolver {
+        --constructors--
+        +OmnidirectionalFiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +~OmnidirectionalFiniteSolver() override
+        --member functions--
+        +run() override: PowersetSharedPtr
+        #discretiseRtlFormula() override: double
+        #constructPolyhedralLtlAutomaton() override: void
+        #virtual runFiniteSemanticsDfs(): PowersetSharedPtr
+    }
+
+    class OmnidirectionalInfiniteSolver {
+        --constructors--
+        +OmnidirectionalInfiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +~OmnidirectionalInfiniteSolver()
+        --member functions--
+        +run() override: PowersetSharedPtr
+        #discretiseRtlFormula() override: double
+        #constructPolyhedralLtlAutomaton() override: void
+    }
+
+    object infinite_semantics_emptiness_h {
+        +inline explicitSe05Search(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton): PowersetSharedPtr
+    }
+
+    OmnidirectionalInfiniteSolver ...> infinite_semantics_emptiness_h: use
+
+    class OmnidirectionalMaySolver {
+        --constructors--
+        +OmnidirectionalMaySolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +~OmnidirectionalMaySolver()
+        --member functions--
+        +run() override: PowersetSharedPtr
+        #preprocessRtlFormula() override: void
+        #discretiseRtlFormula() override: double
+        #constructPolyhedralLtlAutomaton override: void
+        #preprocessPolyhedralSystem() override: void
+        #virtual addBrinkAtomInPolyhedralSystem(): void
+    }
+
+    OmnidirectionalMaySolver --|> OmnidirectionalSolver
+    OmnidirectionalSolver --|> ExplicitSolver
+    OmnidirectionalFiniteSolver --|> OmnidirectionalSolver
+    OmnidirectionalFiniteSolver ...> FiniteSemanticsDfs: use
+    OmnidirectionalInfiniteSolver --|> OmnidirectionalSolver
 }
 @enduml
