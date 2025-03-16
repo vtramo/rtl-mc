@@ -1,5 +1,6 @@
 #include <spot/twaalgos/translate.hh>
 #include <spdlog/fmt/bundled/format.h>
+#include <spdlog/fmt/bundled/format-inl.h>
 #include <spdlog/fmt/bundled/ranges.h>
 #include <spot/twa/formula2bdd.hh>
 
