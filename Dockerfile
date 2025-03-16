@@ -10,7 +10,7 @@ ARG PPL_VERSION
 ARG ANTLR4_VERSION
 ARG SPOT_VERSION
 
-RUN apt update && apt install -y meson=1.3.2-1ubuntu1
+RUN apt update
 RUN apt install -y cmake=3.28.3-1build7
 RUN apt install -y make=4.3-4.1build2
 RUN apt install -y wget=1.21.4-1ubuntu4.1
@@ -75,9 +75,12 @@ RUN wget -q -O - https://www.lrde.epita.fr/repo/debian.gpg | apt-key add - && \
     apt update && \
     apt install -y spot=${SPOT_VERSION}.0-1 libspot-dev=${SPOT_VERSION}.0-1
 
+# Install meson
+RUN python3 -m pip install meson --break-system-packages
+
 WORKDIR /project
 COPY . .
-
+ENTRYPOINT ["sh"]
 
 FROM build-stage AS compile-test
 RUN apt install -y valgrind
