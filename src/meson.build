@@ -59,6 +59,7 @@ rtl_mc_static_library = static_library(
 rtl_mc_exe = executable(
     meson.project_name(),
     'main.cpp',
+    cpp_args: '-DRTL_MC_VERSION="' + meson.project_version() + '"',
     link_whole: [rtl_mc_static_library],
     dependencies: [spdlog_dep, fmt_dep, argparse_dep],
     include_directories : include_directories,

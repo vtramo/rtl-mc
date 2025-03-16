@@ -1,5 +1,5 @@
 project('rtl-mc', 'cpp',
-  version : '0.1',
+  version : '0.1.0',
   meson_version : '>= 0.64.0',
   default_options : [
     'warning_level=3',

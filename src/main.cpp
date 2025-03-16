@@ -11,12 +11,16 @@
 #include "BrinkFiniteOnTheFlySolver.h"
 #include "StayFiniteOnTheFlySolver.h"
 
+#ifndef RTL_MC_VERSION
+#define RTL_MC_VERSION "0.0.0"
+#endif
+
 void showResult(const RtlMcProgram& rtlMcProgram, PolyhedralSystemConstSharedPtr polyhedralSystem, PowersetSharedPtr result);
 
 int main(const int argc, char *argv[])
 {
     Log::configureLogger();
-    RtlMcProgram rtlMcProgram { argc, argv };
+    RtlMcProgram rtlMcProgram { argc, argv, RTL_MC_VERSION };
     Log::setVerbosityLevel(rtlMcProgram.verbosityLevel());
 
     PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };

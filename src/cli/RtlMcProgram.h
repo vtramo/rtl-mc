@@ -16,7 +16,8 @@ using namespace SpotUtils;
 class RtlMcProgram
 {
 public:
-    RtlMcProgram(const int argc, char* argv[])
+    RtlMcProgram(const int argc, char* argv[], const std::string_view version = "0.0.0")
+        : m_rtlMcProgram { "rtl_mc", std::string { version } }
     {
         buildRtlMcProgram();
         parseArgs(argc, argv);
