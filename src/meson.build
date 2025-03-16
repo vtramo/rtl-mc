@@ -25,7 +25,7 @@ project_dependencies = [
     spdlog_dep
 ]
 
-project_source_files = ['main.cpp']
+project_source_files = []
 
 subdir('abstractions')
 subdir('product')
@@ -45,11 +45,18 @@ if get_option('enable_profiling') == true
     link_args += ['-pg']
 endif
 
-project_exe = executable(
-    meson.project_name(),
+rtl_mc_static_library = static_library(
+    'rtl-mc',
     project_source_files,
-    dependencies : project_dependencies,
-    include_directories : include_directories,
-    install : true,
+    dependencies: project_dependencies,
+    include_directories: include_directories,
     link_args : link_args
+)
+
+rtl_mc_exe = executable(
+    meson.project_name(),
+    'main.cpp',
+    link_whole: [rtl_mc_static_library],
+    include_directories : include_directories,
+    install : true
 )

@@ -1,17 +1,8 @@
-traversal_operators_source_files = [
-    'traversal_operator_tests.cpp',
-    polyhedral_system_source_files,
-    polyhedral_system_parser_source_files,
-    ppl_utils_source_files,
-    operators_source_files,
-    spot_utils_source_files
-]
-
 traversal_operators_system_tests_exe = executable(
     'traversal_operator_tests',
-    traversal_operators_source_files,
-    dependencies : [catch2_dep, catch2_with_main_dep, spot_dep, ppl_dep, gmp_dep, antlr4_runtime_dep, gmpxx_dep],
+    'traversal_operator_tests.cpp',
+    link_with: [test_rtl_mc_static_library],
     include_directories : include_directories
 )
 
-test('traversal-operator', traversal_operators_system_tests_exe, suite: ['traversal-operator'], workdir: meson.current_source_dir())
+test('traversal-operator', traversal_operators_system_tests_exe, workdir: meson.current_source_dir())

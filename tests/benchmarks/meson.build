@@ -1,4 +1,4 @@
 subdir('discretisation')
 subdir('parser')
-subdir('automaton')
+subdir('automata')
 subdir('denot')

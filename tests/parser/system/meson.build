@@ -1,16 +1,7 @@
-system_tests_source_files = [
-    'parse_system_tests.cpp',
-    polyhedral_system_parser_source_files,
-    polyhedral_system_source_files,
-    ppl_utils_source_files,
-    operators_source_files,
-    spot_utils_source_files
-]
-
 parse_system_tests_exe = executable(
     'parse_system_tests',
-    system_tests_source_files,
-    dependencies : [catch2_dep, catch2_with_main_dep, spot_dep, antlr4_runtime_dep, ppl_dep, gmp_dep, gmpxx_dep],
+    'parse_system_tests.cpp',
+    link_with: [test_rtl_mc_static_library],
     include_directories : include_directories
 )
 
