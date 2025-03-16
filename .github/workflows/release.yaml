@@ -18,7 +18,7 @@ jobs:
       - name: Check Tag
         id: check-tag
         run: |
-          if [[ ${{ github.event.ref }} =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ ${{ github.ref_name }} =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "is_release_tag=true" >> $GITHUB_OUTPUT
           fi
 
@@ -60,7 +60,7 @@ jobs:
       - name: Check Tag
         id: check-tag
         run: |
-          if [[ ${{ github.event.ref }} =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ ${{ github.ref_name }} =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "is_release_tag=true" >> $GITHUB_OUTPUT
           fi
 
@@ -104,7 +104,7 @@ jobs:
       - name: Check Tag
         id: check-tag
         run: |
-          if [[ ${{ github.event.ref }} =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ ${{ github.ref_name }} =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "is_release_tag=true" >> $GITHUB_OUTPUT
           fi
 

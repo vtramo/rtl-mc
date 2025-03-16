@@ -3,7 +3,7 @@ name: Compile -> Test -> Build Docker Image -> Push Docker Image
 on:
   push:
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/compile-test-image.yaml'
       - 'Dockerfile'
       - 'meson_options.txt'
       - 'meson.build'
