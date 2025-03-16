@@ -1,0 +1,11 @@
+.github/
+.github/**/*
+
+buildDir/
+buildDir/**/*
+
+.venv/
+.venv/**/*
+
+gmon.out
+Doxyfile
