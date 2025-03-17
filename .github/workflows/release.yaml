@@ -93,8 +93,9 @@ jobs:
       - name: Meson dist
         id: meson-dist
         run: |
+          git config --global safe.directory "*"
           meson dist -C buildDir
-          PACK_NAME=$(find ./buildDir/meson-dist -maxdepth 1 -type f -name "*.tar.xz")
+          PACK_NAME=$(find ./buildDir/meson-dist -maxdepth 1 -type f -name "*.tar.xz" -printf "%f\n")
           echo "::set-output name=tar_filename::$PACK_NAME"
 
       - name: Upload artifacts

@@ -14,6 +14,8 @@ on:
 
 jobs:
   build-test-image-push:
+    if: ${{ github.actor != 'dependabot[bot]' }}
+
     name: Compile -> Test -> Build Docker Image -> Push Docker Image
     runs-on: ubuntu-24.04
     steps:

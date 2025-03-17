@@ -21,6 +21,7 @@ RUN apt install -y libgmp3-dev=2:6.3.0+dfsg-2ubuntu6
 RUN apt install -y m4=1.4.19-4build1
 RUN apt install -y unzip=6.0-28ubuntu4.1
 RUN apt install -y git
+RUN apt install -y g++
 RUN apt install -y libtool=2.4.7-7build1
 RUN apt install -y autoconf=2.71-3
 RUN apt install -y automake=1:1.16.5-1.3ubuntu1
@@ -77,6 +78,7 @@ RUN wget -q -O - https://www.lrde.epita.fr/repo/debian.gpg | apt-key add - && \
 
 # Install meson
 RUN python3 -m pip install meson --break-system-packages
+RUN apt install ninja-build -y
 
 WORKDIR /project
 COPY . .
