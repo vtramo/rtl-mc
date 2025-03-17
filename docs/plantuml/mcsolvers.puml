@@ -25,19 +25,15 @@ package mcsolvers {
         #m_polyhedralSystem: PolyhedralSystemSharedPtr
         #m_rtlFormula: spot::formula
         #m_universalDenotation: bool
-        #m_polyhedralSystemStats: PolyhedralSystemStats
         #m_automatonOptimizationFlags: AutomatonOptimizationFlags
-        #m_rtlFormulaStats: RtlFormulaStats
         #m_discreteLtlFormula: DiscreteLtlFormula
-        #m_discretisationStats: DiscretisationStats
+        #m_solverStats: std::shared_ptr<SolverStats>
         --constructors--
         +Solver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
         +virtual ~Solver() = default
         --member functions--
         +virtual run() = 0: PowersetSharedPtr
-        +polyhedralSystemStats() : PolyhedralSystemStats
-        +rtlFormulaStats() : RtlFormulaStats
-        +discretisationStats() : DiscretisationStats
+        +virtual stats(): const SolverStats&
         #virtual preprocessPolyhedralSystem() = 0: void
         #virtual preprocessRtlFormula(): void
         #virtual logPolyhedralSystemAndCollectStats(): void
@@ -51,6 +47,7 @@ package mcsolvers {
     class FiniteOnTheFlySolver {
         --data members--
         #m_backwardNfa: BackwardNFAConstSharedPtr
+        #m_finiteOnTheFlySolverStats: std::shared_ptr<FiniteOnTheFlySolverStats>
         #m_denotStats: DenotStats
         #m_concurrent: bool
         #m_discretiseRtlfDirectToLtl: bool
@@ -58,7 +55,7 @@ package mcsolvers {
         +FiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, spot::formula rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false)
         +~FiniteOnTheFlySolver() override
         --member functions--
-        +denotStats(): DenotStats
+        +stats(): const FiniteOnTheFlySolverStats&
         +run() override: PowersetSharedPtr
         #preprocessPolyhedralSystem() override
         #discretiseRtlFormula() override : double
@@ -99,6 +96,8 @@ package mcsolvers {
         #run() override: PowersetSharedPtr
         #preprocessPolyhedralSystem() override: void
         #preprocessRtlFormula() override: double
+        #logPolyhedralSystemAndCollectStats() override: void
+        #logRtlFormulaAndCollectStats() override: void
     }
 
     StayFiniteOnTheFlySolver --|> FiniteOnTheFlySolver

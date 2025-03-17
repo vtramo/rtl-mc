@@ -23,12 +23,16 @@ public:
     {
         OmnidirectionalInfiniteSolver infiniteSolver { m_polyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation };
         PowersetConstSharedPtr infiniteResult { infiniteSolver.run() };
+        const SolverStats& infiniteSolverStats { infiniteSolver.stats() };
 
         preprocessPolyhedralSystem();
         preprocessRtlFormula();
 
         OmnidirectionalFiniteSolver finiteSolver { m_polyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation };
         PowersetConstSharedPtr finiteResult { finiteSolver.run() };
+        const SolverStats& finiteSolverStats { finiteSolver.stats() };
+
+        m_solverStats = std::make_shared<SolverStats>(infiniteSolverStats.merge(finiteSolverStats));
 
         return PPLUtils::fusion(*finiteResult, *infiniteResult);
     }

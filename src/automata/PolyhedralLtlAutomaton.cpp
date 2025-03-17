@@ -11,6 +11,7 @@
 
 PolyhedralLtlAutomaton::PolyhedralLtlAutomaton()
 {
+    PolyhedralLtlAutomaton::initializeStats();
 }
 
 PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(const PolyhedralLtlAutomaton& other)
@@ -21,10 +22,11 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(const PolyhedralLtlAutomaton& oth
     , m_dummyEdges { other.m_dummyEdges }
     , m_stateDenotationById { other.m_stateDenotationById }
     , m_formulaDenotationMap { other.m_formulaDenotationMap }
-    , m_automatonStats { other.m_automatonStats }
+    , m_polyhedralLtlAutomatonStats { std::make_shared<PolyhedralLtlAutomatonStats>(*other.m_polyhedralLtlAutomatonStats) }
     , m_discreteLtlFormula { other.m_discreteLtlFormula }
     , m_optimizationLevel { other.m_optimizationLevel }
 {
+    m_automatonStats = m_polyhedralLtlAutomatonStats;
 }
 
 PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
@@ -35,6 +37,7 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
     , m_formulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
     , m_discreteLtlFormula { std::move(discreteLtlFormula) }
 {
+    PolyhedralLtlAutomaton::initializeStats();
 }
 
 PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
@@ -45,6 +48,7 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
     , m_formulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
     , m_discreteLtlFormula { std::move(discreteLtlFormula) }
 {
+    PolyhedralLtlAutomaton::initializeStats();
 }
 
 void PolyhedralLtlAutomaton::initializeAutomaton()
@@ -54,6 +58,12 @@ void PolyhedralLtlAutomaton::initializeAutomaton()
     m_automaton->prop_state_acc(spot::trival { true });
     m_automaton->set_acceptance(spot::acc_cond {spot::acc_cond::acc_code::buchi()});
     assert(m_automaton->prop_state_acc().is_true());
+}
+
+void PolyhedralLtlAutomaton::initializeStats()
+{
+    m_polyhedralLtlAutomatonStats = std::make_shared<PolyhedralLtlAutomatonStats>();
+    m_automatonStats = m_polyhedralLtlAutomatonStats;
 }
 
 PolyhedralLtlAutomaton::~PolyhedralLtlAutomaton()
@@ -130,9 +140,9 @@ const StateDenotation& PolyhedralLtlAutomaton::stateDenotation(const unsigned st
     return m_stateDenotationById.at(state);
 }
 
-const AutomatonStats& PolyhedralLtlAutomaton::stats() const
+const PolyhedralLtlAutomatonStats& PolyhedralLtlAutomaton::stats() const
 {
-    return m_automatonStats;
+    return *m_polyhedralLtlAutomatonStats;
 }
 
 void PolyhedralLtlAutomaton::buildAutomaton(
@@ -141,7 +151,6 @@ void PolyhedralLtlAutomaton::buildAutomaton(
 )
 {
     Log::log(Verbosity::veryVerbose, "[{} - Construction] Construction started.", m_name);
-    Timer timer {};
 
     initializeAutomaton();
 
@@ -193,12 +202,12 @@ void PolyhedralLtlAutomaton::buildAutomaton(
 
     createDummyInitialStateWithEdgesToInitialStates();
     purgeUnreachableStates();
-    onConstructionCompleted(timer.elapsedInSeconds());
 }
 
 void PolyhedralLtlAutomaton::onConstructionCompleted(const double executionTimeSeconds)
 {
     logConstructionCompleted(executionTimeSeconds);
+    setAutomatonStats(executionTimeSeconds);
 }
 
 StateDenotation PolyhedralLtlAutomaton::extractStateDenotationFromEdgeGuard(
@@ -270,13 +279,12 @@ void PolyhedralLtlAutomaton::purgeUnreachableStatesThenRenumberAcceptingStates(
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Total states: {}.", m_name, twaGraph->num_states());
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Total edges: {}.", m_name, twaGraph->num_edges());
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Accepting states: [{}].", m_name, fmt::join(acceptingStates, ", "));
-    m_automatonStats.nfaOptimizations =
-        AutomatonStats::NfaStats {
-            executionTimeSeconds,
-            static_cast<int>(twaGraph->num_states()),
-            static_cast<int>(twaGraph->num_edges()),
-            static_cast<int>(acceptingStates.size())
-        };
+    m_polyhedralLtlAutomatonStats->setOptimizedAutomatonExecutionTimeSeconds(executionTimeSeconds);
+    m_polyhedralLtlAutomatonStats->setOptimizedAutomatonTotalStates(twaGraph->num_states());
+    m_polyhedralLtlAutomatonStats->setOptimizedAutomatonTotalAcceptingStates(acceptingStates.size());
+    m_polyhedralLtlAutomatonStats->setOptimizedAutomatonTotalEdges(twaGraph->num_edges());
+    m_polyhedralLtlAutomatonStats->setOptimizedAutomatonTotalInitialStates(1);
+    m_polyhedralLtlAutomatonStats->setOptimizedAutomatonSccInfo(spot::scc_info { twaGraph });
 }
 
 void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSeconds)
@@ -310,12 +318,12 @@ void PolyhedralLtlAutomaton::createDummyInitialStateWithEdgesToInitialStates()
 
 void PolyhedralLtlAutomaton::updatePatchStats(const int totPatches)
 {
-    m_automatonStats.nfaConstructionStats.maxNumberPatches =
+    m_polyhedralLtlAutomatonStats->setMaxNumberPatches(
         std::max(
-            m_automatonStats.nfaConstructionStats.maxNumberPatches,
+            m_polyhedralLtlAutomatonStats->getMaxNumberPatches(),
             totPatches
-        );
-    m_automatonStats.nfaConstructionStats.totalNumberPatches += totPatches;
+        ));
+    m_polyhedralLtlAutomatonStats->setTotalNumberPatches(m_polyhedralLtlAutomatonStats->getTotalNumberPatches() + totPatches);
 }
 
 std::unordered_set<unsigned> PolyhedralLtlAutomaton::killAcceptingStates(const spot::twa_graph_ptr& graph)
@@ -413,14 +421,14 @@ spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(
     Log::log(Verbosity::veryVerbose, "[{} - Translation] Total TGBA states: {}.", m_name, formulaTgba->num_states());
     Log::log(Verbosity::veryVerbose, "[{} - Translation] Total TGBA edges {}.", m_name, formulaTgba->num_edges());
     Log::log(Verbosity::veryVerbose, "[{} - Translation] Total TGBA accepting sets {}.", m_name, formulaTgba->num_sets());
-    m_automatonStats.translationFormulaIntoTgba =
-      AutomatonStats::TranslationFormulaIntoTgbaStats {
-          optimizationLevel,
-          executionTimeSeconds,
-          static_cast<int>(formulaTgba->num_states()),
-          static_cast<int>(formulaTgba->num_edges()),
-          static_cast<int>(formulaTgba->num_sets())
-      };
+    m_polyhedralLtlAutomatonStats->setTranslationOptimizationLevel(optimizationLevel);
+    m_polyhedralLtlAutomatonStats->setTranslationExecutionTimeSeconds(executionTimeSeconds);
+    m_polyhedralLtlAutomatonStats->setTranslationTotalStates(formulaTgba->num_states());
+    m_polyhedralLtlAutomatonStats->setTranslationTotalEdges(formulaTgba->num_edges());
+    m_polyhedralLtlAutomatonStats->setTranslationTotalAcceptingSets(formulaTgba->num_sets());
+    m_polyhedralLtlAutomatonStats->setTranslationTotalInitialStates(1);
+    m_polyhedralLtlAutomatonStats->setTranslationSccInfo(spot::scc_info { formulaTgba });
+    m_polyhedralLtlAutomatonStats->setTranslationTotalAcceptingStates(SpotUtils::collectAcceptingStates(formulaTgba).size());
 
     return formulaTgba;
 }

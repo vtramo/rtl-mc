@@ -4,7 +4,7 @@
 
 #include "Automaton.h"
 #include "DiscreteLtlFormula.h"
-#include "AutomatonStats.h"
+#include "PolyhedralLtlAutomatonStats.h"
 #include "StateDenotation.h"
 #include "PolyhedralSystemFormulaDenotationMap.h"
 
@@ -27,7 +27,7 @@ public:
     [[nodiscard]] virtual const std::unordered_set<unsigned>& acceptingStates() const;
     [[nodiscard]] int countSuccessors(unsigned state) const override;
     [[nodiscard]] const StateDenotation& stateDenotation(unsigned state) const;
-    [[nodiscard]] const AutomatonStats& stats() const;
+    [[nodiscard]] const PolyhedralLtlAutomatonStats& stats() const override;
     [[nodiscard]] virtual const DiscreteLtlFormula& formula() const;
     [[nodiscard]] virtual spot::postprocessor::optimization_level optimizationLevel() const;
     [[nodiscard]] PPL::dimension_type spaceDimension() const;
@@ -39,7 +39,7 @@ protected:
     unsigned m_dummyEdges {};
     std::unordered_map<unsigned, StateDenotation> m_stateDenotationById {};
     PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
-    AutomatonStats m_automatonStats {};
+    std::shared_ptr<PolyhedralLtlAutomatonStats> m_polyhedralLtlAutomatonStats {};
     DiscreteLtlFormula m_discreteLtlFormula {};
     spot::postprocessor::optimization_level m_optimizationLevel {};
 
@@ -84,6 +84,7 @@ protected:
     friend std::ostream& operator<< (std::ostream& out, const PolyhedralLtlAutomaton& automaton);
 
     void initializeAutomaton() override;
+    void initializeStats() override;
     virtual void buildAutomaton(const spot::const_twa_graph_ptr& twaGraph, const std::unordered_set<unsigned>& acceptingStates);
     virtual StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& twaGraph, const bdd& guard);
     virtual bdd stateLabelsAsBdd(unsigned state) const;

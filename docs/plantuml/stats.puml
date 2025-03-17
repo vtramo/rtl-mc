@@ -1,94 +1,251 @@
 @startuml
 
 package stats {
-    struct AutomatonStats {
+    class DenotOnTheFlyStats {
+        --static data members--
+        +static const inline std::string s_totalIterationsPlaceHolder { "%Di" }
+        +static const inline std::string s_executionTimeSecondsPlaceHolder { "%Dx" }
         --data members--
-        -translationFormulaIntoTgba: TranslationFormulaIntoTgbaStats
-        -translationTgbaIntoNfaStats: NfaStats
-        -nfaOptimizations: NfaStats
-        -backwardNfaConstructionStats: FiniteAutomatonConstructionStats
-    }
-
-    struct TranslationFormulaIntoTgbaStats {
-        --data members--
-        -optimizationLevel: std::string
-        -executionTimeSeconds: double
-        -totalStates: int
-        -totalEdges: int
-        -totalAcceptingSets: int
-    }
-
-    struct NfaStats {
-        --data members--
-        -executionTimeSeconds: double
-        -totalStates: int
-        -totalEdges: int
-        -totalFinalStates: int
-        -sccInfo: std::optional<spot::scc_info>
-    }
-
-    struct FiniteAutomatonConstructionStats {
-        --data members--
-        -executionTimeSeconds: double
-        -totalInitialStates: int
-        -totalStates: int
-        -totalEdges: int
-        -totalFinalStates: int
-        -maxNumberPatches: int
-        -totalNumberPatches: int
-        -maxRecursiveDepthOnTheFly: int
-        -sccInfo: std::optional<spot::scc_info>
-    }
-
-    struct DenotStats {
-        --data members--
-        -totalIterations: int
-        -executionTimeSeconds: double
-    }
-
-    struct DiscretisationStats {
-        --data members--
-        -discreteLtlFormulaTotalAtomicPropositions: int
-        -discreteLtlFormulaLength: int
-        -discretisationExecutionTimeSeconds: double
-    }
-
-    struct PolyhedralSystemStats {
-        --data members--
-        -totalAtomicPropositions: int
-        -spaceDimension: int
-    }
-
-    struct RtlFormulaStats {
-        --data members--
-        -totalAtomicPropositions: int
-        -length: int
-    }
-
-    class StatsFormatter {
-        --data members--
-        -m_polyhedralSystemStats: PolyhedralSystemStats
-        -m_rtlFormulaStats: RtlFormulaStats
-        -m_discretisationStats: DiscretisationStats
-        -m_automatonStats: AutomatonStats
-        -m_denotStats: DenotStats
-        --constructors--
-        +StatsFormatter(PolyhedralSystemStats&&, RtlFormulaStats&&, DiscretisationStats&&, AutomatonStats&&, DenotStats&&)
+        #m_totalIterations: int
+        #m_executionTimeSeconds: double
         --member functions--
-        +operator()(std::string&& input): std::string
-        +format(std::string&& input): std::string
-        -replacePlaceholders(input: std::string): void
-        -replace(str: std::string&, from: std::string_view, to: std::string_view): void
+        +getTotalIterations(): int
+        +getExecutionTimeSeconds(): double
+        +setTotalIterations(int): void
+        +setExecutionTimeSeconds(double): void
     }
 
-    StatsFormatter --> "1" PolyhedralSystemStats
-    StatsFormatter --> "1" RtlFormulaStats
-    StatsFormatter --> "1" DiscretisationStats
-    StatsFormatter --> "1" AutomatonStats
-    StatsFormatter --> "1" DenotStats
-    AutomatonStats #---> "1" TranslationFormulaIntoTgbaStats
-    AutomatonStats #---> "1" FiniteAutomatonConstructionStats
-    AutomatonStats #---> "2" NfaStats
+    class DiscretisationStats {
+        --static data members--
+        +static const inline std::string s_discreteLtlFormulaTotalAtomicPropositionsPlaceHolder { "%da" }
+        +static const inline std::string s_discreteLtlFormulaLengthPlaceHolder { "%dl" }
+        +static const inline std::string s_discretisationExecutionTimeSecondsPlaceHolder { "%dx" }
+        --data members--
+        #m_discreteLtlFormulaTotalAtomicPropositions: int
+        #m_discreteLtlFormulaLength: int
+        #m_discretisationExecutionTimeSeconds: double
+        --member functions--
+        +getDiscreteLtlFormulaTotalAtomicPropositions(): int
+        +getDiscreteLtlFormulaLength(): int
+        +getDiscretisationExecutionTimeSeconds(): double
+        +setDiscreteLtlFormulaTotalAtomicPropositions(int): void
+        +setDiscreteLtlFormulaLength(int): void
+        +setDiscretisationExecutionTimeSeconds(double): void
+    }
+
+    class PolyhedralSystemStats {
+        --static data members--
+        +static const inline std::string s_totalAtomicPropositionsPlaceHolder { "%Pta" }
+        +static const inline std::string s_spaceDimensionPlaceHolder { "%Psp" }
+        --data members--
+        #m_totalAtomicPropositions: int
+        #m_spaceDimension: int
+        --member functions--
+        +getTotalAtomicPropositions(): int
+        +getSpaceDimension(): int
+        +setTotalAtomicPropositions(int): void
+        +setSpaceDimension(int): void
+    }
+
+    class RtlFormulaStats {
+        --static data members--
+        +static const inline std::string s_totalAtomicPropositionsPlaceHolder { "%rta" }
+        +static const inline std::string s_lengthPlaceHolder { "%rl" }
+        --data members--
+        #m_totalAtomicPropositions: int
+        #m_length: int
+        --member functions--
+        +getTotalAtomicPropositions(): int
+        +getLength(): int
+        +setTotalAtomicPropositions(int): void
+        +setLength(int): void
+    }
+
+    DiscretisationStats --|> FormattableStats
+    PolyhedralSystemStats --|> FormattableStats
+    RtlFormulaStats --|> FormattableStats
+    DenotOnTheFlyStats --|> FormattableStats
+
+    class AutomatonStats {
+        --static data members--
+        +static const inline std::string s_totalStatesPlaceHolder { "%As" }
+        +static const inline std::string s_totalInitialStatesPlaceHolder { "%Ais" }
+        +static const inline std::string s_totalAcceptingStatesPlaceHolder { "%Aas" }
+        +static const inline std::string s_totalEdgesPlaceHolder { "%Ae" }
+        +static const inline std::string s_executionTimeSecondsPlaceHolder { "%Ax" }
+        +static const inline std::string s_totalSccPlaceHolder { "%Ascc" }
+        --data members--
+        #m_totalStates: int
+        #m_totalEdges: int
+        #m_totalInitialStates: int
+        #m_totalAcceptingStates: int
+        #m_sccInfo: std::optional<spot::scc_info>
+        #m_executionTimeSeconds: double
+        --member functions--
+        +getTotalStates(): int
+        +getTotalEdges(): int
+        +getTotalInitialStates(): int
+        +getTotalAcceptingStates(): int
+        +getExecutionTimeSeconds(): double
+        +getSccInfo(): const std::optional<spot::scc_info>&
+        +setTotalStates(unsigned): int
+        +setTotalEdges(unsigned): int
+        +setTotalInitialStates(unsigned): int
+        +setTotalAcceptingStates(unsigned): int
+        +setExecutionTimeSeconds(double): double
+        +setSccInfo(const spot::scc_info&): const std::optional<spot::scc_info>&
+    }
+
+    class FormattableStats {
+        --static data members--
+        +static const inline std::string s_placeholderPrefix { "%" }
+        +static const inline std::string s_valueNotAvailable { "N/A" }
+        --destructor--
+        virtual ~FormattableStats()
+        --data members--
+        #m_valueByPlaceholder: std::unordered_map<std::string, std::string>
+        --member functions--
+        +virtual format(std::string_view s) const: std::string
+        +getValueByPlaceholderMap() const: const std::unordered_map<std::string, std::string>&
+        #getPlaceholderValue(const std::string_view placeholder) const: std::string
+    }
+
+    AutomatonStats --|> FormattableStats
+
+    class PolyhedralLtlAutomatonStats {
+        --static data members--
+        +static const inline std::string s_translationOptimizationLevelPlaceHolder { "%ATo" }
+        +static const inline std::string s_translationExecutionTimeSecondsPlaceHolder { "%ATx" }
+        +static const inline std::string s_translationTotalStatesPlaceHolder { "%ATs" }
+        +static const inline std::string s_translationTotalInitialStatesPlaceHolder { "%ATis" }
+        +static const inline std::string s_translationTotalAcceptingStatesPlaceHolder { "%ATas" }
+        +static const inline std::string s_translationTotalAcceptingSetsPlaceHolder { "%ATase" }
+        +static const inline std::string s_translationTotalEdgesPlaceHolder { "%ATe" }
+        +static const inline std::string s_translationTotalSccInfoPlaceHolder { "%ATscc" }
+
+        +static const inline std::string s_optimizedExecutionTimeSecondsPlaceHolder { "%AOx" }
+        +static const inline std::string s_optimizedTotalStatesPlaceHolder { "%AOs" }
+        +static const inline std::string s_optimizedTotalInitialStatesPlaceHolder { "%AOis" }
+        +static const inline std::string s_optimizedTotalAcceptingStatesPlaceHolder { "%AOas" }
+        +static const inline std::string s_optimizedTotalEdgesPlaceHolder { "%AOe" }
+        +static const inline std::string s_optimizedTotalSccInfoPlaceHolder { "%AOscc" }
+
+        +static const inline std::string s_maxNumberPatchesPlaceHolder { "%Amp" }
+        +static const inline std::string s_totalNumberPatchesPlaceHolder { "%Atp" }
+        --member functions--
+        +getTranslationOptimizationLevel() const: const std::string&
+        +getTranslationExecutionTimeSeconds() const: double
+        +getTranslationTotalAcceptingSets() const: int
+        +getTranslationSccInfo() const: const std::optional<spot::scc_info>&
+        +getMaxNumberPatches() const: int
+        +getTotalNumberPatches() const: int
+        +getOptimizedAutomatonExecutionTimeSeconds() const: double
+        +getOptimizedAutomatonTotalStates() const: int
+        +getOptimizedAutomatonTotalInitialStates() const: int
+        +getOptimizedAutomatonTotalAcceptingStates() const: int
+        +getOptimizedAutomatonTotalEdges() const: int
+        +getOptimizedAutomatonSccInfo() const: const std::optional<spot::scc_info>&
+        +setTranslationOptimizationLevel(std::string_view level): void
+        +setTranslationExecutionTimeSeconds(double): void
+        +setTranslationTotalAcceptingSets(int): void
+        +setTranslationSccInfo(const spot::scc_info&): void
+        +setMaxNumberPatches(int): void
+        +setTotalNumberPatches(int): void
+        +setOptimizedAutomatonExecutionTimeSeconds(double): void
+        +setOptimizedAutomatonTotalStates(int): void
+        +setOptimizedAutomatonTotalInitialStates(int): void
+        +setOptimizedAutomatonTotalAcceptingStates(int): void
+        +setOptimizedAutomatonTotalEdges(int): void
+        +setOptimizedAutomatonSccInfo(const spot::scc_info&): void
+        --data members--
+        #m_translationOptimizationLevel: std::string
+        #m_translationExecutionTimeSeconds: double
+        #m_translationTotalStates: int
+        #m_translationTotalEdges: int
+        #m_translationTotalAcceptingSets: int
+        #m_translationTotalAcceptingStates: int
+        #m_translationSccInfo: std::optional<spot::scc_info>
+        #m_optimizedExecutionTimeSeconds: double
+        #m_optimizedTotalStates: int
+        #m_optimizedTotalEdges: int
+        #m_optimizedTotalInitialStates: int
+        #m_optimizedTotalAcceptingStates: int
+        #m_optimizedSccInfo: std::optional<spot::scc_info>
+        #m_sccInfo: std::optional<spot::scc_info>
+        #m_maxNumberPatches: int
+        #m_totalNumberPatches: int
+    }
+
+    PolyhedralLtlAutomatonStats --|> AutomatonStats
+
+    class PolyhedralFiniteLtlAutomatonStats {
+        --static data members--
+        +static const inline std::string s_nfaExecutionTimeSecondsPlaceHolder { "%ANx" }
+        +static const inline std::string s_nfaTotalStatesPlaceHolder { "%ANs" }
+        +static const inline std::string s_nfaTotalInitialStatesPlaceHolder { "%ANis" }
+        +static const inline std::string s_nfaTotalAcceptingStatesPlaceHolder { "%ANas" }
+        +static const inline std::string s_nfaTotalEdgesPlaceHolder { "%ANe" }
+        +static const inline std::string s_nfaTotalSccInfoPlaceHolder { "%ANscc" }
+        +static const inline std::string s_maxRecursiveDepthOnTheFly { "%ANr" }
+        --data members--
+        #m_nfaTotalStates: int
+        #m_nfaTotalEdges: int
+        #m_nfaTotalInitialStates: int
+        #m_nfaTotalAcceptingStates: int
+        #m_nfaSccInfo: spot::optional<spot::scc_info>
+        #m_nfaExecutionTimeSeconds: double
+        #m_maxRecursiveDepthOnTheFly: int
+        --member functions--
+        +getNfaTotalStates() const: int
+        +getNfaTotalInitialStates() const: int
+        +getNfaTotalAcceptingStates() const: int
+        +getNfaTotalEdges() const: int
+        +getNfaSccInfo() const: std::optional<spot::scc_info>
+        +getNfaExecutionTimeSeconds() const: double
+        +getNfaMaxRecursiveDepth() const: int
+        +setNfaTotalStates(int): void
+        +setNfaTotalInitialStates(int): void
+        +setNfaTotalAcceptingStates(int): void
+        +setNfaTotalEdges(int): void
+        +setNfaSccInfo(const spot::scc_info&): void
+        +setNfaExecutionTimeSeconds(double): void
+        +setNfaMaxRecursiveDepth(int): void
+    }
+
+    PolyhedralFiniteLtlAutomatonStats --|> PolyhedralLtlAutomatonStats
+
+    class SolverStats {
+        --static data members--
+        +static const inline std::string s_executionTimePlaceHolder { "%x" }
+        --member functions--
+        +addExecutionTime(const double executionTimeSeconds): void
+        +addRtlFormulaStats(const RtlFormulaStats& rtlFormulaStats): void
+        +addPolyhedralSystemStats(const PolyhedralSystemStats& polyhedralSystemStats): void
+        +addDiscretisationStats(const DiscretisationStats& discretisationStats): void
+        +addAutomatonStats(const AutomatonStats& automatonStats): void
+        +merge(const SolverStats& other): void
+        +merge(const SolverStats& other) const: SolverStats
+        #addIndexedPlaceholderValues(const std::unordered_map<std::string, std::string>& valueByPlaceholder, std::size_t index): void
+        --data members--
+        #m_executionTimesSeconds: std::vector<double>
+        #m_polyhedralSystemsStats: std::vector<PolyhedralFiniteLtlAutomatonStats>
+        #m_discretisationStats: std::vector<DiscretisationStats>
+        #m_automataStats: std::vector<AutomatonStats>
+        #m_rtlFormulaStats: std::vector<RtlFormulaStats>
+    }
+
+    SolverStats --|> FormattableStats
+
+    class FiniteOnTheFlySolverStats {
+        --data members--
+        #m_denotOnTheFlyStats: std::vector<DenotOnTheFlyStats>
+        --member functions--
+        +addDenotOnTheFlyStats(const DenotOnTheFlyStats& denotOnTheFlyStats): void
+        +merge(const FiniteOnTheFlySolverStats& other): void
+        +merge(const FiniteOnTheFlySolverStats& other) const: FiniteOnTheFlySolverStats
+    }
+
+    FiniteOnTheFlySolverStats --|> SolverStats
 }
 
 @enduml

@@ -5,8 +5,8 @@
 |-------------|----------------------------------------------------------------------|
 | `%Pta`      | Polyhedral System total atomic propositions                          |
 | `%Psp`      | Polyhedral System space dimension                                    |
-| `%rta`      | Rtlf formula total atomic propositions                               |
-| `%rl`       | Rtlf formula length                                                  |
+| `%rta`      | RTL formula total atomic propositions                                |
+| `%rl`       | RTL formula length                                                   |
 | `%dta`      | Discrete LTL formula total atomic propositions                       |
 | `%dl`       | Discrete LTL formula length                                          |
 | `%dx`       | Discretisation execution time in s                                   |

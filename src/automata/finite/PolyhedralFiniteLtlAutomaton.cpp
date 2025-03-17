@@ -12,11 +12,15 @@
 
 PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton()
 {
+    PolyhedralFiniteLtlAutomaton::initializeStats();
 }
 
 PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(const PolyhedralFiniteLtlAutomaton& other)
     : PolyhedralLtlAutomaton(other)
+    , m_polyhedralFiniteLtlAutomatonStats { std::make_shared<PolyhedralFiniteLtlAutomatonStats>(*other.m_polyhedralFiniteLtlAutomatonStats) }
 {
+    m_polyhedralLtlAutomatonStats = m_polyhedralFiniteLtlAutomatonStats;
+    m_automatonStats = m_polyhedralFiniteLtlAutomatonStats;
 }
 
 PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(
@@ -28,7 +32,9 @@ PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(
         std::move(polyhedralSystemLabelDenotationMap),
         name
     )
-{}
+{
+    PolyhedralFiniteLtlAutomaton::initializeStats();
+}
 
 PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(
     DiscreteLtlFormula&& discreteLtlFormula,
@@ -40,6 +46,7 @@ PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(
         name
     )
 {
+    PolyhedralFiniteLtlAutomaton::initializeStats();
 }
 
 PolyhedralFiniteLtlAutomatonConstSharedPtr PolyhedralFiniteLtlAutomaton::buildAutomaton(
@@ -60,6 +67,7 @@ PolyhedralFiniteLtlAutomatonConstSharedPtr PolyhedralFiniteLtlAutomaton::buildAu
         )
     };
 
+    Timer timer {};
     finiteLtlAutomaton->m_optimizationLevel = optimizationLevel;
     spot::twa_graph_ptr formulaTgba { finiteLtlAutomaton->translateDiscreteLtlFormulaIntoTgba(anyOption) };
     spot::twa_graph_ptr nfa { finiteLtlAutomaton->convertToNfa(formulaTgba) };
@@ -67,6 +75,7 @@ PolyhedralFiniteLtlAutomatonConstSharedPtr PolyhedralFiniteLtlAutomaton::buildAu
     std::unordered_set nfaAcceptingStates { finiteLtlAutomaton->killAcceptingStates(nfa) };
     finiteLtlAutomaton->purgeUnreachableStatesThenRenumberAcceptingStates(nfa, nfaAcceptingStates);
     finiteLtlAutomaton->PolyhedralLtlAutomaton::buildAutomaton(nfa, nfaAcceptingStates);
+    finiteLtlAutomaton->onConstructionCompleted(timer.elapsedInSeconds());
 
     return finiteLtlAutomaton;
 }
@@ -82,13 +91,12 @@ spot::twa_graph_ptr PolyhedralFiniteLtlAutomaton::convertToNfa(spot::twa_graph_p
     Log::log(Verbosity::veryVerbose, "[{} - TGBA to NFA] Conversion from TGBA to NFA completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
     Log::log(Verbosity::veryVerbose, "[{} - TGBA to NFA] Total NFA states: {}.", m_name, nfa->num_states());
     Log::log(Verbosity::veryVerbose, "[{} - TGBA to NFA] Total NFA edges {}.", m_name, nfa->num_edges());
-    m_automatonStats.translationTgbaIntoNfaStats =
-        AutomatonStats::NfaStats {
-            executionTimeSeconds,
-            static_cast<int>(nfa->num_states()),
-            static_cast<int>(nfa->num_edges()),
-            static_cast<int>(nfa->num_sets())
-        };
+    m_polyhedralFiniteLtlAutomatonStats->setNfaTotalStates(nfa->num_states());
+    m_polyhedralFiniteLtlAutomatonStats->setNfaTotalInitialStates(1);
+    m_polyhedralFiniteLtlAutomatonStats->setNfaTotalAcceptingStates(SpotUtils::collectAcceptingStates(nfa).size());
+    m_polyhedralFiniteLtlAutomatonStats->setNfaTotalEdges(nfa->num_edges());
+    m_polyhedralFiniteLtlAutomatonStats->setNfaSccInfo(spot::scc_info { nfa });
+    m_polyhedralFiniteLtlAutomatonStats->setNfaExecutionTimeSeconds(executionTimeSeconds);
 
     return nfa;
 }
@@ -96,7 +104,7 @@ spot::twa_graph_ptr PolyhedralFiniteLtlAutomaton::convertToNfa(spot::twa_graph_p
 void PolyhedralFiniteLtlAutomaton::onConstructionCompleted(const double executionTimeSeconds)
 {
     PolyhedralLtlAutomaton::onConstructionCompleted(executionTimeSeconds);
-    setNfaStats(executionTimeSeconds);
+    m_polyhedralFiniteLtlAutomatonStats->setNfaMaxRecursiveDepth(1 + 2 * m_polyhedralFiniteLtlAutomatonStats->getTotalNumberPatches());
 }
 
 void PolyhedralFiniteLtlAutomaton::initializeAutomaton()
@@ -107,14 +115,14 @@ void PolyhedralFiniteLtlAutomaton::initializeAutomaton()
     m_automaton->set_acceptance(spot::acc_cond::inf({0}));
 }
 
-void PolyhedralFiniteLtlAutomaton::setNfaStats(const double executionTimeSeconds)
+void PolyhedralFiniteLtlAutomaton::initializeStats()
 {
-    auto* nfaStats { &m_automatonStats.nfaConstructionStats };
-    nfaStats->executionTimeSeconds = executionTimeSeconds;
-    nfaStats->totalInitialStates = totalInitialStates();
-    nfaStats->totalStates = totalStates();
-    nfaStats->totalEdges = totalEdges();
-    nfaStats->totalAcceptingStates = totalAcceptingStates();
-    nfaStats->sccInfo = spot::scc_info { m_automaton };
-    nfaStats->maxRecursiveDepthOnTheFly = 1 + 2 * nfaStats->totalNumberPatches;
+    m_polyhedralFiniteLtlAutomatonStats = std::make_shared<PolyhedralFiniteLtlAutomatonStats>();
+    m_polyhedralLtlAutomatonStats = m_polyhedralFiniteLtlAutomatonStats;
+    m_automatonStats = m_polyhedralFiniteLtlAutomatonStats;
+}
+
+const PolyhedralFiniteLtlAutomatonStats& PolyhedralFiniteLtlAutomaton::stats() const
+{
+    return *m_polyhedralFiniteLtlAutomatonStats;
 }

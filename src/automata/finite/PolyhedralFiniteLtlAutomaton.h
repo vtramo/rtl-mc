@@ -4,6 +4,8 @@
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
 #include "StateDenotation.h"
+#include "PolyhedralFiniteLtlAutomatonStats.h"
+#include "PolyhedralFiniteLtlAutomaton.h"
 
 class PolyhedralFiniteLtlAutomaton;
 using PolyhedralFiniteLtlAutomatonConstSharedPtr = std::shared_ptr<PolyhedralFiniteLtlAutomaton>;
@@ -21,8 +23,13 @@ public:
         std::string_view name = "PolyhedralFiniteLtlAutomaton"
     );
 
+    [[nodiscard]] const PolyhedralFiniteLtlAutomatonStats& stats() const override;
+
 protected:
+    std::shared_ptr<PolyhedralFiniteLtlAutomatonStats> m_polyhedralFiniteLtlAutomatonStats {};
+
     PolyhedralFiniteLtlAutomaton();
+    void initializeStats() override;
 
     explicit PolyhedralFiniteLtlAutomaton(
         const DiscreteLtlFormula& discreteLtlFormula,
@@ -39,5 +46,4 @@ protected:
     void initializeAutomaton() override;
     void onConstructionCompleted(double executionTimeSeconds) override;
     spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
-    void setNfaStats(double executionTimeSeconds);
 };

@@ -444,4 +444,17 @@ namespace SpotUtils
 
         return isNonRecurrent;
     }
+
+    std::unordered_set<unsigned> collectAcceptingStates(spot::const_twa_graph_ptr twa)
+    {
+        std::unordered_set<unsigned> acceptingStates {};
+        for (unsigned nfaState { 0 }; nfaState < twa->num_states(); ++nfaState)
+        {
+            if (twa->state_is_accepting(nfaState))
+            {
+                acceptingStates.insert(nfaState);
+            }
+        }
+        return acceptingStates;
+    }
 }

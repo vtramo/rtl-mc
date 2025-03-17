@@ -1,5 +1,7 @@
 #include "PolyhedralBuchiLtlAutomaton.h"
 
+#include <Timer.h>
+
 PolyhedralBuchiLtlAutomaton::PolyhedralBuchiLtlAutomaton(const PolyhedralBuchiLtlAutomaton& other)
     : PolyhedralLtlAutomaton(other)
 {
@@ -51,25 +53,14 @@ PolyhedralBuchiLtlAutomatonConstSharedPtr PolyhedralBuchiLtlAutomaton::buildAuto
         )
     };
 
+    Timer timer {};
     finiteLtlAutomaton->m_optimizationLevel = optimizationLevel;
     spot::twa_graph_ptr formulaTgba { finiteLtlAutomaton->translateDiscreteLtlFormulaIntoTgba(anyOption) };
     finiteLtlAutomaton->eraseInitialEdgesWithEmptyDenotation(formulaTgba);
-    std::unordered_set acceptingStates { finiteLtlAutomaton->collectAcceptingStates(formulaTgba) };
+    std::unordered_set acceptingStates { SpotUtils::collectAcceptingStates(formulaTgba) };
     finiteLtlAutomaton->purgeUnreachableStatesThenRenumberAcceptingStates(formulaTgba, acceptingStates);
     finiteLtlAutomaton->PolyhedralLtlAutomaton::buildAutomaton(formulaTgba, acceptingStates);
+    finiteLtlAutomaton->onConstructionCompleted(timer.elapsedInSeconds());
 
     return finiteLtlAutomaton;
-}
-
-std::unordered_set<unsigned> PolyhedralBuchiLtlAutomaton::collectAcceptingStates(spot::const_twa_graph_ptr twaGraph)
-{
-    std::unordered_set<unsigned> acceptingStates {};
-    for (unsigned nfaState { 0 }; nfaState < twaGraph->num_states(); ++nfaState)
-    {
-        if (twaGraph->state_is_accepting(nfaState))
-        {
-            acceptingStates.insert(nfaState);
-        }
-    }
-    return acceptingStates;
 }

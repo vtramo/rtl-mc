@@ -32,6 +32,4 @@ protected:
         PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
         std::string_view name = "PolyhedralBuchiLtlAutomaton"
     );
-
-    static std::unordered_set<unsigned> collectAcceptingStates(spot::const_twa_graph_ptr twaGraph);
 };

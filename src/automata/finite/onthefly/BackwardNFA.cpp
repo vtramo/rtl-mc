@@ -1,5 +1,7 @@
 #include "BackwardNFA.h"
 
+#include <Timer.h>
+
 BackwardNFA::BackwardNFA()
 {
 }
@@ -67,6 +69,7 @@ BackwardNFAConstSharedPtr BackwardNFA::buildAutomaton(
         )
     };
 
+    Timer timer {};
     backwardNfa->m_optimizationLevel = optimizationLevel;
     spot::twa_graph_ptr formulaTgba { backwardNfa->translateDiscreteLtlFormulaIntoTgba(anyOption) };
     spot::twa_graph_ptr nfa { backwardNfa->convertToNfa(formulaTgba) };
@@ -74,6 +77,7 @@ BackwardNFAConstSharedPtr BackwardNFA::buildAutomaton(
     std::unordered_set nfaAcceptingStates { backwardNfa->killAcceptingStates(nfa) };
     backwardNfa->purgeUnreachableStatesThenRenumberAcceptingStates(nfa, nfaAcceptingStates);
     backwardNfa->PolyhedralLtlAutomaton::buildAutomaton(nfa, nfaAcceptingStates);
+    backwardNfa->onConstructionCompleted(timer.elapsedInSeconds());
 
     return backwardNfa;
 }
@@ -112,10 +116,4 @@ void BackwardNFA::createDummyInitialStateWithEdgesToReachableAcceptingStates()
             ++m_dummyEdges;
         }
     }
-}
-
-void BackwardNFA::onConstructionCompleted(const double executionTimeSeconds)
-{
-    logConstructionCompleted(executionTimeSeconds);
-    setNfaStats(executionTimeSeconds);
 }

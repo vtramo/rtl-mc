@@ -15,7 +15,12 @@
 #define RTL_MC_VERSION "0.0.0"
 #endif
 
-void showResult(const RtlMcProgram& rtlMcProgram, PolyhedralSystemConstSharedPtr polyhedralSystem, PowersetSharedPtr result);
+void run(
+    const RtlMcProgram& rtlMcProgram,
+    PolyhedralSystemConstSharedPtr polyhedralSystem,
+    SolverUniquePtr solver,
+    bool isUniversalDenotation
+);
 
 int main(const int argc, char *argv[])
 {
@@ -197,17 +202,22 @@ int main(const int argc, char *argv[])
         break;
     }
 
+    run(rtlMcProgram, polyhedralSystem, std::move(solver), isUniversalDenotation);
+}
+
+void run(
+    const RtlMcProgram& rtlMcProgram,
+    PolyhedralSystemConstSharedPtr polyhedralSystem,
+    SolverUniquePtr solver,
+    const bool isUniversalDenotation
+)
+{
     PowersetSharedPtr result {
         isUniversalDenotation
             ? PPLUtils::minus(polyhedralSystem->invariant(), *solver->run())
             : solver->run()
     };
 
-    showResult(rtlMcProgram, polyhedralSystem, result);
-}
-
-void showResult(const RtlMcProgram& rtlMcProgram, PolyhedralSystemConstSharedPtr polyhedralSystem, PowersetSharedPtr result)
-{
     switch (rtlMcProgram.outputFormat())
     {
     case OutputFormat::normal:
@@ -224,7 +234,8 @@ void showResult(const RtlMcProgram& rtlMcProgram, PolyhedralSystemConstSharedPtr
     case OutputFormat::quiet:
         break;
     case OutputFormat::stats:
-        throw std::runtime_error("Not implemented yet");
+        const SolverStats& solverStats { solver->stats() };
+        std::cout << solverStats.format(rtlMcProgram.statsFormat()) << std::endl;
         break;
     }
 

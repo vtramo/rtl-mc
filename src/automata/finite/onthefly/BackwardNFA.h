@@ -48,5 +48,4 @@ protected:
     void createNewEdge(unsigned srcState, unsigned dstState) override;
     void purgeUnreachableStates() override;
     void createDummyInitialStateWithEdgesToReachableAcceptingStates();
-    void onConstructionCompleted(double executionTimeSeconds) override;
 };

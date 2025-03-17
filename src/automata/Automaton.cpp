@@ -9,18 +9,21 @@
 Automaton::Automaton()
 {
     Automaton::initializeAutomaton();
+    Automaton::initializeStats();
 }
 
 Automaton::Automaton(const std::string_view name)
     : m_name { name }
 {
     Automaton::initializeAutomaton();
+    Automaton::initializeStats();
 }
 
 Automaton::Automaton(const std::string_view name, spot::twa_graph_ptr automaton)
     : m_automaton { automaton }
     , m_name { name }
 {
+    Automaton::initializeStats();
 }
 
 unsigned Automaton::totalStates() const
@@ -106,4 +109,9 @@ void Automaton::assertThatStateIsInRange(const unsigned state) const
 spot::twa_graph_ptr Automaton::transpose() const
 {
     return SpotUtils::transpose(m_automaton);
+}
+
+const AutomatonStats& Automaton::stats() const
+{
+    return *m_automatonStats;
 }

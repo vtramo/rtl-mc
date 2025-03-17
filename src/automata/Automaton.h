@@ -1,6 +1,9 @@
 #pragma once
 
 #include <spot/twa/twagraph.hh>
+#include <spot/twaalgos/sccinfo.hh>
+
+#include "AutomatonStats.h"
 
 class Automaton
 {
@@ -23,12 +26,32 @@ public:
     [[nodiscard]] virtual int countSuccessors(unsigned state) const;
     [[nodiscard]] virtual spot::const_twa_graph_ptr twa() const;
     [[nodiscard]] virtual spot::twa_graph_ptr transpose() const;
+    [[nodiscard]] virtual const AutomatonStats& stats() const;
     void printDotFormat(std::ostream& os) const;
 
 protected:
     spot::twa_graph_ptr m_automaton {};
     std::string m_name {};
+    std::shared_ptr<AutomatonStats> m_automatonStats {};
 
     virtual void initializeAutomaton();
+    virtual void initializeStats()
+    {
+        m_automatonStats = std::make_unique<AutomatonStats>();
+    }
     virtual void assertThatStateIsInRange(unsigned state) const;
+    virtual void setAutomatonStats(const double executionTimeSeconds)
+    {
+        if (!m_automatonStats)
+        {
+            initializeStats();
+        }
+
+        m_automatonStats->setTotalStates(totalStates());
+        m_automatonStats->setTotalInitialStates(totalInitialStates());
+        m_automatonStats->setTotalAcceptingStates(totalAcceptingStates());
+        m_automatonStats->setTotalEdges(totalEdges());
+        m_automatonStats->setExecutionTimeSeconds(executionTimeSeconds);
+        m_automatonStats->setSccInfo(spot::scc_info { m_automaton });
+    }
 };

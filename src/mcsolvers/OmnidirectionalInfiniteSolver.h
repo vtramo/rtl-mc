@@ -54,6 +54,8 @@ protected:
             std::move(m_discreteLtlFormula),
             polyhedralSystemFormulaDenotationMap,
             m_automatonOptimizationFlags
-        );
+            );
+        const PolyhedralLtlAutomatonStats& automatonStats { m_ltlAutomaton->stats() };
+        m_solverStats->addAutomatonStats(automatonStats);
     }
 };

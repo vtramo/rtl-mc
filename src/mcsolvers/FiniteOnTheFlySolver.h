@@ -5,6 +5,7 @@
 #include "DenotConcurrentV1.h"
 #include "DenotOnTheFly.h"
 #include "Timer.h"
+#include "FiniteOnTheFlySolverStats.h"
 
 using namespace SpotUtils;
 
@@ -19,16 +20,20 @@ public:
         const bool concurrent = false,
         const bool discretiseRtlfDirectToLtl = false
     ) : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+      , m_finiteOnTheFlySolverStats { std::make_shared<FiniteOnTheFlySolverStats>() }
       , m_concurrent { concurrent }
       , m_discretiseRtlfDirectToLtl { discretiseRtlfDirectToLtl }
-    {}
+    {
+       m_solverStats = m_finiteOnTheFlySolverStats;
+    }
 
     ~FiniteOnTheFlySolver() override = default;
 
-    [[nodiscard]] DenotStats denotStats() const { return m_denotStats; }
+    [[nodiscard]] const FiniteOnTheFlySolverStats& stats() const override { return *m_finiteOnTheFlySolverStats; }
 
     PowersetSharedPtr run() override
     {
+        Timer timer {};
         preprocessPolyhedralSystem();
         logPolyhedralSystemAndCollectStats();
 
@@ -40,11 +45,14 @@ public:
 
         constructBackwardFiniteLtlAutomaton();
 
-        return startDenotAlgorithm();
+        PowersetUniquePtr result { startDenotAlgorithm() };
+        m_finiteOnTheFlySolverStats->addExecutionTime(timer.elapsedInSeconds());
+
+        return result;
     }
 protected:
     BackwardNFAConstSharedPtr m_backwardNfa {};
-    DenotStats m_denotStats {};
+    std::shared_ptr<FiniteOnTheFlySolverStats> m_finiteOnTheFlySolverStats {};
     bool m_concurrent {};
     bool m_discretiseRtlfDirectToLtl {};
 
@@ -74,6 +82,8 @@ protected:
                 std::move(polyhedralSystemFormulaDenotationMap),
                 m_automatonOptimizationFlags
             );
+        const PolyhedralFiniteLtlAutomatonStats& backwardNfaStats { m_backwardNfa->stats() };
+        m_finiteOnTheFlySolverStats->addAutomatonStats(backwardNfaStats);
 
         Log::log(Verbosity::verbose, "<<< BackwardNFA automaton construction completed. Elapsed time: {} s.\n", timer.elapsedInSeconds());
         Log::log(Verbosity::debug, "[BackwardNFA]\n{}\n", *m_backwardNfa);
@@ -94,9 +104,10 @@ protected:
         };
 
         const double denotExecutionTimeSeconds { timer.elapsedInSeconds() };
-        m_denotStats = collectDenotStats(denot, denotExecutionTimeSeconds);
-        Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", m_denotStats.executionTimeSeconds);
-        Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", m_denotStats.totalIterations);
+        DenotOnTheFlyStats denotStats { collectDenotStats(denot, denotExecutionTimeSeconds) };
+        m_finiteOnTheFlySolverStats->addDenotOnTheFlyStats(denotStats);
+        Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.getExecutionTimeSeconds());
+        Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.getTotalIterations());
 
         return denotResult;
     }

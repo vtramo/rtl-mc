@@ -58,4 +58,5 @@ namespace SpotUtils
     spot::twa_graph_ptr transpose(const spot::twa_graph_ptr& twaGraph);
     bool isNonRecurrent(spot::formula& formula);
     spot::formula andAtoms(const spot::atomic_prop_set& atoms);
+    std::unordered_set<unsigned> collectAcceptingStates(spot::const_twa_graph_ptr twa);
 }

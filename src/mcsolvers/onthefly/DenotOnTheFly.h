@@ -12,7 +12,7 @@ public:
       , m_backwardNfa { backwardNfa }
     {
         const auto& stats { m_backwardNfa->stats() };
-        m_maxRecursionDepth = 1 + stats.nfaConstructionStats.totalNumberPatches * 2;
+        m_maxRecursionDepth = stats.getNfaMaxRecursiveDepth();
     }
     ~DenotOnTheFly() override = default;
 

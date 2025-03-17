@@ -1,53 +1,67 @@
 #pragma once
 
-#include <string>
-#include <spot/twaalgos/sccinfo.hh>
-#include "spot_utils.h"
 #include <optional>
 
+#include "FormattableStats.h"
 
-struct AutomatonStats
+class AutomatonStats: public FormattableStats
 {
-    struct TranslationFormulaIntoTgbaStats
-    {
-        std::string optimizationLevel { SpotUtils::toOptimizationLevelString(spot::postprocessor::optimization_level::Low) };
-        double executionTimeSeconds {};
-        int totalStates {};
-        int totalEdges {};
-        int totalAcceptingSets {};
-    };
+public:
+    static const inline std::string s_totalStatesPlaceHolder { "%As" };
+    static const inline std::string s_totalInitialStatesPlaceHolder { "%Ais" };
+    static const inline std::string s_totalAcceptingStatesPlaceHolder { "%Aas" };
+    static const inline std::string s_totalEdgesPlaceHolder { "%Ae" };
+    static const inline std::string s_executionTimeSecondsPlaceHolder { "%Ax" };
+    static const inline std::string s_totalSccPlaceHolder { "%Ascc" };
 
-    struct TranslationTgbaIntoNfaStats
-    {
-        double executionTimeSeconds {};
-        int totalStates {};
-        int totalEdges {};
-        int totalFinalStates {};
-    };
+    [[nodiscard]] int getTotalStates() const { return m_totalStates; }
+    [[nodiscard]] int getTotalEdges() const { return m_totalEdges; }
+    [[nodiscard]] int getTotalInitialStates() const { return m_totalInitialStates; }
+    [[nodiscard]] int getTotalAcceptingStates() const { return m_totalAcceptingStates; }
+    [[nodiscard]] double getExecutionTimeSeconds() const { return m_executionTimeSeconds; }
+    [[nodiscard]] const std::optional<spot::scc_info>& getSccInfo() const { return m_sccInfo; }
 
-    struct NfaStats
+    void setTotalStates(const int totalStates)
     {
-        double executionTimeSeconds {};
-        int totalStates {};
-        int totalEdges {};
-        int totalFinalStates {};
-    };
+        m_totalStates = totalStates;
+        m_valueByPlaceholder[s_totalStatesPlaceHolder] = std::to_string(totalStates);
+    }
 
-    struct FiniteAutomatonConstructionStats
+    void setTotalEdges(const int totalEdges)
     {
-        double executionTimeSeconds {};
-        int totalInitialStates {};
-        int totalStates {};
-        int totalEdges {};
-        int totalAcceptingStates {};
-        int maxNumberPatches {};
-        int totalNumberPatches {};
-        int maxRecursiveDepthOnTheFly {};
-        std::optional<spot::scc_info> sccInfo {};
-    };
+        m_totalEdges = totalEdges;
+        m_valueByPlaceholder[s_totalEdgesPlaceHolder] = std::to_string(totalEdges);
+    }
 
-    TranslationFormulaIntoTgbaStats translationFormulaIntoTgba {};
-    NfaStats translationTgbaIntoNfaStats {};
-    NfaStats nfaOptimizations {};
-    FiniteAutomatonConstructionStats nfaConstructionStats {};
+    void setTotalInitialStates(const int initialStates)
+    {
+        m_totalInitialStates = initialStates;
+        m_valueByPlaceholder[s_totalInitialStatesPlaceHolder] = std::to_string(initialStates);
+    }
+
+    void setTotalAcceptingStates(const int totalAcceptingStates)
+    {
+        m_totalAcceptingStates = totalAcceptingStates;
+        m_valueByPlaceholder[s_totalAcceptingStatesPlaceHolder] = std::to_string(totalAcceptingStates);
+    }
+
+    void setExecutionTimeSeconds(const double seconds)
+    {
+        m_executionTimeSeconds = seconds;
+        m_valueByPlaceholder[s_executionTimeSecondsPlaceHolder] = std::to_string(seconds);
+    }
+
+    void setSccInfo(const spot::scc_info& sccInfo)
+    {
+        m_sccInfo = sccInfo;
+        m_valueByPlaceholder[s_totalSccPlaceHolder] = std::to_string(sccInfo.scc_count());
+    }
+
+protected:
+    int m_totalStates {};
+    int m_totalEdges {};
+    int m_totalInitialStates {};
+    int m_totalAcceptingStates {};
+    std::optional<spot::scc_info> m_sccInfo {};
+    double m_executionTimeSeconds {};
 };

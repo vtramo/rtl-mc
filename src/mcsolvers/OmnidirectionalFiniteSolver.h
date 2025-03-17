@@ -56,6 +56,8 @@ protected:
             polyhedralSystemFormulaDenotationMap,
             m_automatonOptimizationFlags
         );
+        const PolyhedralLtlAutomatonStats& automatonStats { m_ltlAutomaton->stats() };
+        m_solverStats->addAutomatonStats(automatonStats);
     }
 
     virtual PowersetSharedPtr runFiniteSemanticsDfs()
