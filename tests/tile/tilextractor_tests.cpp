@@ -9,6 +9,7 @@
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
 #include "spot_utils.h"
+#include "formula.h"
 
 using namespace SpotUtils;
 using namespace PPLUtils;

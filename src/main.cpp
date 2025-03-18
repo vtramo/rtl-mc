@@ -74,7 +74,7 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
-        else if (polyhedralSystem->hasClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasClosedFlow() && isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] Infinite-time semantics, non-recurrent RTL and closed flow.");
 
@@ -123,7 +123,7 @@ int main(const int argc, char *argv[])
                 BrinkSemantics::may
             );
         }
-        else if (polyhedralSystem->hasClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasClosedFlow() && isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] May semantics, non-recurrent RTL and closed flow.");
 
@@ -174,7 +174,7 @@ int main(const int argc, char *argv[])
                 BrinkSemantics::must
             );
         }
-        else if (polyhedralSystem->hasClosedFlow() && SpotUtils::isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasClosedFlow() && isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] Must semantics, non-recurrent RTL and closed flow.");
 

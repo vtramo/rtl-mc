@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <spot_utils.h>
+#include <spot/tl/apcollect.hh>
 
 #include "ParserError.h"
 
@@ -13,7 +13,7 @@ public:
     [[nodiscard]] bool isUsingIllegalAtoms() const { return !m_illegalAtoms.empty(); }
     [[nodiscard]] bool hasParserErrors() const { return !m_parserErrors.empty(); }
     [[nodiscard]] std::vector<ParserError> parserErrors() const { return m_parserErrors; }
-    [[nodiscard]] spot::atomic_prop_vector illegalAtoms() const { return m_illegalAtoms; }
+    [[nodiscard]] std::vector<spot::formula> illegalAtoms() const { return m_illegalAtoms; }
 
     [[nodiscard]] spot::formula& operator* ()
     {

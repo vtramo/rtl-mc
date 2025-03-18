@@ -3,7 +3,7 @@
 #include "Observable.h"
 #include "ObservablePatchSequence.h"
 #include "traverse.h"
-#include "spot_utils.h"
+#include "formula.h"
 
 class ObservableTraversalNode
 {
@@ -45,7 +45,7 @@ private:
         else
         {
             spot::atomic_prop_set atoms { observable.atoms() };
-            atoms.insert(SpotUtils::sing());
+            atoms.insert(sing());
             m_observable = Observable { atoms, *observable.interpretation() };
         }
     }

@@ -1,7 +1,5 @@
 #include "discretisation.h"
-#include "spot_constants.h"
-
-using namespace SpotUtils;
+#include "formula_constants.h"
 
 namespace
 {
@@ -59,7 +57,7 @@ spot::formula toDiscretisedLtlFormula(spot::formula&& formula)
     {
     case spot::op::ap:
         return formula == ap("last")
-            ? spot::constants::g_lastFinite
+            ? g_lastFinite
             : formula;
     case spot::op::X:
         return dsctX(std::move(formula));
@@ -89,7 +87,7 @@ spot::formula toDiscretisedFormula(spot::formula&& formula)
     {
     case spot::op::ap:
         return formula == ap("last")
-            ? spot::constants::g_last
+            ? g_last
             : formula;
     case spot::op::X:
         return dscX(std::move(formula));
@@ -246,16 +244,16 @@ namespace
 
     spot::formula finiteAlternationSingOpenObservablesOneStep()
     {
-        return spot::constants::g_finiteAlternationSingOpenObservablesOneStep;
+        return g_finiteAlternationSingOpenObservablesOneStep;
     }
 
     spot::formula finiteAlternationSingOpenObservables()
     {
-        return spot::constants::g_finiteAlternationSingOpenObservables;
+        return g_finiteAlternationSingOpenObservables;
     }
 
     spot::formula alternationSingOpenObservables()
     {
-        return spot::constants::g_alternationSingOpenObservables;
+        return g_alternationSingOpenObservables;
     }
 }

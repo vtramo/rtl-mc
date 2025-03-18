@@ -1,6 +1,7 @@
 #include "PolyhedralSystemSymbolTable.h"
 #include "spot_utils.h"
 #include "ppl_utils.h"
+#include "formula.h"
 
 namespace
 {
@@ -36,7 +37,7 @@ PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addVariables(const std
 
 PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtom(const std::string_view atom)
 {
-    return addAtom(SpotUtils::ap(atom));
+    return addAtom(ap(atom));
 }
 
 PolyhedralSystemSymbolTable& PolyhedralSystemSymbolTable::addAtom(const spot::formula& atom)
@@ -60,7 +61,7 @@ bool PolyhedralSystemSymbolTable::containsVariable(const std::string_view id) co
 
 bool PolyhedralSystemSymbolTable::containsAtom(const std::string_view atom) const
 {
-    return m_atoms.count(SpotUtils::ap(atom));
+    return m_atoms.count(ap(atom));
 }
 
 const spot::atomic_prop_set& PolyhedralSystemSymbolTable::atoms() const

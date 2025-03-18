@@ -1,6 +1,6 @@
 #pragma once
 
-#include <spot_utils.h>
+#include "formula.h"
 
 #include "Tile.h"
 
@@ -43,7 +43,7 @@ private:
         const Tile& tile2 { std::get<1>(m_triple) };
         const Observable& tile2Observable { tile2.observable() };
         spot::atomic_prop_set tile2AtomsWithSing { tile2Observable.atoms() };
-        tile2AtomsWithSing.insert(SpotUtils::sing());
+        tile2AtomsWithSing.insert(sing());
         m_observable = Observable { tile2AtomsWithSing, *tile2.patches() };
     }
 

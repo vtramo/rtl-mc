@@ -1,4 +1,5 @@
 #include "OmnidirectionalPolyhedralAbstraction.h"
+#include "formula.h"
 
 #include "TileExtractorComplex.h"
 

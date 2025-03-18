@@ -51,6 +51,7 @@ include_directories = [
   include_directories(src_dir / 'cli'),
   include_directories(src_dir / 'logger'),
   include_directories(src_dir / 'stats'),
+  include_directories(src_dir / 'formula'),
 ]
 
 subdir(src_dir)

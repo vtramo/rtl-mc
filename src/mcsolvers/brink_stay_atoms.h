@@ -1,6 +1,6 @@
 #pragma once
 
-#include "spot_constants.h"
+#include "formula_constants.h"
 #include "PolyhedralSystem.h"
 #include "reach.h"
 #include "spot_utils.h"

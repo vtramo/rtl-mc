@@ -5,6 +5,7 @@
 #include "spot_utils.h"
 #include "ppl_output.h"
 #include "ppl_aliases.h"
+#include "formula.h"
 
 class StateDenotation
 {
@@ -22,7 +23,7 @@ public:
             "Formula: {}\n"
             "IsSing: {}\n"
             "Denotation: {}",
-            SpotUtils::toFormulaString(m_formula),
+            toFormulaString(m_formula),
             m_isSing,
             PPLOutput::toString(*m_denotation, symbolTable)
         );
@@ -47,7 +48,7 @@ public:
             removeSingFromLabels();
         }
 
-        assert(!isSing || SpotUtils::containsSing(*m_labels));
+        assert(!isSing || containsSing(*m_labels));
     }
 
     StateDenotation(const StateDenotation& other)
@@ -77,7 +78,7 @@ private:
     {
         for (auto label { m_labels->begin() }; label != m_labels->end(); ++label)
         {
-            if (*label == SpotUtils::sing())
+            if (*label == sing())
             {
                 m_labels->erase(label);
                 break;

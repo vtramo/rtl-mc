@@ -216,7 +216,7 @@ StateDenotation PolyhedralLtlAutomaton::extractStateDenotationFromEdgeGuard(
 )
 {
     spot::formula formulaPossiblyWithSing { spot::bdd_to_formula(guard, twaGraph->get_dict()) };
-    auto [formulaWithoutSing, containsSing] { SpotUtils::removeSing(spot::formula { formulaPossiblyWithSing }) };
+    auto [formulaWithoutSing, containsSing] { removeSing(spot::formula { formulaPossiblyWithSing }) };
     const PowersetConstSharedPtr powerset { m_formulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
     return StateDenotation { std::move(formulaPossiblyWithSing), powerset, containsSing };
 }
@@ -225,7 +225,7 @@ bdd PolyhedralLtlAutomaton::stateLabelsAsBdd(const unsigned state) const
 {
     const StateDenotation& outStateDenotation { m_stateDenotationById.at(state) };
     spot::atomic_prop_set labels { outStateDenotation.labels() };
-    return { spot::formula_to_bdd(SpotUtils::andAtoms(labels), m_automaton->get_dict(), m_automaton) };
+    return { spot::formula_to_bdd(andAtoms(labels), m_automaton->get_dict(), m_automaton) };
 }
 
 void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::twa_graph_ptr twaGraph)
@@ -241,7 +241,7 @@ void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::tw
             continue;
         }
 
-        const auto& [formulaWithoutSing, _] { SpotUtils::removeSing(std::move(formula)) };
+        const auto& [formulaWithoutSing, _] { removeSing(std::move(formula)) };
         PowersetConstSharedPtr denotation { m_formulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
         if (denotation->is_empty()) outIteraser.erase();
         ++outIteraser;
@@ -402,7 +402,7 @@ void PolyhedralLtlAutomaton::renumberOrRemoveStatesAfterPurge(
 
 spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(const bool anyOption)
 {
-    std::string optimizationLevel { SpotUtils::toOptimizationLevelString(m_optimizationLevel) };
+    std::string optimizationLevel {SpotUtils::toOptimizationLevelString(m_optimizationLevel) };
     Log::log(Verbosity::veryVerbose, "[{} - Translation] Translation of the discretised LTL formula into a TGBA automaton started.", m_name);
     Log::log(Verbosity::veryVerbose, "[{} - Translation] Optimization level: {}.", m_name, optimizationLevel);
 

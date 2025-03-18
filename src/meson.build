@@ -42,6 +42,7 @@ subdir('mcsolvers')
 subdir('cli')
 subdir('logger')
 subdir('stats')
+subdir('formula')
 
 link_args = []
 if get_option('enable_profiling') == true

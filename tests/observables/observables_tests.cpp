@@ -12,6 +12,7 @@
 #include "ppl_utils.h"
 #include "PolyhedralSystem.h"
 #include "systemparser.h"
+#include "formula.h"
 
 using namespace PPLUtils;
 using namespace SpotUtils;

@@ -148,7 +148,7 @@ ReachPairs reachPlus(const Powerset& A, const Poly& B, const Poly& preFlow)
         }
     }
 
-    for (const auto & [p1, p2] : result)
+    for ([[maybe_unused]] const auto & [p1, p2] : result)
         assert(p1.space_dimension() == preFlow.space_dimension());
 
     return result;
@@ -258,7 +258,7 @@ static void init_maps(
 
         // PER OGNI P' IN W
         first_ext=true;
-        for (it_notover=notover_ps.begin(); it_notover!=notover_ps.end(); it_notover++)
+        for (it_notover=notover_ps.begin(); it_notover!=notover_ps.end(); ++it_notover)
         {
             pprime_nnc = it_notover->pointset();
             b_nnc = exit_border_opt(*p1_point, p1close_nnc, pprime_nnc, flow_nnc);
@@ -367,7 +367,7 @@ static std::pair<Powerset, Powerset> refine_maps(
     [[maybe_unused]] Powerset::iterator it_under;
     Powerset W(U_ps);
     hash_map_type::iterator it_int;
-    list_nnc_type::iterator it_list;
+    [[maybe_unused]] list_nnc_type::iterator it_list;
 
     // ANALIZZA QUEUE
     while (!queue.empty())

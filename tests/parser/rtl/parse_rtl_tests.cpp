@@ -1,5 +1,6 @@
 #include "parsertl.h"
 #include "test_utils.h"
+#include "formula.h"
 #include "RtlParsingResult.h"
 #include <catch2/catch_test_macros.hpp>
 
@@ -50,7 +51,7 @@ TEST_CASE("Correctly report syntax errors when parsing a RTL formula", "[bad]")
     SECTION("Given AP={p0,p1,p2} then GF p0 & F!p1 & FGFG(p2 U !p3) should be illegal")
     {
         std::string rtl { "G(F(p0)) & F(!p1) & F(G(F(G(p2 U !p3))))" };
-        spot::atomic_prop_set allowedAtomicProp { SpotUtils::AP({ "p0", "p1", "p2" }) };
+        spot::atomic_prop_set allowedAtomicProp { AP({ "p0", "p1", "p2" }) };
         RtlParsingResult rtlParsingResult { parseRtl(rtl, allowedAtomicProp) };
 
         REQUIRE(!rtlParsingResult);
@@ -58,6 +59,6 @@ TEST_CASE("Correctly report syntax errors when parsing a RTL formula", "[bad]")
         REQUIRE(rtlParsingResult.isLtl());
         REQUIRE(rtlParsingResult.isUsingIllegalAtoms());
         REQUIRE(rtlParsingResult.illegalAtoms().size() == 1);
-        REQUIRE(rtlParsingResult.illegalAtoms()[0] == SpotUtils::ap("p3"));
+        REQUIRE(rtlParsingResult.illegalAtoms()[0] == ap("p3"));
     }
 }

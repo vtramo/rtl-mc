@@ -2,6 +2,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include "test_utils.h"
 #include "spot_utils.h"
+#include "formula.h"
 #include "TileExtractor.h"
 #include "TileExtractorComplex.h"
 #include "TileExtractorFast.h"

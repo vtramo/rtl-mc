@@ -6,6 +6,7 @@
 #include "spot_utils.h"
 #include "reflection.h"
 #include "Observable.h"
+#include "formula.h"
 
 using namespace PPLUtils;
 using namespace SpotUtils;

@@ -193,7 +193,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& zeroStateDenotation { backwardNfa->stateDenotation(0) };
     REQUIRE(!zeroStateDenotation.isSingular());
     REQUIRE(zeroStateDenotation.formula() == spot::parse_infix_psl("p & !q & !sing & t0 & t1").f);
-    REQUIRE(zeroStateDenotation.labels() == SpotUtils::AP({ "p", "q", "t0", "t1" }));
+    REQUIRE(zeroStateDenotation.labels() == AP({ "p", "q", "t0", "t1" }));
     REQUIRE(backwardNfa->isInitialState(stateZero));
     REQUIRE(!backwardNfa->isAcceptingState(stateZero));
     REQUIRE(!backwardNfa->hasSuccessors(stateZero));
@@ -204,7 +204,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& oneStateDenotation { backwardNfa->stateDenotation(stateOne) };
     REQUIRE(!oneStateDenotation.isSingular());
     REQUIRE(oneStateDenotation.formula() == spot::parse_infix_psl("!p & !sing & t0 & t1").f);
-    REQUIRE(oneStateDenotation.labels() == SpotUtils::AP({ "p", "t0", "t1" }));
+    REQUIRE(oneStateDenotation.labels() == AP({ "p", "t0", "t1" }));
     REQUIRE(backwardNfa->isInitialState(stateOne));
     REQUIRE(!backwardNfa->isAcceptingState(stateOne));
     REQUIRE(!backwardNfa->hasSuccessors(stateOne));
@@ -215,7 +215,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& twoStateDenotation { backwardNfa->stateDenotation(stateTwo) };
     REQUIRE(twoStateDenotation.isSingular());
     REQUIRE(twoStateDenotation.formula() == spot::parse_infix_psl("p & !q & sing & t0 & t1").f);
-    REQUIRE(twoStateDenotation.labels() == SpotUtils::AP({ "p", "q", "sing", "t0", "t1" }));
+    REQUIRE(twoStateDenotation.labels() == AP({ "p", "q", "sing", "t0", "t1" }));
     REQUIRE(backwardNfa->isInitialState(stateTwo));
     REQUIRE(!backwardNfa->isAcceptingState(stateTwo));
     REQUIRE(!backwardNfa->hasSuccessors(stateTwo));
@@ -226,7 +226,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& threeStateDenotation { backwardNfa->stateDenotation(stateThree) };
     REQUIRE(threeStateDenotation.isSingular());
     REQUIRE(threeStateDenotation.formula() == spot::parse_infix_psl("!p & sing & t0 & t1").f);
-    REQUIRE(threeStateDenotation.labels() == SpotUtils::AP({ "p", "sing", "t0", "t1" }));
+    REQUIRE(threeStateDenotation.labels() == AP({ "p", "sing", "t0", "t1" }));
     REQUIRE(backwardNfa->isInitialState(stateThree));
     REQUIRE(!backwardNfa->isAcceptingState(stateThree));
     REQUIRE(!backwardNfa->hasSuccessors(stateThree));
@@ -237,7 +237,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& fourStateDenotation { backwardNfa->stateDenotation(stateFour) };
     REQUIRE(fourStateDenotation.isSingular());
     REQUIRE(fourStateDenotation.formula() == spot::parse_infix_psl("!q & sing & t1").f);
-    REQUIRE(fourStateDenotation.labels() == SpotUtils::AP({ "q", "sing", "t1" }));
+    REQUIRE(fourStateDenotation.labels() == AP({ "q", "sing", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateFour));
     REQUIRE(!backwardNfa->isAcceptingState(stateFour));
     REQUIRE(backwardNfa->hasSuccessors(stateFour));
@@ -248,7 +248,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& fiveStateDenotation { backwardNfa->stateDenotation(stateFive) };
     REQUIRE(fiveStateDenotation.isSingular());
     REQUIRE(fiveStateDenotation.formula() == spot::parse_infix_psl("q & sing & t1").f);
-    REQUIRE(fiveStateDenotation.labels() == SpotUtils::AP({ "q", "sing", "t1" }));
+    REQUIRE(fiveStateDenotation.labels() == AP({ "q", "sing", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateFive));
     REQUIRE(backwardNfa->isAcceptingState(stateFive));
     REQUIRE(backwardNfa->hasSuccessors(stateFive));
@@ -259,7 +259,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& sixStateDenotation { backwardNfa->stateDenotation(stateSix) };
     REQUIRE(sixStateDenotation.isSingular());
     REQUIRE(sixStateDenotation.formula() == spot::parse_infix_psl("p & !q & sing & t1").f);
-    REQUIRE(sixStateDenotation.labels() == SpotUtils::AP({ "p", "q", "sing", "t1" }));
+    REQUIRE(sixStateDenotation.labels() == AP({ "p", "q", "sing", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateSix));
     REQUIRE(!backwardNfa->isAcceptingState(stateSix));
     REQUIRE(backwardNfa->hasSuccessors(stateSix));
@@ -270,7 +270,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& sevenStateDenotation { backwardNfa->stateDenotation(stateSeven) };
     REQUIRE(sevenStateDenotation.isSingular());
     REQUIRE(sevenStateDenotation.formula() == spot::parse_infix_psl("!p & sing & t1").f);
-    REQUIRE(sevenStateDenotation.labels() == SpotUtils::AP({ "p", "sing", "t1" }));
+    REQUIRE(sevenStateDenotation.labels() == AP({ "p", "sing", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateSeven));
     REQUIRE(!backwardNfa->isAcceptingState(stateSeven));
     REQUIRE(backwardNfa->hasSuccessors(stateSeven));
@@ -281,7 +281,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& eightStateDenotation { backwardNfa->stateDenotation(stateEight) };
     REQUIRE(!eightStateDenotation.isSingular());
     REQUIRE(eightStateDenotation.formula() == spot::parse_infix_psl("!q & !sing & t1").f);
-    REQUIRE(eightStateDenotation.labels() == SpotUtils::AP({ "q", "t1" }));
+    REQUIRE(eightStateDenotation.labels() == AP({ "q", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateEight));
     REQUIRE(!backwardNfa->isAcceptingState(stateEight));
     REQUIRE(backwardNfa->hasSuccessors(stateEight));
@@ -292,7 +292,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& nineStateDenotation { backwardNfa->stateDenotation(stateNine) };
     REQUIRE(!nineStateDenotation.isSingular());
     REQUIRE(nineStateDenotation.formula() == spot::parse_infix_psl("q & !sing & t1").f);
-    REQUIRE(nineStateDenotation.labels() == SpotUtils::AP({ "q", "t1" }));
+    REQUIRE(nineStateDenotation.labels() == AP({ "q", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateNine));
     REQUIRE(!backwardNfa->isAcceptingState(stateNine));
     REQUIRE(backwardNfa->hasSuccessors(stateNine));
@@ -303,7 +303,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& tenStateDenotation { backwardNfa->stateDenotation(stateTen) };
     REQUIRE(!tenStateDenotation.isSingular());
     REQUIRE(tenStateDenotation.formula() == spot::parse_infix_psl("p & !q & !sing & t1").f);
-    REQUIRE(tenStateDenotation.labels() == SpotUtils::AP({ "p", "q", "t1" }));
+    REQUIRE(tenStateDenotation.labels() == AP({ "p", "q", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateTen));
     REQUIRE(!backwardNfa->isAcceptingState(stateTen));
     REQUIRE(backwardNfa->hasSuccessors(stateTen));
@@ -314,7 +314,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& elevenStateDenotation { backwardNfa->stateDenotation(stateEleven) };
     REQUIRE(!elevenStateDenotation.isSingular());
     REQUIRE(elevenStateDenotation.formula() == spot::parse_infix_psl("!p & !sing & t1").f);
-    REQUIRE(elevenStateDenotation.labels() == SpotUtils::AP({ "p", "t1" }));
+    REQUIRE(elevenStateDenotation.labels() == AP({ "p", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateEleven));
     REQUIRE(!backwardNfa->isAcceptingState(stateEleven));
     REQUIRE(backwardNfa->hasSuccessors(stateEleven));
@@ -325,7 +325,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     const StateDenotation& twelveStateDenotation { backwardNfa->stateDenotation(stateTwelve) };
     REQUIRE(twelveStateDenotation.isSingular());
     REQUIRE(twelveStateDenotation.formula() == spot::parse_infix_psl("sing & t1").f);
-    REQUIRE(twelveStateDenotation.labels() == SpotUtils::AP({ "sing", "t1" }));
+    REQUIRE(twelveStateDenotation.labels() == AP({ "sing", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateTwelve));
     REQUIRE(backwardNfa->isAcceptingState(stateTwelve));
     REQUIRE(backwardNfa->hasSuccessors(stateTwelve));

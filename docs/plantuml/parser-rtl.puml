@@ -17,7 +17,7 @@ package rtl {
         +isLtl() : bool
         +isUsingIllegalAtoms() : bool
         +ok() : bool
-        +illegalAtoms() : spot::atomic_prop_vector
+        +illegalAtoms() : std::vector<spot::formula>
         +parserErrors() : std::vector<ParserError>
         -setIllegalAtoms(std::vector<spot::formula>&& illegalAtoms) : void
         --operators--

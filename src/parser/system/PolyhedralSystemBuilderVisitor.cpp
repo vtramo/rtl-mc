@@ -1,8 +1,6 @@
 #include "PolyhedralSystemBuilderVisitor.h"
 
-#include "spot_utils.h"
-
-using namespace SpotUtils;
+#include "formula.h"
 
 namespace
 {

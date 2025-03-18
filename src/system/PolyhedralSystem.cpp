@@ -3,12 +3,12 @@
 
 #include "utils.h"
 #include "ppl_utils.h"
-#include "spot_utils.h"
 #include "PolyhedralSystem.h"
 #include "ppl_output.h"
 #include "systemparser.h"
 #include "reflection.h"
 #include "omnidirectional.h"
+#include "formula.h"
 
 const Poly& PolyhedralSystem::flow() const
 {
@@ -57,7 +57,7 @@ const spot::atomic_prop_set& PolyhedralSystem::atoms() const
 
 std::optional<const AtomInterpretation* const> PolyhedralSystem::getAtomInterpretation(const std::string_view atom) const
 {
-    return getAtomInterpretation(SpotUtils::ap(atom));
+    return getAtomInterpretation(ap(atom));
 }
 
 std::optional<const AtomInterpretation* const> PolyhedralSystem::getAtomInterpretation(const spot::formula& atom) const
@@ -73,7 +73,7 @@ std::optional<const AtomInterpretation* const> PolyhedralSystem::getAtomInterpre
 
 const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const std::string_view atom, const Powerset& interpretation)
 {
-    return addAtomInterpretation(SpotUtils::ap(atom), interpretation);
+    return addAtomInterpretation(ap(atom), interpretation);
 }
 
 const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation)
@@ -90,7 +90,7 @@ const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const spot::fo
 
 bool PolyhedralSystem::containsAtom(const std::string_view atom) const
 {
-    return containsAtom(SpotUtils::ap(atom));
+    return containsAtom(ap(atom));
 }
 
 bool PolyhedralSystem::containsAtom(spot::formula atom) const

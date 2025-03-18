@@ -1,5 +1,6 @@
 #include "parsertl.h"
 #include "spot_utils.h"
+#include "formula.h"
 #include <spot/tl/parse.hh>
 
 static RtlParsingResult toRtlfParsingResult(spot::parse_error_list&& spotErrors);
@@ -34,7 +35,7 @@ RtlParsingResult parseRtl(const std::string_view rtl, const spot::atomic_prop_se
     }
 
     spot::formula& rtlfFormula { *rtlfParsingResult };
-    spot::atomic_prop_vector illegalAtoms { collectAtomsNotIn(allowedAtomicPropositions, rtlfFormula) };
+    std::vector illegalAtoms { collectAtomsNotIn(allowedAtomicPropositions, rtlfFormula) };
 
     if (!illegalAtoms.empty())
     {

@@ -4,6 +4,7 @@
 #include "ppl_utils.h"
 #include "spot_utils.h"
 #include "ppl_output.h"
+#include "formula.h"
 
 
 PolyhedralSystemFormulaDenotationMap::PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem)
@@ -99,7 +100,7 @@ void PolyhedralSystemFormulaDenotationMap::saveFormulaDenotation(const spot::for
     m_powersetByFormula.insert(
         std::make_pair(
             formula.id(),
-            std::move(std::make_tuple(denotation, SpotUtils::toFormulaString(formula)))
+            std::move(std::make_tuple(denotation, toFormulaString(formula)))
         )
     );
 }
