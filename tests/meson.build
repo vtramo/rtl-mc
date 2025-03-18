@@ -9,6 +9,8 @@ test_rtl_mc_static_library = static_library(
     include_directories: include_directories
 )
 
+test_dependencies = [spdlog_dep, fmt_dep, catch2_dep, catch2_with_main_dep]
+
 subdir('automata')
 subdir('discretisation')
 subdir('benchmarks')
