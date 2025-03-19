@@ -7,7 +7,7 @@
 #include "mcparser.h"
 #include "parsertl.h"
 #include "Verbosity.h"
-#include "AutomatonOptimizationFlags.h"
+#include "AutomatonOptimization.h"
 #include "OutputFormat.h"
 #include "Semantics.h"
 
@@ -193,13 +193,22 @@ private:
         auto& automatonOptimizationGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
         automatonOptimizationGroup.add_argument("--low")
                                   .help("Minimal optimizations during automaton construction (fast, default).")
-                                  .store_into(m_automatonOptimizationFlags.low);
+                                  .action([&](const auto&)
+                                  {
+                                        m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::low;
+                                  });
         automatonOptimizationGroup.add_argument("--medium")
                                   .help("Moderate optimizations during automaton construction.")
-                                  .store_into(m_automatonOptimizationFlags.medium);
+                                  .action([&](const auto&)
+                                  {
+                                        m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::medium;
+                                  });
         automatonOptimizationGroup.add_argument("--high")
                                   .help("All available optimizations during automaton construction (slow).")
-                                  .store_into(m_automatonOptimizationFlags.high);
+                                  .action([&](const auto&)
+                                  {
+                                        m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::high;
+                                  });
         m_rtlMcProgram.add_argument("--any")
                       .help("Tells the translator that it should attempt to \n"
                           "reduce or produce a deterministic result: any automaton denoting the \n"

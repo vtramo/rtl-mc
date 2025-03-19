@@ -2,13 +2,21 @@
 
 #include "PolyhedralFiniteLtlAutomaton.h"
 #include "PolyhedralBuchiLtlAutomaton.h"
-#include "AutomatonOptimizationFlags.h"
+#include "AutomatonOptimization.h"
 
 inline spot::postprocessor::optimization_level toSpotAutomatonOptimizationLevel(const AutomatonOptimizationFlags& optimizationFlags)
 {
-    if (optimizationFlags.low) return spot::postprocessor::optimization_level::Low;
-    if (optimizationFlags.medium) return spot::postprocessor::optimization_level::Medium;
-    return spot::postprocessor::optimization_level::High;
+    switch (optimizationFlags.optimizationLevel)
+    {
+    case low:
+        return spot::postprocessor::optimization_level::Low;
+    case medium:
+        return spot::postprocessor::optimization_level::Medium;
+    case high:
+        return spot::postprocessor::optimization_level::High;
+    default:
+        throw std::invalid_argument("Invalid automaton optimization level");
+    }
 }
 
 inline PolyhedralFiniteLtlAutomatonConstSharedPtr buildPolyhedralFiniteLtlAutomaton(

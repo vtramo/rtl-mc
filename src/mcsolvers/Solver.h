@@ -3,7 +3,7 @@
 #include "PolyhedralSystem.h"
 #include "logger.h"
 #include "stats_collectors.h"
-#include "AutomatonOptimizationFlags.h"
+#include "AutomatonOptimization.h"
 #include "DiscreteFiniteLtlFormula.h"
 #include "spot_utils.h"
 #include "SolverStats.h"

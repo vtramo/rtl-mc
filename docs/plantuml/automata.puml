@@ -35,6 +35,7 @@ package automata {
         #virtual assertThatStateIsInRange(const unsigned state): void
     }
 
+
     abstract PolyhedralLtlAutomaton
     {
         --type aliases--

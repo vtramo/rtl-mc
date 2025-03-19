@@ -37,13 +37,6 @@ package cli {
         -parseModelCheckingPoint(): void
     }
 
-    struct AutomatonOptimizationFlags {
-        low: bool
-        medium: bool
-        high: bool
-        any: bool
-    }
-
     enum Verbosity {
         silent,
         verbose,
@@ -61,7 +54,6 @@ package cli {
     }
 }
 
-RtlMcProgram ---> "1" AutomatonOptimizationFlags
 RtlMcProgram ---> "1" Verbosity
 RtlMcProgram ---> "1" OutputFormat
 
