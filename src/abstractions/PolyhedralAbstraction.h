@@ -17,6 +17,7 @@ public:
         : Automaton(name)
         , m_polyhedralSystem { polyhedralSystem }
     {
+        m_spaceDimension = m_polyhedralSystem->spaceDimension();
         PolyhedralAbstraction::initializeAutomaton();
     }
 
