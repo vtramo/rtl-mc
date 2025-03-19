@@ -12,4 +12,6 @@ polyhedral_system_source_files = [
     current_source_dir / 'AtomInterpretation.cpp',
 ]
 
+subdir('instances')
+
 project_source_files += polyhedral_system_source_files

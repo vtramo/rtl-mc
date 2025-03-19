@@ -29,6 +29,7 @@ include_directories = [
   include_directories(src_dir / utils_dir / 'ppl'),
   include_directories(src_dir / utils_dir / 'spot'),
   include_directories(src_dir / system_dir),
+  include_directories(src_dir / system_dir / 'instances'),
   include_directories(src_dir / abstraction_dir),
   include_directories(src_dir / abstraction_dir / omnidirectional_dir),
   include_directories(src_dir / abstraction_dir / omnidirectional_dir / 'tilextractor'),

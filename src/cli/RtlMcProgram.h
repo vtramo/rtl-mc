@@ -6,6 +6,8 @@
 #include "systemparser.h"
 #include "mcparser.h"
 #include "parsertl.h"
+#include "gap.h"
+#include "nogap.h"
 #include "Verbosity.h"
 #include "AutomatonOptimization.h"
 #include "OutputFormat.h"
@@ -373,53 +375,5 @@ private:
         m_modelCheckingPoint = Poly{
             Parma_Polyhedra_Library::Generator_System{std::get<PPL::Generator>(mcPointParsingResult)}
         };
-    }
-
-    static std::tuple<PolyhedralSystemSharedPtr, spot::formula> gap(const int k, const int t)
-    {
-        assert(k >= 0);
-        assert(t >= 0);
-        PolyhedralSystemSharedPtr polyhedralSystem{
-            std::make_shared<PolyhedralSystem>(
-                std::move(
-                    *parsePolyhedralSystem(
-                        "Inv ( { a >= 0 & b >= 0 } )"
-                        "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
-                        "p { a >= b + 1 }"
-                        "q { b >= a + 1 }"
-                        "t0 { t = 0 }"
-                        "t1 { t <= " + std::to_string(t) + " }"
-                    )
-                )
-            )
-        };
-
-        spot::formula rtlf{And({ap("t0"), G(ap("t1")), generateAlternatingFormula(k, ap("p"), ap("q"))})};
-
-        return {std::move(polyhedralSystem), std::move(rtlf)};
-    }
-
-    static std::tuple<PolyhedralSystemSharedPtr, spot::formula> nogap(const int k, const int t)
-    {
-        assert(k >= 0);
-        assert(t >= 0);
-        PolyhedralSystemSharedPtr polyhedralSystem{
-            std::make_shared<PolyhedralSystem>(
-                std::move(
-                    *parsePolyhedralSystem(
-                        "Inv ( { a >= 0 & b >= 0 } )"
-                        "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
-                        "p { a > b }"
-                        "q { b > a }"
-                        "t0 { t = 0 }"
-                        "t1 { t <= " + std::to_string(t) + " }"
-                    )
-                )
-            )
-        };
-
-        spot::formula rtlf{And({ap("t0"), G(ap("t1")), generateAlternatingFormula(k, ap("p"), ap("q"))})};
-
-        return {std::move(polyhedralSystem), std::move(rtlf)};
     }
 };
