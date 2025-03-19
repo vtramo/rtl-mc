@@ -12,13 +12,13 @@ public:
     GeneralFiniteSolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        AutomatonOptimizationFlags automatonOptimizationFlags,
-        bool universalDenotation = false
+        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const bool universalDenotation = false
     )
       : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
     {}
 
-    virtual ~GeneralFiniteSolver() = default;
+    ~GeneralFiniteSolver() override = default;
 
     PowersetSharedPtr run() override
     {
@@ -28,12 +28,12 @@ public:
         preprocessRtlFormula();
         logRtlFormulaAndCollectStats();
 
+        const double discretisationExecutionTimeSeconds { discretiseRtlFormula() };
+        logAndCollectDiscretisationStats(discretisationExecutionTimeSeconds);
+
         constructPolyhedralLtlAutomaton();
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
-
-        const double discretisationExecutionTimeSeconds { discretiseRtlFormula() };
-        logAndCollectDiscretisationStats(discretisationExecutionTimeSeconds);
 
         return runFiniteSemanticsDfs();
     }
