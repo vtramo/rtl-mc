@@ -1,3 +1,4 @@
+#include "TileExtractorGraph.h"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include "test_utils.h"
@@ -137,6 +138,19 @@ TEST_CASE("TileExtractor benchmarks")
         std::vector<Tile> tiles {};
 
         BENCHMARK("TileExtractorFast benchmark")
+        {
+            tiles = tilextractor->extractTiles(observable);
+        };
+
+        REQUIRE(tiles.size() == 5);
+    }
+
+    SECTION("TileExtractorGraph")
+    {
+        tilextractor = std::make_unique<TileExtractorGraph>();
+        std::vector<Tile> tiles {};
+
+        BENCHMARK("TileExtractorGraph benchmark")
         {
             tiles = tilextractor->extractTiles(observable);
         };
