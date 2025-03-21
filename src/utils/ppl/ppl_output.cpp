@@ -18,6 +18,10 @@ PPL_U(T)& PPL_U(id) = holder_ ## id.item()
 
 namespace PPLOutput
 {
+    /*!
+     * This function takes a `Powerset` object and converts it into a string. The output includes the constraints of each polyhedron
+     * in the powerset, using the variable names defined in the `PolyhedralSystemSymbolTable`.
+     */
     std::string toString(const Powerset& powerset, const PolyhedralSystemSymbolTable& symbolTable, const bool minimizeConstraints)
     {
         std::string result{};
@@ -48,6 +52,10 @@ namespace PPLOutput
         return result;
     }
 
+    /*!
+     * This function takes a `Poly` object and converts it into a string. The output includes the constraints of the polyhedron,
+     * using the variable names defined in the `PolyhedralSystemSymbolTable`.
+     */
     std::string toString(const Poly& poly, const PolyhedralSystemSymbolTable& symbolTable, const bool minimizeConstraints)
     {
         std::string result{};
@@ -63,6 +71,10 @@ namespace PPLOutput
         return result;
     }
 
+    /*!
+     * This function takes a `Constraint_System` object and converts it into a string. The output includes all constraints in the system,
+     * using the variable names defined in the `PolyhedralSystemSymbolTable`.
+     */
     std::string toString(const PPL::Constraint_System& system, const PolyhedralSystemSymbolTable& symbolTable)
     {
         std::string result{};
@@ -89,6 +101,10 @@ namespace PPLOutput
         return result;
     }
 
+    /*!
+     * This function takes a `Constraint` object and converts it into a string using the variable names
+     * defined in the `PolyhedralSystemSymbolTable`.
+     */
     std::string toString(const PPL::Constraint& constraint, const PolyhedralSystemSymbolTable& symbolTable)
     {
         std::string result{};
@@ -155,11 +171,18 @@ namespace PPLOutput
         return result;
     }
 
+    /*!
+     * This function takes a `Coefficient` object and converts it into a string. The output is the numeric value of the coefficient.
+     */
     std::string toString(const PPL::Coefficient& coefficient)
     {
         return coefficient.get_str();
     }
 
+    /*!
+     * This function takes a `Constraint::Type` object and converts it into a string. The output is the name of the constraint type
+     * (e.g., "EQUALITY", "NONSTRICT_INEQUALITY", "STRICT_INEQUALITY").
+     */
     std::string toString(const PPL::Constraint::Type& constraintType)
     {
         const char* type = nullptr;
@@ -180,6 +203,10 @@ namespace PPLOutput
         return type;
     }
 
+    /*!
+     * This function takes a `Variable` object and converts it into a string. The output uses the variable name defined in the
+     * `PolyhedralSystemSymbolTable`. If no name is defined, it generates a default name based on the variable's ID.
+     */
     std::string toString(const PPL::Variable& variable, const PolyhedralSystemSymbolTable& symbolTable)
     {
         std::string result {};
