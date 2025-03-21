@@ -107,6 +107,29 @@ TEST_CASE("Extract Tiles from Observables")
                 )
             );
         }
+
+        SECTION("TileExtractorGraph")
+        {
+            TileExtractorGraph tileExtractorGraph {};
+            std::vector tiles { tileExtractorGraph.extractTiles(observables) };
+
+            REQUIRE(tiles.size() == 2);
+            REQUIRE_THAT(
+                tiles,
+                Catch::Matchers::UnorderedEquals(
+                    std::vector {
+                        Tile {
+                            Observable { AP({"p"}), intersect(p, notQ), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                            p
+                        },
+                        Tile {
+                            Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                            q
+                        },
+                    }
+                )
+            );
+        }
     }
 
     SECTION(
@@ -181,6 +204,19 @@ TEST_CASE("Extract Tiles from Observables")
         {
             TileExtractorFast tileExtractorFast {};
             std::vector tiles { tileExtractorFast.extractTiles(observable) };
+
+
+            REQUIRE(tiles.size() == 2);
+            REQUIRE_THAT(
+                tiles,
+                Catch::Matchers::UnorderedEquals(std::vector { expectedTile1, expectedTile2 })
+            );
+        }
+
+        SECTION("TileExtractorGraph")
+        {
+            TileExtractorGraph tileExtractorGraph {};
+            std::vector tiles { tileExtractorGraph.extractTiles(observable) };
 
 
             REQUIRE(tiles.size() == 2);
@@ -280,6 +316,25 @@ TEST_CASE("Extract Tiles from Observables")
         {
             TileExtractorFast tileExtractorFast {};
             std::vector tiles { tileExtractorFast.extractTiles(observable) };
+
+
+            REQUIRE(tiles.size() == 5);
+            REQUIRE_THAT(
+                tiles,
+                Catch::Matchers::UnorderedEquals(std::vector {
+                    expectedTile1,
+                    expectedTile2,
+                    expectedTile3,
+                    expectedTile4,
+                    expectedTile5
+                })
+            );
+        }
+
+        SECTION("TileExtractorGraph")
+        {
+            TileExtractorGraph tileExtractorGraph {};
+            std::vector tiles { tileExtractorGraph.extractTiles(observable) };
 
 
             REQUIRE(tiles.size() == 5);
