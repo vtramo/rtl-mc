@@ -1,4 +1,5 @@
 #include "traverse.h"
+#include "reach.h"
 
 ObservablePatchSequenceSlice::ObservablePatchSequenceSlice(
     const ObservablePatchSequence& observablePatchSequence,
@@ -14,6 +15,10 @@ ObservablePatchSequenceSlice::ObservablePatchSequenceSlice(
         throw std::invalid_argument("ObservablePatchSequenceSlice: 'endIndex' must be less than the total number of patches!");
 }
 
+/*
+ * This method creates a new slice that starts at `startIndex + 1` and ends at `endIndex`.
+ * If the slice is already empty, the returned slice will also be empty.
+ */
 ObservablePatchSequenceSlice ObservablePatchSequenceSlice::advanceStartIndexByOne() const
 {
     return ObservablePatchSequenceSlice { m_observablePatchSequence, m_startIndex + 1, m_endIndex };
@@ -57,6 +62,23 @@ unsigned ObservablePatchSequenceSlice::endIndex() const
     return m_endIndex;
 }
 
+
+/*!
+ * Given a finite sequence of patches \f$\Delta\f$ (finite sequence of convex polyhedra), this function computes
+ * the set of points from which there exists a left-closed trajectories that traverse the sequence \f$\Delta\f$.
+ *
+ * The function is recursively defined as:
+ *
+ * \f[
+ * \mathit{Trav}^0(\epsilon) = \mathbb{R}^n
+ * \f]
+ * \f[
+ * \mathit{Trav}^0(P\Delta) = \mathit{reach}^0(P, \mathit{Trav}^+(\Delta))
+ * \f]
+ *
+ * where \f$\epsilon\f$ is the empty sequence, \f$P\f$ is the first patch of the \ref ObservablePatchSequence,
+ * and \f$\Delta\f$ is a sequence of patches without the first patch \f$P\f$.
+ */
 PowersetSharedPtr traverseZero(const ObservablePatchSequence& sequence, const Poly& preFlow)
 {
     if (sequence.isEmpty())
@@ -83,6 +105,24 @@ PowersetSharedPtr traverseZero(const ObservablePatchSequenceSlice slice, const P
     return reach0(firstPatch, *traversalPlusResult, preFlow);
 }
 
+
+/*!
+ * Given a finite sequence of patches \f$\Delta\f$ (finite sequence of convex polyhedra), this function computes
+ * the set of points from which there exists a left-open admissible trajectory that traverse the sequence \f$\Delta\f$.
+ *
+ * For a patch \f$P \in \Delta\f$, we denote by \f$\alpha_P\f$ the observable to which it belongs.
+ * The function is recursively defined as:
+ *
+ * \f[
+ * \mathit{Trav}^+(\epsilon) = \mathbb{R}^n
+ * \f]
+ * \f[
+ * \mathit{Trav}^+(P\Delta) = P\, \cap\, \mathit{reach}^+([[\alpha_P]], \mathit{Trav}^+(\Delta))
+ * \f]
+ *
+ * where \f$\epsilon\f$ is the empty sequence, \f$P\f$ is the first patch of the \ref ObservablePatchSequence,
+ * and \f$\Delta\f$ is a sequence of patches without the first patch \f$P\f$.
+ */
 PowersetSharedPtr traversePlus(const ObservablePatchSequence& sequence, const Poly& preFlow)
 {
     if (sequence.isEmpty())
