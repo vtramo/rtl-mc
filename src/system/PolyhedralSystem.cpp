@@ -237,9 +237,9 @@ std::istream& operator>> (std::istream& istream, PolyhedralSystem& polyhedralSys
     return istream;
 }
 
-void PolyhedralSystem::setConstraintOutputMinimized(const bool minimizeConstraintsOutput)
+void PolyhedralSystem::setConstraintOutputMinimized(const bool minimize)
 {
-    m_minimizeConstraintsOutput = minimizeConstraintsOutput;
+    m_minimizeConstraintsOutput = minimize;
 }
 
 spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
@@ -247,6 +247,43 @@ spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
     return m_bddDict;
 }
 
+/*!
+ * This method computes all possible subsets of atomic propositions \f$\alpha \subseteq \mathit{AP}\f$ and their
+ * interpretations \f$[\![\alpha]\!]\f$. Here, \f$\mathit{AP}\f$ represents the set of atomic propositions defined in the \ref PolyhedralSystem.
+ *
+ * The interpretation of a set \f$\alpha\f$ is defined as:
+ *
+ * \f[
+ * [\![\alpha]\!] = \bigcap_{p \in \alpha} [p] \, \cap \, \bigcap_{p \in \mathit{AP} \, \setminus \, \alpha} \overline{[p]}
+ * \f]
+ *
+ * where:
+ * - \f$[p]\f$ is the interpretation of the atomic proposition \f$p\f$.
+ * - \f$\overline{[p]}\f$ is the complement of \f$[p]\f$.
+ *
+ * The method iterates over all possible subset sizes \f$k\f$ (from 1 to the total number of atomic propositions of the
+ * \ref PolyhedralSystem) and computes the interpretations for each subset.
+ *
+ * \param filterEmptyObservables If `true`, excludes observables with empty interpretations from the result.
+ * \return A vector of \ref Observable objects, each representing a set of atomic propositions and its interpretation.
+ *
+ * The interpretation of each observable is computed by intersecting the interpretations of the propositions
+ * in the subset and the complements of the interpretations of the propositions not in the subset. This ensures
+ * that the resulting polyhedron represents the set of points where all and only the proposition in \f$\alpha\f$ hold.
+ *
+ * For any two sets of atomic propositions \f$\alpha_1, \alpha_2 \subseteq \mathit{AP}\f$, we have that either
+ * \f$[\![\alpha_1]\!] = [\![\alpha_2]\!]\f$ or \f$[\![\alpha_1]\!] \, \cap \, [\![\alpha_2]\!] = \emptyset\f$.
+ * Hence, the image of \f$2^{\mathit{AP}}\f$ under \f$[\![\cdot]\!]\f$ is a partition of \f$\mathbb{R}^n\f$ into polyhedra.
+ *
+ * \note If the \c DEBUG directive is enabled, each observable will include a string representation
+ *       of its interpretation, where variable names match those defined in the \ref PolyhedralSystem.
+ *       This is useful for debugging and visualizing the polyhedral interpretations
+ *
+ * \throws None
+ *
+ * \see Observable
+ * \see AtomInterpretation
+ */
 std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterEmptyObservables) const
 {
     const spot::atomic_prop_set& polyhedralAtoms { atoms() };

@@ -8,7 +8,6 @@
 #include "DiscreteLtlFormula.h"
 #include "BackwardNFA.h"
 
-// Specializations of fmt::formatter to enable {fmt} library formatting for custom types using operator<<.
 template <> struct fmt::formatter<spot::formula> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<PolyhedralSystem> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<DiscreteLtlFormula> : fmt::ostream_formatter {};

@@ -84,7 +84,7 @@ inline const spot::formula g_finiteAlternationSingOpenObservablesOneStep {
  *  \brief A constant representing the atomic proposition \f$last\f$ using the strong next operator.
  *
  * The \f$last\f$ proposition is defined as \f$last \equiv \lnot \texttt{X}[!] \, true\f$, where:
- * - \\texttt{X}[!]\f$ is the **strong next** operator, which requires that the next state exists and that the argument holds in that state.
+ * - \f$\texttt{X}[!]\f$ is the **strong next** operator, which requires that the next state exists and that the argument holds in that state.
  * - \f$true\f$ is a tautology that always holds.
  *
  * In the context of finite-time semantics (LTLf), \f$last\f$ holds true in the final state of the trace, where there is no next state.
