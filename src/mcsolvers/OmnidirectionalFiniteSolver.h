@@ -27,12 +27,12 @@ public:
         preprocessRtlFormula();
         logRtlFormulaAndCollectStats();
 
+        const double discretisationExecutionTimeSeconds { discretiseRtlFormula() };
+        logAndCollectDiscretisationStats(discretisationExecutionTimeSeconds);
+
         constructPolyhedralLtlAutomaton();
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
-
-        const double discretisationExecutionTimeSeconds { discretiseRtlFormula() };
-        logAndCollectDiscretisationStats(discretisationExecutionTimeSeconds);
 
         return runFiniteSemanticsDfs();
     }
