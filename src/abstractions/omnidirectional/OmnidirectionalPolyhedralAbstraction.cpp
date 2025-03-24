@@ -1,4 +1,7 @@
 #include "OmnidirectionalPolyhedralAbstraction.h"
+
+#include <fmt/base.h>
+
 #include "formula.h"
 
 #include "TileExtractorComplex.h"
@@ -19,9 +22,16 @@ OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(
 
 std::vector<Tile> OmnidirectionalPolyhedralAbstraction::extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem)
 {
+    Log::log(Verbosity::veryVerbose, "[{}] Generating polyhedral system observables...", m_name);
     std::vector observables { polyhedralSystem->generateObservables() };
+    Log::log(Verbosity::verbose, "[{}] Polyhedral system total observables: {}.", m_name, observables.size());
+
+    Log::log(Verbosity::veryVerbose, "[{}] Extracting tiles...", m_name);
     TileExtractorComplex tileExtractor {};
-    return tileExtractor.extractTiles(observables);
+    std::vector<Tile> tiles { tileExtractor.extractTiles(observables) };
+    Log::log(Verbosity::verbose, "[{}] Total tiles: {}.", m_name, tiles.size());
+
+    return tiles;
 }
 
 void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& tiles)
@@ -34,6 +44,13 @@ void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& 
         for (int j { 0 }; j < totalTiles; ++j)
             for (int k { 0 }; k < totalTiles; ++k)
                 processTriple(tiles[i], tiles[j], tiles[k], stateByTile);
+
+    Log::log(Verbosity::verbose, "[{}] Construction completed.", m_name);
+    Log::log(Verbosity::verbose, "[{}] Total states: {}.", m_name, totalStates());
+    Log::log(Verbosity::verbose, "[{}] Total edges: {}.", m_name, totalEdges());
+    Log::log(Verbosity::verbose, "[{}] Total initial states: {}.", m_name, totalInitialStates());
+    Log::log(Verbosity::verbose, "[{}] Total accepting states: {}.", m_name, totalAcceptingStates());
+    Log::log(Verbosity::verbose, "[{}] Initial state: {}.", m_name, initialState());
 }
 
 void OmnidirectionalPolyhedralAbstraction::processTriple(

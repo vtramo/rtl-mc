@@ -185,11 +185,11 @@ inline std::ostream& operator<< (std::ostream& os, RtlParsingResult& result)
         return os << *result;
 
     if (!result.isLtl())
-        os << "Not a RTLf formula!\n";
+        os << "Not a RTL formula!\n";
 
     if (result.isUsingIllegalAtoms())
     {
-        os << "The RTLf formula is using atomic propositions not present in the Polyhedral System: \n";
+        os << "The RTL formula is using atomic propositions not present in the Polyhedral System: \n";
         os << "  Illegal atomic propositions: [";
         bool first { true };
         for (const auto& atom: result.illegalAtoms())

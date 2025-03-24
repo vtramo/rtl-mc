@@ -20,6 +20,7 @@ GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
     const std::string_view name
 ) : PolyhedralAbstraction(polyhedralSystem, name)
 {
+    Log::log(Verbosity::veryVerbose, "[{}] Generating polyhedral system observables...", m_name);
     std::vector observables { m_polyhedralSystem->generateObservables() };
     std::size_t totalObservables { observables.size() };
     buildAbstraction(totalObservables, std::move(observables));
@@ -27,6 +28,9 @@ GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
 
 void GeneralPolyhedralAbstraction::buildAbstraction(const unsigned maxObservablePatchSequenceLength, std::vector<Observable>&& observables)
 {
+    Log::log(Verbosity::verbose, "[{}] Polyhedral system total observables: {}.", m_name, observables.size());
+    Log::log(Verbosity::verbose, "[{}] Sufficient horizon (maxObservablePatchSequenceLength): {}.", m_name, maxObservablePatchSequenceLength);
+
     const Poly& preFlow { m_polyhedralSystem->preFlow() };
 
     auto compareObservableByAtoms {

@@ -29,5 +29,5 @@ private:
     unsigned getStateByTileOrCreate(const Tile& tile, std::unordered_map<Tile, unsigned>& stateByTile);
     void processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile);
 
-    static std::vector<Tile> extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem);
+    std::vector<Tile> extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem);
 };

@@ -350,7 +350,7 @@ private:
         RtlParsingResult rtlfParsingResult{parseRtl(rtlf, m_polyhedralSystem->atoms())};
         if (!rtlfParsingResult.ok())
         {
-            std::cerr << "Error while parsing RTLf formula (file " << m_rtlFilename << ").\n";
+            std::cerr << "Error while parsing RTL formula (file " << m_rtlFilename << ").\n";
             std::cerr << rtlfParsingResult;
             exit(1);
         }

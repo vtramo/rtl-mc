@@ -292,8 +292,7 @@ package abstractions {
             -buildAbstraction(std::vector<Tile>&& tiles): void
             -processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile): void
             -getStateByTileOrCreate(const Tile& tile, std::unordered_map<Tile, unsigned>& stateByTile): unsigned
-            --static functions--
-            {static} -extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem): std::vector<Tile>
+            -extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem): std::vector<Tile>
         }
 
         Tile <..> TileHash

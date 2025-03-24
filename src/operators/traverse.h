@@ -88,7 +88,7 @@ private:
 };
 
 /*!
- * \brief Computes the set of points from which there exists a left-closed admissibile trajectory that traverse the sequence \ref ObservablePatchSequence
+ * \brief Computes the set of points from which there exists a left-closed admissible trajectory that traverse the sequence \ref ObservablePatchSequence
  * \param sequence The sequence of patches to traverse.
  * \param preFlow A convex polyhedron representing a pre-flow.
  * \return A powerset representing the set of points from which there exists a left-closed admissible trajectory that traverse the sequence.

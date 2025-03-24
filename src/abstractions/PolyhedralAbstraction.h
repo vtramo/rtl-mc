@@ -2,6 +2,7 @@
 
 #include <spot/twa/formula2bdd.hh>
 
+#include "logger.h"
 #include "ObservableTraversalNode.h"
 #include "PolyhedralSystem.h"
 #include "Automaton.h"
@@ -19,6 +20,7 @@ public:
     {
         m_spaceDimension = m_polyhedralSystem->spaceDimension();
         PolyhedralAbstraction::initializeAutomaton();
+        Log::log(Verbosity::verbose, "\n[{}] Construction started.", name);
     }
 
     virtual ~PolyhedralAbstraction() override = default;
@@ -30,6 +32,8 @@ public:
     {
         return m_automaton->get_init_state_number();
     }
+    [[nodiscard]] unsigned totalInitialStates() const override { return 1; }
+    [[nodiscard]] unsigned totalAcceptingStates() const override { return totalStates(); }
 
 protected:
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
