@@ -143,12 +143,12 @@ spot::formula And(std::vector<spot::formula>&& formulae)
 }
 
 /*!
- * Creates a conjunction formula from a set of atomic propositions.
+ * Creates a conjunction formula from a set of formulae.
  */
-spot::formula andAtoms(const spot::atomic_prop_set& atoms)
+spot::formula andFormulae(const std::set<spot::formula>& formulae)
 {
     spot::formula result {};
-    for (spot::formula atom: atoms)
+    for (spot::formula atom: formulae)
         result = And(std::vector { std::move(atom), std::move(result) });
     return result;
 }
@@ -261,14 +261,14 @@ spot::formula generateAlternatingFormula(int k, spot::formula p, spot::formula q
         throw std::invalid_argument("k must be greater than 0!");
     }
 
-    spot::formula result { F(andAtoms({ p, F(q) })) };
+    spot::formula result { F(andFormulae({ p, F(q) })) };
     if (k == 1)
         return result;
 
     bool pTurn = false;
     while (--k > 0)
     {
-        result = pTurn ? F(andAtoms({ p, result })) : F(andAtoms({ q  , result }));
+        result = pTurn ? F(andFormulae({ p, result })) : F(andFormulae({ q  , result }));
         pTurn = !pTurn;
     }
 

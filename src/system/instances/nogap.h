@@ -56,7 +56,7 @@ inline std::tuple<PolyhedralSystemSharedPtr, spot::formula> nogap(const int k, c
         )
     };
 
-    spot::formula rtlf{andAtoms({ap("t0"), G(ap("t1")), generateAlternatingFormula(k, ap("p"), ap("q"))})};
+    spot::formula rtlf{andFormulae({ap("t0"), G(ap("t1")), generateAlternatingFormula(k, ap("p"), ap("q"))})};
 
     return {std::move(polyhedralSystem), std::move(rtlf)};
 }

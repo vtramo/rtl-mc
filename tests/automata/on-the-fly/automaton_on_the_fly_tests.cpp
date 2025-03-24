@@ -373,7 +373,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=20")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -381,7 +381,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=50")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -389,7 +389,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=55")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(55) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(55) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -397,7 +397,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=58")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(58) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(58) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -405,7 +405,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=59")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(59) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(59) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -413,7 +413,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=60")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(60) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(60) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -421,7 +421,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=100")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(100) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(100) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -429,7 +429,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=253")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(253) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(253) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -437,7 +437,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=254")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(254) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(254) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -445,7 +445,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=500")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(500) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(500) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -453,7 +453,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("GAP k=1000")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1000) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1000) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -461,7 +461,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("not GAP k=1")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1) }))).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1) }))).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -469,7 +469,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("not GAP k=10")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(10) }))).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(10) }))).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -477,7 +477,7 @@ TEST_CASE("BackwardNFA invariant GAP Experiment")
     SECTION("not GAP k=20")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) }))).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) }))).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -504,7 +504,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=1")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -512,7 +512,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=10")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(10) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(10) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -520,7 +520,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=20")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -528,7 +528,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=50")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(50) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -536,7 +536,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=55")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(55) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(55) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -544,7 +544,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=58")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(58) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(58) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -552,7 +552,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=59")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(59) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(59) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -560,7 +560,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=60")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(60) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(60) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -568,7 +568,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=100")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(100) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(100) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -576,7 +576,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=500")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(500) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(500) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -584,7 +584,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("NO GAP k=1000")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1000) })).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1000) })).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -592,7 +592,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("not NO GAP k=1")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1) }))).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(1) }))).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -600,7 +600,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("not NO GAP k=10")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(10) }))).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(10) }))).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
@@ -608,7 +608,7 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
     SECTION("not NO GAP k=20")
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
-        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andAtoms({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) }))).toLtl() };
+        DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(Not(andFormulae({ ap("t0"), G(ap("t1")), generateAlternatingFormula(20) }))).toLtl() };
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }

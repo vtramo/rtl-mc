@@ -127,11 +127,11 @@ spot::formula Equiv(const spot::formula& formula1, const spot::formula& formula2
 spot::formula And(std::vector<spot::formula>&& formulae);
 
 /*!
- *  \brief Creates a formula representing the conjunction of the given atomic propositions.
- *  \param atoms A set of atomic propositions to be combined in conjunction.
- *  \return A formula representing the conjunction of the given atomic propositions.
+ *  \brief Creates a formula representing the conjunction of the given formulae.
+ *  \param formulae A set of formulae to be combined in conjunction.
+ *  \return A formula representing the conjunction of the given formulae.
  */
-spot::formula andAtoms(const spot::atomic_prop_set& atoms);
+spot::formula andFormulae(const std::set<spot::formula>& formulae);
 
 /*!
  *  \brief Negates the given formula.

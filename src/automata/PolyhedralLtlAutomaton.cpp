@@ -225,7 +225,7 @@ bdd PolyhedralLtlAutomaton::stateLabelsAsBdd(const unsigned state) const
 {
     const StateDenotation& outStateDenotation { m_stateDenotationById.at(state) };
     spot::atomic_prop_set labels { outStateDenotation.labels() };
-    return { spot::formula_to_bdd(andAtoms(labels), m_automaton->get_dict(), m_automaton) };
+    return { spot::formula_to_bdd(andFormulae(labels), m_automaton->get_dict(), m_automaton) };
 }
 
 void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::twa_graph_ptr twaGraph)
