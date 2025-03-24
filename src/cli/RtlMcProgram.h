@@ -195,18 +195,21 @@ private:
         auto& automatonOptimizationGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
         automatonOptimizationGroup.add_argument("--low")
                                   .help("Minimal optimizations during automaton construction (fast, default).")
+                                  .flag()
                                   .action([&](const auto&)
                                   {
                                         m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::low;
                                   });
         automatonOptimizationGroup.add_argument("--medium")
                                   .help("Moderate optimizations during automaton construction.")
+                                  .flag()
                                   .action([&](const auto&)
                                   {
                                         m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::medium;
                                   });
         automatonOptimizationGroup.add_argument("--high")
                                   .help("All available optimizations during automaton construction (slow).")
+                                  .flag()
                                   .action([&](const auto&)
                                   {
                                         m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::high;
