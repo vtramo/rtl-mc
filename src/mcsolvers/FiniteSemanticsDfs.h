@@ -53,7 +53,7 @@ private:
 
         void process_state(const spot::state* state, [[maybe_unused]] const int _, [[maybe_unused]] spot::twa_succ_iterator* __) override
         {
-            unsigned productStateNumber { m_parent->m_synchronousProduct->twa()->state_number(state) };
+            unsigned productStateNumber { m_parent->m_transposedSynchronousProduct->state_number(state) };
             if (m_parent->m_synchronousProduct->isInitialState(productStateNumber))
                 m_parent->addInitialStateDenotationToResult(productStateNumber);
         }
