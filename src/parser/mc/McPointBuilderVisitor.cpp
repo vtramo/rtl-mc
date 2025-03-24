@@ -44,6 +44,11 @@ PPL::Generator McPointBuilderVisitor::buildMcPoint(McPointParser::ArrayContext* 
 
 PPL::Generator McPointBuilderVisitor::computeMcPoint()
 {
+    if (hasErrors())
+    {
+        throw std::runtime_error("Cannot compute point with parsing errors");
+    }
+
     if (m_visitor.m_valueByVariable.size() == 1)
     {
         const auto & [variableName, fraction] = *m_visitor.m_valueByVariable.begin();
@@ -126,8 +131,8 @@ void McPointBuilderVisitor::McPointVisitor::addDivisionByZeroError(const McPoint
 {
     antlr4::Token* start { ctx->getStart() };
     antlr4::Token* end { ctx->getStop() };
-    PositionError startPositionError { start->getLine(), start->getCharPositionInLine() };
-    PositionError endPositionError { end->getLine(), end->getCharPositionInLine() };
+    Position startPositionError { start->getLine(), start->getCharPositionInLine() };
+    Position endPositionError { end->getLine(), end->getCharPositionInLine() };
     std::string errorMessage { "Division by zero!" };
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
@@ -140,9 +145,9 @@ bool McPointBuilderVisitor::McPointVisitor::symbolTableHasVariable(const std::st
 void McPointBuilderVisitor::McPointVisitor::addDuplicateVariableParserError(antlr4::tree::TerminalNode* ctx)
 {
     antlr4::Token* start { ctx->getSymbol() };
-    PositionError startPositionError { start->getLine(), start->getCharPositionInLine() };
+    Position startPositionError { start->getLine(), start->getCharPositionInLine() };
     std::string duplicatedVariable { ctx->getText() };
-    PositionError endPositionError { start->getLine(), start->getCharPositionInLine() + duplicatedVariable.length() };
+    Position endPositionError { start->getLine(), start->getCharPositionInLine() + duplicatedVariable.length() };
     std::string errorMessage { "Variable '" + duplicatedVariable + "' already has a value!" };
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
@@ -150,9 +155,9 @@ void McPointBuilderVisitor::McPointVisitor::addDuplicateVariableParserError(antl
 void McPointBuilderVisitor::McPointVisitor::addVariableNotPresentInPolySystemError(antlr4::tree::TerminalNode* ctx)
 {
     antlr4::Token* start { ctx->getSymbol() };
-    PositionError startPositionError { start->getLine(), start->getCharPositionInLine() };
+    Position startPositionError { start->getLine(), start->getCharPositionInLine() };
     std::string variableNotPresent { ctx->getText() };
-    PositionError endPositionError { start->getLine(), start->getCharPositionInLine() + variableNotPresent.length() };
+    Position endPositionError { start->getLine(), start->getCharPositionInLine() + variableNotPresent.length() };
     std::string errorMessage { "Variable '" + variableNotPresent + "' is not defined in the Polyhedral System!" };
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
@@ -166,8 +171,8 @@ void McPointBuilderVisitor::McPointVisitor::addMissingVariablesError(
         "Variables [{}] are not defined in the Polyhedral System!",
         variablesList
     )};
-    PositionError startPositionError { 0, 0 };
-    PositionError endPositionError { parseTree->getStop()->getLine(), parseTree->getStop()->getCharPositionInLine() };
+    Position startPositionError { 0, 0 };
+    Position endPositionError { parseTree->getStop()->getLine(), parseTree->getStop()->getCharPositionInLine() };
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
 

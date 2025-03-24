@@ -8,9 +8,9 @@ package system {
         -m_hashcode: std::size_t
         --constructors--
         +Observable(spot::atomic_prop_set atoms, const Powerset& interpretation)
-        +Observable(spot::atomic_prop_set atoms, PowersetSharedPtr interpretation)
+        +Observable(spot::atomic_prop_set atoms, PowersetConstSharedPtr interpretation)
         +Observable(spot::atomic_prop_set atoms, const Powerset& interpretation, std::string interpretationToString)
-        +Observable(spot::atomic_prop_set atoms, PowersetSharedPtr interpretation, std::string interpretationToString)
+        +Observable(spot::atomic_prop_set atoms, PowersetConstSharedPtr interpretation, std::string interpretationToString)
         +Observable(const Observable& other)
         +Observable(Observable&& other)
         +Observable() = default

@@ -102,9 +102,9 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty
 void PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::addDuplicateAtomParserError(antlr4::tree::TerminalNode* ctx)
 {
     antlr4::Token* start { ctx->getSymbol() };
-    PositionError startPositionError { start->getLine(), start->getCharPositionInLine() };
+    Position startPositionError { start->getLine(), start->getCharPositionInLine() };
     std::string duplicatedAtom { ctx->getText() };
-    PositionError endPositionError { start->getLine(), start->getCharPositionInLine() + duplicatedAtom.length() };
+    Position endPositionError { start->getLine(), start->getCharPositionInLine() + duplicatedAtom.length() };
     std::string errorMessage { "The atomic proposition " + duplicatedAtom + " is already defined!" };
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }

@@ -14,18 +14,21 @@
  * - Internal PPL (Parma Polyhedra Library) variables
  *
  * It also manages a set of atomic propositions, which are used to define regions of interest in the state space.
- * Typically, a \c PolyhedralSystemSymbolTable is constructed during the parsing of a polyhedral system specification.
- * The \c PolyhedralSystemBuilderVisitor is responsible for collecting user-defined variable names and atomic proposition
+ * Typically, a \c PolyhedralSystemSymbolTable is constructed after the parsing of a polyhedral system specification.
+ * The \c PolyhedralSystemSymbolTableListener is responsible for collecting user-defined variable names and atomic proposition
  * names from the specification and using them to build a \c PolyhedralSystemSymbolTable. This table is then used
  * throughout the system to ensure consistent naming and interpretation of variables and propositions.
  *
-* \note The symbol table plays a crucial role in constructing and interpreting polyhedral systems, as it acts as a bridge
+ * \note The symbol table plays a crucial role in constructing and interpreting polyhedral systems, as it acts as a bridge
  *       between human-readable variable names and the internal representation used by the PPL (Parma Polyhedra Library).
  *       It enables the translation of polyhedral objects (such as \c Poly or \c Powerset) into human-readable output
  *       by providing meaningful variable names. This is particularly useful when using the \c toString functions
  *       defined in the \c PPLOutput namespace, which rely on the symbol table to generate readable representations
- *       of polyhedra and other geometric objects.
+ *       of polyhedra and other geometric objects. Moreover, it is used to construct a \c PolyhedralSystem during
+ *       its parsing process.
  *
+ * \see PolyhedralSystemSymbolTableListener
+ * \see PolyhedralSystemBuilderVisitor
  */
 class PolyhedralSystemSymbolTable {
 public:

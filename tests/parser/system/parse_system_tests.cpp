@@ -355,7 +355,7 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.semanticErrors().empty());
 
         const ParserError nonIntegerError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        const PositionError locationError { nonIntegerError.startLocation() };
+        const Position locationError { nonIntegerError.startLocation() };
         REQUIRE(locationError.line() == 1);
         REQUIRE(locationError.charPositionInLine() == 16);
     }
@@ -381,7 +381,7 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.semanticErrors().empty());
 
         const ParserError nonIntegerError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        const PositionError locationError { nonIntegerError.startLocation() };
+        const Position locationError { nonIntegerError.startLocation() };
         REQUIRE(locationError.line() == 3);
         REQUIRE(locationError.charPositionInLine() == 15);
     }
@@ -406,7 +406,7 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.semanticErrors().empty());
 
         const ParserError firstNonIntegerError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        const PositionError locationError { firstNonIntegerError.startLocation() };
+        const Position locationError { firstNonIntegerError.startLocation() };
         REQUIRE(locationError.line() == 4);
         REQUIRE(locationError.charPositionInLine() == 26);
     }
@@ -465,7 +465,7 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.semanticErrors().empty());
 
         const ParserError invalidVariableIdError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        const PositionError locationError { invalidVariableIdError.startLocation() };
+        const Position locationError { invalidVariableIdError.startLocation() };
         REQUIRE(locationError.line() == 10);
         REQUIRE(locationError.charPositionInLine() == 21);
     }
@@ -509,7 +509,7 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.semanticErrors().empty());
 
         const ParserError firstNonIntegerError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        const PositionError locationError { firstNonIntegerError.startLocation() };
+        const Position locationError { firstNonIntegerError.startLocation() };
         REQUIRE(locationError.line() == 4);
         REQUIRE(locationError.charPositionInLine() == 0);
     }
@@ -533,7 +533,7 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(polyhedralSystemParsingResult.semanticErrors().empty());
 
         const ParserError firstNonIntegerError { polyhedralSystemParsingResult.syntaxErrors()[0] };
-        const PositionError locationError { firstNonIntegerError.startLocation() };
+        const Position locationError { firstNonIntegerError.startLocation() };
         REQUIRE(locationError.line() == 4);
         REQUIRE(locationError.charPositionInLine() == 0);
     }
@@ -561,12 +561,12 @@ TEST_CASE("Correctly report syntax errors when parsing PolyhedralSystem", "[bad]
         REQUIRE(!polyhedralSystemParsingResult.semanticErrors().empty());
 
         const ParserError p_duplicate { polyhedralSystemParsingResult.semanticErrors()[0] };
-        const PositionError locationError1 { p_duplicate.startLocation() };
+        const Position locationError1 { p_duplicate.startLocation() };
         REQUIRE(locationError1.line() == 5);
         REQUIRE(locationError1.charPositionInLine() == 0);
 
         const ParserError q_duplicate { polyhedralSystemParsingResult.semanticErrors()[1] };
-        const PositionError locationError2 { q_duplicate.startLocation() };
+        const Position locationError2 { q_duplicate.startLocation() };
         REQUIRE(locationError2.line() == 6);
         REQUIRE(locationError2.charPositionInLine() == 0);
     }

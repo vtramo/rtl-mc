@@ -30,7 +30,7 @@ endif
 
 common_parser_source_files = [
     current_source_dir / 'ParserError.h',
-    current_source_dir / 'PositionError.h',
+    current_source_dir / 'Position.h',
 ]
 
 antlr4_error_listeners = [
