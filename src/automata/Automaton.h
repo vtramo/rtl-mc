@@ -15,6 +15,7 @@ public:
     explicit Automaton(std::string_view name, spot::twa_graph_ptr automaton);
     virtual ~Automaton() = default;
 
+    [[nodiscard]] std::string_view name() const { return m_name; }
     [[nodiscard]] virtual unsigned totalStates() const;
     [[nodiscard]] virtual unsigned totalInitialStates() const;
     [[nodiscard]] virtual unsigned totalAcceptingStates() const;

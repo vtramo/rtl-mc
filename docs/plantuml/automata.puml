@@ -16,6 +16,7 @@ package automata {
         +Automaton(std::string_view name, spot::twa_graph_ptr automaton)
         +virtual ~Automaton() = default
         --member functions--
+        +name(): std::string_view
         +virtual totalStates(): unsigned
         +virtual totalInitialStates(): unsigned
         +virtual totalAcceptingStates(): unsigned
