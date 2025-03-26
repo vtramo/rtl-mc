@@ -264,9 +264,6 @@ spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
  * The method iterates over all possible subset sizes \f$k\f$ (from 1 to the total number of atomic propositions of the
  * \ref PolyhedralSystem) and computes the interpretations for each subset.
  *
- * \param filterEmptyObservables If `true`, excludes observables with empty interpretations from the result.
- * \return A vector of \ref Observable objects, each representing a set of atomic propositions and its interpretation.
- *
  * The interpretation of each observable is computed by intersecting the interpretations of the propositions
  * in the subset and the complements of the interpretations of the propositions not in the subset. This ensures
  * that the resulting polyhedron represents the set of points where all and only the proposition in \f$\alpha\f$ hold.
@@ -279,58 +276,54 @@ spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
  *       of its interpretation, where variable names match those defined in the \ref PolyhedralSystem.
  *       This is useful for debugging and visualizing the polyhedral interpretations
  *
- * \throws None
- *
  * \see Observable
  * \see AtomInterpretation
  */
 std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterEmptyObservables) const
 {
-    const spot::atomic_prop_set& polyhedralAtoms { atoms() };
-
-    int totPolyhedralAtoms { totalAtoms() };
-    std::vector<Observable> observables {};
-    for (int k { 1 }; k <= totPolyhedralAtoms; k++)
+    using AtomRef = std::reference_wrapper<const spot::formula>;
+    const int totalAtoms { PolyhedralSystem::totalAtoms() };
+    std::vector<AtomRef> atoms {};
+    atoms.reserve(totalAtoms);
+    for (const spot::formula& polyhedralAtom: PolyhedralSystem::atoms())
     {
-        std::vector kCombinations {
-            simpleCombinations<spot::formula>(
-                polyhedralAtoms.begin(),
-                polyhedralAtoms.end(),
-                totPolyhedralAtoms,
-                k
-            )
-        };
+        atoms.push_back(polyhedralAtom);
+    }
 
-        for (std::vector kCombination: kCombinations)
+    std::vector<Observable> observables {};
+    const long totalSubsets { 1L << totalAtoms };
+    for (long subsetIndex { 1 }; subsetIndex < totalSubsets; ++subsetIndex)
+    {
+        PowersetSharedPtr observableDenotation { std::make_shared<Powerset>(spaceDimension(), PPL::UNIVERSE) };
+        spot::atomic_prop_set observableAtoms {};
+
+        for (long atomIndex { 0 }; atomIndex < totalAtoms; ++atomIndex)
         {
-            PowersetSharedPtr observableDenotation { std::make_shared<Powerset>(spaceDimension(), PPL::UNIVERSE) };
-            spot::atomic_prop_set observableAtoms {};
-
-            for (const spot::formula& observableAtom: kCombination)
+            const spot::formula& atom { atoms[atomIndex] };
+            const AtomInterpretation* const atomInterpretation { *getAtomInterpretation(atom) };
+            const bool isAtomInSubset { ((subsetIndex >> atomIndex & 1) == 1) };
+            if (isAtomInSubset)
             {
-                const AtomInterpretation* atomInterpretation { *getAtomInterpretation(observableAtom) };
+                observableAtoms.insert(atom);
                 observableDenotation->intersection_assign(atomInterpretation->interpretation());
-                observableAtoms.insert(observableAtom);
             }
-
-            for (const spot::formula& polyhedralAtom: polyhedralAtoms)
+            else
             {
-                if (!observableAtoms.count(polyhedralAtom))
-                {
-                    const AtomInterpretation* atomInterpretation { *getAtomInterpretation(polyhedralAtom) };
-                    observableDenotation->intersection_assign(atomInterpretation->notInterpretation());
-                }
+                observableDenotation->intersection_assign(atomInterpretation->notInterpretation());
             }
+        }
 
-            if (filterEmptyObservables && observableDenotation->is_empty()) continue;
+        if (filterEmptyObservables && observableDenotation->is_empty())
+        {
+            continue;
+        }
 
 #ifdef DEBUG
-            Observable observable { observableAtoms, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
+        Observable observable { observableAtoms, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
 #else
-            Observable observable { observableAtoms, observableDenotation };
+        Observable observable { observableAtoms, observableDenotation };
 #endif
-            observables.push_back(observable);
-        }
+        observables.push_back(observable);
     }
 
     return observables;
