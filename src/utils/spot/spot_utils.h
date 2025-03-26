@@ -37,4 +37,11 @@ namespace SpotUtils
      * \return An `std::unordered_set<unsigned>` containing all accepting states.
      */
     std::unordered_set<unsigned> collectAcceptingStates(spot::const_twa_graph_ptr twa);
+
+    /*!
+     * \brief Provides a hash function for `spot::atomic_prop_set`.
+     * \pre All formulas in \p atoms must be atomic propositions (spot::op::ap)
+     * \throws std::invalid_argument if any spot::formula is not an atomic proposition
+     */
+    std::size_t hashcode(const spot::atomic_prop_set& atoms);
 }

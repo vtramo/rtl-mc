@@ -4,6 +4,7 @@
 #include <spot/tl/apcollect.hh>
 #include <optional>
 
+#include "spot_utils.h"
 #include "ppl_utils.h"
 #include "utils.h"
 #include "ppl_aliases.h"
@@ -179,15 +180,26 @@ private:
      */
     void computeHashCode()
     {
-        hashCombine(m_hashcode, m_atoms, m_interpretation);
+        hashCombine(m_hashcode, SpotUtils::hashcode(*m_atoms), *m_interpretation);
     }
 };
 
+/**
+ * \brief Equality comparison for \c Observable
+ * \param observable1 First \c Observable to compare
+ * \param observable2 Second \c Observable to compare
+ * \return true if both \c Observable s have the same \ref Observable::hashcode()
+ */
 inline bool operator== (const Observable& observable1, const Observable& observable2) {
-    return observable1.atoms() == observable2.atoms() &&
-           *observable1.interpretation() == *observable2.interpretation();
+    return observable1.hashcode() == observable2.hashcode();
 }
 
+/**
+ * \brief Inequality comparison for \c Observable
+ * \param observable1 First \c Observable to compare
+ * \param observable2 Second \c Observable to compare
+ * \return true if the \c Observable s are different
+ */
 inline bool operator!= (const Observable& observable1, const Observable& observable2) {
     return !(observable1 == observable2);
 }

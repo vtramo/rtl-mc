@@ -82,4 +82,16 @@ namespace SpotUtils
         }
         return acceptingStates;
     }
+
+    /*!
+     * Implementation combines proposition names into a string then hashes it:
+     */
+    std::size_t hashcode(const spot::atomic_prop_set& atoms)
+    {
+        std::string hash {};
+        hash.resize(atoms.size());
+        for (const auto& atom : atoms)
+            hash += atom.ap_name();
+        return std::hash<std::string>{}(hash);
+    }
 }

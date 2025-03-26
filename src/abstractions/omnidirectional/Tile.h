@@ -66,8 +66,7 @@ private:
 
 inline bool operator== (const Tile& tile1, const Tile& tile2)
 {
-    return tile1.observable() == tile2.observable() &&
-           *tile1.patches() == *tile2.patches();
+    return tile1.hashcode() == tile2.hashcode();
 }
 
 inline bool operator!= (const Tile& tile1, const Tile& tile2)
