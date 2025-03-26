@@ -1,6 +1,6 @@
 /**
 * \file DiscreteLtlFormula.h
- * \brief Represents an LTL formula obtained by discretising RTL/RTLf formulae
+ * \brief Represents an LTL formula obtained by discretising RTL/\f$\text{RTL}_f\f$ formulae
  */
 
 #pragma once
@@ -10,16 +10,16 @@
 
 /**
  * \class DiscreteLtlFormula
- * \brief Represents an LTL formula obtained through discretisation of RTL/RTLf formulae
+ * \brief Represents an LTL formula obtained through discretisation of RTL/\f$\text{RTL}_f\f$ formulae
  *
  * This class encapsulates a discrete LTL formula obtained through one of two transformation paths:
  * 1. discretisation of infinite-semantics RTL formulae to LTL (RTL → LTL)
- * 2. Optimized conversion of finite-semantics RTLf formulae to LTL (RTLf → LTLf → LTL in one step)
+ * 2. Optimized conversion of finite-semantics \f$\text{RTL}_f\f$ formulae to LTL (\f$\text{RTL}_f\f$ → \f$\text{LTL}_f\f$ → LTL in one step)
  *
  * @note Construction constraints:
  * - The only valid construction methods are the static factory methods:
  *   - \ref discretiseRtl (for direct RTL → LTL conversion)
- *   - \ref discretiseRtlFinite (for optimized RTLf → LTL conversion)
+ *   - \ref discretiseRtlFinite (for optimized \f$\text{RTL}_f\f$ → LTL conversion)
  * - The default constructor creates an empty formula
  *
  *
@@ -45,18 +45,18 @@ public:
     }
 
     /**
-     * \brief Discretises a finite-semantics RTLf directly to LTL (RTLf -> LTLf -> LTL)
-     * \param formula The RTLf formula to discretise (rvalue reference)
+     * \brief Discretises a finite-semantics \f$\text{RTL}_f\f$ directly to LTL (\f$\text{RTL}_f\f$ -> \f$\text{LTL}_f\f$ -> LTL)
+     * \param formula The \f$\text{RTL}_f\f$ formula to discretise (rvalue reference)
      * \return DiscreteLtlFormula containing the converted LTL formula
      *
      * Transformation process:
-     * 1. Converts RTLf to LTL via \ref toDiscretisedLtlFormula
+     * 1. Converts \f$\text{RTL}_f\f$ to LTL via \ref toDiscretisedLtlFormula
      * 2. Applies finite-semantics constraints via \ref applyFiniteAlternationSingOpenObservablesOneStep
      *
      * \note Optimization advantage:
      *       This method provides a more efficient path than separate transformations:
-     *       - Combined path (optimized): RTLf → LTL (single step via \ref discretiseRtlFinite)
-     *       - Old path (inefficient): RTLf → LTLf (via \ref DiscreteFiniteLtlFormula) → LTL (via \ref DiscreteFiniteLtlFormula::toLtl())
+     *       - Combined path (optimized): \f$\text{RTL}_f\f$ → LTL (single step via \ref discretiseRtlFinite)
+     *       - Old path (inefficient): \f$\text{RTL}_f\f$ → \f$\text{LTL}_f\f$ (via \ref DiscreteFiniteLtlFormula) → LTL (via \ref DiscreteFiniteLtlFormula::toLtl())
      *       The optimized path avoids intermediate object creation and performs transformations in a single pass.
      *
      * Suitable for properties over finite traces that need infinite-semantics treatment.

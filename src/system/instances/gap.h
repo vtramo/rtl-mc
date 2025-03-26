@@ -5,9 +5,9 @@
 #include "systemparser.h"
 
 /*!
- * \brief Constructs a polyhedral system and an RTLf formula for the \f$\varphi^{\text{gap}}_k\f$ family.
+ * \brief Constructs a polyhedral system and an \f$\text{RTL}_f\f$ formula for the \f$\varphi^{\text{gap}}_k\f$ family.
  *
- * This function constructs a polyhedral system and an RTLf formula that enforces a trajectory to alternate
+ * This function constructs a polyhedral system and an \f$\text{RTL}_f\f$ formula that enforces a trajectory to alternate
  * \f$k\f$ times between two disjunct and non-adjacent half-spaces. The system is based on the two-tank model,
  * where the invariant and flow constraints are defined as follows:
  *
@@ -18,7 +18,7 @@
  * - \f$[p] = \{a \geq b + 1\}\f$
  * - \f$[q] = \{b \geq a + 1\}\f$
  *
- * The RTLf formula is of the form:
+ * The \f$\text{RTL}_f\f$ formula is of the form:
  * \f[
  * \varphi^{\text{gap}}_k \overset{\triangle}{=} \texttt{G}(\mathit{inv}) \land t_0 \land \texttt{G}(t_{\mathit{max}}) \land \texttt{F}\,\big(p \, \land \, \texttt{F}(q \, \land \, \texttt{F}(p \, \land \, \texttt{F}(q \, \land \, \dots )))\big)
  * \f]
@@ -26,7 +26,7 @@
  *
  * \param k The number of alternations between \f$p\f$ and \f$q\f$.
  * \param t The maximum time \f$t_{\mathit{max}}\f$.
- * \return A tuple containing the constructed \ref PolyhedralSystem and the RTLf formula.
+ * \return A tuple containing the constructed \ref PolyhedralSystem and the \f$\text{RTL}_f\f$ formula.
  * \throws std::invalid_argument If \f$k\f$ or \f$t\f$ is negative.
  */
 inline std::tuple<PolyhedralSystemSharedPtr, spot::formula> gap(const int k, const int t)

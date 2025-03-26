@@ -4,7 +4,7 @@
 
 /*!
  * \class AtomInterpretation
- * \brief Represents the interpretation of an atomic proposition in a polyhedral system.
+ * \brief Represents the interpretation of an atomic proposition in a \c PolyhedralSystem.
  *
  * The \c AtomInterpretation class encapsulates the interpretation of an atomic proposition as a polyhedron.
  * It stores both the interpretation (the set of points where the proposition holds)

@@ -1,6 +1,6 @@
 /**
  * \file DiscreteFiniteLtlFormula.h
- * \brief Represents a finite LTL (LTLf) formula obtained by discretising an RTLf formula
+ * \brief Represents a finite \f$\text{LTL}_f\f$ formula obtained by discretising an \f$\text{RTL}_f\f$ formula
  */
 
 #pragma once
@@ -12,14 +12,14 @@
 
 /**
  * \class DiscreteFiniteLtlFormula
- * \brief Represents a finite LTL (LTLf) formula obtained by discretising an RTLf formula
+ * \brief Represents a finite \f$\text{LTL}_f\f$ formula obtained by discretising an \f$\text{RTL}_f\f$ formula
  *
- * This class encapsulates a discrete LTLf formula obtained by transforming an RTLf formula
+ * This class encapsulates a discrete \f$\text{LTL}_f\f$ formula obtained by transforming an \f$\text{RTL}_f\f$ formula
  * through a two-step process:
  * 1. Initial discretization via \ref toDiscretisedFormula
  * 2. Application of finite semantics constraints via \ref applyFiniteAlternationSingOpenObservables
  *
- * If the RTLf formula is \f$\varphi\f$, then the formula contained in \ref DiscreteFiniteLtlFormula
+ * If the \f$\text{RTL}_f\f$ formula is \f$\varphi\f$, then the formula contained in \ref DiscreteFiniteLtlFormula
  * (which we call \f$\widehat{\varphi}^{\text{fin}}\f$) will be:
  * \f[
  *    \widehat{\varphi}^{\text{fin}} \overset{\triangle}{=} \text{dsc}(\varphi)\, \land \,
@@ -27,15 +27,17 @@
  *    \texttt{F}(last \, \land\, sing)
  * \f]
  * where \f$last \, \overset{\triangle}{=} \, !\texttt{X}[!]\,true \f$
+ *
+ * \see g_sing
  */
 class DiscreteFiniteLtlFormula {
 public:
     /**
-     * \brief Discretises an RTLf formula into an equivalent LTLf formula
-     * \param formula The RTLf formula to discretise (rvalue reference)
-     * \return DiscreteFiniteLtlFormula containing the discretised LTLf formula
+     * \brief Discretises an \f$\text{RTL}_f\f$ formula into an equivalent \f$\text{LTL}_f\f$ formula
+     * \param formula The \f$\text{RTL}_f\f$ formula to discretise (rvalue reference)
+     * \return DiscreteFiniteLtlFormula containing the discretised \f$\text{LTL}_f\f$ formula
      *
-     * Applies the discretisation rules to transform the RTL formula into LTLf:
+     * Applies the discretisation rules to transform the \f$\text{RTL}_f\f$ formula into \f$\text{LTL}_f\f$:
      * 1. First converts to basic discretised LTL form \ref toDiscretisedFormula
      * 2. Then applies finite semantics with alternation between singular and open observables \ref applyFiniteAlternationSingOpenObservables
      */
@@ -45,16 +47,16 @@ public:
     }
 
     /**
-     * \brief Access the underlying LTLf formula
-     * \return Const reference to the internal LTLf spot::formula
+     * \brief Access the underlying \f$\text{LTL}_f\f$ formula
+     * \return Const reference to the internal \f$\text{LTL}_f\f$ spot::formula
      */
     const spot::formula& formula() const { return m_discreteFiniteLtlFormula; }
 
     /**
-     * \brief Converts the LTLf formula to infinite-semantics LTL
+     * \brief Converts the \f$\text{LTL}_f\f$ formula to infinite-semantics LTL
      * \return DiscreteLtlFormula with infinite semantics
      *
-     * Uses SPOT's from_ltlf() to transform the finite LTL formula to infinite
+     * Uses SPOT's from_ltlf() to transform the finite \f$\text{LTL}_f\f$ formula to infinite
      * semantics by adding the 'alive' atomic proposition.
      *
      * @note This class can only be constructed through its static factory method \ref discretiseRtlFinite.
@@ -70,7 +72,7 @@ private:
 
     /**
      * \brief Private constructor that takes ownership of a spot formula
-     * \param formula The discretised LTLf formula (rvalue reference)
+     * \param formula The discretised \f$\text{LTL}_f\f$ formula (rvalue reference)
      *
      * \pre The input formula must be a valid LTL formula (asserted)
      */

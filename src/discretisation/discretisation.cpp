@@ -3,7 +3,7 @@
 
 /**
  * \defgroup DiscretisationRules Formal Discretisation Rules
- * \brief Mathematical definition of RTL/RTLf discretisation rules
+ * \brief Mathematical definition of RTL/\f$\text{RTL}_f\f$ discretisation rules
  *
  * The discretisation follows these formal rules:
  * \f{align*}{
@@ -18,18 +18,20 @@
  *   \texttt{dsc}(\varphi_1\,\mathbf{M}\,\varphi_2) &\overset{\triangle}{=} \texttt{dsc}(\varphi_1 \, \mathbf{R} \, \varphi_2)\,\land\,\texttt{dsc}(\mathbf{F}(\varphi_1\,\land\,\varphi_2)) \\
  *   \texttt{dsc}(\varphi_1\,\mathbf{W}\,\varphi_2) &\overset{\triangle}{=} \texttt{dsc}(\varphi_1\, \mathbf{U} \, \varphi_2)\,\lor\,\texttt{dsc}(\mathbf{G}(\varphi_1))
  * \f}
+ *
+ * \see g_sing
  */
 
 
 /**
- * \defgroup FiniteDiscretisation Finite Semantics Discretisation (RTLf → LTL)
- * \brief Direct discretisation of finite-time RTLf formulae to LTL infinite semantics
+ * \defgroup FiniteDiscretisation Finite Semantics Discretisation (\f$\text{RTL}_f\f$ → LTL)
+ * \brief Direct discretisation of finite-time \f$\text{RTL}_f\f$ formulae to LTL infinite semantics
  *
- * These functions implement the combined RTLf → LTL transformation that:
+ * These functions implement the combined \f$\text{RTL}_f\f$ → LTL transformation that:
  * - Applies standard discretisation rules
  * - Incorporates the \f$alive\f$ proposition to convert to LTL
  *
- * \note More efficient than separate RTLf → LTLf → LTL transformations
+ * \note More efficient than separate \f$\text{RTL}_f\f$ → \f$\text{LTL}_f\f$ → LTL transformations
  * \see DiscretisationRules
  * \see https://spot.lre.epita.fr/tut12.html
  */

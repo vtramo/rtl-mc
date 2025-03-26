@@ -7,11 +7,12 @@
  *  \brief A constant representing the \f$sing\f$ atomic proposition.
  *
  * The \f$sing\f$ atomic proposition is used to distinguish between open and singular intervals
- * in the context of time slicing. It holds true in all and only the time points \f$t_i\f$ of the
- * time slicing \f$\tau\f$.
+ * in the context of time slicing. It holds \p true in all and only the time points \f$t_i\f$ of the
+ * time slicing \f$\tau$, and \p false elsewhere.
  *
- * \note This proposition is essential for maintaining the distinction between open intervals
- * (where \f$sing\f$ is false) and singular intervals (where \f$sing\f$ is true).
+ * \note The atomic proposition \f$sing\f$ is essential because it allows us to address the model-checking
+ * problem of a \c PolyhedralSystem against an RTL specification by reducing it to a suitable decision problem
+ * for the discrete version of the logic, i.e., classic \f$\omega\f$-regular LTL and its finite variant \f$\text{LTL}_f\f$.
  */
 inline const spot::formula g_sing { ap("sing") };
 
@@ -19,13 +20,13 @@ inline const spot::formula g_sing { ap("sing") };
 /*!
  *  \brief A constant representing the \f$alive\f$ atomic proposition.
  *
- * The \f$alive\f$ atomic proposition is used to embed the semantics of LTLf (LTL with finite semantics)
+ * The \f$alive\f$ atomic proposition is used to embed the semantics of \f$\text{LTL}_f\f$ (LTL with finite semantics)
  * into standard LTL (which operates over infinite words). This is achieved by introducing \f$alive\f$
  * as a proposition that is initially true but eventually becomes false forever, effectively
  * marking the end of the finite trace.
  *
- * This trick allows Spot, which is designed for infinite-word semantics, to handle LTLf formulae
- * by rewriting them. For example, the LTLf formula \f$(a \, \texttt{U} \, b) \land \, \texttt{F} \, c\f$ is transformed
+ * This trick allows Spot, which is designed for infinite-word semantics, to handle \f$\text{LTL}_f\f$ formulae
+ * by rewriting them. For example, the \f$\text{LTL}_f\f$ formula \f$(a \, \texttt{U} \, b) \land \, \texttt{F} \, c\f$ is transformed
  * into the LTL formula:
  * \f[
  * alive \land (a \, \texttt{U} \, (alive \land b)) \, \land \, \texttt{F}(alive \land c) \land (alive \, \texttt{U} \, (\texttt{G} \, \lnot alive))
@@ -40,7 +41,7 @@ inline const spot::formula g_alive { ap("alive") };
 /*!
  *  \brief A constant representing the LTL formula \f$alive \, \texttt{U} \, (\texttt{G} \, \lnot alive)\f$.
  *
- * This formula is a key component in the reduction of LTLf (LTL with finite semantics) satisfiability
+ * This formula is a key component in the reduction of \f$\text{LTL}_f\f$ (LTL with finite semantics) satisfiability
  * to LTL (on infinite traces) satisfiability.
  *
  * It guarantees that \f$alive\f$ stays true until it fails and then stay failed.
@@ -48,13 +49,13 @@ inline const spot::formula g_alive { ap("alive") };
 inline const spot::formula g_aliveUntilGNotAlive { U(g_alive, G(Not(g_alive))) };
 
 /*!
- *  \brief A constant representing the atomic proposition \f$last\f$ in the context of LTLf semantics.
+ *  \brief A constant representing the atomic proposition \f$last\f$ in the context of \f$\text{LTL}_f\f$ semantics.
  *
  * The \f$last\f$ proposition is defined as \f$last \, \equiv \, \lnot \texttt{X} \, alive\f$, where:
  * - \f$alive\f$ is the atomic proposition that marks the alive part of the trace.
  *
- * In the context of LTLf (LTL with finite semantics), \f$last\f$ holds true at the final state of the
- * finite trace. This proposition is used to identify the end of the finite trace when translating LTLf
+ * In the context of \f$\text{LTL}_f\f$ (LTL with finite semantics), \f$last\f$ holds true at the final state of the
+ * finite trace. This proposition is used to identify the end of the finite trace when translating \f$\text{LTL}_f\f$
  * formulae into LTL formulae over infinite traces.
  */
 inline const spot::formula g_lastFinite { Not(X(alive())) };
@@ -71,6 +72,7 @@ inline const spot::formula g_lastFinite { Not(X(alive())) };
  * - The first part of the formula ensures that the \f$sing\f$ proposition alternates between singular and open observables
  *   as long as the trace is active (i.e., \f$alive\f$ is true).
  * - The second part ensures that the trace is finite and ends with a right-closed signal (i.e., a singular observable).
+ * \see g_sing
  */
 inline const spot::formula g_finiteAlternationSingOpenObservablesOneStep {
     spot::parse_infix_psl(
@@ -87,7 +89,7 @@ inline const spot::formula g_finiteAlternationSingOpenObservablesOneStep {
  * - \f$\texttt{X}[!]\f$ is the **strong next** operator, which requires that the next state exists and that the argument holds in that state.
  * - \f$true\f$ is a tautology that always holds.
  *
- * In the context of finite-time semantics (LTLf), \f$last\f$ holds true in the final state of the trace, where there is no next state.
+ * In the context of finite-time semantics (\f$\text{LTL}_f\f$), \f$last\f$ holds true in the final state of the trace, where there is no next state.
  * The strong next operator ensures that \f$\texttt{X}[!] \, true\f$ is false in the last state, as there is no successor state.
  * Therefore, \f$\lnot \texttt{X}[!] \, true\f$ correctly identifies the final state of a finite trace.
  *
@@ -117,9 +119,9 @@ inline const spot::formula g_last { spot::parse_infix_psl("!X[!] true").f };
  *   The condition \f$\lnot X[!] \, true\f$ identifies the final state of the trace, where no next state exists.
  *
  *   Unlike `g_finiteAlternationSingOpenObservablesOneStep`, this formula does **not** use the atomic proposition \f$alive\f$.
- *   The proposition \f$\text{alive}\f$ **must** be introduced to embed the semantics of LTLf (LTL with finite semantics)
+ *   The proposition \f$\text{alive}\f$ **must** be introduced to embed the semantics of \f$\text{LTL}_f\f$ (LTL with finite semantics)
  *   into standard LTL (which operates over infinite words). The \f$\text{alive}\f$ proposition marks the active part
- *   of the trace, ensuring that the finite semantics of LTLf are correctly captured within the infinite semantics of LTL.
+ *   of the trace, ensuring that the finite semantics of \f$\text{LTL}_f\f$ are correctly captured within the infinite semantics of LTL.
  */
 inline const spot::formula g_finiteAlternationSingOpenObservables {
     spot::parse_infix_psl(

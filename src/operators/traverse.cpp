@@ -117,7 +117,7 @@ PowersetSharedPtr traverseZero(const ObservablePatchSequenceSlice slice, const P
  * \mathit{Trav}^+(\epsilon) = \mathbb{R}^n
  * \f]
  * \f[
- * \mathit{Trav}^+(P\Delta) = P\, \cap\, \mathit{reach}^+([[\alpha_P]], \mathit{Trav}^+(\Delta))
+ * \mathit{Trav}^+(P\Delta) = P\, \cap\, \mathit{reach}^+([\![\alpha_P]\!], \mathit{Trav}^+(\Delta))
  * \f]
  *
  * where \f$\epsilon\f$ is the empty sequence, \f$P\f$ is the first patch of the \ref ObservablePatchSequence,

@@ -34,6 +34,12 @@ std::vector<Tile> OmnidirectionalPolyhedralAbstraction::extractTilesFromPolyhedr
     return tiles;
 }
 
+/**
+ * This method constructs the abstraction by:
+ * 1. Processing all possible triple combinations of \c Tile s
+ * 2. Creating non-empty nodes and valid edges between nodes (\ref processTriple)
+ * 3. Logging construction statistics
+ */
 void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& tiles)
 {
     const int totalTiles {static_cast<int>(tiles.size())};
@@ -53,6 +59,16 @@ void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& 
     Log::log(Verbosity::verbose, "[{}] Initial state: {}.", m_name, initialState());
 }
 
+/**
+ * For a triple \f$(P,Q,R)\f$, this method:
+ * 1. Creates a new \c TripleTileNode \f$(P,Q,R)\f$ if \f$Q \cap \mathit{cl}(P) \cap \mathit{cl}(R)\f$ is non-empty
+ * 2. Creates corresponding \c TileNode s for \f$P\f$ and \f$R\f$ if they don't exist
+ * 3. Adds edges:
+ *    - \f$(P) \rightarrow (P,Q,R)\f$ labeled with \f$\text{observableAsBdd}(\mathit{obs}(Q) \cup \{\mathit{sing}\})\f$
+ *    - \f$(P,Q,R) \rightarrow (R)\f$ labeled with \f$\text{observableAsBdd}(\mathit{obs}(R))\f$
+ *
+ * \see observableAsBdd
+ */
 void OmnidirectionalPolyhedralAbstraction::processTriple(
     const Tile& tile1,
     const Tile& tile2,

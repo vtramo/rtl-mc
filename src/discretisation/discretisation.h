@@ -1,14 +1,14 @@
 /**
  * \file discretisation.h
- * \brief RTL/RTLf to LTL/LTLf discretization rules implementation
+ * \brief RTL/\f$\text{RTL}_f\f$ to LTL/\f$\text{LTL}_f\f$ discretization rules implementation
  */
 
 #pragma once
 #include <spot/tl/formula.hh>
 
 /**
- * \brief Main entry point for RTLf → LTL discretisation
- * \param rtlFinite Input RTLf formula with finite semantics
+ * \brief Main entry point for \f$\text{RTL}_f\f$ → LTL discretisation
+ * \param rtlFinite Input \f$\text{RTL}_f\f$ formula with finite semantics
  * \return Equivalent LTL formula with infinite semantics
  */
 spot::formula toDiscretisedLtlFormula(spot::formula&& rtlFinite);
@@ -17,9 +17,9 @@ spot::formula toDiscretisedLtlFormula(spot::formula&& rtlFinite);
 spot::formula applyFiniteAlternationSingOpenObservablesOneStep(spot::formula&& formula);
 
 /**
- * \brief Main discretisation function converting RTL/RTLf to LTL/LTLf
- * \param formula Input RTL/RTLf formula to discretise
- * \return Equivalent discrete LTL/LTLf formula
+ * \brief Main discretisation function converting RTL/\f$\text{RTL}_f\f$ to LTL/\f$\text{LTL}_f\f$
+ * \param formula Input RTL/\f$\text{RTL}_f\f$ formula to discretise
+ * \return Equivalent discrete LTL/\f$\text{LTL}_f\f$ formula
  */
 spot::formula toDiscretisedFormula(spot::formula&& formula);
 
