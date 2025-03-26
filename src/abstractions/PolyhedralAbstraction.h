@@ -32,6 +32,23 @@ public:
     {
         return m_automaton->get_init_state_number();
     }
+
+    /**
+     * \brief Sets the initial state of the \c PolyhedralAbstraction
+     * \param state The state of the abstraction to set as initial state
+     * \throws std::invalid_argument if \p state is out of range
+     * \see PolyhedralAbstraction::initialState() to retrieve the current initial state
+     */
+    virtual void setInitialState(const unsigned state)
+    {
+        assertThatStateIsInRange(state);
+        m_automaton->set_init_state(state);
+    }
+
+    /**
+     * \brief Gets the total number of initial states
+     * \return Always 1 for a \c PolyhedralAbstraction
+     */
     [[nodiscard]] unsigned totalInitialStates() const override { return 1; }
     [[nodiscard]] unsigned totalAcceptingStates() const override { return totalStates(); }
 

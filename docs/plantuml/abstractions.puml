@@ -19,6 +19,7 @@ package abstractions {
             +virtual points(unsigned state): PowersetConstSharedPtr
             +virtual observable(unsigned state): const Observable&
             +virtual initialState(): unsigned
+            +virtual setInitialState(unsigned state): void
             +virtual spaceDimension(): PPL::dimension_type
             #virtual observableAsBdd(const Observable& observable): bdd
             --friends--
