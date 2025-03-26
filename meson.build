@@ -58,8 +58,5 @@ include_directories = [
 subdir(src_dir)
 
 if get_option('enable_tests') == true
-  catch2_subproject = subproject('catch2', version: '>=3.7.1')
-  catch2_dep = catch2_subproject.get_variable('catch2_dep')
-  catch2_with_main_dep = catch2_subproject.get_variable('catch2_with_main_dep')
   subdir('tests')
 endif

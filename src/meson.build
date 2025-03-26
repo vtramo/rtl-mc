@@ -1,6 +1,6 @@
 ppl_dep = dependency('ppl', version: '==1.2')
-gmp_dep = dependency('gmp', version: '>=6.3.0')
-gmpxx_dep = dependency('gmpxx', version: '>=6.3.0')
+gmp_dep = dependency('gmp', version: '>=6.1.0')
+gmpxx_dep = dependency('gmpxx', version: '>=6.1.0')
 antlr4_runtime_dep = dependency('antlr4-runtime', version: '>=4.13.0')
 spot_dep = dependency('libspot', version: '>=2.12.1')
 argparse_dep = dependency('argparse', fallback : ['argparse'], version: '>=3.1')

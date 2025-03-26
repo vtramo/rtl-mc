@@ -9,6 +9,10 @@ test_rtl_mc_static_library = static_library(
     include_directories: include_directories
 )
 
+catch2_subproject = subproject('catch2', version: '>=3.7.1')
+catch2_dep = catch2_subproject.get_variable('catch2_dep')
+catch2_with_main_dep = catch2_subproject.get_variable('catch2_with_main_dep')
+
 test_dependencies = [spdlog_dep, fmt_dep, catch2_dep, catch2_with_main_dep]
 
 subdir('automata')
