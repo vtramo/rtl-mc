@@ -4,12 +4,13 @@
 #include <algorithm>
 
 /*!
- *  \brief Generates all combinations of size `k` from a range of `n` elements.
+ * \brief Generates all simple combinations of size `k` from a range of `n` elements.
  *
- * This function computes all possible combinations of size `k` from a given range of elements
- * defined by the iterators `begin` and `end`. A combination is a selection of items where
- * the order does not matter. The function uses a bitmask-based approach to efficiently
- * generate all combinations.
+ * This function computes all possible simple combinations of size `k` from a given range of elements
+ * defined by the iterators `begin` and `end`. A simple combination is a selection of items where
+ * the order does not matter and each item can be selected only once.
+ *
+ * The function uses a bitmask-based approach to efficiently generate all simple combinations.
  *
  * \tparam T The type of elements in the input range.
  * \tparam Iterator The type of iterator for the input range (must support forward iteration).
@@ -17,7 +18,7 @@
  * \param end Iterator to the end of the input range.
  * \param n The total number of elements in the input range.
  * \param k The size of each combination to generate.
- * \return A vector of vectors, where each inner vector represents a combination of size `k`.
+ * \return A vector of vectors, where each inner vector represents a simple combination of size `k`.
  *
  * \throws std::invalid_argument If `n` or `k` is less than or equal to 0.
  * \throws std::invalid_argument If `n` is less than `k`.
@@ -28,12 +29,12 @@
  * Example usage:
  * \code
  * std::vector<int> elements = {1, 2, 3, 4};
- * auto result = combinations<int>(elements.begin(), elements.end(), 4, 2);
+ * auto result = simpleCombinations<int>(elements.begin(), elements.end(), 4, 2);
  * // result will contain: {{1, 2}, {1, 3}, {1, 4}, {2, 3}, {2, 4}, {3, 4}}
  * \endcode
  */
 template <typename T, typename Iterator>
-std::vector<std::vector<T>> combinations(Iterator begin, Iterator end, const int n, const int k)
+std::vector<std::vector<T>> simpleCombinations(Iterator begin, Iterator end, const int n, const int k)
 {
     if (n <= 0 || k <= 0)
         throw std::invalid_argument("n and k must be greater than 0");
@@ -50,6 +51,8 @@ std::vector<std::vector<T>> combinations(Iterator begin, Iterator end, const int
     }
 
     std::vector<std::vector<T>> combinations {};
+
+    // Compute the total number of simple combinations
     long long numCombinations { 1 };
     for (int i = 0; i < k; ++i)
     {
@@ -57,6 +60,7 @@ std::vector<std::vector<T>> combinations(Iterator begin, Iterator end, const int
         numCombinations /= (i + 1);
     }
 
+    std::cout << numCombinations << '\n';
     combinations.reserve(numCombinations);
 
     std::vector bitmask(k, true);

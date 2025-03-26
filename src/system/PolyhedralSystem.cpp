@@ -293,7 +293,7 @@ std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterE
     for (int k { 1 }; k <= totPolyhedralAtoms; k++)
     {
         std::vector kCombinations {
-            combinations<spot::formula>(
+            simpleCombinations<spot::formula>(
                 polyhedralAtoms.begin(),
                 polyhedralAtoms.end(),
                 totPolyhedralAtoms,

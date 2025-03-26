@@ -42,7 +42,7 @@ void GeneralPolyhedralAbstraction::buildAbstraction(const unsigned maxObservable
     for (unsigned k { 1 }; k <= maxObservablePatchSequenceLength; ++k)
     {
         std::vector kObservableCombinations {
-            combinations<Observable>(
+            simpleCombinations<Observable>(
                 observables.begin(),
                 observables.end(),
                 observables.size(),
