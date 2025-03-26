@@ -85,6 +85,7 @@ COPY . .
 ENTRYPOINT ["sh"]
 
 FROM build-stage AS compile-test
+RUN apt update
 RUN apt install -y valgrind
 RUN meson setup  \
     --errorlogs  \
