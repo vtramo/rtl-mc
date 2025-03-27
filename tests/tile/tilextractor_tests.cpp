@@ -530,7 +530,7 @@ TEST_CASE(
 }
 
 TEST_CASE(
-    "TILEXTRACTOR TEST CASE 6 (1 observable with 256 patches and 20 tiles).\n"
+    "TILEXTRACTOR TEST CASE 6 (1 observable with 216 patches and 20 tiles).\n"
     "See image tests/tile/tilextractor-test-case-6-expected-result.png"
 )
 {

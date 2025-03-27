@@ -168,7 +168,7 @@ inline Powerset observableInterpretationTestCase5Fixture()
     return observableInterpretation;
 }
 
-// Observable interpretation with 256 patches and 20 tiles
+// Observable interpretation with 216 patches and 20 tiles
 inline Powerset observableInterpretationTestCase6Fixture()
 {
     PPL::Variable x { 0 };

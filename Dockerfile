@@ -71,10 +71,12 @@ Cflags: -I\${includedir}\n\
 Libs: -L\${libdir} -lantlr4-runtime" > /usr/local/lib/pkgconfig/antlr4-runtime.pc
 
 # Spot library
-RUN wget -q -O - https://www.lrde.epita.fr/repo/debian.gpg | apt-key add - && \
-    echo 'deb http://www.lrde.epita.fr/repo/debian/ stable/' >> /etc/apt/sources.list && \
-    apt update && \
-    apt install -y spot=${SPOT_VERSION}.0-1 libspot-dev=${SPOT_VERSION}.0-1
+RUN wget -q http://www.lrde.epita.fr/dload/spot/spot-${SPOT_VERSION}.tar.gz && \
+    tar -xvzf spot-${SPOT_VERSION}.tar.gz && \
+    cd spot-${SPOT_VERSION} && \
+    ./configure && \
+    make && \
+    make install
 
 # Install meson
 RUN python3 -m pip install meson --break-system-packages
