@@ -1,128 +1,34 @@
+#include <pairwise_reduce.h>
+
 #include "TileExtractorGraph.h"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include "test_utils.h"
 #include "formula.h"
 #include "TileExtractor.h"
-#include "TileExtractorFast.h"
-#include "TileExtractorList.h"
+#include "TileExtractorDoublyLinkedList.h"
+#include "tests/tile/tilextractor_observable_interpretation_fixtures.h"
 
 using namespace SpotUtils;
 
-TEST_CASE("TileExtractor benchmarks 1")
+TEST_CASE(
+    "TILEXTRACTOR BENCHMARK 1 (1 observable with 66 patches and 5 tiles).\n"
+    "The input for this benchmark corresponds to that of TILEXTRACTOR TEST CASE 4\n"
+    "(in tests/tile/tilextractor_tests.cpp)."
+)
 {
-    PPL::Variable x { 0 };
-    PPL::Variable y { 1 };
-
-    Powerset observableInterpretation {
-        PPLUtils::powerset({
-            { x >= -1, x <= 1, y >= -1, y <= 1 },
-            { x >= 1 , x <= 2, y >= 0 , y <= 1 },
-            { x >= 1 , x <= 3, y >= 1 , y <= 2 },
-            { x >= 1 , x <= 4, y >= 2 , y <= 3 },
-            { x >= 1 , x <= 5, y >= 3 , y <= 4 },
-            { x >= 1 , x <= 6, y >= 4 , y <= 5 },
-            { x >= 1 , x <= 7, y >= 5 , y <= 6 },
-            { x >= 1 , x <= 8, y >= 6 , y <= 7 },
-            { x >= 1 , x <= 9, y >= 7 , y <= 8 },
-
-            { x >= 4 , x <= 5, y >= 0 , y <= 1 },
-            { x >= 4 , x <= 6, y >= 1 , y <= 2 },
-            { x >= 4 , x <= 7, y >= 2 , y <= 3 },
-            { x >= 4 , x <= 8, y >= 3 , y <= 4 },
-            { x >= 4 , x <= 9, y >= 4 , y <= 5 },
-            { x >= 4 , x <= 10, y >= 5 , y <= 6 },
-            { x >= 4 , x <= 11, y >= 7 , y <= 8 },
-            { x >= 4 , x <= 12, y >= 8 , y <= 9 },
-            { x >= 4 , x <= 13, y >= 9 , y <= 10 },
-
-            { x >= 10 , x <= 11, y >= 0 , y <= 1 },
-            { x >= 10 , x <= 12, y >= 1 , y <= 2 },
-            { x >= 10 , x <= 13, y >= 2 , y <= 3 },
-            { x >= 10 , x <= 14, y >= 3 , y <= 4 },
-            { x >= 10 , x <= 15, y >= 4 , y <= 5 },
-            { x >= 10 , x <= 16, y >= 5 , y <= 6 },
-
-            { x >= 0 , x <= 1, y >= 7 , y <= 8 },
-            { x >= 0 , x <= 1, y >= 8 , y <= 9 },
-            { x >= 0 , x <= 2, y >= 8 , y <= 9 },
-            { x >= 0 , x <= 3, y >= 9 , y <= 10 },
-            { x >= 2 , x <= 3, y >= 9 , y <= 10 },
-            { x >= 3 , x <= 4, y >= 9 , y <= 10 },
-
-            { x >= -1 , x <= 0, y >= 6 , y <= 7 },
-            { x >= -2 , x <= -1, y >= 5 , y <= 6 },
-            { x >= -2 , x <= -1, y >= 6 , y <= 7 },
-            { x >= 15 , x <= 16, y >= 3 , y <= 4 },
-            { x >= 15 , x <= 17, y >= 4 , y <= 5 },
-
-            { x >= 17 , x <= 18, y >= 5 , y <= 6 },
-            { x >= 17 , x <= 18, y >= 4 , y <= 5 },
-            { x >= 17 , x <= 18, y >= 3 , y <= 4 },
-            { x >= -3 , x <= -2, y >= 3 , y <= 4 },
-            { x >= -3 , x <= -2, y >= 4 , y <= 5 },
-
-            { x >= 50 , x <= 52, y >= 50 , y <= 50 },
-            { x >= 50 , x <= 53, y >= 50 , y <= 52 },
-            { x >= 50 , x <= 54, y >= 52 , y <= 53 },
-            { x >= 50 , x <= 55, y >= 53 , y <= 54 },
-            { x >= 50 , x <= 56, y >= 54 , y <= 55 },
-            { x >= 50 , x <= 57, y >= 55 , y <= 56 },
-            { x >= 50 , x <= 58, y >= 56 , y <= 57 },
-            { x >= 50 , x <= 59, y >= 57 , y <= 58 },
-
-            { x >= 70 , x <= 72, y >= 70 , y <= 70 },
-            { x >= 70 , x <= 73, y >= 70 , y <= 72 },
-            { x >= 70 , x <= 74, y >= 72 , y <= 73 },
-            { x >= 70 , x <= 75, y >= 73 , y <= 74 },
-            { x >= 70 , x <= 76, y >= 74 , y <= 75 },
-            { x >= 70 , x <= 77, y >= 75 , y <= 76 },
-            { x >= 70 , x <= 78, y >= 76 , y <= 77 },
-            { x >= 70 , x <= 79, y >= 77 , y <= 78 },
-
-            { x >= 90 , x <= 92, y >= 90 , y <= 90 },
-            { x >= 90 , x <= 93, y >= 90 , y <= 92 },
-            { x >= 90 , x <= 94, y >= 92 , y <= 93 },
-            { x >= 90 , x <= 95, y >= 93 , y <= 94 },
-            { x >= 90 , x <= 96, y >= 94 , y <= 95 },
-            { x >= 90 , x <= 97, y >= 95 , y <= 96 },
-            { x >= 90 , x <= 98, y >= 96 , y <= 97 },
-            { x >= 90 , x <= 99, y >= 97 , y <= 98 },
-
-            { x >= 110 , x <= 112, y >= 110 , y <= 110 },
-            { x >= 110 , x <= 113, y >= 110 , y <= 112 },
-            { x >= 110 , x <= 114, y >= 112 , y <= 113 },
-            { x >= 110 , x <= 115, y >= 113 , y <= 114 },
-            { x >= 110 , x <= 116, y >= 114 , y <= 115 },
-            { x >= 110 , x <= 117, y >= 115 , y <= 116 },
-            { x >= 110 , x <= 118, y >= 116 , y <= 117 },
-            { x >= 110 , x <= 119, y >= 117 , y <= 118 },
-        })
-    };
-
+    Powerset observableInterpretation { observableInterpretationTestCase4Fixture() };
+    REQUIRE(observableInterpretation.size() == 66);
     Observable observable { Observable { AP({"p"}), observableInterpretation } };
 
-
     std::unique_ptr<TileExtractor> tilextractor {};
-    SECTION("TileExtractorList")
+
+    SECTION("TileExtractorDoublyLinkedList")
     {
-        tilextractor = std::make_unique<TileExtractorList>();
+        tilextractor = std::make_unique<TileExtractorDoublyLinkedList>();
         std::vector<Tile> tiles {};
 
-        BENCHMARK("TileExtractorList benchmark")
-        {
-            tiles = tilextractor->extractTiles(observable);
-        };
-
-        REQUIRE(tiles.size() == 5);
-    }
-
-    SECTION("TileExtractorFast")
-    {
-        tilextractor = std::make_unique<TileExtractorFast>();
-        std::vector<Tile> tiles {};
-
-        BENCHMARK("TileExtractorFast benchmark")
+        BENCHMARK("TileExtractorDoublyLinkedList benchmark")
         {
             tiles = tilextractor->extractTiles(observable);
         };
@@ -144,123 +50,24 @@ TEST_CASE("TileExtractor benchmarks 1")
     }
 }
 
-
-
-TEST_CASE("TileExtractor benchmarks 2")
+TEST_CASE(
+    "TILEXTRACTOR BENCHMARK 2 (1 observable with 72 patches and 8 tiles)\n"
+    "The input for this benchmark corresponds to that of TILEXTRACTOR TEST CASE 5\n"
+    "(in tests/tile/tilextractor_tests.cpp)."
+)
 {
-    PPL::Variable x { 0 };
-    PPL::Variable y { 1 };
-
-    Powerset observableInterpretation {
-        PPLUtils::powerset({
-            { x >= -1, x <= 1, y >= -1, y <= 1 },
-            { x >= 1 , x <= 2, y >= 0 , y <= 1 },
-
-            { x >= 4 , x <= 5, y >= 0 , y <= 1 },
-            { x >= 4 , x <= 6, y >= 1 , y <= 2 },
-            { x >= 4 , x <= 7, y >= 2 , y <= 3 },
-            { x >= 4 , x <= 8, y >= 3 , y <= 4 },
-            { x >= 4 , x <= 9, y >= 4 , y <= 5 },
-            { x >= 4 , x <= 10, y >= 5 , y <= 6 },
-            { x >= 4 , x <= 11, y >= 7 , y <= 8 },
-            { x >= 4 , x <= 12, y >= 8 , y <= 9 },
-            { x >= 4 , x <= 13, y >= 9 , y <= 10 },
-
-            { x >= 10 , x <= 11, y >= 0 , y <= 1 },
-            { x >= 10 , x <= 12, y >= 1 , y <= 2 },
-            { x >= 10 , x <= 13, y >= 2 , y <= 3 },
-            { x >= 10 , x <= 14, y >= 3 , y <= 4 },
-            { x >= 10 , x <= 15, y >= 4 , y <= 5 },
-            { x >= 10 , x <= 16, y >= 5 , y <= 6 },
-
-            { x >= 0 , x <= 1, y >= 7 , y <= 8 },
-            { x >= 0 , x <= 1, y >= 8 , y <= 9 },
-            { x >= 0 , x <= 2, y >= 8 , y <= 9 },
-            { x >= 0 , x <= 3, y >= 9 , y <= 10 },
-            { x >= 2 , x <= 3, y >= 9 , y <= 10 },
-            { x >= 3 , x <= 4, y >= 9 , y <= 10 },
-
-            { x >= -1 , x <= 0, y >= 6 , y <= 7 },
-            { x >= -2 , x <= -1, y >= 5 , y <= 6 },
-            { x >= -2 , x <= -1, y >= 6 , y <= 7 },
-            { x >= 15 , x <= 16, y >= 3 , y <= 4 },
-            { x >= 15 , x <= 17, y >= 4 , y <= 5 },
-
-            { x >= 17 , x <= 18, y >= 5 , y <= 6 },
-            { x >= 17 , x <= 18, y >= 4 , y <= 5 },
-            { x >= 17 , x <= 18, y >= 3 , y <= 4 },
-            { x >= -3 , x <= -2, y >= 3 , y <= 4 },
-            { x >= -3 , x <= -2, y >= 4 , y <= 5 },
-
-            { x >= 50 , x <= 52, y >= 50 , y <= 50 },
-            { x >= 50 , x <= 53, y >= 50 , y <= 52 },
-            { x >= 50 , x <= 54, y >= 52 , y <= 53 },
-            { x >= 50 , x <= 55, y >= 53 , y <= 54 },
-            { x >= 50 , x <= 56, y >= 54 , y <= 55 },
-            { x >= 50 , x <= 57, y >= 55 , y <= 56 },
-            { x >= 50 , x <= 58, y >= 56 , y <= 57 },
-            { x >= 50 , x <= 59, y >= 57 , y <= 58 },
-
-            { x >= 70 , x <= 72, y >= 70 , y <= 70 },
-            { x >= 70 , x <= 73, y >= 70 , y <= 72 },
-            { x >= 70 , x <= 74, y >= 72 , y <= 73 },
-            { x >= 70 , x <= 75, y >= 73 , y <= 74 },
-            { x >= 70 , x <= 76, y >= 74 , y <= 75 },
-            { x >= 70 , x <= 77, y >= 75 , y <= 76 },
-            { x >= 70 , x <= 78, y >= 76 , y <= 77 },
-            { x >= 70 , x <= 79, y >= 77 , y <= 78 },
-
-            { x >= 90 , x <= 92, y >= 90 , y <= 90 },
-            { x >= 90 , x <= 93, y >= 90 , y <= 92 },
-            { x >= 90 , x <= 94, y >= 92 , y <= 93 },
-            { x >= 90 , x <= 95, y >= 93 , y <= 94 },
-            { x >= 90 , x <= 96, y >= 94 , y <= 95 },
-            { x >= 90 , x <= 97, y >= 95 , y <= 96 },
-            { x >= 90 , x <= 98, y >= 96 , y <= 97 },
-            { x >= 90 , x <= 99, y >= 97 , y <= 98 },
-
-            { x >= 110 , x <= 112, y >= 110 , y <= 110 },
-            { x >= 110 , x <= 113, y >= 110 , y <= 112 },
-            { x >= 110 , x <= 114, y >= 112 , y <= 113 },
-            { x >= 110 , x <= 115, y >= 113 , y <= 114 },
-            { x >= 110 , x <= 116, y >= 114 , y <= 115 },
-            { x >= 110 , x <= 117, y >= 115 , y <= 116 },
-            { x >= 110 , x <= 118, y >= 116 , y <= 117 },
-            { x >= 110 , x <= 119, y >= 117 , y <= 118 },
-
-            { x >= 110 , x <= 120, y >= 1 , y <= 2 },
-            { x >= 110 , x <= 121, y >= 2 , y <= 3 },
-            { x >= 110 , x <= 122, y >= 3 , y <= 4 },
-            { x >= 110 , x <= 123, y >= 4 , y <= 5 },
-            { x >= 110 , x <= 124, y >= 5 , y <= 6 },
-            { x >= 110 , x <= 125, y >= 6 , y <= 7 },
-            { x >= 110 , x <= 126, y >= 7 , y <= 8 },
-        })
-    };
-
+    Powerset observableInterpretation { observableInterpretationTestCase5Fixture() };
+    REQUIRE(observableInterpretation.size() == 72);
     Observable observable { Observable { AP({"p"}), observableInterpretation } };
 
-
     std::unique_ptr<TileExtractor> tilextractor {};
-    SECTION("TileExtractorList")
+
+    SECTION("TileExtractorDoublyLinkedList")
     {
-        tilextractor = std::make_unique<TileExtractorList>();
+        tilextractor = std::make_unique<TileExtractorDoublyLinkedList>();
         std::vector<Tile> tiles {};
 
-        BENCHMARK("TileExtractorList benchmark")
-        {
-            tiles = tilextractor->extractTiles(observable);
-        };
-
-        REQUIRE(tiles.size() == 8);
-    }
-
-    SECTION("TileExtractorFast")
-    {
-        tilextractor = std::make_unique<TileExtractorFast>();
-        std::vector<Tile> tiles {};
-
-        BENCHMARK("TileExtractorFast benchmark")
+        BENCHMARK("TileExtractorDoublyLinkedList benchmark")
         {
             tiles = tilextractor->extractTiles(observable);
         };
@@ -279,5 +86,44 @@ TEST_CASE("TileExtractor benchmarks 2")
         };
 
         REQUIRE(tiles.size() == 8);
+    }
+}
+
+TEST_CASE(
+    "TILEXTRACTOR BENCHMARK 3 (1 observable with 216 patches and 20 tiles)\n"
+    "The input for this benchmark corresponds to that of TILEXTRACTOR TEST CASE 6\n"
+    "(in tests/tile/tilextractor_tests.cpp)."
+)
+{
+    Powerset observableInterpretation { observableInterpretationTestCase6Fixture() };
+    REQUIRE(observableInterpretation.size() == 216);
+    Observable observable { Observable { AP({"p"}), observableInterpretation } };
+
+    std::unique_ptr<TileExtractor> tilextractor {};
+
+    SECTION("TileExtractorDoublyLinkedList")
+    {
+        tilextractor = std::make_unique<TileExtractorDoublyLinkedList>();
+        std::vector<Tile> tiles {};
+
+        BENCHMARK("TileExtractorDoublyLinkedList benchmark")
+        {
+            tiles = tilextractor->extractTiles(observable);
+        };
+
+        REQUIRE(tiles.size() == 20);
+    }
+
+    SECTION("TileExtractorGraph")
+    {
+        tilextractor = std::make_unique<TileExtractorGraph>();
+        std::vector<Tile> tiles {};
+
+        BENCHMARK("TileExtractorGraph benchmark")
+        {
+            tiles = tilextractor->extractTiles(observable);
+        };
+
+        REQUIRE(tiles.size() == 20);
     }
 }
