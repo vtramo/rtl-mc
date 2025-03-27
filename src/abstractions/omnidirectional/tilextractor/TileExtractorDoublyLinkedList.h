@@ -4,7 +4,7 @@
 #include "Observable.h"
 #include "TileExtractor.h"
 
-class TileExtractorFast: public TileExtractor
+class TileExtractorDoublyLinkedList: public TileExtractor
 {
 public:
     [[nodiscard]] std::vector<Tile> extractTiles(const std::vector<Observable>& observables) override;

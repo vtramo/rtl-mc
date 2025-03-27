@@ -1,12 +1,12 @@
-#include "TileExtractorFast.h"
+#include "TileExtractorDoublyLinkedList.h"
 #include "adjacency.h"
 
-std::vector<Tile> TileExtractorFast::extractTiles(const std::vector<Observable>& observables)
+std::vector<Tile> TileExtractorDoublyLinkedList::extractTiles(const std::vector<Observable>& observables)
 {
     return TileExtractor::extractTiles(observables);
 }
 
-std::vector<Tile> TileExtractorFast::extractTiles(const Observable& observable)
+std::vector<Tile> TileExtractorDoublyLinkedList::extractTiles(const Observable& observable)
 {
     if (observable.isEmpty()) return {};
 
@@ -61,7 +61,7 @@ std::vector<Tile> TileExtractorFast::extractTiles(const Observable& observable)
     return tiles;
 }
 
-void TileExtractorFast::buildPowersetLinkedList(const Observable& observable)
+void TileExtractorDoublyLinkedList::buildPowersetLinkedList(const Observable& observable)
 {
     if (observable.isEmpty()) return;
 
@@ -81,7 +81,7 @@ void TileExtractorFast::buildPowersetLinkedList(const Observable& observable)
     }
 }
 
-bool TileExtractorFast::merge(const PowersetLinkedList::NodePtr& i, const PowersetLinkedList::NodePtr& j)
+bool TileExtractorDoublyLinkedList::merge(const PowersetLinkedList::NodePtr& i, const PowersetLinkedList::NodePtr& j)
 {
     assert(i != nullptr && j != nullptr);
 

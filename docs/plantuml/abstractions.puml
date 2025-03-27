@@ -185,32 +185,11 @@ package abstractions {
                 +virtual std::vector<Tile> extractTiles(const Observable& observable) = 0
             }
 
-            class TileExtractorComplex {
-                 --data members--
-                 -m_currentObservable: const Observable*
-                 -m_patchesIndexesInFirstTile: std::unordered_set<int>
-                 --constructors--
-                 +TileExtractorComplex()
-                 --member functions--
-                 -findFirstTile(): Tile
-                 -collectPatchesNotInFirstTile(): std::list<std::reference_wrapper<const Poly>>
-                 -findRemainingTiles(): std::vector<Tile>
-            }
-
-            class TileExtractorList {
-                 --data members--
-                 -m_partialTileList: std::list<PowersetSharedPtr>
-                 --constructors--
-                 +TileExtractorList()
-                 --member functions--
-                -initializePartialTileList(const Observable& observable)
-            }
-
-            class TileExtractorFast {
+            class TileExtractorDoublyLinkedList {
                 --data members--
                  -m_powersetLinkedList: PowersetLinkedList
                 --constructors--
-                 +TileExtractorFast()
+                 +TileExtractorDoublyLinkedList()
                 --member functions--
                 -buildPowersetLinkedList(const Observable& observable)
                 --static functions--
@@ -231,10 +210,8 @@ package abstractions {
                 -prev: NodePtr
             }
 
-            TileExtractorComplex --|> TileExtractor
-            TileExtractorList --|> TileExtractor
-            TileExtractorFast --|> TileExtractor
-            TileExtractorFast +--> PowersetLinkedList
+            TileExtractorDoublyLinkedList --|> TileExtractor
+            TileExtractorDoublyLinkedList +--> PowersetLinkedList
             PowersetLinkedList --> "*" Node
         }
 
