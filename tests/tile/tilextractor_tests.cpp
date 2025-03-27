@@ -5,11 +5,9 @@
 #include <catch2/matchers/catch_matchers_vector.hpp>
 
 #include "ppl_output.h"
-#include "TileExtractorComplex.h"
 #include "TileExtractorList.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
-#include "spot_utils.h"
 #include "formula.h"
 
 using namespace SpotUtils;
@@ -38,29 +36,6 @@ TEST_CASE("Extract Tiles from Observables")
 
         std::vector observables { polyhedralSystem.generateObservables() };
         REQUIRE(observables.size() == 2);
-
-        SECTION("TileExtractorComplex")
-        {
-            TileExtractorComplex tileExtractor {};
-            std::vector tiles { tileExtractor.extractTiles(observables) };
-
-            REQUIRE(tiles.size() == 2);
-            REQUIRE_THAT(
-                tiles,
-                Catch::Matchers::UnorderedEquals(
-                    std::vector {
-                        Tile {
-                            Observable { AP({"p"}), intersect(p, notQ), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
-                            p
-                        },
-                        Tile {
-                            Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
-                            q
-                        },
-                    }
-                )
-            );
-        }
 
         SECTION("TileExtractorList")
         {
@@ -174,19 +149,6 @@ TEST_CASE("Extract Tiles from Observables")
             })
         };
 
-        SECTION("TileExtractorComplex")
-        {
-            TileExtractorComplex tileExtractor {};
-            std::vector tiles { tileExtractor.extractTiles(observable) };
-
-
-            REQUIRE(tiles.size() == 2);
-            REQUIRE_THAT(
-                tiles,
-                Catch::Matchers::UnorderedEquals(std::vector { expectedTile1, expectedTile2 })
-            );
-        }
-
         SECTION("TileExtractorList")
         {
             TileExtractorList tileExtractorList {};
@@ -273,25 +235,6 @@ TEST_CASE("Extract Tiles from Observables")
             observable,
             PPLUtils::powerset({{ x > 4 , x < 6, y > 1 , y < 2 }})
         };
-
-        SECTION("TileExtractorComplex")
-        {
-            TileExtractorComplex tileExtractor {};
-            std::vector tiles { tileExtractor.extractTiles(observable) };
-
-
-            REQUIRE(tiles.size() == 5);
-            REQUIRE_THAT(
-                tiles,
-                Catch::Matchers::UnorderedEquals(std::vector {
-                    expectedTile1,
-                    expectedTile2,
-                    expectedTile3,
-                    expectedTile4,
-                    expectedTile5
-                })
-            );
-        }
 
         SECTION("TileExtractorList")
         {
@@ -597,25 +540,6 @@ TEST_CASE("Extract Tiles from Observables")
                 { -x >= -119, -y >= -118, y >= 117, x >= 110 },
             })
         };
-
-        SECTION("TileExtractorComplex")
-        {
-            TileExtractorComplex tileExtractor {};
-            std::vector tiles { tileExtractor.extractTiles(observable) };
-
-
-            REQUIRE(tiles.size() == 5);
-            REQUIRE_THAT(
-                tiles,
-                Catch::Matchers::UnorderedEquals(std::vector {
-                    expectedTile1,
-                    expectedTile2,
-                    expectedTile3,
-                    expectedTile4,
-                    expectedTile5
-                })
-            );
-        }
 
         SECTION("TileExtractorList")
         {
@@ -961,28 +885,6 @@ TEST_CASE("Extract Tiles from Observables")
                 { -x >= -126, -y >= -8, y >= 7, x >= 110 }
             })
         };
-
-        SECTION("TileExtractorComplex")
-        {
-            TileExtractorComplex tileExtractor {};
-            std::vector tiles { tileExtractor.extractTiles(observable) };
-
-
-            REQUIRE(tiles.size() == 9);
-            REQUIRE_THAT(
-                tiles,
-                Catch::Matchers::UnorderedEquals(std::vector {
-                    expectedTile1,
-                    expectedTile2,
-                    expectedTile3,
-                    expectedTile4,
-                    expectedTile5,
-                    expectedTile6,
-                    expectedTile7,
-                    expectedTile8,
-                })
-            );
-        }
 
         SECTION("TileExtractorList")
         {

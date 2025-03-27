@@ -60,7 +60,6 @@ std::vector<std::vector<T>> simpleCombinations(Iterator begin, Iterator end, con
         numCombinations /= (i + 1);
     }
 
-    std::cout << numCombinations << '\n';
     combinations.reserve(numCombinations);
 
     std::vector bitmask(k, true);

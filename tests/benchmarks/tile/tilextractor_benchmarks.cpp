@@ -4,7 +4,6 @@
 #include "test_utils.h"
 #include "formula.h"
 #include "TileExtractor.h"
-#include "TileExtractorComplex.h"
 #include "TileExtractorFast.h"
 #include "TileExtractorList.h"
 
@@ -111,19 +110,6 @@ TEST_CASE("TileExtractor benchmarks 1")
         std::vector<Tile> tiles {};
 
         BENCHMARK("TileExtractorList benchmark")
-        {
-            tiles = tilextractor->extractTiles(observable);
-        };
-
-        REQUIRE(tiles.size() == 5);
-    }
-
-    SECTION("TileExtractorComplex")
-    {
-        tilextractor = std::make_unique<TileExtractorComplex>();
-        std::vector<Tile> tiles {};
-
-        BENCHMARK("TileExtractorComplex benchmark")
         {
             tiles = tilextractor->extractTiles(observable);
         };
@@ -262,19 +248,6 @@ TEST_CASE("TileExtractor benchmarks 2")
         std::vector<Tile> tiles {};
 
         BENCHMARK("TileExtractorList benchmark")
-        {
-            tiles = tilextractor->extractTiles(observable);
-        };
-
-        REQUIRE(tiles.size() == 8);
-    }
-
-    SECTION("TileExtractorComplex")
-    {
-        tilextractor = std::make_unique<TileExtractorComplex>();
-        std::vector<Tile> tiles {};
-
-        BENCHMARK("TileExtractorComplex benchmark")
         {
             tiles = tilextractor->extractTiles(observable);
         };

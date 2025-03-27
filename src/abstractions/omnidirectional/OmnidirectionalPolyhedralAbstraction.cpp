@@ -1,10 +1,7 @@
 #include "OmnidirectionalPolyhedralAbstraction.h"
 
 #include <fmt/base.h>
-
-#include "formula.h"
-
-#include "TileExtractorComplex.h"
+#include "TileExtractorGraph.h"
 
 
 OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(
@@ -27,7 +24,7 @@ std::vector<Tile> OmnidirectionalPolyhedralAbstraction::extractTilesFromPolyhedr
     Log::log(Verbosity::verbose, "[{}] Polyhedral system total observables: {}.", m_name, observables.size());
 
     Log::log(Verbosity::veryVerbose, "[{}] Extracting tiles...", m_name);
-    TileExtractorComplex tileExtractor {};
+    TileExtractorGraph tileExtractor {};
     std::vector<Tile> tiles { tileExtractor.extractTiles(observables) };
     Log::log(Verbosity::verbose, "[{}] Total tiles: {}.", m_name, tiles.size());
 
