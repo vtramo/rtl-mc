@@ -8,7 +8,7 @@
 #include <spot/twa/formula2bdd.hh>
 
 #include "logger.h"
-#include "ObservableTraversalNode.h"
+#include "ObservableTraverseNode.h"
 #include "PolyhedralSystem.h"
 #include "Automaton.h"
 
@@ -126,6 +126,7 @@ public:
      * \brief Converts an \c Observable to its corresponding BDD representation (conjunction of the atomic propositions of the \c Observable)
      * \param observable An \c Observable contained within the \c PolyhedralAbstraction
      * \return A BDD representing the conjunction of the atomic propositions of the \c Observable (\ref Observable::atoms())
+     * \see https://spot.lre.epita.fr/tut90.html
      */
     virtual bdd observableAsBdd(const Observable& observable) const
     {

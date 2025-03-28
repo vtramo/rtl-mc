@@ -90,14 +90,14 @@ package abstractions {
             ObservablePatch <..> ObservablePatchSequenceHash
             Observable <..> ObservableHash
 
-            class ObservableTraversalNode {
+            class ObservableTraverseNode {
                 --data members--
                 -m_travPoints: PowersetSharedPtr
                 -m_observable: Observable
                 -m_isSing: bool
                 --constructors--
-                +ObservableTraversalNode(const ObservablePatchSequence& sequence, const Poly& preFlow, bool isSing = false)
-                +ObservableTraversalNode() = default
+                +ObservableTraverseNode(const ObservablePatchSequence& sequence, const Poly& preFlow, bool isSing = false)
+                +ObservableTraverseNode() = default
                 --member functions--
                 +travPoints(): PowersetConstSharedPtr
                 +observable(): const Observable&
@@ -110,20 +110,20 @@ package abstractions {
             }
 
             ObservablePatchSequence --> "1...*" ObservablePatch
-            ObservableTraversalNode --> "1" Observable
-            ObservableTraversalNode ..> ObservablePatchSequence
+            ObservableTraverseNode --> "1" Observable
+            ObservableTraverseNode ..> ObservablePatchSequence
 
             class GeneralPolyhedralAbstraction {
                 --type aliases--
                 using GeneralPolyhedralAbstractionConstSharedPtr = std::shared_ptr<GeneralPolyhedralAbstraction>
                 --data members--
-                -m_nodeByState: std::unordered_map<unsigned, ObservableTraversalNode>
+                -m_nodeByState: std::unordered_map<unsigned, ObservableTraverseNode>
                 --constructors--
                 +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::string_view name = "GeneralPolyhedralAbstraction")
                 +GeneralPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::vector<Observable>&& observables, int maxObservablePatchSequenceLength, std::string_view name = "GeneralPolyhedralAbstraction")
                 --member function--
                 -buildAbstraction(int maxObservablePatchSequenceLength, std::vector<Observable>&& observables): void
-                -createStates(const ObservableTraversalNode& singTravNode, const ObservableTraversalNode& openTravNode): SingOpenStatePair
+                -createStates(const ObservableTraverseNode& singTravNode, const ObservableTraverseNode& openTravNode): SingOpenStatePair
                 -createEdges(SingOpenStatePair singOpenStatePair, const SingOpenStatePair& adjSingOpenStatePair): void
                 -advanceByOne(const ObservablePatchSequence& observablePatchSequence): ObservablePatchSequence
             }
@@ -144,7 +144,7 @@ package abstractions {
             }
 
             GeneralPolyhedralAbstraction ..> ObservablePatchSequence
-            GeneralPolyhedralAbstraction --> "*" ObservableTraversalNode
+            GeneralPolyhedralAbstraction --> "*" ObservableTraverseNode
             GeneralPolyhedralAbstraction ..> SingOpenStatePair
             GeneralPolyhedralAbstraction --|> PolyhedralAbstraction
     }
@@ -187,11 +187,11 @@ package abstractions {
 
             class TileExtractorDoublyLinkedList {
                 --data members--
-                 -m_powersetLinkedList: PowersetLinkedList
+                 #m_powersetLinkedList: PowersetLinkedList
                 --constructors--
                  +TileExtractorDoublyLinkedList()
                 --member functions--
-                -buildPowersetLinkedList(const Observable& observable)
+                #buildPowersetLinkedList(const Observable& observable)
                 --static functions--
                 {static}-bool merge(const PowersetLinkedList::NodePtr& i, const PowersetLinkedList::NodePtr& j)
             }

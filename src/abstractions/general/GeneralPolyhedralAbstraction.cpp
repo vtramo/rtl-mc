@@ -58,8 +58,8 @@ void GeneralPolyhedralAbstraction::buildAbstraction(const unsigned maxObservable
                 for (const auto& sequence: sequences)
                 {
                     ObservablePatchSequence observablePatchSequence { sequence, spaceDimension() };
-                    ObservableTraversalNode singTravNode { observablePatchSequence, preFlow, true };
-                    ObservableTraversalNode openTravNode { observablePatchSequence, preFlow };
+                    ObservableTraverseNode singTravNode { observablePatchSequence, preFlow, true };
+                    ObservableTraverseNode openTravNode { observablePatchSequence, preFlow };
                     if (singTravNode.isEmpty() && openTravNode.isEmpty()) continue;
 
                     SingOpenStatePair singOpenStatePair { createStates(singTravNode, openTravNode) };
@@ -90,8 +90,8 @@ void GeneralPolyhedralAbstraction::buildAbstraction(const unsigned maxObservable
 }
 
 SingOpenStatePair GeneralPolyhedralAbstraction::createStates(
-    const ObservableTraversalNode& singTravNode,
-    const ObservableTraversalNode& openTravNode
+    const ObservableTraverseNode& singTravNode,
+    const ObservableTraverseNode& openTravNode
 )
 {
     if (singTravNode.isEmpty() && openTravNode.isEmpty())
@@ -169,14 +169,14 @@ PowersetConstSharedPtr GeneralPolyhedralAbstraction::points(const unsigned state
 {
     PolyhedralAbstraction::assertThatStateIsInRange(state);
 
-    const ObservableTraversalNode& observableTraversalNode { m_nodeByState.at(state) };
-    return observableTraversalNode.travPoints();
+    const ObservableTraverseNode& observableTraverseNode { m_nodeByState.at(state) };
+    return observableTraverseNode.travPoints();
 }
 
 const Observable& GeneralPolyhedralAbstraction::observable(const unsigned state) const
 {
     PolyhedralAbstraction::assertThatStateIsInRange(state);
 
-    const ObservableTraversalNode& observableTraversalNode { m_nodeByState.at(state) };
-    return observableTraversalNode.observable();
+    const ObservableTraverseNode& observableTraverseNode { m_nodeByState.at(state) };
+    return observableTraverseNode.observable();
 }

@@ -5,22 +5,22 @@
 #include "traverse.h"
 #include "formula.h"
 
-class ObservableTraversalNode
+class ObservableTraverseNode
 {
 public:
-    ObservableTraversalNode(const ObservablePatchSequence& sequence, const Poly& preFlow, const bool isSing = false)
+    ObservableTraverseNode(const ObservablePatchSequence& sequence, const Poly& preFlow, const bool isSing = false)
         : m_isSing { isSing }
     {
         if (sequence.isEmpty())
         {
-            throw std::invalid_argument("ObservableTraversalNode: empty sequence!");
+            throw std::invalid_argument("ObservableTraverseNode: empty sequence!");
         }
 
         computeObservable(sequence);
         computeTravPoints(sequence, preFlow);
     }
 
-    ObservableTraversalNode() = default;
+    ObservableTraverseNode() = default;
 
     [[nodiscard]] const Observable& observable() const { return m_observable; }
     [[nodiscard]] PowersetConstSharedPtr travPoints() const { return m_travPoints; }

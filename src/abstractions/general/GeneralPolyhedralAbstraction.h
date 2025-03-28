@@ -4,7 +4,7 @@
 
 #include "PolyhedralAbstraction.h"
 #include "SingOpenStatePair.h"
-#include "ObservableTraversalNode.h"
+#include "ObservableTraverseNode.h"
 #include "PolyhedralSystem.h"
 
 class GeneralPolyhedralAbstraction: public PolyhedralAbstraction
@@ -27,10 +27,10 @@ public:
     [[nodiscard]] PowersetConstSharedPtr points(unsigned state) const override;
     [[nodiscard]] const Observable& observable(unsigned state) const override;
 private:
-    std::unordered_map<unsigned, ObservableTraversalNode> m_nodeByState {};
+    std::unordered_map<unsigned, ObservableTraverseNode> m_nodeByState {};
 
     void buildAbstraction(unsigned maxObservablePatchSequenceLength, std::vector<Observable>&& observables);
-    SingOpenStatePair createStates(const ObservableTraversalNode& singTravNode, const ObservableTraversalNode& openTravNode);
+    SingOpenStatePair createStates(const ObservableTraverseNode& singTravNode, const ObservableTraverseNode& openTravNode);
     void createEdges(SingOpenStatePair singOpenStatePair, const SingOpenStatePair& adjSingOpenStatePair);
     ObservablePatchSequence advanceByOne(const ObservablePatchSequence& observablePatchSequence);
 };

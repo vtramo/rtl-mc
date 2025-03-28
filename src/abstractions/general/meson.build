@@ -11,7 +11,7 @@ general_abstraction_source_files = [
     current_source_dir / 'ObservablePatchSequence.h',
     current_source_dir / 'GeneralPolyhedralAbstraction.h',
     current_source_dir / 'GeneralPolyhedralAbstraction.cpp',
-    current_source_dir / 'ObservableTraversalNode.h',
+    current_source_dir / 'ObservableTraverseNode.h',
     current_source_dir / 'SingOpenStatePair.h',
 ]
 
