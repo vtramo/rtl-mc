@@ -30,6 +30,22 @@ bool PolyhedralSystem::hasClosedFlow() const
     return m_flow.is_topologically_closed();
 }
 
+bool PolyhedralSystem::hasBoundedFlow() const
+{
+    return m_flow.is_bounded();
+}
+
+/*!
+ * The flow constraint is compact iff is a closed and bounded region.
+ *
+ * \see hasClosedFlow
+ * \see hasBoundedFlow
+ */
+bool PolyhedralSystem::hasCompactFlow() const
+{
+    return hasClosedFlow() && hasBoundedFlow();
+}
+
 bool PolyhedralSystem::isMovementForced() const
 {
     return m_isMovementForced;
@@ -43,6 +59,22 @@ const Powerset& PolyhedralSystem::invariant() const
 bool PolyhedralSystem::hasBoundedInvariant() const
 {
     return m_invariant.is_bounded();
+}
+
+bool PolyhedralSystem::hasClosedInvariant() const
+{
+    return m_invariant.is_topologically_closed();
+}
+
+/*!
+ * The invariant is compact iff is a closed and bounded region.
+ *
+ * \see hasClosedInvariant
+ * \see hasBoundedInvariant
+ */
+bool PolyhedralSystem::hasCompactInvariant() const
+{
+    return hasClosedInvariant() && hasBoundedInvariant();
 }
 
 const PolyhedralSystemSymbolTable& PolyhedralSystem::symbolTable() const

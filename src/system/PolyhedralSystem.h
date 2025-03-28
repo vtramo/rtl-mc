@@ -27,6 +27,14 @@ using PolyhedralSystemSharedPtr = std::shared_ptr<PolyhedralSystem>;
  */
 using PolyhedralSystemConstSharedPtr = std::shared_ptr<const PolyhedralSystem>;
 
+/*!
+ *  \brief Type alias for a unique pointer to a \ref PolyhedralSystem.
+ *
+ * This type is used to manage unique ownership of a dynamically allocated \ref PolyhedralSystem object.
+ * The object will be automatically deleted when the pointer referencing it goes out of scope.
+ */
+using PolyhedralSystemUniquePtr = std::unique_ptr<PolyhedralSystem>;
+
 
 /*!
  * \class PolyhedralSystem
@@ -63,17 +71,29 @@ public:
     [[nodiscard]] const Poly& preFlow() const;
 
     /*!
-     * \brief Checks if the flow is omnidirectional.
-     * \return `true` if the flow is omnidirectional, `false` otherwise.
+     * \brief Checks if the flow constraint is omnidirectional.
+     * \return `true` if the flow constraint is omnidirectional, `false` otherwise.
      * \see isOmnidirectionalFlow(const Poly& flow)
      */
     [[nodiscard]] bool hasOmnidirectionalFlow() const;
+
+    /*!
+     * \brief Checks if the flow constraint is bounded.
+     * \return `true` if the flow constraint is bounded, `false` otherwise.
+     */
+    [[nodiscard]] bool hasBoundedFlow() const;
 
     /*!
      * \brief Checks if the flow constraint is topologically closed.
      * \return `true` if the flow is closed, `false` otherwise.
      */
     [[nodiscard]] bool hasClosedFlow() const;
+
+    /*!
+     * \brief Checks if the flow constraint is compact.
+     * \return `true` if the flow is compact, `false` otherwise.
+     */
+    [[nodiscard]] bool hasCompactFlow() const;
 
     /*!
      * \brief Checks if movement is forced in the system (i.e., the origin is not in the flow closure).
@@ -92,6 +112,18 @@ public:
      * \return `true` if the invariant is bounded, `false` otherwise.
      */
     [[nodiscard]] bool hasBoundedInvariant() const;
+
+    /*!
+     * \brief Checks if the invariant region is topologically closed.
+     * \return `true` if the invariant is closed, `false` otherwise.
+     */
+    [[nodiscard]] bool hasClosedInvariant() const;
+
+    /*!
+     * \brief Checks if the invariant region is compact.
+     * \return `true` if the invariant is compact, `false` otherwise.
+     */
+    [[nodiscard]] bool hasCompactInvariant() const;
 
     /*!
      * \brief Returns the symbol table associated with the polyhedral system.
@@ -198,7 +230,7 @@ public:
     friend bool operator== (const PolyhedralSystem& polyhedralSystem1, const PolyhedralSystem& polyhedralSystem2);
     friend std::istream& operator>> (std::istream&, PolyhedralSystem&);
 
-private:
+protected:
     Powerset m_invariant { 0, PPL::EMPTY };
     Poly m_flow { 0, PPL::EMPTY };
     bool m_hasOmnidirectionalFlow { false };
