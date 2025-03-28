@@ -34,24 +34,27 @@ inline std::pair<spot::formula, PowersetUniquePtr> brinkMust(PolyhedralSystemCon
 inline std::pair<spot::formula, PowersetUniquePtr> stay(PolyhedralSystemConstSharedPtr polyhedralSystem)
 {
     spot::formula stay { ap("stay") };
-    PowersetUniquePtr stayInterpretation { std::make_unique<Powerset>(polyhedralSystem->spaceDimension(), PPL::EMPTY) };
 
     if (polyhedralSystem->hasOmnidirectionalFlow())
     {
-        return std::make_pair<spot::formula, PowersetUniquePtr>(std::move(stay), std::move(stayInterpretation));
+        return std::make_pair<spot::formula, PowersetUniquePtr>(
+            std::move(stay),
+            std::make_unique<Powerset>(polyhedralSystem->spaceDimension(), PPL::UNIVERSE)
+        );
     }
 
+    PowersetUniquePtr stayInterpretation { std::make_unique<Powerset>(polyhedralSystem->spaceDimension(), PPL::EMPTY) };
     std::vector observables { polyhedralSystem->generateObservables() };
     for (Observable observable: observables)
     {
         PowersetConstSharedPtr observableInterpretation { observable.interpretation() };
-        for (auto patch { observableInterpretation->begin() }; patch != observableInterpretation->end(); ++patch)
+        for (const auto& patch: *observableInterpretation)
         {
-            PolyUniquePtr patchCone { characteristicCone(patch->pointset()) };
+            PolyUniquePtr patchCone { characteristicCone(patch.pointset()) };
             PolyUniquePtr patchConeIntersectedWithFlow { PPLUtils::intersect(*patchCone, polyhedralSystem->flow()) };
             if (!patchConeIntersectedWithFlow->is_empty())
             {
-                stayInterpretation->add_disjunct(patch->pointset());
+                stayInterpretation->add_disjunct(patch.pointset());
             }
         }
     }
