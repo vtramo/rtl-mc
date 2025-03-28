@@ -88,6 +88,10 @@ package system {
         +totalAtoms() : int
         +containsAtom(spot::formula atom): bool
         +containsAtom(std::string_view atom): bool
+        +extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations): PolyhedralSystemUniquePtr
+        +extend(const std::vector<std::pair<std::string_view, Powerset>>& atomInterpretations): PolyhedralSystemUniquePtr
+        +extend(const spot::formula& atom, const Powerset& interpretation): PolyhedralSystemUniquePtr
+        +extend(const std::string_view atom, const Powerset& interpretation): PolyhedralSystemUniquePtr
         +getAtomInterpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
         +getAtomInterpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
         +setConstraintOutputMinimized(bool) : void

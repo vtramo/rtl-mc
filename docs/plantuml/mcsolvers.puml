@@ -240,7 +240,6 @@ package mcsolvers {
         #discretiseRtlFormula() override: double
         #constructPolyhedralLtlAutomaton override: void
         #preprocessPolyhedralSystem() override: void
-        #virtual addBrinkAtomInPolyhedralSystem(): void
     }
 
     OmnidirectionalMaySolver --|> OmnidirectionalSolver

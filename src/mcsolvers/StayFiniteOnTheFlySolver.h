@@ -22,7 +22,7 @@ protected:
     void preprocessPolyhedralSystem() override
     {
         const auto& [stayAtom, stayInterpretation] { stay(m_polyhedralSystem) };
-        m_polyhedralSystem->addAtomInterpretation(stayAtom, *stayInterpretation);
+        m_polyhedralSystem = m_polyhedralSystem->extend(stayAtom, *stayInterpretation);
     }
 
     void preprocessRtlFormula() override

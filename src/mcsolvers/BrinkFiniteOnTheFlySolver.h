@@ -30,7 +30,8 @@ protected:
                 ? brinkMay(m_polyhedralSystem)
                 : brinkMust(m_polyhedralSystem)
         };
-        m_polyhedralSystem->addAtomInterpretation(brinkAtom, *brinkInterpretation);
+
+        m_polyhedralSystem = m_polyhedralSystem->extend(brinkAtom, *brinkInterpretation);
     }
 
     void preprocessRtlFormula() override

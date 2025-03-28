@@ -76,7 +76,7 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->hasCompactFlow() && isNonRecurrent(rtlFormula))
         {
-            Log::log(Verbosity::verbose, "[Semantics] Infinite-time semantics, non-recurrent RTL and closed flow.");
+            Log::log(Verbosity::verbose, "[Semantics] Infinite-time semantics, non-recurrent RTL and compact flow.");
 
             solver = std::make_unique<StayFiniteOnTheFlySolver>(
                 polyhedralSystem,
@@ -125,7 +125,7 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->hasCompactFlow() && isNonRecurrent(rtlFormula))
         {
-            Log::log(Verbosity::verbose, "[Semantics] May semantics, non-recurrent RTL and closed flow.");
+            Log::log(Verbosity::verbose, "[Semantics] May semantics, non-recurrent RTL and compact flow.");
 
             solver = std::make_unique<BrinkStayFiniteOnTheFlySolver>(
                 polyhedralSystem,
@@ -176,7 +176,7 @@ int main(const int argc, char *argv[])
         }
         else if (polyhedralSystem->hasCompactFlow() && isNonRecurrent(rtlFormula))
         {
-            Log::log(Verbosity::verbose, "[Semantics] Must semantics, non-recurrent RTL and closed flow.");
+            Log::log(Verbosity::verbose, "[Semantics] Must semantics, non-recurrent RTL and compact flow.");
 
             solver = std::make_unique<BrinkStayFiniteOnTheFlySolver>(
                 polyhedralSystem,

@@ -171,19 +171,30 @@ public:
     [[nodiscard]] std::optional<const AtomInterpretation* const> getAtomInterpretation(const spot::formula& atom) const;
 
     /*!
-     * \brief Adds a new atomic proposition with its interpretation.
-     * \param atom The atomic proposition.
-     * \param interpretation The polyhedron representing the interpretation of the atomic proposition.
-     * \return A reference to the newly added \ref AtomInterpretation.
-     * \throws std::invalid_argument If the atom already exists or is not an atomic proposition.
+     * \brief Create a new \c PolyhedralSystem by extending it with new atomic propositions and their interpretations.
+     * \param atomInterpretations A vector of pairs, each consisting of an atomic proposition and its corresponding interpretation.
+     * \return A new \ref PolyhedralSystem instance that extends the original system with the added atomic proposition interpretations.
+     * \throws std::invalid_argument If any of the atoms already exists or are not valid atomic propositions.
      */
-    const AtomInterpretation& addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation);
+    [[nodiscard]] PolyhedralSystemUniquePtr extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations) const;
 
     /*!
      * \overload
-     * \see addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation)
+     * \see extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations)
      */
-    const AtomInterpretation& addAtomInterpretation(std::string_view atom, const Powerset& interpretation);
+    [[nodiscard]] PolyhedralSystemUniquePtr extend(const std::vector<std::pair<std::string_view, Powerset>>& atomInterpretations) const;
+
+    /*!
+     * \overload
+     * \see extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations)
+     */
+    [[nodiscard]] PolyhedralSystemUniquePtr extend(const spot::formula& atom, const Powerset& interpretation) const;
+
+    /*!
+     * \overload
+     * \see extend(const std::vector<spot::formula, Powerset>& atomInterpretations)
+     */
+    [[nodiscard]] PolyhedralSystemUniquePtr extend(std::string_view atom, const Powerset& interpretation) const;
 
     /*!
      * \brief Returns the BDD dictionary used by the system.
@@ -306,6 +317,21 @@ protected:
      * \brief Evaluates properties of the flow, such as whether it is omnidirectional or forces movement.
      */
     void evaluateFlowProperties();
+
+    /*!
+     * \brief Adds a new atomic proposition with its interpretation.
+     * \param atom The atomic proposition.
+     * \param interpretation The polyhedron representing the interpretation of the atomic proposition.
+     * \return A reference to the newly added \ref AtomInterpretation.
+     * \throws std::invalid_argument If the atom already exists or is not an atomic proposition.
+     */
+    const AtomInterpretation& addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation);
+
+    /*!
+     * \overload
+     * \see addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation)
+     */
+    const AtomInterpretation& addAtomInterpretation(std::string_view atom, const Powerset& interpretation);
 };
 
 /*!

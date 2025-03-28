@@ -120,6 +120,40 @@ const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const spot::fo
     return m_denotation.emplace(atom, AtomInterpretation { interpretation, m_invariant }).first->second;
 }
 
+/*!
+ * This method creates a new instance of \ref PolyhedralSystem with the specified atomic propositions and their interpretations added.
+ * It does not modify the current \ref PolyhedralSystem.
+ */
+PolyhedralSystemUniquePtr PolyhedralSystem::extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations) const
+{
+    PolyhedralSystemUniquePtr extendedPolyhedralSystem { std::make_unique<PolyhedralSystem>(*this) };
+    for (const auto& [atom, interpretation]: atomInterpretations)
+        extendedPolyhedralSystem->addAtomInterpretation(atom, interpretation);
+    return extendedPolyhedralSystem;
+}
+
+PolyhedralSystemUniquePtr PolyhedralSystem::extend(const std::vector<std::pair<std::string_view, Powerset>>& atomInterpretations) const
+{
+    PolyhedralSystemUniquePtr extendedPolyhedralSystem { std::make_unique<PolyhedralSystem>(*this) };
+    for (const auto& [atom, interpretation]: atomInterpretations)
+        extendedPolyhedralSystem->addAtomInterpretation(atom, interpretation);
+    return extendedPolyhedralSystem;
+}
+
+PolyhedralSystemUniquePtr PolyhedralSystem::extend(const spot::formula& atom, const Powerset& interpretation) const
+{
+    PolyhedralSystemUniquePtr extendedPolyhedralSystem { std::make_unique<PolyhedralSystem>(*this) };
+    extendedPolyhedralSystem->addAtomInterpretation(atom, interpretation);
+    return extendedPolyhedralSystem;
+}
+
+PolyhedralSystemUniquePtr PolyhedralSystem::extend(const std::string_view atom, const Powerset& interpretation) const
+{
+    PolyhedralSystemUniquePtr extendedPolyhedralSystem { std::make_unique<PolyhedralSystem>(*this) };
+    extendedPolyhedralSystem->addAtomInterpretation(atom, interpretation);
+    return extendedPolyhedralSystem;
+}
+
 bool PolyhedralSystem::containsAtom(const std::string_view atom) const
 {
     return containsAtom(ap(atom));

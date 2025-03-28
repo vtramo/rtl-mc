@@ -37,6 +37,11 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
     , m_formulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
     , m_discreteLtlFormula { std::move(discreteLtlFormula) }
 {
+    if (m_discreteLtlFormula.formula() == nullptr)
+    {
+        throw std::invalid_argument("The provided DiscreteLtlFormula contains a null formula. A valid formula must be provided.");
+    }
+
     PolyhedralLtlAutomaton::initializeStats();
 }
 
@@ -48,6 +53,11 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
     , m_formulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
     , m_discreteLtlFormula { std::move(discreteLtlFormula) }
 {
+    if (m_discreteLtlFormula.formula() == nullptr)
+    {
+        throw std::invalid_argument("The provided DiscreteLtlFormula contains a null formula. A valid formula must be provided.");
+    }
+
     PolyhedralLtlAutomaton::initializeStats();
 }
 
@@ -150,7 +160,7 @@ void PolyhedralLtlAutomaton::buildAutomaton(
     const std::unordered_set<unsigned>& acceptingStates
 )
 {
-    Log::log(Verbosity::veryVerbose, "[{} - Construction] Construction started.", m_name);
+    Log::log(Verbosity::verbose, "[{} - Construction] Construction started.", m_name);
 
     initializeAutomaton();
 
@@ -289,11 +299,11 @@ void PolyhedralLtlAutomaton::purgeUnreachableStatesThenRenumberAcceptingStates(
 
 void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSeconds)
 {
-    Log::log(Verbosity::veryVerbose, "[{} - Construction] Construction completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
-    Log::log(Verbosity::veryVerbose, "[{} - Construction] Total states: {}.", m_name, totalStates());
-    Log::log(Verbosity::veryVerbose, "[{} - Construction] Total initial states: {}.", m_name, totalInitialStates());
-    Log::log(Verbosity::veryVerbose, "[{} - Construction] Total accepting states: {}.", m_name, totalAcceptingStates());
-    Log::log(Verbosity::veryVerbose, "[{} - Construction] Total edges: {}.", m_name, totalEdges());
+    Log::log(Verbosity::verbose, "[{} - Construction] Construction completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
+    Log::log(Verbosity::verbose, "[{} - Construction] Total states: {}.", m_name, totalStates());
+    Log::log(Verbosity::verbose, "[{} - Construction] Total initial states: {}.", m_name, totalInitialStates());
+    Log::log(Verbosity::verbose, "[{} - Construction] Total accepting states: {}.", m_name, totalAcceptingStates());
+    Log::log(Verbosity::verbose, "[{} - Construction] Total edges: {}.", m_name, totalEdges());
     Log::log(Verbosity::veryVerbose, "[{} - Construction] Initial states: [{}].", m_name, fmt::join(m_initialStates, ", "));
     Log::log(Verbosity::veryVerbose, "[{} - Construction] Accepting states: [{}].", m_name, fmt::join(m_acceptingStates, ", "));
 }
@@ -408,7 +418,7 @@ spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(
 
     spot::translator ltlToNbaTranslator {};
     ltlToNbaTranslator.set_type(spot::postprocessor::TGBA);
-    if (anyOption) ltlToNbaTranslator.set_pref(spot::postprocessor::Any);
+    if (anyOption) ltlToNbaTranslator.set_pref(spot::postprocessor::Any | spot::postprocessor::SBAcc | spot::postprocessor::Small);
     else ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
     ltlToNbaTranslator.set_level(m_optimizationLevel);
 

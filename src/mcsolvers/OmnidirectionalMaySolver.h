@@ -49,13 +49,8 @@ protected:
 
     void preprocessPolyhedralSystem() override
     {
-        addBrinkAtomInPolyhedralSystem();
-    }
-
-    virtual void addBrinkAtomInPolyhedralSystem()
-    {
         const auto& [brinkAtom, brinkInterpretation] { brinkMay(m_polyhedralSystem) };
-        m_polyhedralSystem->addAtomInterpretation(brinkAtom, *brinkInterpretation);
+        m_polyhedralSystem = m_polyhedralSystem->extend(brinkAtom, *brinkInterpretation);
     }
 
     void constructPolyhedralLtlAutomaton() override {}

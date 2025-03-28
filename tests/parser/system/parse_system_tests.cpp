@@ -299,11 +299,11 @@ TEST_CASE("Correctly parse PolyhedralSystem", "[good]")
 
         spot::formula stay { ap("stay") };
         Powerset stayInterpretation { powerset({{ x - y >= 3 }, { x - y <= 6 }}) };
-        polyhedralSystem.addAtomInterpretation(stay, stayInterpretation);
-        REQUIRE(polyhedralSystem.containsAtom(stay));
-        std::optional stayAtomInterpretation { polyhedralSystem.getAtomInterpretation(stay) };
+        PolyhedralSystemUniquePtr stayPolyhedralSystem { polyhedralSystem.extend(stay, stayInterpretation) };
+        REQUIRE(stayPolyhedralSystem->containsAtom(stay));
+        std::optional stayAtomInterpretation { stayPolyhedralSystem->getAtomInterpretation(stay) };
         REQUIRE(stayAtomInterpretation.has_value());
-        REQUIRE((*stayAtomInterpretation)->interpretation() == *intersect(stayInterpretation, polyhedralSystem.invariant()));
+        REQUIRE((*stayAtomInterpretation)->interpretation() == *intersect(stayInterpretation, stayPolyhedralSystem->invariant()));
     }
 
     SECTION("Parse GAP Experiment")

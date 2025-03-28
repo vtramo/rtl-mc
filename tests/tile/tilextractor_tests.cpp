@@ -39,8 +39,8 @@ TEST_CASE("TILEXTRACTOR TEST CASE 1 - Extract Tiles from Polyhedral System")
 
         SECTION("TileExtractorDoublyLinkedList")
         {
-            TileExtractorDoublyLinkedList tileExtractorFast {};
-            std::vector tiles { tileExtractorFast.extractTiles(observables) };
+            TileExtractorDoublyLinkedList tileExtractorDoublyLinkedList {};
+            std::vector tiles { tileExtractorDoublyLinkedList.extractTiles(observables) };
 
             REQUIRE(tiles.size() == 2);
             REQUIRE_THAT(
@@ -120,8 +120,8 @@ TEST_CASE("TILEXTRACTOR TEST CASE 2 (1 observable with 5 patches and 2 tiles).")
 
     SECTION("TileExtractorDoublyLinkedList")
     {
-        TileExtractorDoublyLinkedList tileExtractorFast {};
-        std::vector tiles { tileExtractorFast.extractTiles(observable) };
+        TileExtractorDoublyLinkedList tileExtractorDoublyLinkedList {};
+        std::vector tiles { tileExtractorDoublyLinkedList.extractTiles(observable) };
 
 
         REQUIRE(tiles.size() == 2);
@@ -185,8 +185,8 @@ TEST_CASE("TILEXTRACTOR TEST CASE 3 (1 observable with 5 patches and 5 tiles).")
 
     SECTION("TileExtractorDoublyLinkedList")
     {
-        TileExtractorDoublyLinkedList tileExtractorFast {};
-        std::vector tiles { tileExtractorFast.extractTiles(observable) };
+        TileExtractorDoublyLinkedList tileExtractorDoublyLinkedList {};
+        std::vector tiles { tileExtractorDoublyLinkedList.extractTiles(observable) };
 
 
         REQUIRE(tiles.size() == 5);
@@ -328,8 +328,8 @@ TEST_CASE(
 
     SECTION("TileExtractorDoublyLinkedList")
     {
-        TileExtractorDoublyLinkedList tileExtractorFast {};
-        std::vector tiles { tileExtractorFast.extractTiles(observable) };
+        TileExtractorDoublyLinkedList tileExtractorDoublyLinkedList {};
+        std::vector tiles { tileExtractorDoublyLinkedList.extractTiles(observable) };
 
 
         REQUIRE(tiles.size() == 5);
