@@ -74,7 +74,7 @@ int main(const int argc, char *argv[])
                 isUniversalDenotation
             );
         }
-        else if (polyhedralSystem->hasClosedFlow() && isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasCompactFlow() && isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] Infinite-time semantics, non-recurrent RTL and closed flow.");
 
@@ -91,7 +91,7 @@ int main(const int argc, char *argv[])
             spdlog::error(
                 "Model-checking problem for infinite-time semantics: The problem can be solved under the following conditions:\n"
                 "- Omnidirectional Flow: the interior of the polyhedral system's flow contains the origin, with no restrictions on the formula.\n"
-                "- Non-Recurrent RTL Formula and Closed Flow: the formula is non-recurrent and the flow of the polyhedral system is closed.\n"
+                "- Non-Recurrent RTL Formula and Compact Flow: the formula is non-recurrent and the flow of the polyhedral system is compact.\n"
                 "When these conditions are not satisfied, the problem remains open and unsolved."
             );
 
@@ -123,7 +123,7 @@ int main(const int argc, char *argv[])
                 BrinkSemantics::may
             );
         }
-        else if (polyhedralSystem->hasClosedFlow() && isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasCompactFlow() && isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] May semantics, non-recurrent RTL and closed flow.");
 
@@ -141,7 +141,7 @@ int main(const int argc, char *argv[])
             spdlog::error(
                 "Model-checking problem for may semantics: The problem can be solved under the following conditions:\n"
                 "- Omnidirectional Flow: the interior of the polyhedral system's flow contains the origin, with no restrictions on the formula.\n"
-                "- Non-Recurrent RTL Formula and Closed Flow: the formula is non-recurrent and the flow of the polyhedral system is closed.\n"
+                "- Non-Recurrent RTL Formula and Compact Flow: the formula is non-recurrent and the flow of the polyhedral system is compact.\n"
                 "- Forced Motion and Bounded Invariant.\n"
                 "When these conditions are not satisfied, the problem remains open and unsolved."
             );
@@ -174,7 +174,7 @@ int main(const int argc, char *argv[])
                 BrinkSemantics::must
             );
         }
-        else if (polyhedralSystem->hasClosedFlow() && isNonRecurrent(rtlFormula))
+        else if (polyhedralSystem->hasCompactFlow() && isNonRecurrent(rtlFormula))
         {
             Log::log(Verbosity::verbose, "[Semantics] Must semantics, non-recurrent RTL and closed flow.");
 
@@ -192,7 +192,7 @@ int main(const int argc, char *argv[])
             spdlog::error(
                 "Model-checking problem for must semantics: The problem can be solved under the following conditions:\n"
                 "- Omnidirectional Flow: the interior of the polyhedral system's flow contains the origin, with no restrictions on the formula.\n"
-                "- Non-Recurrent RTL Formula and Closed Flow: the formula is non-recurrent and the flow of the polyhedral system is closed.\n"
+                "- Non-Recurrent RTL Formula and Compact Flow: the formula is non-recurrent and the flow of the polyhedral system is compact.\n"
                 "- Forced Motion and Bounded Invariant.\n"
                 "When these conditions are not satisfied, the problem remains open and unsolved."
             );
