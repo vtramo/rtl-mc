@@ -46,7 +46,7 @@ unsigned Automaton::totalEdges() const
     return m_automaton->num_edges();
 }
 
-unsigned Automaton::isInitialState(const unsigned state) const
+bool Automaton::isInitialState(const unsigned state) const
 {
     assertThatStateIsInRange(state);
 

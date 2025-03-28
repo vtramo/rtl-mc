@@ -1,6 +1,5 @@
 #include "BackwardNFA.h"
-
-#include <Timer.h>
+#include "Timer.h"
 
 BackwardNFA::BackwardNFA()
 {
@@ -96,9 +95,14 @@ void BackwardNFA::createNewEdge(const unsigned srcState, const unsigned dstState
     }
 }
 
-void BackwardNFA::purgeUnreachableStates()
+void BackwardNFA::postprocessAutomaton()
 {
     createDummyInitialStateWithEdgesToReachableAcceptingStates();
+    purgeUnreachableStates();
+}
+
+void BackwardNFA::purgeUnreachableStates()
+{
     spot::twa_graph::shift_action renumberNfaAcceptingStatesStates { &renumberOrRemoveStatesAfterPurge };
     RenumberingContext renumberingContext { &m_initialStates, &m_acceptingStates, &m_stateDenotationById, &m_dummyInitialState };
     m_automaton->purge_unreachable_states(&renumberNfaAcceptingStatesStates, &renumberingContext);

@@ -111,7 +111,7 @@ const std::unordered_set<unsigned>& PolyhedralSynchronousProductAutomaton::initi
     return m_initialStates;
 }
 
-unsigned PolyhedralSynchronousProductAutomaton::isInitialState(const unsigned state) const
+bool PolyhedralSynchronousProductAutomaton::isInitialState(const unsigned state) const
 {
     return m_initialStates.count(state);
 }

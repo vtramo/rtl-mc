@@ -74,6 +74,7 @@ package automata {
         #eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nf) : void
         #purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaAcceptingStates) : void
         #stateLabelsAsBdd(unsigned outEdgeState) : bdd
+        #postprocessAutomaton() : void
         #createDummyInitialStateWithEdgesToInitialStates() : void
         #updatePatchStats(int totPatches) : void
         #setNfaStats(double executionTimeSeconds) : void

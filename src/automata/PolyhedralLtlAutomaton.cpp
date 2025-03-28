@@ -99,7 +99,7 @@ unsigned PolyhedralLtlAutomaton::totalEdges() const
 {
     const unsigned numEdges { m_automaton->num_edges() };
     if (numEdges == 0) return 0;
-    return m_automaton->num_edges() - m_dummyEdges;
+    return numEdges - m_dummyEdges;
 }
 
 unsigned PolyhedralLtlAutomaton::totalAcceptingStates() const
@@ -113,7 +113,7 @@ unsigned PolyhedralLtlAutomaton::totalStates() const
     return m_automaton->num_states() - DUMMY_INITIAL_STATE;
 }
 
-unsigned PolyhedralLtlAutomaton::isInitialState(const unsigned state) const
+bool PolyhedralLtlAutomaton::isInitialState(const unsigned state) const
 {
     assertThatStateIsInRange(state);
 
@@ -210,6 +210,11 @@ void PolyhedralLtlAutomaton::buildAutomaton(
 
     assert(m_stateDenotationById.size() == m_automaton->num_states());
 
+    postprocessAutomaton();
+}
+
+void PolyhedralLtlAutomaton::postprocessAutomaton()
+{
     createDummyInitialStateWithEdgesToInitialStates();
     purgeUnreachableStates();
 }
@@ -476,10 +481,8 @@ std::ostream& operator<< (std::ostream& out, const PolyhedralLtlAutomaton& autom
         out << "State " << state << '\n';
         const PolyhedralSystem& polyhedralSystem { automaton.m_formulaDenotationMap.getPolyhedralSystem() };
         stateDenotation.print(out, polyhedralSystem.symbolTable());
-        out << std::boolalpha;
-        out << "\nIs initial state: " << automaton.isInitialState(state) << '\n';
+        out << std::boolalpha << "\nIs initial state: " << automaton.isInitialState(state) << '\n';
         out << "Is accepting state: " << automaton.isAcceptingState(state) << '\n';
-        out << std::noboolalpha;
 
         out << "Successors: [";
         first = true;

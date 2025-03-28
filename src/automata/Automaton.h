@@ -20,7 +20,7 @@ public:
     [[nodiscard]] virtual unsigned totalInitialStates() const;
     [[nodiscard]] virtual unsigned totalAcceptingStates() const;
     [[nodiscard]] virtual unsigned totalEdges() const;
-    [[nodiscard]] virtual unsigned isInitialState(unsigned state) const;
+    [[nodiscard]] virtual bool isInitialState(unsigned state) const;
     [[nodiscard]] virtual bool isAcceptingState(unsigned state) const;
     [[nodiscard]] virtual EdgeIterator successors(unsigned state) const;
     [[nodiscard]] virtual bool hasSuccessors(unsigned state) const;

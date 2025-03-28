@@ -21,7 +21,7 @@ public:
     [[nodiscard]] unsigned totalEdges() const override;
     [[nodiscard]] unsigned totalAcceptingStates() const override;
     [[nodiscard]] unsigned totalStates() const override;
-    [[nodiscard]] unsigned isInitialState(unsigned state) const override;
+    [[nodiscard]] bool isInitialState(unsigned state) const override;
     [[nodiscard]] bool isAcceptingState(unsigned state) const override;
     [[nodiscard]] virtual const std::unordered_set<unsigned>& initialStates() const;
     [[nodiscard]] virtual const std::unordered_set<unsigned>& acceptingStates() const;
@@ -91,6 +91,7 @@ protected:
     virtual void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr twaGraph);
     virtual void createNewEdge(unsigned srcState, unsigned dstState);
     virtual void purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr twaGraph, std::unordered_set<unsigned>& acceptingStates);
+    virtual void postprocessAutomaton();
     virtual void onConstructionCompleted(double executionTimeSeconds);
     virtual void logConstructionCompleted(double executionTimeSeconds);
     virtual void purgeUnreachableStates();

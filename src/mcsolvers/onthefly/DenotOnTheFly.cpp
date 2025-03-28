@@ -41,6 +41,7 @@ PowersetUniquePtr DenotOnTheFly::run() {
                 acceptingState,
                 PPLOutput::toString(*acceptingStateResult, m_polyhedralSystem->symbolTable())
             );
+            ++patchIndex;
         }
 
         PPLUtils::fusion(*result, *acceptingStateResult);

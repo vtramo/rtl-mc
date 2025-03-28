@@ -18,7 +18,7 @@ public:
         std::string_view name = "PolyhedralSynchronousProductAutomaton"
     );
 
-    [[nodiscard]] unsigned isInitialState(unsigned state) const override;
+    [[nodiscard]] bool isInitialState(unsigned state) const override;
     [[nodiscard]] bool isAcceptingState(unsigned state) const override;
     [[nodiscard]] unsigned totalInitialStates() const override;
     [[nodiscard]] unsigned totalAcceptingStates() const override;
