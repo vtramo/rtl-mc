@@ -154,7 +154,7 @@ TEST_CASE("Formula denotation map TEST 1")
 
 std::unordered_set<unsigned> predecessors(BackwardNFAConstSharedPtr backwardNfa, unsigned state);
 
-TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
+TEST_CASE("GAP experiment t0 & G(t1) & F(p & F(q)) with HIGH optimization")
 {
     PolyhedralSystemConstSharedPtr polyhedralSystem {
         std::make_shared<PolyhedralSystem>(
@@ -187,7 +187,7 @@ TEST_CASE("t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     REQUIRE(backwardNfa->totalAcceptingStates() == 2);
     REQUIRE(backwardNfa->acceptingStates() == std::unordered_set<unsigned>{ 12, 5 });
     REQUIRE(backwardNfa->initialStates() == std::unordered_set<unsigned>{ 0, 1, 2, 3 });
-    REQUIRE(backwardNfa->totalEdges() == 17);
+    REQUIRE(backwardNfa->totalEdges() == 21);
 
     constexpr unsigned stateZero = 0;
     const StateDenotation& zeroStateDenotation { backwardNfa->stateDenotation(0) };
@@ -612,6 +612,30 @@ TEST_CASE("BackwardNFA invariant NOGAP Experiment")
         BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
         testBackwardNfaInvariant(backwardNfa);
     }
+}
+
+TEST_CASE("BackwardNFA invariant GAP Experiment with formula t0 & F(p & F(q & t1)")
+{
+    PolyhedralSystemConstSharedPtr polyhedralSystem {
+        std::make_shared<PolyhedralSystem>(
+            std::move(
+                *parsePolyhedralSystem(
+                  "Inv ( { a >= 0 & b >= 0 } )"
+                  "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
+                  "p { a > b }"
+                  "q { b > a }"
+                  "t0 { t = 0 }"
+                  "t1 { t <= 10 }"
+              )
+            )
+        )
+    };
+
+    spot::formula rtlf { spot::parse_infix_psl("t0 & F(p & F(q & t1)").f };
+    DiscreteLtlFormula formula { DiscreteFiniteLtlFormula::discretiseRtlFinite(std::move(rtlf)).toLtl() };
+    PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+    BackwardNFAConstSharedPtr backwardNfa { BackwardNFA::buildAutomaton(std::move(formula), std::move(polyhedralSystemFormulaDenotationMap)) };
+    testBackwardNfaInvariant(backwardNfa);
 }
 
 class BackwardNFADepthFirstSearchInvariantCheck final : public BackwardNFADepthFirstSearch {
