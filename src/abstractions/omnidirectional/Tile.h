@@ -29,6 +29,7 @@
  *
  * \see TileExtractor
  * \see Observable
+ * \see adjacency.h
  */
 class Tile
 {

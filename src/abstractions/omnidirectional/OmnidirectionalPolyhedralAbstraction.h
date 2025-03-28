@@ -1,6 +1,6 @@
 /**
  * \file OmnidirectionalPolyhedralAbstraction.h
- * \brief Concrete class representing a \c PolyhedralAbstraction of a \c PolyhedralSystem
+ * \brief Concrete class representing a \c PolyhedralAbstraction of a \c PolyhedralSystem (omnidirectional case)
  */
 
 #pragma once
@@ -46,9 +46,9 @@ using OmnidirectionalPolyhedralAbstractionUniquePtr = std::unique_ptr<Omnidirect
  * \brief Represents a concrete \c PolyhedralAbstraction of a \c PolyhedralSystem with an omnidirectional \f$\mathit{Flow}\f$
  *
  *
- * Represents a finite-state abstraction of a \c PolyhedralSystem in which the \f$\mathit{Flow}\f$ includes the origin
- * \f$(\mathbf{0} \in \mathit{Flow})\f$. In this case, compared to a \c GeneralPolyhedralAbstraction, the problem
- * becomes simpler, and a more compact abstraction based on geometric adjacency is sufficient.
+ * Represents an abstraction of a \c PolyhedralSystem in which the \f$\mathit{Flow}\f$ includes the origin
+ * \f$(\mathbf{0} \in \mathit{Flow})\f$. In this case, compared to a \c GeneralPolyhedralAbstraction, a more
+ * compact abstraction based on geometric adjacency is sufficient.
  *
  * We shall call \c Tile a maximal connected set of patches of the same observable contained in the invariant.
  * Every \c Tile is, therefore, a polyhedron.
@@ -66,8 +66,6 @@ using OmnidirectionalPolyhedralAbstractionUniquePtr = std::unique_ptr<Omnidirect
  *   - For \f$(P,Q,R) \in V\f$ nodes (\c TripleTileNode):
  *      - \f$\mathit{obs}(v) = \mathit{obs}(Q) \cup \{\mathit{sing}\}\f$ (\ref TripleTileNode::observable())
  *      - \f$\mathit{pts}(v) = Q \cap \mathit{cl}(P) \cap \mathit{cl}(R)\f$ (\ref TripleTileNode::points())
- *
- * \extends PolyhedralAbstraction
  *
  * \see PolyhedralAbstraction
  * \see isOmnidirectionalFlow

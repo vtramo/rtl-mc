@@ -81,6 +81,10 @@ void TileExtractorDoublyLinkedList::buildPowersetLinkedList(const Observable& ob
     }
 }
 
+/**
+ * 1. Check the geometric adjacency between the \c Powerset s of the nodes
+ * 2. If adjacent, merges all \c Poly from \p i's \c Powerset into \p j's \c Powerset
+ */
 bool TileExtractorDoublyLinkedList::merge(const PowersetLinkedList::NodePtr& i, const PowersetLinkedList::NodePtr& j)
 {
     assert(i != nullptr && j != nullptr);
