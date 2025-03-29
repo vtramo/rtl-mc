@@ -358,6 +358,13 @@ std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterE
 
     std::vector<Observable> observables {};
     const long totalSubsets { 1L << totalAtoms };
+    observables.reserve(totalSubsets);
+    Observable emptyObservable { generateEmptyObservable() };
+    if (!filterEmptyObservables || !emptyObservable.isEmpty())
+    {
+        observables.push_back(std::move(emptyObservable));
+    }
+
     for (long subsetIndex { 1 }; subsetIndex < totalSubsets; ++subsetIndex)
     {
         PowersetSharedPtr observableDenotation { std::make_shared<Powerset>(spaceDimension(), PPL::UNIVERSE) };

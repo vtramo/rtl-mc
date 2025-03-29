@@ -28,6 +28,8 @@ TEST_CASE("TILEXTRACTOR TEST CASE 1 - Extract Tiles from Polyhedral System")
         REQUIRE(polyhedralSystemParsingResult.ok());
         const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
         REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
+        PPL::Variable X { 0 };
+        PPL::Variable Y { 1 };
 
         const Powerset& p { (*polyhedralSystem.getAtomInterpretation("p"))->interpretation() };
         const Powerset& q { (*polyhedralSystem.getAtomInterpretation("q"))->interpretation() };
@@ -35,24 +37,28 @@ TEST_CASE("TILEXTRACTOR TEST CASE 1 - Extract Tiles from Polyhedral System")
         const Powerset& notQ { (*polyhedralSystem.getAtomInterpretation("q"))->notInterpretation() };
 
         std::vector observables { polyhedralSystem.generateObservables() };
-        REQUIRE(observables.size() == 2);
+        REQUIRE(observables.size() == 3);
 
         SECTION("TileExtractorDoublyLinkedList")
         {
             TileExtractorDoublyLinkedList tileExtractorDoublyLinkedList {};
             std::vector tiles { tileExtractorDoublyLinkedList.extractTiles(observables) };
 
-            REQUIRE(tiles.size() == 2);
+            REQUIRE(tiles.size() == 3);
             REQUIRE_THAT(
                 tiles,
                 Catch::Matchers::UnorderedEquals(
                     std::vector {
                         Tile {
+                            Observable { AP({}), intersect(notP, notQ), PPLOutput::toString(*intersect(notP, notQ), polyhedralSystem.symbolTable()) },
+                            powerset({{ -X > -3, Y > 10, X + Y >= 3 }, { X == 3, Y >= 4 }})
+                        },
+                        Tile {
                             Observable { AP({"p"}), intersect(p, notQ), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
                             p
                         },
                         Tile {
-                            Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                            Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(notP, q), polyhedralSystem.symbolTable()) },
                             q
                         },
                     }
@@ -65,17 +71,21 @@ TEST_CASE("TILEXTRACTOR TEST CASE 1 - Extract Tiles from Polyhedral System")
             TileExtractorGraph tileExtractorGraph {};
             std::vector tiles { tileExtractorGraph.extractTiles(observables) };
 
-            REQUIRE(tiles.size() == 2);
+            REQUIRE(tiles.size() == 3);
             REQUIRE_THAT(
                 tiles,
                 Catch::Matchers::UnorderedEquals(
                     std::vector {
                         Tile {
+                            Observable { AP({}), intersect(notP, notQ), PPLOutput::toString(*intersect(notP, notQ), polyhedralSystem.symbolTable()) },
+                            powerset({{ -X > -3, Y > 10, X + Y >= 3 }, { X == 3, Y >= 4 }})
+                        },
+                        Tile {
                             Observable { AP({"p"}), intersect(p, notQ), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
                             p
                         },
                         Tile {
-                            Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(p, notQ), polyhedralSystem.symbolTable()) },
+                            Observable { AP({"q"}), intersect(notP, q), PPLOutput::toString(*intersect(notP, q), polyhedralSystem.symbolTable()) },
                             q
                         },
                     }
