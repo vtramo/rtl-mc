@@ -22,3 +22,9 @@ RtlParsingResult parseRtl(std::string_view rtl);
  * \return RtlParsingResult containing parsing results and validation info
  */
 RtlParsingResult parseRtl(std::string_view rtl, const spot::atomic_prop_set& allowedAtomicPropositions);
+
+/*!
+ * \overload
+ * \see parseRtl(const std::string_view rtl, const spot::atomic_prop_set& allowedAtomicPropositions)
+ */
+RtlParsingResult parseRtl(const std::istream& rtl, const spot::atomic_prop_set& allowedAtomicPropositions);

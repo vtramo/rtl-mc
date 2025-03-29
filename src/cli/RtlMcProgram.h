@@ -6,8 +6,6 @@
 #include "systemparser.h"
 #include "mcparser.h"
 #include "parsertl.h"
-#include "gap.h"
-#include "nogap.h"
 #include "Verbosity.h"
 #include "AutomatonOptimization.h"
 #include "OutputFormat.h"
@@ -19,25 +17,17 @@ class RtlMcProgram
 {
 public:
     RtlMcProgram(const int argc, char* argv[], const std::string_view version = "0.0.0")
-        : m_rtlMcProgram { "rtl_mc", std::string { version } }
+        : m_rtlMcProgram { "rtl-mc", std::string { version } }
     {
         buildRtlMcProgram();
         parseArgs(argc, argv);
-
-        if (m_gap || m_nogap)
-        {
-            auto [polyhedralSystem, rtlf] = m_gap ? gap(m_k, m_t) : nogap(m_k, m_t);
-            m_polyhedralSystem = polyhedralSystem;
-            m_rtlFormula = rtlf;
-        }
-        else
-        {
-            readAndParsePolyhedralSystemFile();
-            readAndParseRtlFile();
-        }
+        readAndParsePolyhedralSystem();
+        readAndParseRtlFormula();
 
         if (modelChecking())
+        {
             parseModelCheckingPoint();
+        }
     }
 
     [[nodiscard]] PolyhedralSystemSharedPtr polyhedralSystem() const { return m_polyhedralSystem; }
@@ -62,26 +52,21 @@ public:
 private:
     argparse::ArgumentParser m_rtlMcProgram{};
 
-    Semantics m_semantics{};
-    std::string m_polyhedralSystemFilename{};
-    std::string m_rtlFilename{};
+    std::istream* m_polyhedralSystemInputStream;
+    std::istream* m_rtlFormulaInputStream;
+
     PolyhedralSystemSharedPtr m_polyhedralSystem{};
     spot::formula m_rtlFormula{};
 
-    AutomatonOptimizationFlags m_automatonOptimizationFlags{};
-    bool m_directLtl{};
-    bool m_verbose{};
+    Semantics m_semantics{};
     bool m_universal{};
     bool m_existential{};
-    bool m_concurrent{};
-
     std::optional<std::string> m_modelCheckingPointString{};
     Poly m_modelCheckingPoint{};
 
-    bool m_gap{};
-    bool m_nogap{};
-    int m_t{};
-    int m_k{};
+    AutomatonOptimizationFlags m_automatonOptimizationFlags{};
+    bool m_directLtl{};
+    bool m_concurrent{};
 
     Verbosity m_verbosityLevel{Verbosity::silent};
     OutputFormat m_outputFormat{OutputFormat::normal};
@@ -90,14 +75,11 @@ private:
     void buildRtlMcProgram()
     {
         addDescription();
-        addInputTypeGroup();
-        addUniversalOrExistentialGroup();
-        addSemanticsArgument();
-        addModelCheckingArgument();
-        addDirectLtlArgument();
-        addAutomatonOptimizationFlagsGroup();
-        addOutputFormatGroup();
-        addConcurrentArgument();
+        addInputArguments();
+        addSemanticsArguments();
+        addAutomatonOptimizationFlagsArguments();
+        addOutputFormatArguments();
+        addAdvancedArguments();
     }
 
     void addDescription()
@@ -107,38 +89,41 @@ private:
             .set_usage_max_line_width(80);
     }
 
-    void addInputTypeGroup()
+    void addInputArguments()
     {
-        auto& inputTypeGroup{m_rtlMcProgram.add_mutually_exclusive_group(true)};
-        inputTypeGroup.add_argument("-f", "--from-files")
-                      .help("Polyhedral System file and RTL formula φ file.")
-                      .nargs(2);
+        m_rtlMcProgram.add_group("Input options");
 
-        inputTypeGroup.add_argument("--gap")
-                      .nargs(2)
-                      .help("GAP experiment with k alternating steps and max time t. Example: --gap 3 15.")
-                      .scan<'i', int>();
-
-        inputTypeGroup.add_argument("--nogap")
-                      .nargs(2)
-                      .help("NO GAP experiment with k alternating steps and max time t. Example: --nogap 2 20.")
-                      .scan<'i', int>();
+        m_rtlMcProgram.add_argument("--system")
+            .required()
+            .help(
+                "A polyhedral system can be provided in one of the following formats:\n"
+                "   > @FILE  : File path (must start with '@').\n"
+                "   > STRING : A direct string representation of the polyhedral system.\n"
+                "   > -      : Reads the polyhedral system from stdin."
+            )
+            .metavar("<@FILE|STRING|->")
+            .nargs(1);
+        m_rtlMcProgram.add_argument("--formula")
+            .required()
+            .help(
+                "An RTL formula can be provided in one of the following formats:\n"
+                "   > @FILE  : File path (must start with '@').\n"
+                "   > STRING : A direct string representation of the formula.\n"
+                "   > -      : Reads the formula from stdin."
+            )
+            .metavar("<@FILE|STRING|->")
+            .nargs(1);
     }
 
-    void addUniversalOrExistentialGroup()
+    void addSemanticsArguments()
     {
-        auto& existentialOrUniversalGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
-        existentialOrUniversalGroup.add_argument("--existential")
-                                   .help("Compute the set of points from which there exists a trajectory that satisfies φ (default).")
-                                   .flag()
-                                   .store_into(m_existential);
-        existentialOrUniversalGroup.add_argument("--universal")
-                                   .help("Compute the set of points from which every trajectory satisfies φ.")
-                                   .flag()
-                                   .store_into(m_universal);
+        m_rtlMcProgram.add_group("Semantics options");
+        addSemanticsTypeArgument();
+        addUniversalOrExistentialArguments();
+        addModelCheckingArgument();
     }
 
-    void addSemanticsArgument()
+    void addSemanticsTypeArgument()
     {
         m_rtlMcProgram.add_argument("--semantics")
             .action([&](const std::string& semanticsString)
@@ -153,16 +138,33 @@ private:
             })
             .nargs(1)
             .help("E.g. --semantics=fin. Possible semantics:\n"
-                  "> fin:   Considers only finite-time trajectories (default).\n"
-                  "         Suitable for properties that are positively verified as soon as a prefix of the trajectory satisfies them,\n"
-                  "         such as reachability properties.\n"
-                  "> inf:   Considers only infinite-time trajectories.\n"
-                  "         Suitable for non-terminating properties, such as liveness or fairness properties.\n"
-                  "> may:   Considers all trajectories that are either infinite-time, or end in a may-exit point,\n"
-                  "         i.e., a point on the boundary of the invariant from which at least one admissible direction exits.\n"
-                  "> must:  Considers all trajectories that are either infinite-time, or end in a must-exit point,\n"
-                  "         i.e., a point on the boundary of the invariant from which all admissible directions exit.");
+                  "     > fin:   Considers only finite-time trajectories (default).\n"
+                  "              Suitable for properties that are positively verified\n"
+                  "              as soon as a prefix of the trajectory satisfies them,\n"
+                  "              such as reachability properties.\n"
+                  "     > inf:   Considers only infinite-time trajectories.\n"
+                  "              Suitable for non-terminating properties, such as\n"
+                  "              safety or fairness properties.\n"
+                  "     > may:   Considers all trajectories that are either infinite-time,\n"
+                  "              or end in a may-exit point, i.e., a point on the boundary\n"
+                  "              of the invariant from which at least one admissible\n"
+                  "              direction exits.\n"
+                  "     > must:  Considers all trajectories that are either infinite-time,\n"
+                  "              or end in a must-exit point, i.e., a point on the boundary\n"
+                  "              of the invariant from which all admissible directions exit.");
+    }
 
+    void addUniversalOrExistentialArguments()
+    {
+        auto& existentialOrUniversalGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
+        existentialOrUniversalGroup.add_argument("--existential")
+                                   .help("Compute the set of points from which there exists a trajectory that satisfies φ (default).")
+                                   .flag()
+                                   .store_into(m_existential);
+        existentialOrUniversalGroup.add_argument("--universal")
+                                   .help("Compute the set of points from which every trajectory satisfies φ.")
+                                   .flag()
+                                   .store_into(m_universal);
     }
 
     void addModelCheckingArgument()
@@ -181,17 +183,9 @@ private:
                       });
     }
 
-    void addDirectLtlArgument()
+    void addAutomatonOptimizationFlagsArguments()
     {
-        m_rtlMcProgram.add_argument("--direct-ltl")
-                      .help("Discretise the RTLf formula directly into LTL in a single step, improving performance (experimental).\n"
-                            "This option is only effective for finite-time semantics.")
-                      .flag()
-                      .store_into(m_directLtl);
-    }
-
-    void addAutomatonOptimizationFlagsGroup()
-    {
+        m_rtlMcProgram.add_group("Automaton construction optimizations");
         auto& automatonOptimizationGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
         automatonOptimizationGroup.add_argument("--low")
                                   .help("Minimal optimizations during automaton construction (fast, default).")
@@ -223,8 +217,9 @@ private:
                       .store_into(m_automatonOptimizationFlags.any);
     }
 
-    void addOutputFormatGroup()
+    void addOutputFormatArguments()
     {
+        m_rtlMcProgram.add_group("Output format");
         auto& outputFormatGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
         outputFormatGroup.add_argument("-V", "--verbose")
                          .action([&](const auto&)
@@ -254,15 +249,31 @@ private:
                          {
                              m_statsFormat = formatStats;
                              m_outputFormat = OutputFormat::stats;
-                         }).help("Formats the execution statistics. Example: --stats \"Tot states: %Ats\". "
-                             "Placeholders (%Ats, %Ate, etc.) are described in the documentation.");
+                         }).help("Formats the execution statistics.");
+    }
+
+    void addAdvancedArguments()
+    {
+        m_rtlMcProgram.add_group("Advanced options");
+        addDirectLtlArgument();
+        addConcurrentArgument();
+    }
+
+    void addDirectLtlArgument()
+    {
+        m_rtlMcProgram.add_argument("--direct-ltl")
+                      .help("Discretise the RTLf formula directly into LTL in a single step, improving performance (experimental).\n"
+                          "This option is only effective for finite-time semantics.")
+                      .flag()
+                      .store_into(m_directLtl);
     }
 
     void addConcurrentArgument()
     {
         m_rtlMcProgram
             .add_argument("-c", "--concurrent")
-            .help("Enable concurrent execution (highly experimental). This option is only effective with the on-the-fly algorithm for finite semantics.")
+            .help("Enable concurrent execution (highly experimental). This option is only effective with\n"
+                  "the on-the-fly algorithm for finite semantics.")
             .flag()
             .store_into(m_concurrent);
     }
@@ -272,30 +283,52 @@ private:
         try
         {
             m_rtlMcProgram.parse_args(argc, argv);
-            std::vector filenames{m_rtlMcProgram.get<std::vector<std::string>>("--from-files")};
-            if (!filenames.empty())
+
+            std::string polyhedralSystemInput{m_rtlMcProgram.get<std::string>("--system")};
+            std::string rtlFormulaInput{m_rtlMcProgram.get<std::string>("--formula")};
+            bool readPolyhedralSystemFromStdin {};
+
+            static constexpr std::string_view FILE_REFERENCE { "@" };
+            static constexpr std::string_view STDIN { "-" };
+
+            if (polyhedralSystemInput.rfind(FILE_REFERENCE, 0) == 0)
             {
-                m_polyhedralSystemFilename = filenames.at(0);
-                m_rtlFilename = filenames.at(1);
+                polyhedralSystemInput = polyhedralSystemInput.substr(1);
+                m_polyhedralSystemInputStream = { new std::ifstream { polyhedralSystemInput } };
+            }
+            else if (polyhedralSystemInput == STDIN)
+            {
+                readPolyhedralSystemFromStdin = true;
+                m_polyhedralSystemInputStream = &std::cin;
+            }
+            else
+            {
+                m_polyhedralSystemInputStream = { new std::istringstream { polyhedralSystemInput } };
             }
 
-            std::vector gap{m_rtlMcProgram.get<std::vector<int>>("--gap")};
-            if (!gap.empty())
+            if (rtlFormulaInput.rfind(FILE_REFERENCE, 0) == 0)
             {
-                assert(filenames.empty());
-                m_gap = true;
-                setGapNoGapParameters(gap[0], gap[1]);
+                rtlFormulaInput = rtlFormulaInput.substr(1);
+                m_rtlFormulaInputStream = { new std::ifstream { rtlFormulaInput } };
+            }
+            else if (rtlFormulaInput == STDIN)
+            {
+                if (readPolyhedralSystemFromStdin)
+                {
+                    throw std::runtime_error("It is not possible to read both the polyhedral system and the RTL formula from stdin!");
+                }
+
+                m_rtlFormulaInputStream = &std::cin;
+            }
+            else
+            {
+                m_rtlFormulaInputStream = { new std::istringstream { rtlFormulaInput } };
             }
 
-            std::vector nogap{m_rtlMcProgram.get<std::vector<int>>("--nogap")};
-            if (!nogap.empty())
+            if (!m_existential && !m_universal)
             {
-                assert(filenames.empty() && gap.empty());
-                m_nogap = true;
-                setGapNoGapParameters(nogap[0], nogap[1]);
+                m_existential = true;
             }
-
-            if (!m_existential && !m_universal) m_existential = true;
         }
         catch (const std::exception& e)
         {
@@ -305,56 +338,38 @@ private:
         }
     }
 
-    void setGapNoGapParameters(const int k, const int t)
+    void readAndParsePolyhedralSystem()
     {
-        if (k <= 0)
-        {
-            std::cerr << "k parameter must be greater than 0!\n";
-            std::cerr << m_rtlMcProgram;
-            exit(1);
-        }
-
-        if (t <= 0)
-        {
-            std::cerr << "t parameter must be greater than 0!\n";
-            std::cerr << m_rtlMcProgram;
-            exit(1);
-        }
-
-        m_k = k;
-        m_t = t;
-    }
-
-    void readAndParsePolyhedralSystemFile()
-    {
-        std::ifstream polyhedralSystemFile{m_polyhedralSystemFilename};
-        PolyhedralSystemParsingResult polyhedralSystemParsingResult{parsePolyhedralSystem(polyhedralSystemFile)};
+        PolyhedralSystemParsingResult polyhedralSystemParsingResult{parsePolyhedralSystem(*m_polyhedralSystemInputStream)};
         if (!polyhedralSystemParsingResult.ok())
         {
-            std::cerr << "Error while parsing Polyhedral System (file " << m_polyhedralSystemFilename << ").\n";
+            std::cerr << "Error while parsing Polyhedral System.\n";
             std::cerr << polyhedralSystemParsingResult;
             exit(1);
         }
         m_polyhedralSystem = std::make_shared<PolyhedralSystem>(std::move(*polyhedralSystemParsingResult));
-        polyhedralSystemFile.close();
+
+        if (m_polyhedralSystemInputStream != &std::cin)
+        {
+            delete m_polyhedralSystemInputStream;
+        }
     }
 
-    void readAndParseRtlFile()
+    void readAndParseRtlFormula()
     {
-        std::ifstream rtlfFile{m_rtlFilename};
-        std::stringstream buffer{};
-        buffer << rtlfFile.rdbuf();
-        std::string rtlf{buffer.str()};
-        rtlfFile.close();
-
-        RtlParsingResult rtlfParsingResult{parseRtl(rtlf, m_polyhedralSystem->atoms())};
-        if (!rtlfParsingResult.ok())
+        RtlParsingResult rtlParsingResult{parseRtl(*m_rtlFormulaInputStream, m_polyhedralSystem->atoms())};
+        if (!rtlParsingResult.ok())
         {
-            std::cerr << "Error while parsing RTL formula (file " << m_rtlFilename << ").\n";
-            std::cerr << rtlfParsingResult;
+            std::cerr << "Error while parsing RTL formula.\n";
+            std::cerr << rtlParsingResult;
             exit(1);
         }
-        m_rtlFormula = std::move(*rtlfParsingResult);
+        m_rtlFormula = std::move(*rtlParsingResult);
+
+        if (m_rtlFormulaInputStream != &std::cin)
+        {
+            delete m_rtlFormulaInputStream;
+        }
     }
 
     void parseModelCheckingPoint()

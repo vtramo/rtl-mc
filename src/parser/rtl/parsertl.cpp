@@ -65,6 +65,14 @@ RtlParsingResult parseRtl(const std::string_view rtl, const spot::atomic_prop_se
     return rtlfParsingResult;
 }
 
+RtlParsingResult parseRtl(const std::istream& rtl, const spot::atomic_prop_set& allowedAtomicPropositions)
+{
+    std::stringstream buffer {};
+    buffer << rtl.rdbuf();
+    std::string rtlString { buffer.str() };
+    return parseRtl(rtlString, allowedAtomicPropositions);
+}
+
 /*!
  * \brief Converts Spot's parse errors to our \ref RtlParsingResult.
  * \param spotErrors List of parse errors from Spot
