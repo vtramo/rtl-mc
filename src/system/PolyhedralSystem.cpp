@@ -389,10 +389,43 @@ std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterE
 #else
         Observable observable { observableAtoms, observableDenotation };
 #endif
-        observables.push_back(observable);
+        observables.push_back(std::move(observable));
     }
 
     return observables;
+}
+
+/*!
+ * This method creates an empty \c Observable, where the interpretation is defined as the intersection of the
+ * negations of all atomic propositions in the system.
+ *
+ * Specifically, for each atomic proposition \f$p\f$ in the set \f$\mathit{AP}\f$, the interpretation of the empty
+ * observable is the intersection of the negated interpretations \f$\overline{[p]}\f$, where \f$[p]\f$ is
+ * the interpretation of the atomic proposition \f$p\f$.
+ *
+ * The interpretation of the empty observable \f$\emptyset\f$ is computed as:
+ *
+ * \f[
+ * [\![\emptyset]\!] = \bigcap_{p \in \mathit{AP}} \overline{[p]}
+ * \f]
+ *
+ * This ensures that the resulting observable represents the set of points where none of the atomic propositions hold.
+ */
+Observable PolyhedralSystem::generateEmptyObservable() const
+{
+    PowersetSharedPtr observableDenotation { std::make_shared<Powerset>(spaceDimension(), PPL::UNIVERSE) };
+
+    for (const auto& atom: atoms())
+    {
+        const AtomInterpretation* atomInterpretation { *getAtomInterpretation(atom) };
+        observableDenotation->intersection_assign(atomInterpretation->notInterpretation());
+    }
+
+#ifdef DEBUG
+    return { {}, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
+#else
+    return { {}, observableDenotation };
+#endif
 }
 
 std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralSystem)

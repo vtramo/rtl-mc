@@ -13,13 +13,13 @@ using PPL::IO_Operators::operator<<;
 
 /*!
  * \class Observable
- * \brief Represents an observable in a polyhedral system, consisting of a set of atomic propositions and an interpretation.
+ * \brief Represents an observable in a \c PolyhedralSystem, consisting of a set of atomic propositions and an interpretation.
  *
  * An \c Observable is a set of atomic propositions \f$\alpha \subseteq \mathit{AP}\f$ along with its interpretation
- * \f$[\![\alpha]\!]\f$, which is a polyhedron representing the set of points where all the propositions
+ * \f$[\![\alpha]\!]\f$, which is a possibly non-convex polyhedron representing the set of points where all the propositions
  * in \f$\alpha\f$ hold. The interpretation is stored as a \ref Powerset object, which can represent a union of convex polyhedra (a.k.a. patches).
  *
- * This class provides methods to query the properties of the observable, such as its atomic propositions, interpretation,
+ * This class provides methods to query the properties of the \c Observable, such as its atomic propositions, interpretation,
  * and geometric properties (e.g., whether it is empty or covers the entire space).
  *
  * \note Instances of \c Observable are immutable. Once constructed, their state cannot be modified.
@@ -135,8 +135,8 @@ public:
     [[nodiscard]] Powerset::const_iterator end() const { return m_interpretation->end(); }
 
     /*!
-     * \brief Returns the dimension of the space in which the interpretation is defined.
-     * \return The space dimension as a \f$\text{dimension\_type}\f$.
+     * \brief Returns the dimension of the space in which the interpretation of the \c Observable is defined.
+     * \return The space dimension of the \c Observable
      */
     [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_interpretation->space_dimension(); }
 

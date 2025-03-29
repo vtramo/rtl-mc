@@ -98,6 +98,7 @@ package system {
         +atoms() : spot::atomic_prop_set&
         +bddDict() : spot::bdd_dict_ptr
         +generateObservables(bool filterEmptyObservables = true) : std::vector<Observable>
+        #generateEmptyObservable() : Observable
         #addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation) : const AtomInterpretation&
         #addAtomInterpretation(std::string_view atom, const Powerset& interpretation) : const AtomInterpretation&
         #makeBddDict(): void

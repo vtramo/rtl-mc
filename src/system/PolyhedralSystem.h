@@ -180,19 +180,17 @@ public:
 
     /*!
      * \overload
-     * \see extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations)
+     * \see PolyhedralSystem::extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations)
      */
     [[nodiscard]] PolyhedralSystemUniquePtr extend(const std::vector<std::pair<std::string_view, Powerset>>& atomInterpretations) const;
 
     /*!
      * \overload
-     * \see extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations)
      */
     [[nodiscard]] PolyhedralSystemUniquePtr extend(const spot::formula& atom, const Powerset& interpretation) const;
 
     /*!
      * \overload
-     * \see extend(const std::vector<spot::formula, Powerset>& atomInterpretations)
      */
     [[nodiscard]] PolyhedralSystemUniquePtr extend(std::string_view atom, const Powerset& interpretation) const;
 
@@ -332,6 +330,13 @@ protected:
      * \see addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation)
      */
     const AtomInterpretation& addAtomInterpretation(std::string_view atom, const Powerset& interpretation);
+
+    /*!
+     * \brief Creates an empty \c Observable, with no atomic propositions.
+     * \return An empty \c Observable instance.
+     * \see generateObservables
+     */
+    Observable generateEmptyObservable() const;
 };
 
 /*!
