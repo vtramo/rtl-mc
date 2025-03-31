@@ -55,6 +55,7 @@ include_directories = [
 ]
 
 subdir(src_dir)
+subdir('tools')
 
 if get_option('enable_tests') == true
   subdir('tests')
