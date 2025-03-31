@@ -32,7 +32,7 @@ TEST_CASE("Generate observables")
            )
         };
         REQUIRE(polyhedralSystemParsingResult.ok());
-        const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
+        PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
         const Powerset& p { (*polyhedralSystem.getAtomInterpretation("p"))->interpretation() };
         const Powerset& q { (*polyhedralSystem.getAtomInterpretation("q"))->interpretation() };
         const Powerset& notP { (*polyhedralSystem.getAtomInterpretation("p"))->notInterpretation() };
@@ -41,7 +41,7 @@ TEST_CASE("Generate observables")
         SECTION("Without filtering empty observables")
         {
             constexpr bool filterEmptyObservables { false };
-            std::vector observables { polyhedralSystem.generateObservables(filterEmptyObservables) };
+            const std::vector<Observable>& observables { polyhedralSystem.getOrGenerateObservables(filterEmptyObservables) };
 
             REQUIRE(observables.size() == 4);
             REQUIRE(allObservablesAreDisjoint(observables));
@@ -61,7 +61,7 @@ TEST_CASE("Generate observables")
         SECTION("Filtering empty observables")
         {
             constexpr bool filterEmptyObservables { true };
-            std::vector observables { polyhedralSystem.generateObservables(filterEmptyObservables) };
+            const std::vector<Observable>& observables { polyhedralSystem.getOrGenerateObservables(filterEmptyObservables) };
 
             REQUIRE(observables.size() == 3);
             REQUIRE(allObservablesAreDisjoint(observables));
@@ -91,7 +91,7 @@ TEST_CASE("Generate observables")
            )
         };
         REQUIRE(polyhedralSystemParsingResult.ok());
-        const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
+        PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
         const Powerset& p { (*polyhedralSystem.getAtomInterpretation("p"))->interpretation() };
         const Powerset& q { (*polyhedralSystem.getAtomInterpretation("q"))->interpretation() };
         const Powerset& r { (*polyhedralSystem.getAtomInterpretation("r"))->interpretation() };
@@ -104,7 +104,7 @@ TEST_CASE("Generate observables")
         SECTION("Without filtering empty observables")
         {
             constexpr bool filterEmptyObservables { false };
-            std::vector observables { polyhedralSystem.generateObservables(filterEmptyObservables) };
+            const std::vector<Observable>& observables { polyhedralSystem.getOrGenerateObservables(filterEmptyObservables) };
 
             REQUIRE(observables.size() == 16);
             REQUIRE(allObservablesAreDisjoint(observables));
@@ -136,7 +136,7 @@ TEST_CASE("Generate observables")
         SECTION("Filtering empty observables")
         {
             constexpr bool filterEmptyObservables { true };
-            std::vector observables { polyhedralSystem.generateObservables(filterEmptyObservables) };
+            const std::vector<Observable>& observables { polyhedralSystem.getOrGenerateObservables(filterEmptyObservables) };
 
             REQUIRE(observables.size() == 7);
             REQUIRE(allObservablesAreDisjoint(observables));
@@ -183,7 +183,7 @@ TEST_CASE("Generate observables")
         const Powerset& not_t1 { (*polyhedralSystem->getAtomInterpretation("t1"))->notInterpretation() };
 
         constexpr bool filteringEmptyObservables { false };
-        std::vector observables { polyhedralSystem->generateObservables(filteringEmptyObservables) };
+        std::vector observables { polyhedralSystem->getOrGenerateObservables(filteringEmptyObservables) };
 
         REQUIRE(observables.size() == 16);
         REQUIRE(allObservablesAreDisjoint(observables));

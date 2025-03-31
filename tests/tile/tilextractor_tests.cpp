@@ -26,7 +26,7 @@ TEST_CASE("TILEXTRACTOR TEST CASE 1 - Extract Tiles from Polyhedral System")
            )
         };
         REQUIRE(polyhedralSystemParsingResult.ok());
-        const PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
+        PolyhedralSystem& polyhedralSystem { *polyhedralSystemParsingResult };
         REQUIRE(polyhedralSystem.hasOmnidirectionalFlow());
         PPL::Variable X { 0 };
         PPL::Variable Y { 1 };
@@ -36,7 +36,7 @@ TEST_CASE("TILEXTRACTOR TEST CASE 1 - Extract Tiles from Polyhedral System")
         const Powerset& notP { (*polyhedralSystem.getAtomInterpretation("p"))->notInterpretation() };
         const Powerset& notQ { (*polyhedralSystem.getAtomInterpretation("q"))->notInterpretation() };
 
-        std::vector observables { polyhedralSystem.generateObservables() };
+        const std::vector<Observable>& observables { polyhedralSystem.getOrGenerateObservables() };
         REQUIRE(observables.size() == 3);
 
         SECTION("TileExtractorDoublyLinkedList")

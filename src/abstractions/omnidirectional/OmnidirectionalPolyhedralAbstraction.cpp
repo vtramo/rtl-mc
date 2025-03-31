@@ -17,7 +17,7 @@ OmnidirectionalPolyhedralAbstraction::OmnidirectionalPolyhedralAbstraction(
 std::vector<Tile> OmnidirectionalPolyhedralAbstraction::extractTilesFromPolyhedralSystem(PolyhedralSystemSharedPtr polyhedralSystem)
 {
     Log::log(Verbosity::veryVerbose, "[{}] Generating polyhedral system observables...", m_name);
-    std::vector observables { polyhedralSystem->generateObservables() };
+    const std::vector<Observable>& observables { polyhedralSystem->getOrGenerateObservables() };
     Log::log(Verbosity::verbose, "[{}] Polyhedral system total observables: {}.", m_name, observables.size());
 
     Log::log(Verbosity::veryVerbose, "[{}] Extracting tiles...", m_name);

@@ -14,7 +14,7 @@
 
 TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 {
-    PolyhedralSystemConstSharedPtr polyhedralSystem {
+    PolyhedralSystemSharedPtr polyhedralSystem {
         std::make_shared<PolyhedralSystem>(
             std::move(
                 *parsePolyhedralSystem(
@@ -272,7 +272,7 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
 TEST_CASE("NO GAP Test Cases (DenotOnTheFly)")
 {
-    PolyhedralSystemConstSharedPtr polyhedralSystem {
+    PolyhedralSystemSharedPtr polyhedralSystem {
         std::make_shared<PolyhedralSystem>(
             std::move(
                 *parsePolyhedralSystem(

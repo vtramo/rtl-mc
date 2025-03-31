@@ -354,15 +354,23 @@ spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
  * \f$[\![\alpha_1]\!] = [\![\alpha_2]\!]\f$ or \f$[\![\alpha_1]\!] \, \cap \, [\![\alpha_2]\!] = \emptyset\f$.
  * Hence, the image of \f$2^{\mathit{AP}}\f$ under \f$[\![\cdot]\!]\f$ is a partition of \f$\mathbb{R}^n\f$ into polyhedra.
  *
+ * \note \c Observable s are generated only once, then they are stored. Subsequent calls to \c getOrGenerateObservables
+ *       return the stored result.
+ *
  * \note If the \c DEBUG directive is enabled, each observable will include a string representation
  *       of its interpretation, where variable names match those defined in the \ref PolyhedralSystem.
- *       This is useful for debugging and visualizing the polyhedral interpretations
+ *       This is useful for debugging and visualizing the polyhedral interpretations.
  *
  * \see Observable
  * \see AtomInterpretation
  */
-std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterEmptyObservables) const
+const std::vector<Observable>& PolyhedralSystem::getOrGenerateObservables(const bool filterEmptyObservables)
 {
+    if (m_observables.has_value())
+    {
+        return *m_observables;
+    }
+
     using AtomRef = std::reference_wrapper<const spot::formula>;
     const int totalAtoms { PolyhedralSystem::totalAtoms() };
     std::vector<AtomRef> atoms {};
@@ -372,13 +380,13 @@ std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterE
         atoms.push_back(polyhedralAtom);
     }
 
-    std::vector<Observable> observables {};
     const long totalSubsets { 1L << totalAtoms };
-    observables.reserve(totalSubsets);
-    Observable emptyObservable { generateEmptyObservable() };
-    if (!filterEmptyObservables || !emptyObservable.isEmpty())
+    m_observables = std::vector<Observable> {};
+    m_observables->reserve(totalSubsets);
+    const Observable& emptyObservable { getOrGenerateEmptyObservable() };
+    if (!filterEmptyObservables || !emptyObservable.isInterpretationEmpty())
     {
-        observables.push_back(std::move(emptyObservable));
+        m_observables->push_back(emptyObservable);
     }
 
     for (long subsetIndex { 1 }; subsetIndex < totalSubsets; ++subsetIndex)
@@ -412,10 +420,10 @@ std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterE
 #else
         Observable observable { observableAtoms, observableDenotation };
 #endif
-        observables.push_back(std::move(observable));
+        m_observables->push_back(std::move(observable));
     }
 
-    return observables;
+    return *m_observables;
 }
 
 /*!
@@ -433,9 +441,17 @@ std::vector<Observable> PolyhedralSystem::generateObservables(const bool filterE
  * \f]
  *
  * This ensures that the resulting observable represents the set of points where none of the atomic propositions hold.
+ *
+ * \note The empty \c Observable is generated only once, then it is stored. Subsequent calls to
+ *       \c getOrGenerateObservable return the stored result.
  */
-Observable PolyhedralSystem::generateEmptyObservable() const
+const Observable& PolyhedralSystem::getOrGenerateEmptyObservable()
 {
+    if (m_emptyObservable.has_value())
+    {
+        return *m_emptyObservable;
+    }
+
     PowersetSharedPtr observableDenotation { std::make_shared<Powerset>(spaceDimension(), PPL::UNIVERSE) };
 
     for (const auto& atom: atoms())
@@ -445,10 +461,12 @@ Observable PolyhedralSystem::generateEmptyObservable() const
     }
 
 #ifdef DEBUG
-    return { {}, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
+    m_emptyObservable = { {}, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
 #else
-    return { {}, observableDenotation };
+    m_emptyObservable { {}, observableDenotation };
 #endif
+
+    return *m_emptyObservable;
 }
 
 std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralSystem)

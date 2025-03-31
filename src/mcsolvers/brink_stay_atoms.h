@@ -46,7 +46,7 @@ inline std::pair<spot::formula, PowersetUniquePtr> stay(PolyhedralSystemSharedPt
     }
 
     PowersetUniquePtr stayInterpretation { std::make_unique<Powerset>(polyhedralSystem->spaceDimension(), PPL::EMPTY) };
-    std::vector observables { polyhedralSystem->generateObservables() };
+    const std::vector<Observable>& observables { polyhedralSystem->getOrGenerateObservables() };
     for (Observable observable: observables)
     {
         PowersetConstSharedPtr observableInterpretation { observable.interpretation() };

@@ -206,7 +206,14 @@ public:
      * \param filterEmptyObservables If `true`, excludes observables with empty interpretations.
      * \return A vector of \ref Observable objects.
      */
-    [[nodiscard]] std::vector<Observable> generateObservables(bool filterEmptyObservables = true) const;
+    const std::vector<Observable>& getOrGenerateObservables(bool filterEmptyObservables = true);
+
+    /*!
+     * \brief Creates an empty \c Observable, with no atomic propositions.
+     * \return An empty \c Observable instance.
+     * \see generateObservables
+     */
+    const Observable& getOrGenerateEmptyObservable();
 
     /*!
      * \brief Sets whether constraint output should be minimized.
@@ -245,6 +252,8 @@ protected:
     bool m_hasOmnidirectionalFlow { false };
     bool m_isMovementForced { false };
     Poly m_preFlow { 0, PPL::EMPTY };
+    std::optional<std::vector<Observable>> m_observables {};
+    std::optional<Observable> m_emptyObservable {};
     spot::bdd_dict_ptr m_bddDict {};
     std::unordered_map<spot::formula, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
@@ -330,13 +339,6 @@ protected:
      * \see addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation)
      */
     const AtomInterpretation& addAtomInterpretation(std::string_view atom, const Powerset& interpretation);
-
-    /*!
-     * \brief Creates an empty \c Observable, with no atomic propositions.
-     * \return An empty \c Observable instance.
-     * \see generateObservables
-     */
-    Observable generateEmptyObservable() const;
 };
 
 /*!

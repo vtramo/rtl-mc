@@ -16,7 +16,7 @@ using namespace SpotUtils;
 
 TEST_CASE("Denot on the fly benchmark GAP")
 {
-    PolyhedralSystemConstSharedPtr polyhedralSystem {
+    PolyhedralSystemSharedPtr polyhedralSystem {
         std::make_shared<PolyhedralSystem>(
             std::move(
                 *parsePolyhedralSystem(

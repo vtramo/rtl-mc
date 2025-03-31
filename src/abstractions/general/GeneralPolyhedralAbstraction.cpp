@@ -21,7 +21,7 @@ GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
 ) : PolyhedralAbstraction(polyhedralSystem, name)
 {
     Log::log(Verbosity::veryVerbose, "[{}] Generating polyhedral system observables...", m_name);
-    std::vector observables { m_polyhedralSystem->generateObservables() };
+    std::vector observables { m_polyhedralSystem->getOrGenerateObservables() };
     std::size_t totalObservables { observables.size() };
     buildAbstraction(totalObservables, std::move(observables));
 }

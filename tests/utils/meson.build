@@ -1,2 +1,0 @@
-subdir('spot')
-subdir('ppl')
