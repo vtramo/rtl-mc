@@ -128,5 +128,6 @@ COPY --from=compile-release /lib-path-dir.txt /lib-path-dir.txt
 COPY --from=compile-release /libs /libs
 RUN LIB_PATH_DIR=$(cat /lib-path-dir.txt) && mkdir -p ${LIB_PATH_DIR} && mv /libs/* ${LIB_PATH_DIR}
 COPY --from=compile-release /project/buildDir/src/rtl-mc /usr/local/bin
+COPY --from=compile-release /project/buildDir/tools/rtl-gen/src/rtl-gen /usr/local/bin
 
-ENTRYPOINT ["rtl-mc"]
+ENTRYPOINT ["/bin/bash", "-c"]
