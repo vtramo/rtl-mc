@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2025-03-31
+### :sparkles: New Features
+- [`dbc3578`](https://github.com/vtramo/rtl-mc/commit/dbc35782d99cb0a64d6ba98075a428de90812d06) - **cli**: add option `--export-dot` to export graph dot files *(commit by [@vtramo](https://github.com/vtramo))*
+- [`3106730`](https://github.com/vtramo/rtl-mc/commit/3106730d64a71045583615d0c1264140573b4739) - **rtl-gen**: add `rtl-gen` tool for generating RTL formulae *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :bug: Bug Fixes
+- [`e5fb512`](https://github.com/vtramo/rtl-mc/commit/e5fb512f5197fbcfa392578a635036ccf51e93b0) - **automata**: replace `!sing` with `true` in state denotation *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :recycle: Refactors
+- [`c4b5abc`](https://github.com/vtramo/rtl-mc/commit/c4b5abccd12923636fdccf0ec620053eb348e447) - **system**: store observables after generation *(commit by [@vtramo](https://github.com/vtramo))*
+
+
 ## [0.1.2] - 2025-03-29
 ### :sparkles: New Features
 - [`fadd7b4`](https://github.com/vtramo/rtl-mc/commit/fadd7b4f8b4f50e4ce8588aaebdf730405a97b90) - **abstraction**: add setInitialState method in PolyhedralAbstraction *(commit by [@vtramo](https://github.com/vtramo))*
@@ -62,3 +74,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [0.1.1]: https://github.com/vtramo/rtl-mc/compare/0.1.0...0.1.1
 [0.1.2]: https://github.com/vtramo/rtl-mc/compare/0.1.1...0.1.2
+[0.1.3]: https://github.com/vtramo/rtl-mc/compare/0.1.2...0.1.3
