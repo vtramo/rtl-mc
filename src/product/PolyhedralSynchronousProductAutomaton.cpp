@@ -20,7 +20,7 @@ PolyhedralSynchronousProductAutomaton::PolyhedralSynchronousProductAutomaton(
 
 void PolyhedralSynchronousProductAutomaton::buildAutomaton()
 {
-    PolyhedralSynchronousProductAutomaton::initializeAutomaton();
+    PolyhedralSynchronousProductAutomaton::initialiseAutomaton();
 
     m_productStatePair = std::vector<std::pair<unsigned, unsigned>>(m_ltlAutomaton->totalStates() * m_abstraction->totalStates());
     std::vector stateProductByPair(m_ltlAutomaton->totalStates(), std::vector(m_abstraction->totalStates(), -1));
@@ -58,6 +58,7 @@ void PolyhedralSynchronousProductAutomaton::buildAutomaton()
 
     createDummyInitialStateWithEdgesToInitialStates();
 
+    Log::log(m_automaton, fmt::format("{}-construction-completed", m_name));
     Log::log(Verbosity::verbose, "[{}] Construction completed.", m_name);
     Log::log(Verbosity::verbose, "[{}] Total states: {}.", m_name, totalStates());
     Log::log(Verbosity::verbose, "[{}] Total edges: {}.", m_name, totalEdges());
@@ -80,7 +81,7 @@ void PolyhedralSynchronousProductAutomaton::createDummyInitialStateWithEdgesToIn
     }
 }
 
-void PolyhedralSynchronousProductAutomaton::initializeAutomaton()
+void PolyhedralSynchronousProductAutomaton::initialiseAutomaton()
 {
     m_automaton = std::make_shared<spot::twa_graph>(m_ltlAutomaton->twa()->get_dict());
     m_automaton->prop_state_acc(spot::trival { true });

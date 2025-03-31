@@ -42,7 +42,7 @@ PowersetUniquePtr DenotConcurrentV2::denot(
     assert(X.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
     const StateDenotation& stateDenotation { m_backwardNfa->stateDenotation(state) };
-    assert(isSing == stateDenotation.isSingular() && "Sing invariant violated, state: " + state);
+    assert(isSing == stateDenotation.isSingular() && "Sing invariant violated.");
 
     if (m_backwardNfa->isInitialState(state))
     {

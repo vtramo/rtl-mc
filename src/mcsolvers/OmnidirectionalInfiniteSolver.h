@@ -50,11 +50,11 @@ protected:
     void constructPolyhedralLtlAutomaton() override
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { m_polyhedralSystem };
-        m_ltlAutomaton = buildPolyhedralBuchiLtlAutomaton(
+        m_ltlAutomaton = buildPolyhedralLtlBüchiAutomaton(
             std::move(m_discreteLtlFormula),
             polyhedralSystemFormulaDenotationMap,
             m_automatonOptimizationFlags
-            );
+        );
         const PolyhedralLtlAutomatonStats& automatonStats { m_ltlAutomaton->stats() };
         m_solverStats->addAutomatonStats(automatonStats);
     }

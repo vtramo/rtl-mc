@@ -1,10 +1,12 @@
-#include "formula.h"
-#include "formula_constants.h"
-
+#include <stack>
+#include <spdlog/fmt/bundled/format.h>
 #include <spot/tl/apcollect.hh>
 #include <spot/tl/randomltl.hh>
 #include <spot/twa/twagraph.hh>
 #include <spot/tl/nenoform.hh>
+
+#include "formula_constants.h"
+#include "formula.h"
 
 /*!
  *  Returns the logical constant 'true' formula (tt).
@@ -237,8 +239,12 @@ spot::formula aliveUntilGNotAlive()
 spot::atomic_prop_set AP(std::set<std::string>&& atoms)
 {
     spot::atomic_prop_set atomicPropVector {};
+
     for (const auto& atom : atoms)
+    {
         atomicPropVector.insert(ap(atom));
+    }
+
     return atomicPropVector;
 }
 
@@ -281,11 +287,12 @@ spot::formula generateAlternatingFormula(int k, spot::formula p, spot::formula q
  * The function traverses the given formula and returns `true` if it does not contain
  * any occurrence of the temporal operator \( X \) (Next). Otherwise, it returns `false`.
  */
-bool isXFree(spot::formula& formula)
+bool isXFree(const spot::formula& formula)
 {
     bool hasX { false };
 
-    formula.traverse([&hasX] (const spot::formula& child)
+    spot::formula formulaCopy { formula };
+    formulaCopy.traverse([&hasX] (const spot::formula& child)
                     {
                         if (child.is(spot::op::X))
                         {
@@ -301,12 +308,13 @@ bool isXFree(spot::formula& formula)
 /*!
 * Traverses the formula and collects all atomic propositions that are not part of the forbidden set.
 */
-std::vector<spot::formula> collectAtomsNotIn(const spot::atomic_prop_set& forbiddenAtoms, spot::formula& formula)
+std::vector<spot::formula> collectAtomsNotIn(const spot::atomic_prop_set& forbiddenAtoms, const spot::formula& formula)
 {
     std::vector<spot::formula> result {};
     result.reserve(forbiddenAtoms.size());
 
-    formula.traverse([&] (const spot::formula& child)
+    spot::formula formulaCopy { formula };
+    formulaCopy.traverse([&] (const spot::formula& child)
     {
         if (child.is(spot::op::ap))
         {
@@ -333,27 +341,29 @@ std::string toFormulaString(const spot::formula& formula)
 }
 
 /*!
- *
- * This function processes the formula recursively, checking for the presence of the "sing" atomic proposition
+ * This function processes the formula recursively, checking for the presence of the \f$sing\f$ atomic proposition
  * or its negation. If found, it replaces them with appropriate constants (\f$\top\f$ or \f$\bot\f$) depending on
- * the context (logical AND or OR). The function also tracks whether any "sing" proposition was removed.
+ * the context (logical AND or OR). The function also tracks whether any \f$sing\f$ proposition was removed.
  *
- * The function handles literals, constants (`tt` and `ff`), and composite formulas (logical AND or OR).
- * It returns a tuple containing the modified formula and a boolean indicating if any "sing" proposition was removed.
+ * \note If the input formula is \f$sing\f$ or \f$\neg sing\f$, \ref removeSing function will return \f$\top\f$.
  */
 std::tuple<spot::formula, bool> removeSing(spot::formula&& formula)
 {
     if (isSingOrNotSing(formula))
+    {
         return std::make_tuple(
-            spot::formula::ff(),
-            true
+            top(),
+            isSing(formula)
         );
+    }
 
     if (formula.is_literal() || formula.is_tt() || formula.is_ff())
+    {
         return std::make_tuple(
             formula,
             false
         );
+    }
 
     bool removedAtLeastOneSing {};
     auto removeAllSingAtoms = [&](spot::formula&& child, auto&& self) -> spot::formula
@@ -393,7 +403,7 @@ std::tuple<spot::formula, bool> removeSing(spot::formula&& formula)
  */
 bool isSingOrNotSing(const spot::formula& formula)
 {
-    return isSing(formula) || (formula.is(spot::op::Not) && isSing(formula[0]));
+    return isSing(formula) || isNotSing(formula);
 }
 
 /*!
@@ -425,11 +435,12 @@ bool containsSing(const spot::atomic_prop_set& atomicPropositions)
  * This function traverses the formula recursively and identifies atomic propositions that are not negated.
  * Negated atomic propositions (e.g., `!p`) are skipped, while positive literals (e.g., `p`) are added to the result set.
  */
-spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula)
+spot::atomic_prop_set collectPositiveLiterals(const spot::formula& formula)
 {
     spot::atomic_prop_set result {};
 
-    formula.traverse([&] (const spot::formula& child)
+    spot::formula formulaCopy { formula };
+    formulaCopy.traverse([&] (const spot::formula& child)
     {
         if (child.is(spot::op::Not) && child[0].is(spot::op::ap))
         {
@@ -445,6 +456,104 @@ spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula)
     });
 
     return result;
+}
+
+bool isCnf(const spot::formula& formula)
+{
+    if (!formula.is_in_nenoform())
+    {
+        return false;
+    }
+
+    if (formula.is_literal() || formula.is_constant())
+    {
+        return true;
+    }
+
+    bool isCnf { true };
+
+    spot::formula formulaCopy { formula };
+    formulaCopy.traverse([&] (const spot::formula& child)
+                    {
+                        if (!isCnf)
+                        {
+                            return true;
+                        }
+
+                        if (!child.is(spot::op::Or))
+                        {
+                            isCnf = isConjunctionOfLiterals(child);
+                            return true;
+                        }
+
+                        return !isCnf;
+                    });
+
+    return isCnf;
+}
+
+std::vector<spot::formula> collectCnfClauses(const spot::formula& formula)
+{
+    if (!formula.is_in_nenoform())
+    {
+        throw std::invalid_argument("Formula is not in CNF! " + toFormulaString(formula));
+    }
+
+    std::vector<spot::formula> result {};
+    result.reserve(formula.size());
+    std::stack<spot::formula> stack {};
+    stack.push(formula);
+
+    do
+    {
+        spot::formula currentFormula { stack.top() };
+        stack.pop();
+
+        if (currentFormula.is(spot::op::Or))
+        {
+            stack.push(currentFormula[0]);
+            stack.push(currentFormula[1]);
+        }
+        else
+        {
+            if (!isConjunctionOfLiterals(currentFormula))
+            {
+                throw std::invalid_argument("Formula is not in CNF! " + toFormulaString(currentFormula));
+            }
+
+            result.push_back(currentFormula);
+        }
+    } while (!stack.empty());
+
+    return result;
+}
+
+bool isConjunctionOfLiterals(const spot::formula& formula)
+{
+    if (formula.is_literal() || formula.is_constant())
+    {
+        return true;
+    }
+
+    bool isConjunctionOfLiterals { true };
+
+    spot::formula formulaCopy { formula };
+    formulaCopy.traverse([&] (const spot::formula& child)
+                    {
+                        if (!isConjunctionOfLiterals)
+                        {
+                            return true;
+                        }
+
+                        if (!child.is(spot::op::And) && !child.is_literal())
+                        {
+                            isConjunctionOfLiterals = false;
+                        }
+
+                        return !isConjunctionOfLiterals;
+                    });
+
+    return isConjunctionOfLiterals;
 }
 
 /*!

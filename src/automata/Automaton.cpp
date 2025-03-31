@@ -8,22 +8,22 @@
 
 Automaton::Automaton()
 {
-    Automaton::initializeAutomaton();
-    Automaton::initializeStats();
+    Automaton::initialiseAutomaton();
+    Automaton::initialiseStats();
 }
 
 Automaton::Automaton(const std::string_view name)
     : m_name { name }
 {
-    Automaton::initializeAutomaton();
-    Automaton::initializeStats();
+    Automaton::initialiseAutomaton();
+    Automaton::initialiseStats();
 }
 
 Automaton::Automaton(const std::string_view name, spot::twa_graph_ptr automaton)
     : m_automaton { automaton }
     , m_name { name }
 {
-    Automaton::initializeStats();
+    Automaton::initialiseStats();
 }
 
 unsigned Automaton::totalStates() const
@@ -93,7 +93,7 @@ void Automaton::printDotFormat(std::ostream& os) const
     spot::print_dot(os, m_automaton);
 }
 
-void Automaton::initializeAutomaton()
+void Automaton::initialiseAutomaton()
 {
     const spot::bdd_dict_ptr dict { std::make_shared<spot::bdd_dict>() };
     m_automaton = std::make_shared<spot::twa_graph>(dict);

@@ -82,7 +82,7 @@ protected:
                 std::move(polyhedralSystemFormulaDenotationMap),
                 m_automatonOptimizationFlags
             );
-        const PolyhedralFiniteLtlAutomatonStats& backwardNfaStats { m_backwardNfa->stats() };
+        const PolyhedralLtlFiniteAutomatonStats& backwardNfaStats { m_backwardNfa->stats() };
         m_finiteOnTheFlySolverStats->addAutomatonStats(backwardNfaStats);
 
         Log::log(Verbosity::verbose, "<<< BackwardNFA automaton construction completed. Elapsed time: {} s.\n", timer.elapsedInSeconds());

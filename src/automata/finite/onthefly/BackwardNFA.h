@@ -2,12 +2,12 @@
 
 #include "PolyhedralSystemFormulaDenotationMap.h"
 #include "DiscreteLtlFormula.h"
-#include "PolyhedralFiniteLtlAutomaton.h"
+#include "PolyhedralLtlFiniteAutomaton.h"
 
 class BackwardNFA;
 using BackwardNFAConstSharedPtr = std::shared_ptr<const BackwardNFA>;
 
-class BackwardNFA: public PolyhedralFiniteLtlAutomaton
+class BackwardNFA: public PolyhedralLtlFiniteAutomaton
 {
 public:
     BackwardNFA(const BackwardNFA& other);

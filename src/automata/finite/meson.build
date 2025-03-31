@@ -1,8 +1,8 @@
 current_source_dir = meson.current_source_dir()
 
 finite_automaton_source_files = [
-    current_source_dir / 'PolyhedralFiniteLtlAutomaton.h',
-    current_source_dir / 'PolyhedralFiniteLtlAutomaton.cpp',
+    current_source_dir / 'PolyhedralLtlFiniteAutomaton.h',
+    current_source_dir / 'PolyhedralLtlFiniteAutomaton.cpp',
 ]
 
 subdir('onthefly')

@@ -16,7 +16,7 @@
  *
  * This class encapsulates a discrete \f$\text{LTL}_f\f$ formula obtained by transforming an \f$\text{RTL}_f\f$ formula
  * through a two-step process:
- * 1. Initial discretization via \ref toDiscretisedFormula
+ * 1. Initial discretisation via \ref toDiscretisedFormula
  * 2. Application of finite semantics constraints via \ref applyFiniteAlternationSingOpenObservables
  *
  * If the \f$\text{RTL}_f\f$ formula is \f$\varphi\f$, then the formula contained in \ref DiscreteFiniteLtlFormula
@@ -28,7 +28,7 @@
  * \f]
  * where \f$last \, \overset{\triangle}{=} \, !\texttt{X}[!]\,true \f$
  *
- * \see g_sing
+ * \see formula_constants.h
  */
 class DiscreteFiniteLtlFormula {
 public:

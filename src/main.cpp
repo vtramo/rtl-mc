@@ -27,6 +27,7 @@ int main(const int argc, char *argv[])
     Log::configureLogger();
     RtlMcProgram rtlMcProgram { argc, argv, RTL_MC_VERSION };
     Log::setVerbosityLevel(rtlMcProgram.verbosityLevel());
+    Log::setExportDot(rtlMcProgram.isExportDotEnabled());
 
     PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
     spot::formula rtlFormula { rtlMcProgram.rtlFormula() };

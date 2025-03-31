@@ -9,7 +9,7 @@ BackwardNFA::BackwardNFA(
     const DiscreteLtlFormula& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
-): PolyhedralFiniteLtlAutomaton(
+): PolyhedralLtlFiniteAutomaton(
     discreteLtlFormula,
     std::move(polyhedralSystemLabelDenotationMap),
     name
@@ -21,7 +21,7 @@ BackwardNFA::BackwardNFA(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
-): PolyhedralFiniteLtlAutomaton(
+): PolyhedralLtlFiniteAutomaton(
         std::move(discreteLtlFormula),
         std::move(polyhedralSystemLabelDenotationMap),
         name
@@ -29,7 +29,7 @@ BackwardNFA::BackwardNFA(
 {
 }
 
-BackwardNFA::BackwardNFA(const BackwardNFA& other): PolyhedralFiniteLtlAutomaton(other)
+BackwardNFA::BackwardNFA(const BackwardNFA& other): PolyhedralLtlFiniteAutomaton(other)
 {
 }
 

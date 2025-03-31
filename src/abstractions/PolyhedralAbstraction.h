@@ -56,12 +56,12 @@ public:
      * \param polyhedralSystem The \c PolyhedralSystem being abstracted
      * \param name Name identifier for the \c PolyhedralAbstraction
      */
-    explicit PolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, const std::string_view name)
+    explicit PolyhedralAbstraction(PolyhedralSystemSharedPtr polyhedralSystem, const std::string_view name)
         : Automaton(name)
         , m_polyhedralSystem { polyhedralSystem }
     {
         m_spaceDimension = m_polyhedralSystem->spaceDimension();
-        PolyhedralAbstraction::initializeAutomaton();
+        PolyhedralAbstraction::initialiseAutomaton();
         Log::log(Verbosity::verbose, "\n[{}] Construction started.", name);
     }
 
@@ -135,7 +135,7 @@ public:
     }
 
 protected:
-    PolyhedralSystemConstSharedPtr m_polyhedralSystem {}; ///< The \c PolyhedralSystem being abstracted
+    PolyhedralSystemSharedPtr m_polyhedralSystem {}; ///< The \c PolyhedralSystem being abstracted
     PPL::dimension_type m_spaceDimension {}; //< Space dimension of the \c PolyhedralSystem
 
     /**
@@ -146,7 +146,7 @@ protected:
      * - State-based acceptance
      * - True acceptance condition (all states accepting)
      */
-    void initializeAutomaton() override
+    void initialiseAutomaton() override
     {
         m_automaton = std::make_shared<spot::twa_graph>(m_polyhedralSystem->bddDict());
         m_automaton->prop_state_acc(spot::trival { true });

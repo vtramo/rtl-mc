@@ -1,17 +1,16 @@
-#include "PolyhedralBuchiLtlAutomaton.h"
+#include "PolyhedralLtlBüchiAutomaton.h"
+#include "Timer.h"
 
-#include <Timer.h>
-
-PolyhedralBuchiLtlAutomaton::PolyhedralBuchiLtlAutomaton(const PolyhedralBuchiLtlAutomaton& other)
+PolyhedralLtlBüchiAutomaton::PolyhedralLtlBüchiAutomaton(const PolyhedralLtlBüchiAutomaton& other)
     : PolyhedralLtlAutomaton(other)
 {
 }
 
-PolyhedralBuchiLtlAutomaton::PolyhedralBuchiLtlAutomaton()
+PolyhedralLtlBüchiAutomaton::PolyhedralLtlBüchiAutomaton()
 {
 }
 
-PolyhedralBuchiLtlAutomaton::PolyhedralBuchiLtlAutomaton(
+PolyhedralLtlBüchiAutomaton::PolyhedralLtlBüchiAutomaton(
     const DiscreteLtlFormula& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
@@ -23,7 +22,7 @@ PolyhedralBuchiLtlAutomaton::PolyhedralBuchiLtlAutomaton(
 {
 }
 
-PolyhedralBuchiLtlAutomaton::PolyhedralBuchiLtlAutomaton(
+PolyhedralLtlBüchiAutomaton::PolyhedralLtlBüchiAutomaton(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
@@ -35,7 +34,7 @@ PolyhedralBuchiLtlAutomaton::PolyhedralBuchiLtlAutomaton(
 {
 }
 
-PolyhedralBuchiLtlAutomatonConstSharedPtr PolyhedralBuchiLtlAutomaton::buildAutomaton(
+PolyhedralLtlBüchiAutomatonConstSharedPtr PolyhedralLtlBüchiAutomaton::buildAutomaton(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const spot::postprocessor::optimization_level optimizationLevel,
@@ -44,8 +43,8 @@ PolyhedralBuchiLtlAutomatonConstSharedPtr PolyhedralBuchiLtlAutomaton::buildAuto
 )
 {
     std::shared_ptr finiteLtlAutomaton {
-        std::make_shared<PolyhedralBuchiLtlAutomaton>(
-            PolyhedralBuchiLtlAutomaton {
+        std::make_shared<PolyhedralLtlBüchiAutomaton>(
+            PolyhedralLtlBüchiAutomaton {
                 std::move(discreteLtlFormula),
                 std::move(polyhedralSystemLabelDenotationMap),
                 name

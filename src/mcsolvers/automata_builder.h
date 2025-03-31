@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PolyhedralFiniteLtlAutomaton.h"
-#include "PolyhedralBuchiLtlAutomaton.h"
+#include "PolyhedralLtlFiniteAutomaton.h"
+#include "PolyhedralLtlBüchiAutomaton.h"
 #include "AutomatonOptimization.h"
 
 inline spot::postprocessor::optimization_level toSpotAutomatonOptimizationLevel(const AutomatonOptimizationFlags& optimizationFlags)
@@ -19,14 +19,14 @@ inline spot::postprocessor::optimization_level toSpotAutomatonOptimizationLevel(
     }
 }
 
-inline PolyhedralFiniteLtlAutomatonConstSharedPtr buildPolyhedralFiniteLtlAutomaton(
+inline PolyhedralLtlFiniteAutomatonConstSharedPtr buildPolyhedralLtlFiniteAutomaton(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap,
     const AutomatonOptimizationFlags optimizationFlags
 )
 {
     spot::postprocessor::optimization_level optimizationLevel { toSpotAutomatonOptimizationLevel(optimizationFlags) };
-    return PolyhedralFiniteLtlAutomaton::buildAutomaton(
+    return PolyhedralLtlFiniteAutomaton::buildAutomaton(
         std::move(discreteLtlFormula),
         std::move(polyhedralSystemFormulaDenotationMap),
         optimizationLevel,
@@ -34,14 +34,14 @@ inline PolyhedralFiniteLtlAutomatonConstSharedPtr buildPolyhedralFiniteLtlAutoma
     );
 }
 
-inline PolyhedralBuchiLtlAutomatonConstSharedPtr buildPolyhedralBuchiLtlAutomaton(
+inline PolyhedralLtlBüchiAutomatonConstSharedPtr buildPolyhedralLtlBüchiAutomaton(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap,
     const AutomatonOptimizationFlags optimizationFlags
 )
 {
     spot::postprocessor::optimization_level optimizationLevel { toSpotAutomatonOptimizationLevel(optimizationFlags) };
-    return PolyhedralBuchiLtlAutomaton::buildAutomaton(
+    return PolyhedralLtlBüchiAutomaton::buildAutomaton(
         std::move(discreteLtlFormula),
         std::move(polyhedralSystemFormulaDenotationMap),
         optimizationLevel,

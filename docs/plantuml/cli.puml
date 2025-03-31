@@ -16,6 +16,7 @@ package cli {
         -m_automatonOptimizationFlags: AutomatonOptimizationFlags
         -m_directLtl: bool
         -m_concurrent: bool
+        -m_exportDot: bool
         -m_verbosityLevel: Verbosity
         -m_outputFormat: OutputFormat
         -m_statsFormat: std::string
@@ -35,6 +36,7 @@ package cli {
         +outputFormat(): OutputFormat
         +statsFormat(): std::string
         +semantics(): Semantics
+        +isExportDotEnabled(): bool
         -buildRtlMcProgram(): void
         -addDescription(): void
         -addInputArguments(): void
@@ -45,6 +47,7 @@ package cli {
         -addAutomatonOptimizationFlagsArguments(): void
         -addOutputFormatArguments(): void
         -addAdvancedArguments(): void
+        -addExportDotArguments(): void
         -addDirectLtlArgument(): void
         -addConcurrentArgument(): void
         -parseArgs(int argc, char *argv[]): void

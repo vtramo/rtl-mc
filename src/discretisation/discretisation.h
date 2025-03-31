@@ -1,6 +1,6 @@
 /**
  * \file discretisation.h
- * \brief RTL/\f$\text{RTL}_f\f$ to LTL/\f$\text{LTL}_f\f$ discretization rules implementation
+ * \brief RTL/\f$\text{RTL}_f\f$ to LTL/\f$\text{LTL}_f\f$ discretisation rules implementation
  */
 
 #pragma once

@@ -108,7 +108,7 @@ public:
      * \brief Checks if the interpretation is empty.
      * \return \c true if the interpretation is empty, \c false otherwise.
      */
-    [[nodiscard]] bool isEmpty() const { return m_interpretation->is_empty(); }
+    [[nodiscard]] bool isInterpretationEmpty() const { return m_interpretation->is_empty(); }
 
     /*!
      * \brief Returns the total number of atomic propositions in the observable.

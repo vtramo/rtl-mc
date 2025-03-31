@@ -1,5 +1,7 @@
 #pragma once
 
+#include <spdlog/fmt/bundled/ranges.h>
+
 #include "formula_constants.h"
 #include "PolyhedralSystem.h"
 #include "reach.h"
@@ -31,7 +33,7 @@ inline std::pair<spot::formula, PowersetUniquePtr> brinkMust(PolyhedralSystemCon
     return std::make_pair<spot::formula, PowersetUniquePtr>(std::move(brink), std::move(brinkInterpretation));
 }
 
-inline std::pair<spot::formula, PowersetUniquePtr> stay(PolyhedralSystemConstSharedPtr polyhedralSystem)
+inline std::pair<spot::formula, PowersetUniquePtr> stay(PolyhedralSystemSharedPtr polyhedralSystem)
 {
     spot::formula stay { ap("stay") };
 

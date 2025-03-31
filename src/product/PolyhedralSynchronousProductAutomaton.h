@@ -35,7 +35,7 @@ private:
     std::unordered_set<unsigned> m_initialStates {};
     std::unordered_set<unsigned> m_acceptingStates {};
 
-    void initializeAutomaton() override;
+    void initialiseAutomaton() override;
     void buildAutomaton();
     bool stateDenotationContainsAbstractionPoints(unsigned ltlAutomatonState, unsigned abstractionState);
     void createDummyInitialStateWithEdgesToInitialStates();

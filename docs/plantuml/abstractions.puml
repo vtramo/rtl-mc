@@ -10,10 +10,10 @@ package abstractions {
             --type aliases--
             +using PolyhedralAbstractionConstSharedPtr = std::shared_ptr<PolyhedralAbstraction>
             --data members--
-            #m_polyhedralSystem: PolyhedralSystemConstSharedPtr
+            #m_polyhedralSystem: PolyhedralSystemSharedPtr
             #m_spaceDimension: PPL::dimension_type
             --constructors--
-            +PolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::string_view name)
+            +PolyhedralAbstraction(PolyhedralSystemSharedPtr polyhedralSystem, std::string_view name)
             +virtual ~PolyhedralAbstraction() = default
             --member functions--
             +virtual points(unsigned state): PowersetConstSharedPtr
@@ -265,12 +265,12 @@ package abstractions {
             --data members--
             -m_tileNodes: std::unordered_map<unsigned, std::variant<TileNode, TripleTileNode>>
             --constructors--
-            +OmnidirectionalPolyhedralAbstraction(PolyhedralSystemConstSharedPtr polyhedralSystem, std::string_view name)
+            +OmnidirectionalPolyhedralAbstraction(PolyhedralSystemSharedPtr polyhedralSystem, std::string_view name)
             --member functions--
             -buildAbstraction(std::vector<Tile>&& tiles): void
             -processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile): void
             -getStateByTileOrCreate(const Tile& tile, std::unordered_map<Tile, unsigned>& stateByTile): unsigned
-            -extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem): std::vector<Tile>
+            -extractTilesFromPolyhedralSystem(PolyhedralSystemSharedPtr polyhedralSystem): std::vector<Tile>
         }
 
         Tile <..> TileHash

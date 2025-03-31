@@ -1,4 +1,4 @@
-#include "PolyhedralFiniteLtlAutomaton.h"
+#include "PolyhedralLtlFiniteAutomaton.h"
 #include "logger.h"
 #include "Timer.h"
 #include "spot_utils.h"
@@ -10,33 +10,33 @@
 #include <spot/twaalgos/stats.hh>
 #include <spot/twaalgos/sccinfo.hh>
 
-PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton()
+PolyhedralLtlFiniteAutomaton::PolyhedralLtlFiniteAutomaton()
 {
-    PolyhedralFiniteLtlAutomaton::initializeStats();
+    PolyhedralLtlFiniteAutomaton::initialiseStats();
 }
 
-PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(const PolyhedralFiniteLtlAutomaton& other)
+PolyhedralLtlFiniteAutomaton::PolyhedralLtlFiniteAutomaton(const PolyhedralLtlFiniteAutomaton& other)
     : PolyhedralLtlAutomaton(other)
-    , m_polyhedralFiniteLtlAutomatonStats { std::make_shared<PolyhedralFiniteLtlAutomatonStats>(*other.m_polyhedralFiniteLtlAutomatonStats) }
+    , m_polyhedralFiniteLtlAutomatonStats { std::make_shared<PolyhedralLtlFiniteAutomatonStats>(*other.m_polyhedralFiniteLtlAutomatonStats) }
 {
     m_polyhedralLtlAutomatonStats = m_polyhedralFiniteLtlAutomatonStats;
     m_automatonStats = m_polyhedralFiniteLtlAutomatonStats;
 }
 
-PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(
+PolyhedralLtlFiniteAutomaton::PolyhedralLtlFiniteAutomaton(
     const DiscreteLtlFormula& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
-) : PolyhedralFiniteLtlAutomaton(
+) : PolyhedralLtlFiniteAutomaton(
         DiscreteLtlFormula { discreteLtlFormula },
         std::move(polyhedralSystemLabelDenotationMap),
         name
     )
 {
-    PolyhedralFiniteLtlAutomaton::initializeStats();
+    PolyhedralLtlFiniteAutomaton::initialiseStats();
 }
 
-PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(
+PolyhedralLtlFiniteAutomaton::PolyhedralLtlFiniteAutomaton(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
@@ -46,10 +46,10 @@ PolyhedralFiniteLtlAutomaton::PolyhedralFiniteLtlAutomaton(
         name
     )
 {
-    PolyhedralFiniteLtlAutomaton::initializeStats();
+    PolyhedralLtlFiniteAutomaton::initialiseStats();
 }
 
-PolyhedralFiniteLtlAutomatonConstSharedPtr PolyhedralFiniteLtlAutomaton::buildAutomaton(
+PolyhedralLtlFiniteAutomatonConstSharedPtr PolyhedralLtlFiniteAutomaton::buildAutomaton(
     DiscreteLtlFormula&& discreteLtlFormula,
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const spot::postprocessor::optimization_level optimizationLevel,
@@ -58,8 +58,8 @@ PolyhedralFiniteLtlAutomatonConstSharedPtr PolyhedralFiniteLtlAutomaton::buildAu
 )
 {
     std::shared_ptr finiteLtlAutomaton {
-        std::make_shared<PolyhedralFiniteLtlAutomaton>(
-            PolyhedralFiniteLtlAutomaton {
+        std::make_shared<PolyhedralLtlFiniteAutomaton>(
+            PolyhedralLtlFiniteAutomaton {
                 std::move(discreteLtlFormula),
                 std::move(polyhedralSystemLabelDenotationMap),
                 name
@@ -80,12 +80,13 @@ PolyhedralFiniteLtlAutomatonConstSharedPtr PolyhedralFiniteLtlAutomaton::buildAu
     return finiteLtlAutomaton;
 }
 
-spot::twa_graph_ptr PolyhedralFiniteLtlAutomaton::convertToNfa(spot::twa_graph_ptr tgba)
+spot::twa_graph_ptr PolyhedralLtlFiniteAutomaton::convertToNfa(spot::twa_graph_ptr tgba)
 {
     Log::log(Verbosity::veryVerbose, "[{} - TGBA to NFA] Conversion from TGBA to NFA started.", m_name);
     Timer timer {};
 
     spot::twa_graph_ptr nfa { spot::to_finite(tgba) };
+    Log::log(nfa, fmt::format("{}-nfa", m_name));
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
     Log::log(Verbosity::veryVerbose, "[{} - TGBA to NFA] Conversion from TGBA to NFA completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
@@ -101,28 +102,26 @@ spot::twa_graph_ptr PolyhedralFiniteLtlAutomaton::convertToNfa(spot::twa_graph_p
     return nfa;
 }
 
-void PolyhedralFiniteLtlAutomaton::onConstructionCompleted(const double executionTimeSeconds)
+void PolyhedralLtlFiniteAutomaton::onConstructionCompleted(const double executionTimeSeconds)
 {
     PolyhedralLtlAutomaton::onConstructionCompleted(executionTimeSeconds);
     m_polyhedralFiniteLtlAutomatonStats->setNfaMaxRecursiveDepth(1 + 2 * m_polyhedralFiniteLtlAutomatonStats->getTotalNumberPatches());
 }
 
-void PolyhedralFiniteLtlAutomaton::initializeAutomaton()
+void PolyhedralLtlFiniteAutomaton::initialiseAutomaton()
 {
-    const PolyhedralSystem& polyhedralSystem { m_formulaDenotationMap.getPolyhedralSystem() };
-    m_automaton = std::make_shared<spot::twa_graph>(polyhedralSystem.bddDict());
-    m_automaton->prop_state_acc(spot::trival { true });
+    PolyhedralLtlAutomaton::initialiseAutomaton();
     m_automaton->set_acceptance(spot::acc_cond::inf({0}));
 }
 
-void PolyhedralFiniteLtlAutomaton::initializeStats()
+void PolyhedralLtlFiniteAutomaton::initialiseStats()
 {
-    m_polyhedralFiniteLtlAutomatonStats = std::make_shared<PolyhedralFiniteLtlAutomatonStats>();
+    m_polyhedralFiniteLtlAutomatonStats = std::make_shared<PolyhedralLtlFiniteAutomatonStats>();
     m_polyhedralLtlAutomatonStats = m_polyhedralFiniteLtlAutomatonStats;
     m_automatonStats = m_polyhedralFiniteLtlAutomatonStats;
 }
 
-const PolyhedralFiniteLtlAutomatonStats& PolyhedralFiniteLtlAutomaton::stats() const
+const PolyhedralLtlFiniteAutomatonStats& PolyhedralLtlFiniteAutomaton::stats() const
 {
     return *m_polyhedralFiniteLtlAutomatonStats;
 }

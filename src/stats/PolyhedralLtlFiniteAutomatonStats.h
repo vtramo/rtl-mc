@@ -2,7 +2,7 @@
 
 #include "PolyhedralLtlAutomatonStats.h"
 
-class PolyhedralFiniteLtlAutomatonStats: public PolyhedralLtlAutomatonStats
+class PolyhedralLtlFiniteAutomatonStats: public PolyhedralLtlAutomatonStats
 {
 public:
     static const inline std::string s_nfaExecutionTimeSecondsPlaceHolder { "%ANx" };

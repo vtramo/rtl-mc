@@ -8,7 +8,7 @@ std::vector<Tile> TileExtractorDoublyLinkedList::extractTiles(const std::vector<
 
 std::vector<Tile> TileExtractorDoublyLinkedList::extractTiles(const Observable& observable)
 {
-    if (observable.isEmpty()) return {};
+    if (observable.isInterpretationEmpty()) return {};
 
     buildPowersetLinkedList(observable);
     assert(m_powersetLinkedList.head != nullptr);
@@ -63,7 +63,7 @@ std::vector<Tile> TileExtractorDoublyLinkedList::extractTiles(const Observable& 
 
 void TileExtractorDoublyLinkedList::buildPowersetLinkedList(const Observable& observable)
 {
-    if (observable.isEmpty()) return;
+    if (observable.isInterpretationEmpty()) return;
 
     Powerset::const_iterator patchIterator { observable.begin() };
     m_powersetLinkedList.head = std::make_shared<PowersetLinkedList::Node>();

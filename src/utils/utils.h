@@ -131,3 +131,18 @@ void hashCombine(std::size_t& seed, const T& v, const Rest&... rest)
     seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
     (hashCombine(seed, rest), ...);
 }
+
+/*!
+ *  \brief Checks if a string ends with a specified suffix.
+ *  \param str The string to check.
+ *  \param suffix The suffix to compare with the end of the string.
+ *  \return `true` if the string ends with the suffix, `false` otherwise.
+ */
+inline bool endsWith(const std::string_view str, const std::string_view suffix) {
+    if (suffix.size() > str.size())
+    {
+        return false;
+    }
+
+    return std::equal(suffix.rbegin(), suffix.rend(), str.rbegin());
+}

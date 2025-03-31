@@ -38,7 +38,7 @@ protected:
     unsigned m_dummyInitialState {};
     unsigned m_dummyEdges {};
     std::unordered_map<unsigned, StateDenotation> m_stateDenotationById {};
-    PolyhedralSystemFormulaDenotationMap m_formulaDenotationMap {};
+    PolyhedralSystemFormulaDenotationMap m_polyhedralSystemFormulaDenotationMap {};
     std::shared_ptr<PolyhedralLtlAutomatonStats> m_polyhedralLtlAutomatonStats {};
     DiscreteLtlFormula m_discreteLtlFormula {};
     spot::postprocessor::optimization_level m_optimizationLevel {};
@@ -83,8 +83,8 @@ protected:
 
     friend std::ostream& operator<< (std::ostream& out, const PolyhedralLtlAutomaton& automaton);
 
-    void initializeAutomaton() override;
-    void initializeStats() override;
+    void initialiseAutomaton() override;
+    void initialiseStats() override;
     virtual void buildAutomaton(const spot::const_twa_graph_ptr& twaGraph, const std::unordered_set<unsigned>& acceptingStates);
     virtual StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& twaGraph, const bdd& guard);
     virtual bdd stateLabelsAsBdd(unsigned state) const;

@@ -95,10 +95,14 @@ std::optional<const AtomInterpretation* const> PolyhedralSystem::getAtomInterpre
 std::optional<const AtomInterpretation* const> PolyhedralSystem::getAtomInterpretation(const spot::formula& atom) const
 {
     if (!atom.is(spot::op::ap))
+    {
         return {};
+    }
 
     if (const auto it { m_denotation.find(atom) }; it != m_denotation.end())
+    {
         return &it->second;
+    }
 
      return {};
 }
@@ -111,10 +115,14 @@ const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const std::str
 const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation)
 {
     if (!atom.is(spot::op::ap))
-        throw std::invalid_argument("PolyhedralSystem::addAtomInterpretation: formula is not an atomic proposition!");
+    {
+        throw std::invalid_argument("PolyhedralSystem::addAtomInterpretation: formula is not an atomic proposition! " + toFormulaString(atom));
+    }
 
     if (containsAtom(atom))
+    {
         throw std::invalid_argument("PolyhedralSystem::addAtomInterpretation: atom " + atom.ap_name() + " already exists!");
+    }
 
     m_symbolTable.addAtom(atom);
     return m_denotation.emplace(atom, AtomInterpretation { interpretation, m_invariant }).first->second;
@@ -127,8 +135,12 @@ const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const spot::fo
 PolyhedralSystemUniquePtr PolyhedralSystem::extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations) const
 {
     PolyhedralSystemUniquePtr extendedPolyhedralSystem { std::make_unique<PolyhedralSystem>(*this) };
+
     for (const auto& [atom, interpretation]: atomInterpretations)
+    {
         extendedPolyhedralSystem->addAtomInterpretation(atom, interpretation);
+    }
+
     return extendedPolyhedralSystem;
 }
 
@@ -162,10 +174,14 @@ bool PolyhedralSystem::containsAtom(const std::string_view atom) const
 bool PolyhedralSystem::containsAtom(spot::formula atom) const
 {
     if (!atom.is(spot::op::ap))
+    {
         return false;
+    }
 
     if (const auto it { m_denotation.find(atom) }; it != m_denotation.end())
+    {
         return true;
+    }
 
     return false;
 }

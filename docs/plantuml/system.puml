@@ -18,7 +18,7 @@ package system {
         +atoms(): const spot::atomic_prop_set&
         +interpretation(): PowersetConstSharedPtr
         +isUniverse(): bool
-        +isEmpty(): bool
+        +isInterpretationEmpty(): bool
         +totalAtoms(): int
         +totalPatches(): int
         +begin(): Powerset::const_iterator

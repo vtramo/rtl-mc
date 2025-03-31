@@ -178,7 +178,7 @@ package stats {
 
     PolyhedralLtlAutomatonStats --|> AutomatonStats
 
-    class PolyhedralFiniteLtlAutomatonStats {
+    class PolyhedralLtlFiniteAutomatonStats {
         --static data members--
         +static const inline std::string s_nfaExecutionTimeSecondsPlaceHolder { "%ANx" }
         +static const inline std::string s_nfaTotalStatesPlaceHolder { "%ANs" }
@@ -212,7 +212,7 @@ package stats {
         +setNfaMaxRecursiveDepth(int): void
     }
 
-    PolyhedralFiniteLtlAutomatonStats --|> PolyhedralLtlAutomatonStats
+    PolyhedralLtlFiniteAutomatonStats --|> PolyhedralLtlAutomatonStats
 
     class SolverStats {
         --static data members--
@@ -228,7 +228,7 @@ package stats {
         #addIndexedPlaceholderValues(const std::unordered_map<std::string, std::string>& valueByPlaceholder, std::size_t index): void
         --data members--
         #m_executionTimesSeconds: std::vector<double>
-        #m_polyhedralSystemsStats: std::vector<PolyhedralFiniteLtlAutomatonStats>
+        #m_polyhedralSystemsStats: std::vector<PolyhedralLtlFiniteAutomatonStats>
         #m_discretisationStats: std::vector<DiscretisationStats>
         #m_automataStats: std::vector<AutomatonStats>
         #m_rtlFormulaStats: std::vector<RtlFormulaStats>

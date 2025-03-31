@@ -6,7 +6,7 @@
 #include "SingOpenStatePair.h"
 
 GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
-    PolyhedralSystemConstSharedPtr polyhedralSystem,
+    PolyhedralSystemSharedPtr polyhedralSystem,
     std::vector<Observable>&& observables,
     const unsigned maxObservablePatchSequenceLength,
     const std::string_view name
@@ -16,7 +16,7 @@ GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
 }
 
 GeneralPolyhedralAbstraction::GeneralPolyhedralAbstraction(
-    PolyhedralSystemConstSharedPtr polyhedralSystem,
+    PolyhedralSystemSharedPtr polyhedralSystem,
     const std::string_view name
 ) : PolyhedralAbstraction(polyhedralSystem, name)
 {

@@ -6,12 +6,12 @@
 class PolyhedralSystemFormulaDenotationMap
 {
 public:
-    explicit PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem);
+    explicit PolyhedralSystemFormulaDenotationMap(PolyhedralSystemSharedPtr polyhedralSystem);
     PolyhedralSystemFormulaDenotationMap(PolyhedralSystemFormulaDenotationMap&& other) noexcept;
     PolyhedralSystemFormulaDenotationMap(const PolyhedralSystemFormulaDenotationMap& other) = default;
 
     PowersetConstSharedPtr getOrComputeDenotation(const spot::formula& formula);
-    [[nodiscard]] const PolyhedralSystem& getPolyhedralSystem() const;
+    [[nodiscard]] PolyhedralSystemConstSharedPtr polyhedralSystem() const;
     [[nodiscard]] bool containsDenotation(const spot::formula& formula) const;
 
     friend std::ostream& operator<< (std::ostream& out, PolyhedralSystemFormulaDenotationMap& polyhedralSystemFormulaDenotationMap);
@@ -20,13 +20,13 @@ private:
     using FormulaToString = std::string;
     using FormulaId = size_t;
 
-    PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
+    PolyhedralSystemSharedPtr m_polyhedralSystem {};
     std::unordered_map<FormulaId, std::tuple<PowersetConstSharedPtr, FormulaToString>> m_powersetByFormula {};
 
     friend class PolyhedralLtlAutomaton;
     PolyhedralSystemFormulaDenotationMap() = default;
 
     PowersetConstSharedPtr computeFormulaDenotation(const spot::formula& formula);
-    void saveFormulaDenotation(const spot::formula& formula, PowersetConstSharedPtr denotation);
+    void storeFormulaDenotation(const spot::formula& formula, PowersetConstSharedPtr denotation);
     const AtomInterpretation* getAtomInterpretation(const spot::formula& formula) const;
 };

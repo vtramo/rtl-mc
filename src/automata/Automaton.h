@@ -35,8 +35,8 @@ protected:
     std::string m_name {};
     std::shared_ptr<AutomatonStats> m_automatonStats {};
 
-    virtual void initializeAutomaton();
-    virtual void initializeStats()
+    virtual void initialiseAutomaton();
+    virtual void initialiseStats()
     {
         m_automatonStats = std::make_unique<AutomatonStats>();
     }
@@ -45,7 +45,7 @@ protected:
     {
         if (!m_automatonStats)
         {
-            initializeStats();
+            initialiseStats();
         }
 
         m_automatonStats->setTotalStates(totalStates());

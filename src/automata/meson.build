@@ -12,6 +12,6 @@ automaton_source_files = [
 ]
 
 subdir('finite')
-subdir('buchi')
+subdir('büchi')
 
 project_source_files += automaton_source_files

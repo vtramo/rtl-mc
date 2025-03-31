@@ -52,7 +52,7 @@ protected:
     void constructPolyhedralLtlAutomaton() override
     {
         PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { m_polyhedralSystem };
-        m_ltlAutomaton = buildPolyhedralFiniteLtlAutomaton(
+        m_ltlAutomaton = buildPolyhedralLtlFiniteAutomaton(
             std::move(m_discreteLtlFormula),
             polyhedralSystemFormulaDenotationMap,
             m_automatonOptimizationFlags

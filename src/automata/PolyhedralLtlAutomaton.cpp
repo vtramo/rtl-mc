@@ -2,16 +2,18 @@
 #include <spdlog/fmt/bundled/format.h>
 #include <spdlog/fmt/bundled/format-inl.h>
 #include <spdlog/fmt/bundled/ranges.h>
+#include <spot/twaalgos/dot.hh>
 #include <spot/twa/formula2bdd.hh>
 
 #include "PolyhedralLtlAutomaton.h"
+#include "formula_constants.h"
 #include "logger.h"
 #include "spot_utils.h"
 #include "Timer.h"
 
 PolyhedralLtlAutomaton::PolyhedralLtlAutomaton()
 {
-    PolyhedralLtlAutomaton::initializeStats();
+    PolyhedralLtlAutomaton::initialiseStats();
 }
 
 PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(const PolyhedralLtlAutomaton& other)
@@ -21,7 +23,7 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(const PolyhedralLtlAutomaton& oth
     , m_dummyInitialState { other.m_dummyInitialState }
     , m_dummyEdges { other.m_dummyEdges }
     , m_stateDenotationById { other.m_stateDenotationById }
-    , m_formulaDenotationMap { other.m_formulaDenotationMap }
+    , m_polyhedralSystemFormulaDenotationMap { other.m_polyhedralSystemFormulaDenotationMap }
     , m_polyhedralLtlAutomatonStats { std::make_shared<PolyhedralLtlAutomatonStats>(*other.m_polyhedralLtlAutomatonStats) }
     , m_discreteLtlFormula { other.m_discreteLtlFormula }
     , m_optimizationLevel { other.m_optimizationLevel }
@@ -34,7 +36,7 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
 )   : Automaton(name)
-    , m_formulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
+    , m_polyhedralSystemFormulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
     , m_discreteLtlFormula { std::move(discreteLtlFormula) }
 {
     if (m_discreteLtlFormula.formula() == nullptr)
@@ -42,7 +44,7 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
         throw std::invalid_argument("The provided DiscreteLtlFormula contains a null formula. A valid formula must be provided.");
     }
 
-    PolyhedralLtlAutomaton::initializeStats();
+    PolyhedralLtlAutomaton::initialiseStats();
 }
 
 PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
@@ -50,7 +52,7 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
     PolyhedralSystemFormulaDenotationMap&& polyhedralSystemLabelDenotationMap,
     const std::string_view name
 )   : Automaton(name)
-    , m_formulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
+    , m_polyhedralSystemFormulaDenotationMap { std::move(polyhedralSystemLabelDenotationMap) }
     , m_discreteLtlFormula { std::move(discreteLtlFormula) }
 {
     if (m_discreteLtlFormula.formula() == nullptr)
@@ -58,19 +60,19 @@ PolyhedralLtlAutomaton::PolyhedralLtlAutomaton(
         throw std::invalid_argument("The provided DiscreteLtlFormula contains a null formula. A valid formula must be provided.");
     }
 
-    PolyhedralLtlAutomaton::initializeStats();
+    PolyhedralLtlAutomaton::initialiseStats();
 }
 
-void PolyhedralLtlAutomaton::initializeAutomaton()
+void PolyhedralLtlAutomaton::initialiseAutomaton()
 {
-    const PolyhedralSystem& polyhedralSystem { m_formulaDenotationMap.getPolyhedralSystem() };
-    m_automaton = std::make_shared<spot::twa_graph>(polyhedralSystem.bddDict());
+    PolyhedralSystemConstSharedPtr polyhedralSystem { m_polyhedralSystemFormulaDenotationMap.polyhedralSystem() };
+    m_automaton = std::make_shared<spot::twa_graph>(polyhedralSystem->bddDict());
     m_automaton->prop_state_acc(spot::trival { true });
     m_automaton->set_acceptance(spot::acc_cond {spot::acc_cond::acc_code::buchi()});
     assert(m_automaton->prop_state_acc().is_true());
 }
 
-void PolyhedralLtlAutomaton::initializeStats()
+void PolyhedralLtlAutomaton::initialiseStats()
 {
     m_polyhedralLtlAutomatonStats = std::make_shared<PolyhedralLtlAutomatonStats>();
     m_automatonStats = m_polyhedralLtlAutomatonStats;
@@ -162,7 +164,7 @@ void PolyhedralLtlAutomaton::buildAutomaton(
 {
     Log::log(Verbosity::verbose, "[{} - Construction] Construction started.", m_name);
 
-    initializeAutomaton();
+    initialiseAutomaton();
 
     int totalPatches {};
     std::unordered_map<unsigned, std::vector<unsigned>> outEdgeStates {};
@@ -232,7 +234,7 @@ StateDenotation PolyhedralLtlAutomaton::extractStateDenotationFromEdgeGuard(
 {
     spot::formula formulaPossiblyWithSing { spot::bdd_to_formula(guard, twaGraph->get_dict()) };
     auto [formulaWithoutSing, containsSing] { removeSing(spot::formula { formulaPossiblyWithSing }) };
-    const PowersetConstSharedPtr powerset { m_formulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
+    const PowersetConstSharedPtr powerset { m_polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
     return StateDenotation { std::move(formulaPossiblyWithSing), powerset, containsSing };
 }
 
@@ -257,10 +259,16 @@ void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::tw
         }
 
         const auto& [formulaWithoutSing, _] { removeSing(std::move(formula)) };
-        PowersetConstSharedPtr denotation { m_formulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
-        if (denotation->is_empty()) outIteraser.erase();
+        PowersetConstSharedPtr denotation { m_polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
+        if (denotation->is_empty())
+        {
+            outIteraser.erase();
+        }
+
         ++outIteraser;
     }
+
+    Log::log(twaGraph, fmt::format("{}-erase-empty-denotation-edges", m_name));
 }
 
 void PolyhedralLtlAutomaton::createNewEdge(const unsigned srcState, const unsigned dstState)
@@ -288,6 +296,7 @@ void PolyhedralLtlAutomaton::purgeUnreachableStatesThenRenumberAcceptingStates(
     spot::twa_graph::shift_action renumberNfaAcceptingStates { &renumberOrRemoveStatesAfterPurge };
     RenumberingContext renumberingContext { &acceptingStates };
     twaGraph->purge_unreachable_states(&renumberNfaAcceptingStates, &renumberingContext);
+    Log::log(twaGraph, fmt::format("{}-purge-unreachable-states", m_name));
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Removal of unreachable states from automaton completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
@@ -304,6 +313,7 @@ void PolyhedralLtlAutomaton::purgeUnreachableStatesThenRenumberAcceptingStates(
 
 void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSeconds)
 {
+    Log::log(m_automaton, fmt::format("{}-construction-completed", m_name));
     Log::log(Verbosity::verbose, "[{} - Construction] Construction completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
     Log::log(Verbosity::verbose, "[{} - Construction] Total states: {}.", m_name, totalStates());
     Log::log(Verbosity::verbose, "[{} - Construction] Total initial states: {}.", m_name, totalInitialStates());
@@ -355,6 +365,7 @@ std::unordered_set<unsigned> PolyhedralLtlAutomaton::killAcceptingStates(const s
         }
     }
     Log::log(Verbosity::veryVerbose, "[{} - Kill Accepting States] Accepting states: [{}].", m_name, fmt::join(acceptingStates, ", "));
+    Log::log(graph, fmt::format("{}-kill-accepting-states", m_name));
     return acceptingStates;
 }
 
@@ -430,6 +441,7 @@ spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(
     Timer timer {};
 
     spot::twa_graph_ptr formulaTgba { ltlToNbaTranslator.run(m_discreteLtlFormula.formula()) };
+    Log::log(formulaTgba, fmt::format("{}-translation", m_name));
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
     Log::log(Verbosity::veryVerbose, "[{} - Translation] Translation of the discretised LTL formula into a TGBA completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
@@ -450,8 +462,8 @@ spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(
 
 PPL::dimension_type PolyhedralLtlAutomaton::spaceDimension() const
 {
-    const auto& polyhedralSystem { m_formulaDenotationMap.getPolyhedralSystem() };
-    return polyhedralSystem.spaceDimension();
+    const PolyhedralSystemConstSharedPtr polyhedralSystem { m_polyhedralSystemFormulaDenotationMap.polyhedralSystem() };
+    return polyhedralSystem->spaceDimension();
 }
 
 std::ostream& operator<< (std::ostream& out, const PolyhedralLtlAutomaton& automaton)
@@ -479,8 +491,8 @@ std::ostream& operator<< (std::ostream& out, const PolyhedralLtlAutomaton& autom
         const StateDenotation& stateDenotation { automaton.stateDenotation(state) };
 
         out << "State " << state << '\n';
-        const PolyhedralSystem& polyhedralSystem { automaton.m_formulaDenotationMap.getPolyhedralSystem() };
-        stateDenotation.print(out, polyhedralSystem.symbolTable());
+        PolyhedralSystemConstSharedPtr polyhedralSystem { automaton.m_polyhedralSystemFormulaDenotationMap.polyhedralSystem() };
+        stateDenotation.print(out, polyhedralSystem->symbolTable());
         out << std::boolalpha << "\nIs initial state: " << automaton.isInitialState(state) << '\n';
         out << "Is accepting state: " << automaton.isAcceptingState(state) << '\n';
 

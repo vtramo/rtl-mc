@@ -48,6 +48,7 @@ public:
     [[nodiscard]] OutputFormat outputFormat() const { return m_outputFormat; }
     [[nodiscard]] std::string statsFormat() const { return m_statsFormat; }
     [[nodiscard]] Semantics semantics() const { return m_semantics; }
+    [[nodiscard]] bool isExportDotEnabled() const { return m_exportDot; }
 
 private:
     argparse::ArgumentParser m_rtlMcProgram{};
@@ -71,6 +72,7 @@ private:
     Verbosity m_verbosityLevel{Verbosity::silent};
     OutputFormat m_outputFormat{OutputFormat::normal};
     std::string m_statsFormat{};
+    bool m_exportDot {};
 
     void buildRtlMcProgram()
     {
@@ -255,6 +257,7 @@ private:
     void addAdvancedArguments()
     {
         m_rtlMcProgram.add_group("Advanced options");
+        addExportDotArguments();
         addDirectLtlArgument();
         addConcurrentArgument();
     }
@@ -276,6 +279,16 @@ private:
                   "the on-the-fly algorithm for finite semantics.")
             .flag()
             .store_into(m_concurrent);
+    }
+
+    void addExportDotArguments()
+    {
+        m_rtlMcProgram
+            .add_argument("--export-dot")
+            .help("Create a .dot file for each graph/automaton created (including any intermediate changes)\n"
+                  "during the solving process.")
+            .flag()
+            .store_into(m_exportDot);
     }
 
     void parseArgs(const int argc, char* argv[])
@@ -390,8 +403,11 @@ private:
             exit(1);
         }
 
-        m_modelCheckingPoint = Poly{
-            Parma_Polyhedra_Library::Generator_System{std::get<PPL::Generator>(mcPointParsingResult)}
-        };
+        m_modelCheckingPoint =
+            Poly {
+                PPL::Generator_System {
+                    std::get<PPL::Generator>(mcPointParsingResult)
+                }
+            };
     }
 };

@@ -1,13 +1,12 @@
-#include "PolyhedralSystemFormulaDenotationMap.h"
-
 #include <memory>
+
+#include "PolyhedralSystemFormulaDenotationMap.h"
 #include "ppl_utils.h"
-#include "spot_utils.h"
 #include "ppl_output.h"
 #include "formula.h"
 
 
-PolyhedralSystemFormulaDenotationMap::PolyhedralSystemFormulaDenotationMap(PolyhedralSystemConstSharedPtr polyhedralSystem)
+PolyhedralSystemFormulaDenotationMap::PolyhedralSystemFormulaDenotationMap(PolyhedralSystemSharedPtr polyhedralSystem)
     : m_polyhedralSystem { polyhedralSystem }
 {
 }
@@ -18,9 +17,9 @@ PolyhedralSystemFormulaDenotationMap::PolyhedralSystemFormulaDenotationMap(Polyh
 {
 }
 
-const PolyhedralSystem& PolyhedralSystemFormulaDenotationMap::getPolyhedralSystem() const
+PolyhedralSystemConstSharedPtr PolyhedralSystemFormulaDenotationMap::polyhedralSystem() const
 {
-    return *m_polyhedralSystem;
+    return m_polyhedralSystem;
 }
 
 bool PolyhedralSystemFormulaDenotationMap::containsDenotation(const spot::formula& formula) const
@@ -30,14 +29,17 @@ bool PolyhedralSystemFormulaDenotationMap::containsDenotation(const spot::formul
 
 PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::getOrComputeDenotation(const spot::formula& formula)
 {
+    if (!isCnf(formula))
+    {
+        throw std::invalid_argument("Formula is not in CNF! " + toFormulaString(formula));
+    }
+
     if (containsDenotation(formula))
     {
         const auto& [powerset, _] { m_powersetByFormula.at(formula.id()) };
         return powerset;
     }
 
-    assert(formula.is_sugar_free_boolean() && "Only AND, OR and NOT"); // Only AND, OR and NOT
-    assert(formula.is_in_nenoform() && "Only NNF"); // in Negative Normal Form NNF
     return computeFormulaDenotation(formula);
 }
 
@@ -46,6 +48,7 @@ PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::computeFormulaDenot
     if (formula.is_literal())
     {
         const AtomInterpretation* atomIntepretation {};
+
         if (formula.is(spot::op::Not))
         {
             atomIntepretation = getAtomInterpretation(formula[0]);
@@ -56,7 +59,7 @@ PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::computeFormulaDenot
         return std::make_shared<Powerset>(atomIntepretation->interpretation());
     }
 
-    PowersetSharedPtr powersetResult {};
+    PowersetConstSharedPtr powersetResult {};
     if (formula.is_tt())
     {
         powersetResult = std::make_shared<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::UNIVERSE);
@@ -69,17 +72,20 @@ PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::computeFormulaDenot
     {
         std::vector<PowersetConstSharedPtr> powersets {};
         powersets.reserve(formula.size());
-        for (const auto& child: formula)
-            powersets.push_back(getOrComputeDenotation(child));
 
-        if (formula.is(spot::op::And))
-            powersetResult = PPLUtils::intersect(powersets);
-        else
-            powersetResult = PPLUtils::fusion(powersets);
+        for (const auto& child: formula)
+        {
+            powersets.push_back(getOrComputeDenotation(child));
+        }
+
+        powersetResult =
+            formula.is(spot::op::And)
+                ? PPLUtils::intersect(powersets)
+                : PPLUtils::fusion(powersets);
     }
 
     assert(powersetResult->space_dimension() == m_polyhedralSystem->spaceDimension());
-    saveFormulaDenotation(formula, powersetResult);
+    storeFormulaDenotation(formula, powersetResult);
     return powersetResult;
 }
 
@@ -90,12 +96,14 @@ const AtomInterpretation* PolyhedralSystemFormulaDenotationMap::getAtomInterpret
     const std::optional atomInterpretation { m_polyhedralSystem->getAtomInterpretation(formula) };
 
     if (!atomInterpretation)
+    {
         throw std::invalid_argument("The atom " + formula.ap_name() + " has no interpretation!");
+    }
 
     return *atomInterpretation;
 }
 
-void PolyhedralSystemFormulaDenotationMap::saveFormulaDenotation(const spot::formula& formula, PowersetConstSharedPtr denotation)
+void PolyhedralSystemFormulaDenotationMap::storeFormulaDenotation(const spot::formula& formula, PowersetConstSharedPtr denotation)
 {
     m_powersetByFormula.insert(
         std::make_pair(

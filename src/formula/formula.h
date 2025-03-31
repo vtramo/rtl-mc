@@ -2,7 +2,6 @@
 
 #include <spot/tl/apcollect.hh>
 #include <spot/tl/formula.hh>
-#include <spot/twaalgos/postproc.hh>
 
 /*!
  *  \brief Returns the logical constant 'true' formula (tt).
@@ -226,7 +225,7 @@ spot::formula generateAlternatingFormula(int k, spot::formula p = ap("p"), spot:
  *  \param formula The formula to be checked.
  *  \return True if the formula does not contain the Next (X) operator, false otherwise.
  */
-bool isXFree(spot::formula& formula);
+bool isXFree(const spot::formula& formula);
 
 /*!
  *  \brief Converts a formula to a string representation.
@@ -260,7 +259,9 @@ bool isSingOrNotSing(const spot::formula& formula);
 /*!
  *  \brief Removes the "sing" atomic proposition from the given formula if present.
  *  \param formula The formula from which to remove the "sing" atomic proposition.
- *  \return A tuple containing the formula with "sing" removed and a boolean indicating if the "sing" proposition was removed.
+ *  \return A tuple containing the formula with `sing` removed and a boolean indicating if at least
+ *          one positive `sing` proposition was removed.
+ *  \see formula_constants.h
  */
 std::tuple<spot::formula, bool> removeSing(spot::formula&& formula);
 
@@ -277,14 +278,36 @@ bool containsSing(const spot::atomic_prop_set& atomicPropositions);
  *  \param formula The formula from which to collect the atomic propositions.
  *  \return A vector of formulas that represent atomic propositions not in the forbidden set.
  */
-std::vector<spot::formula> collectAtomsNotIn(const spot::atomic_prop_set& forbiddenAtoms, spot::formula& formula);
+std::vector<spot::formula> collectAtomsNotIn(const spot::atomic_prop_set& forbiddenAtoms, const spot::formula& formula);
 
 /*!
  *  \brief Collects all positive literals (non-negated atomic propositions) from the given formula.
  *  \param formula The formula to be processed.
  *  \return A set of atomic propositions representing the positive literals in the formula.
  */
-spot::atomic_prop_set collectPositiveLiterals(spot::formula&& formula);
+spot::atomic_prop_set collectPositiveLiterals(const spot::formula& formula);
+
+/*!
+ *  \brief Checks if the given formula is in Conjunctive Normal Form (CNF).
+ *  \param formula The formula to be checked.
+ *  \return `true` if the formula is in Conjunctive Normal Form (CNF), `false` otherwise.
+ */
+bool isCnf(const spot::formula& formula);
+
+/*!
+ *  \brief Collects all clauses from a Conjunctive Normal Form (CNF) formula.
+ *  \param formula The CNF formula to be processed.
+ *  \throws std::invalid_argument If the formula is not in Conjunctive Normal Form (CNF).
+ *  \return A vector containing all the clauses of the CNF formula.
+ */
+std::vector<spot::formula> collectCnfClauses(const spot::formula& formula);
+
+/*!
+ *  \brief Checks if the formula is a conjunction of literals.
+ *  \param formula The formula to be processed.
+ *  \return `true` if the formula is a conjunction of literals, `false` otherwise.
+ */
+bool isConjunctionOfLiterals(const spot::formula& formula);
 
 /*!
  *  \brief Checks if the given formula is non-recurrent.

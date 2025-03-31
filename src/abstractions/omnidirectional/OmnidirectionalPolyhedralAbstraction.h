@@ -84,7 +84,7 @@ public:
      * \param name Optional name for the abstraction (default: "OmnidirectionalPolyhedralAbstraction")
      */
     explicit OmnidirectionalPolyhedralAbstraction(
-        PolyhedralSystemConstSharedPtr polyhedralSystem,
+        PolyhedralSystemSharedPtr polyhedralSystem,
         std::string_view name = "OmnidirectionalPolyhedralAbstraction"
     );
 
@@ -123,5 +123,5 @@ protected:
      */
     void processTriple(const Tile& tile1, const Tile& tile2, const Tile& tile3, std::unordered_map<Tile, unsigned>& stateByTile);
 
-    std::vector<Tile> extractTilesFromPolyhedralSystem(PolyhedralSystemConstSharedPtr polyhedralSystem);
+    std::vector<Tile> extractTilesFromPolyhedralSystem(PolyhedralSystemSharedPtr polyhedralSystem);
 };
