@@ -463,7 +463,7 @@ const Observable& PolyhedralSystem::getOrGenerateEmptyObservable()
 #ifdef DEBUG
     m_emptyObservable = { {}, observableDenotation, PPLOutput::toString(*observableDenotation, symbolTable()) };
 #else
-    m_emptyObservable { {}, observableDenotation };
+    m_emptyObservable = { {}, observableDenotation };
 #endif
 
     return *m_emptyObservable;

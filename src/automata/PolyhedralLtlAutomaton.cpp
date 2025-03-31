@@ -242,6 +242,12 @@ bdd PolyhedralLtlAutomaton::stateLabelsAsBdd(const unsigned state) const
 {
     const StateDenotation& outStateDenotation { m_stateDenotationById.at(state) };
     spot::atomic_prop_set labels { outStateDenotation.labels() };
+
+    if (labels.size() == 0)
+    {
+        return bdd_true();
+    }
+
     return { spot::formula_to_bdd(andFormulae(labels), m_automaton->get_dict(), m_automaton) };
 }
 
