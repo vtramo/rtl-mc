@@ -149,6 +149,8 @@ spot::formula And(std::vector<spot::formula>&& formulae)
  */
 spot::formula andFormulae(const std::set<spot::formula>& formulae)
 {
+    if (formulae.size() == 0) return bottom();
+
     spot::formula result {};
     for (spot::formula atom: formulae)
         result = And(std::vector { std::move(atom), std::move(result) });

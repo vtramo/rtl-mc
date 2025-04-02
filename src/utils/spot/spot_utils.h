@@ -32,8 +32,9 @@ namespace SpotUtils
     spot::twa_graph_ptr transpose(const spot::twa_graph_ptr& twaGraph);
 
     /*!
-     * \brief Collects all accepting states from a Spot automaton.
+     * \brief Collects all accepting states from a Spot automaton with state-based acceptance.
      * \param twa The Spot automaton (as a `spot::const_twa_graph_ptr`) from which to collect accepting states.
+     * \throw std::runtime_error if called on automata with no state-based acceptance.
      * \return An `std::unordered_set<unsigned>` containing all accepting states.
      */
     std::unordered_set<unsigned> collectAcceptingStates(spot::const_twa_graph_ptr twa);
