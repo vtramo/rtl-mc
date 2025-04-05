@@ -5,5 +5,6 @@ geometry_source_files = [
     current_source_dir / 'cone.h',
     current_source_dir / 'omnidirectional.h',
     current_source_dir / 'reflection.h',
+    current_source_dir / 'closed.h',
 ]
 project_source_files += geometry_source_files
