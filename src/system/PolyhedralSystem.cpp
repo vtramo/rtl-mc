@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "ppl_utils.h"
 #include "PolyhedralSystem.h"
+#include "cone.h"
 #include "ppl_output.h"
 #include "systemparser.h"
 #include "reflection.h"
@@ -50,6 +51,11 @@ bool PolyhedralSystem::hasCompactFlow() const
 bool PolyhedralSystem::isMovementForced() const
 {
     return m_isMovementForced;
+}
+
+bool PolyhedralSystem::hasFlowWithClosedCone() const
+{
+    return m_hasFlowWithClosedCone;
 }
 
 const Powerset& PolyhedralSystem::invariant() const
@@ -292,6 +298,9 @@ void PolyhedralSystem::computePreFlow()
 void PolyhedralSystem::evaluateFlowProperties()
 {
     m_hasOmnidirectionalFlow = isOmnidirectionalFlow(m_flow);
+
+    PowersetUniquePtr flowCone { coneGeometric(m_flow) };
+    m_hasFlowWithClosedCone = isClosed(*flowCone);
 
     Poly zeroPoint { PPLUtils::zeroPoint(spaceDimension()) };
     Poly closureFlow { m_flow };

@@ -96,6 +96,14 @@ public:
     [[nodiscard]] bool hasCompactFlow() const;
 
     /*!
+     * \brief Checks if the cone of the flow is closed.
+     * \return `true` if the cone of the flow is closed, `false` otherwise.
+     * \see coneGeometric
+     * \see coneGenerator
+     */
+    [[nodiscard]] bool hasFlowWithClosedCone() const;
+
+    /*!
      * \brief Checks if movement is forced in the system (i.e., the origin is not in the flow closure).
      * \return `true` if movement is forced, `false` otherwise.
      */
@@ -250,6 +258,7 @@ protected:
     Powerset m_invariant { 0, PPL::EMPTY };
     Poly m_flow { 0, PPL::EMPTY };
     bool m_hasOmnidirectionalFlow { false };
+    bool m_hasFlowWithClosedCone { false };
     bool m_isMovementForced { false };
     Poly m_preFlow { 0, PPL::EMPTY };
     std::optional<std::vector<Observable>> m_observables {};

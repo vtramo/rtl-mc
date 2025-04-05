@@ -58,6 +58,7 @@ package system {
         --data members--
         #m_flow : Poly
         #m_hasOmnidirectionalFlow : bool
+        #m_hasFlowWithClosedCone : bool
         #m_isMovementForced : bool
         #m_preFlow : Poly
         #m_symbolTable : PolyhedralSystemSymbolTable
@@ -80,6 +81,7 @@ package system {
         +hasOmnidirectionalFlow() : bool
         +isMovementForced() : bool
         +hasClosedFlow() : bool
+        +hasFlowWithClosedCone() : bool
         +hasBoundedFlow(): bool
         +hasCompactFlow(): bool
         +symbolTable() : PolyhedralSystemSymbolTable&
