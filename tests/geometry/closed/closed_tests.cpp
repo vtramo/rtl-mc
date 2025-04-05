@@ -4,7 +4,7 @@
 
 using PPL::IO_Operators::operator<<;
 
-TEST_CASE("Closed")
+TEST_CASE("isClosed function")
 {
     PPL::Variable x { 0 };
     PPL::Variable y { 1 };
