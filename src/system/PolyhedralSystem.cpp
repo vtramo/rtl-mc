@@ -9,6 +9,7 @@
 #include "reflection.h"
 #include "omnidirectional.h"
 #include "formula.h"
+#include "closed.h"
 
 const Poly& PolyhedralSystem::flow() const
 {
@@ -63,7 +64,7 @@ bool PolyhedralSystem::hasBoundedInvariant() const
 
 bool PolyhedralSystem::hasClosedInvariant() const
 {
-    return m_invariant.is_topologically_closed();
+    return isClosed(m_invariant);
 }
 
 /*!

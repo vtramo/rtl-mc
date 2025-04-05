@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <closed.h>
+
 #include "Observable.h"
 #include "utils.h"
 
@@ -122,7 +124,7 @@ private:
      */
     void computeClosurePatches()
     {
-        if (m_patches->is_topologically_closed())
+        if (isClosed(*m_patches))
         {
             m_closure = m_patches;
         }
