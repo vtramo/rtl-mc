@@ -5,6 +5,7 @@
 #include <spot/twa/acc.hh>
 #include <spot/twa/twagraph.hh>
 #include <spot/twaalgos/dot.hh>
+#include <spot/twaalgos/sccinfo.hh>
 
 Automaton::Automaton()
 {
@@ -103,7 +104,10 @@ void Automaton::initialiseAutomaton()
 
 void Automaton::assertThatStateIsInRange(const unsigned state) const
 {
-    if (state >= totalStates()) throw std::invalid_argument("State is out of range!");
+    if (state >= totalStates())
+    {
+        throw std::out_of_range("State is out of range!");
+    }
 }
 
 spot::twa_graph_ptr Automaton::transpose() const
@@ -114,4 +118,24 @@ spot::twa_graph_ptr Automaton::transpose() const
 const AutomatonStats& Automaton::stats() const
 {
     return *m_automatonStats;
+}
+
+void Automaton::setAutomatonStats(const double executionTimeSeconds)
+{
+    if (!m_automatonStats)
+    {
+        initialiseStats();
+    }
+
+    m_automatonStats->setTotalStates(totalStates());
+    m_automatonStats->setTotalInitialStates(totalInitialStates());
+    m_automatonStats->setTotalAcceptingStates(totalAcceptingStates());
+    m_automatonStats->setTotalEdges(totalEdges());
+    m_automatonStats->setExecutionTimeSeconds(executionTimeSeconds);
+    m_automatonStats->setSccInfo(spot::scc_info { m_automaton });
+}
+
+void Automaton::initialiseStats()
+{
+    m_automatonStats = std::make_unique<AutomatonStats>();
 }
