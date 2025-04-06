@@ -172,13 +172,17 @@ void PolyhedralLtlAutomaton::buildAutomaton(const spot::const_twa_graph_ptr& twa
 
         for (const auto& edge: twaGraph->out(state))
         {
-            const bool isAccepting { edge.acc.has(0) };
+            if (filterEdge(twaGraph, edge))
+            {
+                continue;
+            }
 
-            StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(twaGraph, edge.cond) };
+            StateDenotation stateDenotation { extractStateDenotationFromEdge(twaGraph, edge) };
             if (stateDenotation.isEmpty()) continue;
             updatePatchStats(stateDenotation.totalPatches());
             totalPatches += stateDenotation.totalPatches();
 
+            const bool isAccepting { isAcceptingEdge(twaGraph, edge) };
             unsigned edgeState { m_automaton->new_state() };
             if (isAccepting) m_acceptingStates.insert(edgeState);
             m_stateDenotationById.emplace(edgeState, std::move(stateDenotation));
@@ -207,6 +211,16 @@ void PolyhedralLtlAutomaton::buildAutomaton(const spot::const_twa_graph_ptr& twa
     assert(m_stateDenotationById.size() == m_automaton->num_states());
 
     postprocessAutomaton();
+}
+
+bool PolyhedralLtlAutomaton::filterEdge(const spot::const_twa_graph_ptr& graph, const Edge& edge)
+{
+    return edge.cond == bdd_false();
+}
+
+bool PolyhedralLtlAutomaton::isAcceptingEdge(const spot::const_twa_graph_ptr& graph, const Edge& edge)
+{
+    return edge.acc.has(0);
 }
 
 void PolyhedralLtlAutomaton::postprocessAutomaton()
@@ -239,13 +253,17 @@ void PolyhedralLtlAutomaton::onConstructionCompleted(const double executionTimeS
     setAutomatonStats(executionTimeSeconds);
 }
 
-StateDenotation PolyhedralLtlAutomaton::extractStateDenotationFromEdgeGuard(
+StateDenotation PolyhedralLtlAutomaton::extractStateDenotationFromEdge(
     const spot::const_twa_graph_ptr& twaGraph,
-    const bdd& guard
+    const Edge& edge
 )
 {
-    if (guard == bdd_false()) return StateDenotation::top(spaceDimension());
-    spot::formula formulaPossiblyWithSing { spot::bdd_to_formula(guard, twaGraph->get_dict()) };
+    if (edge.cond == bdd_false())
+    {
+        throw new std::invalid_argument("Impossible to extract a denotation from an edge labeled with false!");
+    }
+
+    spot::formula formulaPossiblyWithSing { spot::bdd_to_formula(edge.cond, twaGraph->get_dict()) };
     auto [formulaWithoutSing, containsSing] { removeSing(spot::formula { formulaPossiblyWithSing }) };
     const PowersetConstSharedPtr powerset { m_polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
     return StateDenotation { std::move(formulaPossiblyWithSing), powerset, containsSing };

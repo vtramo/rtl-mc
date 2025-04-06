@@ -86,7 +86,9 @@ protected:
     void initialiseAutomaton() override;
     void initialiseStats() override;
     virtual void buildAutomaton(const spot::const_twa_graph_ptr& twaGraph);
-    virtual StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& twaGraph, const bdd& guard);
+    virtual bool isAcceptingEdge(const spot::const_twa_graph_ptr& graph, const Edge& edge);
+    virtual bool filterEdge(const spot::const_twa_graph_ptr& graph, const Edge& edge);
+    virtual StateDenotation extractStateDenotationFromEdge(const spot::const_twa_graph_ptr& twaGraph, const Edge& edge);
     virtual bdd stateLabelsAsBdd(unsigned state) const;
     virtual void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr twaGraph);
     virtual void createNewEdge(unsigned srcState, unsigned dstState);

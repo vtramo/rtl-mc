@@ -44,6 +44,7 @@ protected:
     );
 
     void initialiseAutomaton() override;
+    bool isAcceptingEdge(const spot::const_twa_graph_ptr& nfa, const Edge& edge) override;
     void onConstructionCompleted(double executionTimeSeconds) override;
     spot::twa_graph_ptr convertToNfa(spot::twa_graph_ptr tgba);
 };

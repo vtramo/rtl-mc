@@ -101,6 +101,11 @@ spot::twa_graph_ptr PolyhedralLtlFiniteAutomaton::convertToNfa(spot::twa_graph_p
     return nfa;
 }
 
+bool PolyhedralLtlFiniteAutomaton::isAcceptingEdge(const spot::const_twa_graph_ptr& nfa, const Edge& edge)
+{
+    return nfa->state_is_accepting(edge.dst);
+}
+
 void PolyhedralLtlFiniteAutomaton::onConstructionCompleted(const double executionTimeSeconds)
 {
     PolyhedralLtlAutomaton::onConstructionCompleted(executionTimeSeconds);

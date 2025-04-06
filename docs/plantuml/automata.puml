@@ -7,6 +7,7 @@ package automata {
     abstract Automaton {
         --type aliases--
         +using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>
+        +using Edge = spot::internal::edge_storage<unsigned, unsigned, unsigned, spot::internal::boxed_label<spot::twa_graph_edge_data>>
         --data members--
         #m_automaton: spot::twa_graph_ptr
         #m_name: std::string
@@ -69,6 +70,8 @@ package automata {
         #buildAutomaton(const spot::const_twa_graph_ptr& nfa) : void
         #extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
         #virtual createNewEdge(unsigned srcState, unsigned dstState): void
+        #virtual isAcceptingEdge(const spot::const_twa_graph_ptr& graph, const Edge& edge): bool
+        #virtual filterEdge(const spot::const_twa_graph_ptr& graph, const Edge& edge): bool
         #virtual purgeUnreachableStates(spot::twa_graph_ptr twaGraph) : void
         #virtual purgeUnreachableStates() : void
         #convertToNfa(spot::twa_graph_ptr tgba) : spot::twa_graph_ptr

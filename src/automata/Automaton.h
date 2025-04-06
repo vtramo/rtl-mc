@@ -23,6 +23,9 @@ public:
     /// Iterator type for state successors (Spot's internal representation)
     using EdgeIterator = spot::internal::state_out<spot::digraph<spot::twa_graph_state, spot::twa_graph_edge_data>>;
 
+    /// Edge type (Spot's internal representation)
+    using Edge = spot::internal::edge_storage<unsigned, unsigned, unsigned, spot::internal::boxed_label<spot::twa_graph_edge_data>>;
+
     /**
      * \brief Default constructor (creates empty automaton)
      */
