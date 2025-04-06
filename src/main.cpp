@@ -219,6 +219,11 @@ void run(
             : solver->run()
     };
 
+    Log::log(Verbosity::verbose, "[Result] Total patches: {}", result->size());
+    Log::log(Verbosity::verbose, "[Result] Running pairwise reduce...");
+    fastPairwiseReduce(*result);
+    Log::log(Verbosity::verbose, "[Result] Total patches after pairwise reduce: {}", result->size());
+
     switch (rtlMcProgram.outputFormat())
     {
     case OutputFormat::normal:
