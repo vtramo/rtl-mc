@@ -53,25 +53,6 @@ jobs:
           cache-to: type=gha,mode=max
           load: true
 
-#      - name: Test release Docker Image
-#        run: |
-#          POLYHEDRAL_SYSTEM=$(cat << EOF
-#          Inv ( { a >= 0 & b >= 0 } )
-#          Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }
-#          p { a >= b + 1 }
-#          q { b >= a + 1 }
-#          t0 { t = 0 }
-#          t1 { t <= 10 }
-#          EOF
-#          )
-#
-#          docker run --rm vtramo/rtl-mc:${{ env.COMMIT_SHORT_SHA }} echo "$(rtl-gen alternation -k 10) & t0 & G(t1)" | \
-#          rtl-mc \
-#            --system "$POLYHEDRAL_SYSTEM" \
-#            --formula - \
-#            --semantics fin \
-#            --high
-
       - name: Push release Docker image
         uses: docker/build-push-action@v6
         with:
