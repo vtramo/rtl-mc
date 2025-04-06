@@ -59,34 +59,41 @@ PowersetConstSharedPtr PolyhedralSystemFormulaDenotationMap::computeFormulaDenot
         return std::make_shared<Powerset>(atomIntepretation->interpretation());
     }
 
-    PowersetConstSharedPtr powersetResult {};
+    PowersetSharedPtr result {};
     if (formula.is_tt())
     {
-        powersetResult = std::make_shared<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::UNIVERSE);
+        result = std::make_shared<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::UNIVERSE);
     }
     else if (formula.is_ff())
     {
-        powersetResult = std::make_shared<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY);
+        result = std::make_shared<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY);
     }
     else
     {
-        std::vector<PowersetConstSharedPtr> powersets {};
-        powersets.reserve(formula.size());
+        const bool isAnd { formula.is(spot::op::And) };
+        result = std::make_shared<Powerset>(
+            m_polyhedralSystem->spaceDimension(),
+            isAnd ? PPL::UNIVERSE : PPL::EMPTY
+        );
 
         for (const auto& child: formula)
         {
-            powersets.push_back(getOrComputeDenotation(child));
-        }
+            PowersetConstSharedPtr childDenotation { getOrComputeDenotation(child) };
 
-        powersetResult =
-            formula.is(spot::op::And)
-                ? PPLUtils::intersect(powersets)
-                : PPLUtils::fusion(powersets);
+            if (isAnd)
+            {
+                result->intersection_assign(*childDenotation);
+            }
+            else
+            {
+                PPLUtils::fusion(*result, *childDenotation);
+            }
+        }
     }
 
-    assert(powersetResult->space_dimension() == m_polyhedralSystem->spaceDimension());
-    storeFormulaDenotation(formula, powersetResult);
-    return powersetResult;
+    assert(result->space_dimension() == m_polyhedralSystem->spaceDimension());
+    storeFormulaDenotation(formula, result);
+    return result;
 }
 
 const AtomInterpretation* PolyhedralSystemFormulaDenotationMap::getAtomInterpretation(const spot::formula& formula) const

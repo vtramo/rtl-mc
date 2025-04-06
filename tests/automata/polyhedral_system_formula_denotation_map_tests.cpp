@@ -1,10 +1,10 @@
-#include <catch2/catch_test_macros.hpp>
+#include <../../subprojects/Catch2-3.7.1/src/catch2/catch_test_macros.hpp>
 #include <spot/twaalgos/reachiter.hh>
-#include "ppl_utils.h"
-#include "PolyhedralSystem.h"
-#include "systemparser.h"
-#include "formula.h"
-#include "PolyhedralSystemFormulaDenotationMap.h"
+#include "../../src/utils/ppl/ppl_utils.h"
+#include "../../src/system/PolyhedralSystem.h"
+#include "../../src/parser/system/systemparser.h"
+#include "../../src/formula/formula.h"
+#include "../../src/automata/PolyhedralSystemFormulaDenotationMap.h"
 
 TEST_CASE("Formula formulaDenotation map TEST 1")
 {
