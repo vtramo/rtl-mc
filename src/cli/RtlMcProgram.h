@@ -17,7 +17,7 @@ class RtlMcProgram
 {
 public:
     RtlMcProgram(const int argc, char* argv[], const std::string_view version = "0.0.0")
-        : m_rtlMcProgram { "rtl-mc", std::string { version } }
+        : m_rtlMcProgram{"rtl-mc", std::string{version}}
     {
         buildRtlMcProgram();
         parseArgs(argc, argv);
@@ -53,8 +53,8 @@ public:
 private:
     argparse::ArgumentParser m_rtlMcProgram{};
 
-    std::istream* m_polyhedralSystemInputStream;
-    std::istream* m_rtlFormulaInputStream;
+    std::istream* m_polyhedralSystemInputStream{&std::cin};
+    std::istream* m_rtlFormulaInputStream{&std::cin};
 
     PolyhedralSystemSharedPtr m_polyhedralSystem{};
     spot::formula m_rtlFormula{};
@@ -72,7 +72,7 @@ private:
     Verbosity m_verbosityLevel{Verbosity::silent};
     OutputFormat m_outputFormat{OutputFormat::normal};
     std::string m_statsFormat{};
-    bool m_exportDot {};
+    bool m_exportDot{};
 
     void buildRtlMcProgram()
     {
@@ -95,26 +95,55 @@ private:
     {
         m_rtlMcProgram.add_group("Input options");
 
-        m_rtlMcProgram.add_argument("--system")
-            .required()
-            .help(
-                "A polyhedral system can be provided in one of the following formats:\n"
-                "   > @FILE  : File path (must start with '@').\n"
-                "   > STRING : A direct string representation of the polyhedral system.\n"
-                "   > -      : Reads the polyhedral system from stdin."
-            )
-            .metavar("<@FILE|STRING|->")
-            .nargs(1);
-        m_rtlMcProgram.add_argument("--formula")
-            .required()
-            .help(
-                "An RTL formula can be provided in one of the following formats:\n"
-                "   > @FILE  : File path (must start with '@').\n"
-                "   > STRING : A direct string representation of the formula.\n"
-                "   > -      : Reads the formula from stdin."
-            )
-            .metavar("<@FILE|STRING|->")
-            .nargs(1);
+        auto& inputPolyhedralSystemGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
+
+        inputPolyhedralSystemGroup.add_argument("--system-file", "-sf")
+                                  .help("Provide the polyhedral system from a file.")
+                                  .metavar("<FILE>")
+                                  .action([&](const std::string& filename)
+                                      {
+                                          m_polyhedralSystemInputStream = {new std::ifstream{filename}};
+                                      }
+                                  ).nargs(1);
+
+        inputPolyhedralSystemGroup.add_argument("--system-string", "-ss")
+                                  .help("Provide the polyhedral system directly as a string.")
+                                  .metavar("<STRING>")
+                                  .action([&](const std::string& systemString)
+                                      {
+                                          m_polyhedralSystemInputStream = {new std::istringstream{systemString}};
+                                      }
+                                  ).nargs(1);
+
+        inputPolyhedralSystemGroup.add_argument("--system-stdin", "-si")
+                                  .help("Provide the polyhedral system via stdin (default).")
+                                  .flag()
+                                  .default_value(true);
+
+
+        auto& inputRtlFormula{m_rtlMcProgram.add_mutually_exclusive_group()};
+        inputRtlFormula.add_argument("--formula-file", "-ff")
+                       .help("Provide the RTL formula from a file.")
+                       .metavar("<FILE>")
+                       .action([&](const std::string& filename)
+                           {
+                               m_rtlFormulaInputStream = {new std::ifstream{filename}};
+                           }
+                       ).nargs(1);
+
+        inputRtlFormula.add_argument("--formula-string", "-fs")
+                       .help("Provide the RTL formula directly as a string.")
+                       .metavar("<STRING>")
+                       .action([&](const std::string& rtlString)
+                           {
+                               m_rtlFormulaInputStream = {new std::istringstream{rtlString}};
+                           }
+                       ).nargs(1);
+
+        inputRtlFormula.add_argument("--formula-stdin", "-fi")
+                       .help("Provide the RTL formula via stdin (default).")
+                       .flag()
+                       .default_value(true);
     }
 
     void addSemanticsArguments()
@@ -128,39 +157,40 @@ private:
     void addSemanticsTypeArgument()
     {
         m_rtlMcProgram.add_argument("--semantics")
-            .action([&](const std::string& semanticsString)
-            {
-                std::optional<Semantics> semantics = toSemantics(semanticsString);
-                if (!semantics)
-                {
-                    spdlog::error("Invalid semantics. Supported semantics are: {fin, inf, may, must}.");
-                    exit(1);
-                }
-                m_semantics = *semantics;
-            })
-            .nargs(1)
-            .help("E.g. --semantics=fin. Possible semantics:\n"
-                  "     > fin:   Considers only finite-time trajectories (default).\n"
-                  "              Suitable for properties that are positively verified\n"
-                  "              as soon as a prefix of the trajectory satisfies them,\n"
-                  "              such as reachability properties.\n"
-                  "     > inf:   Considers only infinite-time trajectories.\n"
-                  "              Suitable for non-terminating properties, such as\n"
-                  "              safety or fairness properties.\n"
-                  "     > may:   Considers all trajectories that are either infinite-time,\n"
-                  "              or end in a may-exit point, i.e., a point on the boundary\n"
-                  "              of the invariant from which at least one admissible\n"
-                  "              direction exits.\n"
-                  "     > must:  Considers all trajectories that are either infinite-time,\n"
-                  "              or end in a must-exit point, i.e., a point on the boundary\n"
-                  "              of the invariant from which all admissible directions exit.");
+                      .action([&](const std::string& semanticsString)
+                      {
+                          std::optional<Semantics> semantics = toSemantics(semanticsString);
+                          if (!semantics)
+                          {
+                              spdlog::error("Invalid semantics. Supported semantics are: {fin, inf, may, must}.");
+                              exit(1);
+                          }
+                          m_semantics = *semantics;
+                      })
+                      .nargs(1)
+                      .help("E.g. --semantics=fin. Possible semantics:\n"
+                          "     > fin:   Considers only finite-time trajectories (default).\n"
+                          "              Suitable for properties that are positively verified\n"
+                          "              as soon as a prefix of the trajectory satisfies them,\n"
+                          "              such as reachability properties.\n"
+                          "     > inf:   Considers only infinite-time trajectories.\n"
+                          "              Suitable for non-terminating properties, such as\n"
+                          "              safety or fairness properties.\n"
+                          "     > may:   Considers all trajectories that are either infinite-time,\n"
+                          "              or end in a may-exit point, i.e., a point on the boundary\n"
+                          "              of the invariant from which at least one admissible\n"
+                          "              direction exits.\n"
+                          "     > must:  Considers all trajectories that are either infinite-time,\n"
+                          "              or end in a must-exit point, i.e., a point on the boundary\n"
+                          "              of the invariant from which all admissible directions exit.");
     }
 
     void addUniversalOrExistentialArguments()
     {
         auto& existentialOrUniversalGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
         existentialOrUniversalGroup.add_argument("--existential")
-                                   .help("Compute the set of points from which there exists a trajectory that satisfies φ (default).")
+                                   .help(
+                                       "Compute the set of points from which there exists a trajectory that satisfies φ (default).")
                                    .flag()
                                    .store_into(m_existential);
         existentialOrUniversalGroup.add_argument("--universal")
@@ -194,21 +224,22 @@ private:
                                   .flag()
                                   .action([&](const auto&)
                                   {
-                                        m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::low;
+                                      m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::low;
                                   });
         automatonOptimizationGroup.add_argument("--medium")
                                   .help("Moderate optimizations during automaton construction.")
                                   .flag()
                                   .action([&](const auto&)
                                   {
-                                        m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::medium;
+                                      m_automatonOptimizationFlags.optimizationLevel =
+                                          AutomatonOptimizationLevel::medium;
                                   });
         automatonOptimizationGroup.add_argument("--high")
                                   .help("All available optimizations during automaton construction (slow).")
                                   .flag()
                                   .action([&](const auto&)
                                   {
-                                        m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::high;
+                                      m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::high;
                                   });
         m_rtlMcProgram.add_argument("--any")
                       .help("Tells the translator that it should attempt to \n"
@@ -265,7 +296,8 @@ private:
     void addDirectLtlArgument()
     {
         m_rtlMcProgram.add_argument("--direct-ltl")
-                      .help("Discretise the RTLf formula directly into LTL in a single step, improving performance (experimental).\n"
+                      .help(
+                          "Discretise the RTLf formula directly into LTL in a single step, improving performance (experimental).\n"
                           "This option is only effective for finite-time semantics.")
                       .flag()
                       .store_into(m_directLtl);
@@ -276,7 +308,7 @@ private:
         m_rtlMcProgram
             .add_argument("-c", "--concurrent")
             .help("Enable concurrent execution (highly experimental). This option is only effective with\n"
-                  "the on-the-fly algorithm for finite semantics.")
+                "the on-the-fly algorithm for finite semantics.")
             .flag()
             .store_into(m_concurrent);
     }
@@ -286,7 +318,7 @@ private:
         m_rtlMcProgram
             .add_argument("--export-dot")
             .help("Create a .dot file for each graph/automaton created (including any intermediate changes)\n"
-                  "during the solving process.")
+                "during the solving process.")
             .flag()
             .store_into(m_exportDot);
     }
@@ -297,50 +329,10 @@ private:
         {
             m_rtlMcProgram.parse_args(argc, argv);
 
-            std::string polyhedralSystemInput{m_rtlMcProgram.get<std::string>("--system")};
-            std::string rtlFormulaInput{m_rtlMcProgram.get<std::string>("--formula")};
-            bool readPolyhedralSystemFromStdin {};
-
-            static constexpr std::string_view FILE_REFERENCE { "@" };
-            static constexpr std::string_view STDIN { "-" };
-
-            if (polyhedralSystemInput.rfind(FILE_REFERENCE, 0) == 0)
+            if (m_polyhedralSystemInputStream == &std::cin && m_rtlFormulaInputStream == &std::cin)
             {
-                polyhedralSystemInput = polyhedralSystemInput.substr(1);
-                m_polyhedralSystemInputStream = { new std::ifstream { polyhedralSystemInput } };
-            }
-            else if (polyhedralSystemInput == STDIN)
-            {
-                readPolyhedralSystemFromStdin = true;
-                m_polyhedralSystemInputStream = &std::cin;
-            }
-            else
-            {
-                m_polyhedralSystemInputStream = { new std::istringstream { polyhedralSystemInput } };
-            }
-
-            if (rtlFormulaInput.rfind(FILE_REFERENCE, 0) == 0)
-            {
-                rtlFormulaInput = rtlFormulaInput.substr(1);
-                m_rtlFormulaInputStream = { new std::ifstream { rtlFormulaInput } };
-            }
-            else if (rtlFormulaInput == STDIN)
-            {
-                if (readPolyhedralSystemFromStdin)
-                {
-                    throw std::runtime_error("It is not possible to read both the polyhedral system and the RTL formula from stdin!");
-                }
-
-                m_rtlFormulaInputStream = &std::cin;
-            }
-            else
-            {
-                m_rtlFormulaInputStream = { new std::istringstream { rtlFormulaInput } };
-            }
-
-            if (!m_existential && !m_universal)
-            {
-                m_existential = true;
+                throw std::runtime_error(
+                    "It is not possible to read both the polyhedral system and the RTL formula from stdin!");
             }
         }
         catch (const std::exception& e)
@@ -353,7 +345,9 @@ private:
 
     void readAndParsePolyhedralSystem()
     {
-        PolyhedralSystemParsingResult polyhedralSystemParsingResult{parsePolyhedralSystem(*m_polyhedralSystemInputStream)};
+        PolyhedralSystemParsingResult polyhedralSystemParsingResult{
+            parsePolyhedralSystem(*m_polyhedralSystemInputStream)
+        };
         if (!polyhedralSystemParsingResult.ok())
         {
             std::cerr << "Error while parsing Polyhedral System.\n";
@@ -404,8 +398,8 @@ private:
         }
 
         m_modelCheckingPoint =
-            Poly {
-                PPL::Generator_System {
+            Poly{
+                PPL::Generator_System{
                     std::get<PPL::Generator>(mcPointParsingResult)
                 }
             };
