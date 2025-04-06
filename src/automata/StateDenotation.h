@@ -2,7 +2,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include "spot_utils.h"
 #include "ppl_output.h"
 #include "ppl_aliases.h"
 #include "formula.h"
@@ -67,6 +66,10 @@ public:
     {
     }
 
+    static StateDenotation top(const PPL::dimension_type dimension)
+    {
+        return { spot::formula::tt(), std::make_shared<Powerset>(dimension, PPL::UNIVERSE) };
+    }
 private:
     spot::formula m_formula {};
     std::unique_ptr<spot::atomic_prop_set> m_labels {};
