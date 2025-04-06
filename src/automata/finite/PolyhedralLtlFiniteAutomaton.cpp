@@ -72,9 +72,8 @@ PolyhedralLtlFiniteAutomatonConstSharedPtr PolyhedralLtlFiniteAutomaton::buildAu
     spot::twa_graph_ptr formulaTgba { finiteLtlAutomaton->translateDiscreteLtlFormulaIntoTgba(anyOption) };
     spot::twa_graph_ptr nfa { finiteLtlAutomaton->convertToNfa(formulaTgba) };
     finiteLtlAutomaton->eraseInitialEdgesWithEmptyDenotation(nfa);
-    std::unordered_set nfaAcceptingStates { finiteLtlAutomaton->killAcceptingStates(nfa) };
-    finiteLtlAutomaton->purgeUnreachableStatesThenRenumberAcceptingStates(nfa, nfaAcceptingStates);
-    finiteLtlAutomaton->PolyhedralLtlAutomaton::buildAutomaton(nfa, nfaAcceptingStates);
+    finiteLtlAutomaton->purgeUnreachableStates(nfa);
+    finiteLtlAutomaton->PolyhedralLtlAutomaton::buildAutomaton(nfa);
     finiteLtlAutomaton->onConstructionCompleted(timer.elapsedInSeconds());
 
     return finiteLtlAutomaton;

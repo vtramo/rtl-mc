@@ -73,9 +73,8 @@ BackwardNFAConstSharedPtr BackwardNFA::buildAutomaton(
     spot::twa_graph_ptr formulaTgba { backwardNfa->translateDiscreteLtlFormulaIntoTgba(anyOption) };
     spot::twa_graph_ptr nfa { backwardNfa->convertToNfa(formulaTgba) };
     backwardNfa->eraseInitialEdgesWithEmptyDenotation(nfa);
-    std::unordered_set nfaAcceptingStates { backwardNfa->killAcceptingStates(nfa) };
-    backwardNfa->purgeUnreachableStatesThenRenumberAcceptingStates(nfa, nfaAcceptingStates);
-    backwardNfa->PolyhedralLtlAutomaton::buildAutomaton(nfa, nfaAcceptingStates);
+    backwardNfa->PolyhedralLtlAutomaton::purgeUnreachableStates(nfa);
+    backwardNfa->PolyhedralLtlAutomaton::buildAutomaton(nfa);
     backwardNfa->onConstructionCompleted(timer.elapsedInSeconds());
 
     return backwardNfa;
@@ -83,29 +82,21 @@ BackwardNFAConstSharedPtr BackwardNFA::buildAutomaton(
 
 void BackwardNFA::createNewEdge(const unsigned srcState, const unsigned dstState)
 {
+    const bool isSrcAccepting { m_acceptingStates.count(srcState) == 1 };
+    if (isSrcAccepting)
+    {
+        return;
+    }
+
     const bool isDstAccepting { m_acceptingStates.count(dstState) == 1 };
     bdd labels { stateLabelsAsBdd(srcState) };
     m_automaton->new_acc_edge(dstState, srcState, labels, isDstAccepting);
-    const bool isSrcAccepting { m_acceptingStates.count(srcState) == 1 };
-    if (isSrcAccepting && !m_automaton->state_is_accepting(srcState))
-    {
-        m_automaton->new_acc_edge(srcState, srcState, bdd_false(), true);
-        ++m_dummyEdges;
-        assert(m_automaton->state_is_accepting(srcState));
-    }
 }
 
 void BackwardNFA::postprocessAutomaton()
 {
     createDummyInitialStateWithEdgesToReachableAcceptingStates();
     purgeUnreachableStates();
-}
-
-void BackwardNFA::purgeUnreachableStates()
-{
-    spot::twa_graph::shift_action renumberNfaAcceptingStatesStates { &renumberOrRemoveStatesAfterPurge };
-    RenumberingContext renumberingContext { &m_initialStates, &m_acceptingStates, &m_stateDenotationById, &m_dummyInitialState };
-    m_automaton->purge_unreachable_states(&renumberNfaAcceptingStatesStates, &renumberingContext);
 }
 
 void BackwardNFA::createDummyInitialStateWithEdgesToReachableAcceptingStates()

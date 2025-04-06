@@ -66,20 +66,19 @@ package automata {
         +stateDenotation(int state) : const StateDenotation&
         +spaceDimension(int state) : PPL::dimension_type
         +stats() : const PolyhedralLtlAutomaton&
-        #buildAutomaton(const spot::const_twa_graph_ptr& nfa, const std::unordered_set<int>& nfaAcceptingStates) : void
+        #buildAutomaton(const spot::const_twa_graph_ptr& nfa) : void
         #extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& nfa, const bdd& guard) : StateDenotation
         #virtual createNewEdge(unsigned srcState, unsigned dstState): void
+        #virtual purgeUnreachableStates(spot::twa_graph_ptr twaGraph) : void
         #virtual purgeUnreachableStates() : void
         #convertToNfa(spot::twa_graph_ptr tgba) : spot::twa_graph_ptr
         #eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr nf) : void
-        #purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr nfa, std::unordered_set<int>& nfaAcceptingStates) : void
         #stateLabelsAsBdd(unsigned outEdgeState) : bdd
         #postprocessAutomaton() : void
         #createDummyInitialStateWithEdgesToInitialStates() : void
         #updatePatchStats(int totPatches) : void
         #setNfaStats(double executionTimeSeconds) : void
         #logNfaConstruction(double executionTimeSecond) : void
-        #killAcceptingStates(const spot::twa_graph_ptr& graph) : std::unordered_set<unsigned>
         #virtual spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption)
     }
 

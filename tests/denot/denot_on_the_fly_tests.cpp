@@ -42,8 +42,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -29 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -27 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -29 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -27 }
             })
         };
 
@@ -66,8 +66,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -27 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -25 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -27 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -25 }
             })
         };
 
@@ -90,8 +90,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -25 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -23 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -25 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -23 }
             })
         };
 
@@ -114,8 +114,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -23 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -21 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -23 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -21 }
             })
         };
 
@@ -138,8 +138,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -21 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -19 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -21 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -19 }
             })
         };
 
@@ -162,8 +162,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -19 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -17 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -19 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -17 }
             })
         };
 
@@ -186,8 +186,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -17 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -15 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -17 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -15 }
             })
         };
 
@@ -210,8 +210,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -15 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -13 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -15 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -13 }
             })
         };
 
@@ -234,8 +234,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -13 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -11 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -13 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -11 }
             })
         };
 
@@ -258,8 +258,8 @@ TEST_CASE("GAP Test Cases (DenotOnTheFly)")
 
         Powerset expectedResult {
             PPLUtils::powerset({
-                { t == 0, b >= 0, a - b >= 1, -a + b >= -11 },
-                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b >= -9 }
+                { t == 0, b >= 0, a - b >= 1, -a + b > -11 },
+                { t == 0, b >= 0, -a + b > -1, a >= 0, a - b > -9 }
             })
         };
 

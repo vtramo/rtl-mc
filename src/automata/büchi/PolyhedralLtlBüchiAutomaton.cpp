@@ -56,9 +56,8 @@ PolyhedralLtlBüchiAutomatonConstSharedPtr PolyhedralLtlBüchiAutomaton::buildAu
     finiteLtlAutomaton->m_optimizationLevel = optimizationLevel;
     spot::twa_graph_ptr formulaTgba { finiteLtlAutomaton->translateDiscreteLtlFormulaIntoTgba(anyOption) };
     finiteLtlAutomaton->eraseInitialEdgesWithEmptyDenotation(formulaTgba);
-    std::unordered_set acceptingStates { SpotUtils::collectAcceptingStates(formulaTgba) };
-    finiteLtlAutomaton->purgeUnreachableStatesThenRenumberAcceptingStates(formulaTgba, acceptingStates);
-    finiteLtlAutomaton->PolyhedralLtlAutomaton::buildAutomaton(formulaTgba, acceptingStates);
+    finiteLtlAutomaton->purgeUnreachableStates(formulaTgba);
+    finiteLtlAutomaton->PolyhedralLtlAutomaton::buildAutomaton(formulaTgba);
     finiteLtlAutomaton->onConstructionCompleted(timer.elapsedInSeconds());
 
     return finiteLtlAutomaton;

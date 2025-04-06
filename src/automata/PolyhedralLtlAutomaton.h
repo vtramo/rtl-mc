@@ -85,19 +85,18 @@ protected:
 
     void initialiseAutomaton() override;
     void initialiseStats() override;
-    virtual void buildAutomaton(const spot::const_twa_graph_ptr& twaGraph, const std::unordered_set<unsigned>& acceptingStates);
+    virtual void buildAutomaton(const spot::const_twa_graph_ptr& twaGraph);
     virtual StateDenotation extractStateDenotationFromEdgeGuard(const spot::const_twa_graph_ptr& twaGraph, const bdd& guard);
     virtual bdd stateLabelsAsBdd(unsigned state) const;
     virtual void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr twaGraph);
     virtual void createNewEdge(unsigned srcState, unsigned dstState);
-    virtual void purgeUnreachableStatesThenRenumberAcceptingStates(spot::twa_graph_ptr twaGraph, std::unordered_set<unsigned>& acceptingStates);
+    virtual void purgeUnreachableStates(spot::twa_graph_ptr twaGraph);
+    virtual void purgeUnreachableStates();
     virtual void postprocessAutomaton();
     virtual void onConstructionCompleted(double executionTimeSeconds);
     virtual void logConstructionCompleted(double executionTimeSeconds);
-    virtual void purgeUnreachableStates();
     void createDummyInitialStateWithEdgesToInitialStates();
     void updatePatchStats(int totPatches);
-    virtual std::unordered_set<unsigned> killAcceptingStates(const spot::twa_graph_ptr& graph);
     virtual spot::twa_graph_ptr translateDiscreteLtlFormulaIntoTgba(bool anyOption);
     static void renumberOrRemoveStatesAfterPurge(const std::vector<unsigned>& newst, RenumberingContextVoidPtr renumberingContextVoidPtr);
 };

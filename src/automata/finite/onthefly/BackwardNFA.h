@@ -47,6 +47,5 @@ protected:
 
     void createNewEdge(unsigned srcState, unsigned dstState) override;
     void postprocessAutomaton() override;
-    void purgeUnreachableStates() override;
     void createDummyInitialStateWithEdgesToReachableAcceptingStates();
 };

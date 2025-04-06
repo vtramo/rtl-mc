@@ -1,7 +1,6 @@
 current_source_dir = meson.current_source_dir()
 
 mc_solvers_source_files = [
-    current_source_dir / 'automata_builder.h',
     current_source_dir / 'brink_stay_atoms.h',
     current_source_dir / 'infinite_semantics_emptiness.h',
     current_source_dir / 'Solver.h',

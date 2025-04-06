@@ -381,6 +381,7 @@ const std::vector<Observable>& PolyhedralSystem::getOrGenerateObservables(const 
         return *m_observables;
     }
 
+    // Creates a vector of references to the atoms in PolyhedralSystem
     using AtomRef = std::reference_wrapper<const spot::formula>;
     const int totalAtoms { PolyhedralSystem::totalAtoms() };
     std::vector<AtomRef> atoms {};
@@ -393,6 +394,8 @@ const std::vector<Observable>& PolyhedralSystem::getOrGenerateObservables(const 
     const long totalSubsets { 1L << totalAtoms };
     m_observables = std::vector<Observable> {};
     m_observables->reserve(totalSubsets);
+
+    // Separately handles the empty observable, as it is useful to store it.
     const Observable& emptyObservable { getOrGenerateEmptyObservable() };
     if (!filterEmptyObservables || !emptyObservable.isInterpretationEmpty())
     {

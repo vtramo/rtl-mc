@@ -157,10 +157,7 @@ const PolyhedralLtlAutomatonStats& PolyhedralLtlAutomaton::stats() const
     return *m_polyhedralLtlAutomatonStats;
 }
 
-void PolyhedralLtlAutomaton::buildAutomaton(
-    const spot::const_twa_graph_ptr& twaGraph,
-    const std::unordered_set<unsigned>& acceptingStates
-)
+void PolyhedralLtlAutomaton::buildAutomaton(const spot::const_twa_graph_ptr& twaGraph)
 {
     Log::log(Verbosity::verbose, "[{} - Construction] Construction started.", m_name);
 
@@ -169,18 +166,15 @@ void PolyhedralLtlAutomaton::buildAutomaton(
     int totalPatches {};
     std::unordered_map<unsigned, std::vector<unsigned>> outEdgeStates {};
     std::unordered_map<unsigned, std::vector<unsigned>> inEdgeStates {};
-    for (unsigned nfaState { 0 }; nfaState < twaGraph->num_states(); ++nfaState)
+    for (unsigned state { 0 }; state < twaGraph->num_states(); ++state)
     {
-        const bool isInitial { twaGraph->get_init_state_number() == nfaState };
+        const bool isInitial { twaGraph->get_init_state_number() == state };
 
-        for (const auto& nfaEdge: twaGraph->out(nfaState))
+        for (const auto& edge: twaGraph->out(state))
         {
-            if (nfaEdge.cond == bdd_false()) continue;
+            const bool isAccepting { edge.acc.has(0) };
 
-            unsigned nfaEdgeDst { nfaEdge.dst };
-            const bool isAccepting { acceptingStates.count(nfaEdgeDst) == 1 };
-
-            StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(twaGraph, nfaEdge.cond) };
+            StateDenotation stateDenotation { extractStateDenotationFromEdgeGuard(twaGraph, edge.cond) };
             if (stateDenotation.isEmpty()) continue;
             updatePatchStats(stateDenotation.totalPatches());
             totalPatches += stateDenotation.totalPatches();
@@ -190,19 +184,19 @@ void PolyhedralLtlAutomaton::buildAutomaton(
             m_stateDenotationById.emplace(edgeState, std::move(stateDenotation));
 
             if (isInitial) m_initialStates.insert(edgeState);
-            else outEdgeStates[nfaState].push_back(edgeState);
-            inEdgeStates[nfaEdgeDst].push_back(edgeState);
+            else outEdgeStates[state].push_back(edgeState);
+            inEdgeStates[edge.dst].push_back(edgeState);
 
-            for (const unsigned outEdgeState: outEdgeStates[nfaEdgeDst])
+            for (const unsigned outEdgeState: outEdgeStates[edge.dst])
             {
                 if (outEdgeState == edgeState) continue;
                 createNewEdge(edgeState, outEdgeState);
             }
         }
 
-        for (const unsigned inEdgeState: inEdgeStates[nfaState])
+        for (const unsigned inEdgeState: inEdgeStates[state])
         {
-            for (const unsigned outEdgeState: outEdgeStates[nfaState])
+            for (const unsigned outEdgeState: outEdgeStates[state])
             {
                 if (outEdgeState == inEdgeState) continue;
                 createNewEdge(inEdgeState, outEdgeState);
@@ -221,6 +215,24 @@ void PolyhedralLtlAutomaton::postprocessAutomaton()
     purgeUnreachableStates();
 }
 
+void PolyhedralLtlAutomaton::createDummyInitialStateWithEdgesToInitialStates()
+{
+    m_dummyInitialState = m_automaton->new_state();
+    m_automaton->set_init_state(m_dummyInitialState);
+    for (const unsigned initialState: m_initialStates)
+    {
+        m_automaton->new_edge(m_dummyInitialState, initialState, stateLabelsAsBdd(initialState));
+        m_dummyEdges++;
+    }
+}
+
+void PolyhedralLtlAutomaton::purgeUnreachableStates()
+{
+    spot::twa_graph::shift_action renumberAcceptingStates { &renumberOrRemoveStatesAfterPurge };
+    RenumberingContext renumberingContext { &m_initialStates, &m_acceptingStates, &m_stateDenotationById, &m_dummyInitialState };
+    m_automaton->purge_unreachable_states(&renumberAcceptingStates, &renumberingContext);
+}
+
 void PolyhedralLtlAutomaton::onConstructionCompleted(const double executionTimeSeconds)
 {
     logConstructionCompleted(executionTimeSeconds);
@@ -232,6 +244,7 @@ StateDenotation PolyhedralLtlAutomaton::extractStateDenotationFromEdgeGuard(
     const bdd& guard
 )
 {
+    if (guard == bdd_false()) return StateDenotation::top(spaceDimension());
     spot::formula formulaPossiblyWithSing { spot::bdd_to_formula(guard, twaGraph->get_dict()) };
     auto [formulaWithoutSing, containsSing] { removeSing(spot::formula { formulaPossiblyWithSing }) };
     const PowersetConstSharedPtr powerset { m_polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
@@ -242,12 +255,6 @@ bdd PolyhedralLtlAutomaton::stateLabelsAsBdd(const unsigned state) const
 {
     const StateDenotation& outStateDenotation { m_stateDenotationById.at(state) };
     spot::atomic_prop_set labels { outStateDenotation.labels() };
-
-    if (labels.size() == 0)
-    {
-        return bdd_true();
-    }
-
     return { spot::formula_to_bdd(andFormulae(labels), m_automaton->get_dict(), m_automaton) };
 }
 
@@ -280,8 +287,14 @@ void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::tw
 void PolyhedralLtlAutomaton::createNewEdge(const unsigned srcState, const unsigned dstState)
 {
     const bool isSrcAccepting { m_acceptingStates.count(srcState) == 1 };
+    if (isSrcAccepting)
+    {
+        return;
+    }
+
     bdd labels { stateLabelsAsBdd(dstState) };
-    m_automaton->new_acc_edge(srcState, dstState, labels, isSrcAccepting);
+    m_automaton->new_acc_edge(srcState, dstState, labels, false);
+
     const bool isDstAccepting { m_acceptingStates.count(dstState) == 1 };
     if (isDstAccepting && !m_automaton->state_is_accepting(dstState))
     {
@@ -291,27 +304,20 @@ void PolyhedralLtlAutomaton::createNewEdge(const unsigned srcState, const unsign
     }
 }
 
-void PolyhedralLtlAutomaton::purgeUnreachableStatesThenRenumberAcceptingStates(
-    const spot::twa_graph_ptr twaGraph,
-    std::unordered_set<unsigned>& acceptingStates
-)
+void PolyhedralLtlAutomaton::purgeUnreachableStates(const spot::twa_graph_ptr twaGraph)
 {
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Removal of unreachable states from automaton started.", m_name);
     Timer timer {};
 
-    spot::twa_graph::shift_action renumberNfaAcceptingStates { &renumberOrRemoveStatesAfterPurge };
-    RenumberingContext renumberingContext { &acceptingStates };
-    twaGraph->purge_unreachable_states(&renumberNfaAcceptingStates, &renumberingContext);
+    twaGraph->purge_unreachable_states();
     Log::log(twaGraph, fmt::format("{}-purge-unreachable-states", m_name));
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Removal of unreachable states from automaton completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Total states: {}.", m_name, twaGraph->num_states());
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Total edges: {}.", m_name, twaGraph->num_edges());
-    Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Accepting states: [{}].", m_name, fmt::join(acceptingStates, ", "));
     m_polyhedralLtlAutomatonStats->setOptimizedAutomatonExecutionTimeSeconds(executionTimeSeconds);
     m_polyhedralLtlAutomatonStats->setOptimizedAutomatonTotalStates(twaGraph->num_states());
-    m_polyhedralLtlAutomatonStats->setOptimizedAutomatonTotalAcceptingStates(acceptingStates.size());
     m_polyhedralLtlAutomatonStats->setOptimizedAutomatonTotalEdges(twaGraph->num_edges());
     m_polyhedralLtlAutomatonStats->setOptimizedAutomatonTotalInitialStates(1);
     m_polyhedralLtlAutomatonStats->setOptimizedAutomatonSccInfo(spot::scc_info { twaGraph });
@@ -329,24 +335,6 @@ void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSecond
     Log::log(Verbosity::veryVerbose, "[{} - Construction] Accepting states: [{}].", m_name, fmt::join(m_acceptingStates, ", "));
 }
 
-void PolyhedralLtlAutomaton::purgeUnreachableStates()
-{
-    spot::twa_graph::shift_action renumberNfaAcceptingStates { &renumberOrRemoveStatesAfterPurge };
-    RenumberingContext renumberingContext { &m_initialStates, &m_acceptingStates, &m_stateDenotationById, &m_dummyInitialState };
-    m_automaton->purge_unreachable_states(&renumberNfaAcceptingStates, &renumberingContext);
-}
-
-void PolyhedralLtlAutomaton::createDummyInitialStateWithEdgesToInitialStates()
-{
-    m_dummyInitialState = m_automaton->new_state();
-    m_automaton->set_init_state(m_dummyInitialState);
-    for (const unsigned initialState: m_initialStates)
-    {
-        m_automaton->new_edge(m_dummyInitialState, initialState, stateLabelsAsBdd(initialState));
-        m_dummyEdges++;
-    }
-}
-
 void PolyhedralLtlAutomaton::updatePatchStats(const int totPatches)
 {
     m_polyhedralLtlAutomatonStats->setMaxNumberPatches(
@@ -355,24 +343,6 @@ void PolyhedralLtlAutomaton::updatePatchStats(const int totPatches)
             totPatches
         ));
     m_polyhedralLtlAutomatonStats->setTotalNumberPatches(m_polyhedralLtlAutomatonStats->getTotalNumberPatches() + totPatches);
-}
-
-std::unordered_set<unsigned> PolyhedralLtlAutomaton::killAcceptingStates(const spot::twa_graph_ptr& graph)
-{
-    Log::log(Verbosity::veryVerbose, "[{} - Kill Accepting States] Removal of outgoing edges from accepting states started.", m_name);
-    std::unordered_set<unsigned> acceptingStates {};
-    for (unsigned nfaState { 0 }; nfaState < graph->num_states(); ++nfaState)
-    {
-        if (graph->state_is_accepting(nfaState))
-        {
-            acceptingStates.insert(nfaState);
-            graph->kill_state(nfaState);
-            graph->new_acc_edge(nfaState, nfaState, bdd_false(), true);
-        }
-    }
-    Log::log(Verbosity::veryVerbose, "[{} - Kill Accepting States] Accepting states: [{}].", m_name, fmt::join(acceptingStates, ", "));
-    Log::log(graph, fmt::format("{}-kill-accepting-states", m_name));
-    return acceptingStates;
 }
 
 void PolyhedralLtlAutomaton::renumberOrRemoveStatesAfterPurge(
@@ -439,9 +409,9 @@ spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(
     Log::log(Verbosity::veryVerbose, "[{} - Translation] Optimization level: {}.", m_name, optimizationLevel);
 
     spot::translator ltlToNbaTranslator {};
-    ltlToNbaTranslator.set_type(spot::postprocessor::TGBA);
-    if (anyOption) ltlToNbaTranslator.set_pref(spot::postprocessor::Any | spot::postprocessor::SBAcc | spot::postprocessor::Small);
-    else ltlToNbaTranslator.set_pref(spot::postprocessor::SBAcc | spot::postprocessor::Small);
+    ltlToNbaTranslator.set_type(spot::postprocessor::Buchi);
+    if (anyOption) ltlToNbaTranslator.set_pref(spot::postprocessor::Any | spot::postprocessor::Small);
+    else ltlToNbaTranslator.set_pref(spot::postprocessor::Small);
     ltlToNbaTranslator.set_level(m_optimizationLevel);
 
     Timer timer {};
@@ -461,7 +431,7 @@ spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(
     m_polyhedralLtlAutomatonStats->setTranslationTotalAcceptingSets(formulaTgba->num_sets());
     m_polyhedralLtlAutomatonStats->setTranslationTotalInitialStates(1);
     m_polyhedralLtlAutomatonStats->setTranslationSccInfo(spot::scc_info { formulaTgba });
-    m_polyhedralLtlAutomatonStats->setTranslationTotalAcceptingStates(SpotUtils::collectAcceptingStates(formulaTgba).size());
+    // m_polyhedralLtlAutomatonStats->setTranslationTotalAcceptingStates(SpotUtils::collectAcceptingStates(formulaTgba).size());
 
     return formulaTgba;
 }

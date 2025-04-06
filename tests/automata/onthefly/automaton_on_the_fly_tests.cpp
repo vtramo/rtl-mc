@@ -40,12 +40,12 @@ TEST_CASE("GAP experiment t0 & G(t1) & F(p & F(q)) with HIGH optimization")
             spot::postprocessor::High
         )
     };
-    REQUIRE(backwardNfa->totalStates() == 13);
+    REQUIRE(backwardNfa->totalStates() == 14);
     REQUIRE(backwardNfa->totalInitialStates() == 4);
-    REQUIRE(backwardNfa->totalAcceptingStates() == 2);
-    REQUIRE(backwardNfa->acceptingStates() == std::unordered_set<unsigned>{ 12, 5 });
+    REQUIRE(backwardNfa->totalAcceptingStates() == 1);
+    REQUIRE(backwardNfa->acceptingStates() == std::unordered_set<unsigned>{ 13 });
     REQUIRE(backwardNfa->initialStates() == std::unordered_set<unsigned>{ 0, 1, 2, 3 });
-    REQUIRE(backwardNfa->totalEdges() == 21);
+    REQUIRE(backwardNfa->totalEdges() == 23);
 
     constexpr unsigned stateZero = 0;
     const StateDenotation& zeroStateDenotation { backwardNfa->stateDenotation(0) };
@@ -108,7 +108,7 @@ TEST_CASE("GAP experiment t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     REQUIRE(fiveStateDenotation.formula() == spot::parse_infix_psl("q & sing & t1").f);
     REQUIRE(fiveStateDenotation.labels() == AP({ "q", "sing", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateFive));
-    REQUIRE(backwardNfa->isAcceptingState(stateFive));
+    REQUIRE(!backwardNfa->isAcceptingState(stateFive));
     REQUIRE(backwardNfa->hasSuccessors(stateFive));
     REQUIRE(predecessors(backwardNfa, stateFive) == std::unordered_set<unsigned>{ 10, 8, 0 });
     REQUIRE(backwardNfa->countSuccessors(stateFive) == 3);
@@ -185,10 +185,21 @@ TEST_CASE("GAP experiment t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     REQUIRE(twelveStateDenotation.formula() == spot::parse_infix_psl("sing & t1").f);
     REQUIRE(twelveStateDenotation.labels() == AP({ "sing", "t1" }));
     REQUIRE(!backwardNfa->isInitialState(stateTwelve));
-    REQUIRE(backwardNfa->isAcceptingState(stateTwelve));
+    REQUIRE(!backwardNfa->isAcceptingState(stateTwelve));
     REQUIRE(backwardNfa->hasSuccessors(stateTwelve));
     REQUIRE(predecessors(backwardNfa, stateTwelve) == std::unordered_set<unsigned>{ 9 });
     REQUIRE(backwardNfa->countSuccessors(stateTwelve) == 1);
+
+    constexpr unsigned stateThirteen = 13;
+    const StateDenotation& thirteenStateDenotation { backwardNfa->stateDenotation(stateThirteen) };
+    REQUIRE(!thirteenStateDenotation.isSingular());
+    REQUIRE(thirteenStateDenotation.formula() == spot::parse_infix_psl("!sing & t1").f);
+    REQUIRE(thirteenStateDenotation.labels() == AP({ "t1" }));
+    REQUIRE(!backwardNfa->isInitialState(stateThirteen));
+    REQUIRE(backwardNfa->isAcceptingState(stateThirteen));
+    REQUIRE(backwardNfa->hasSuccessors(stateThirteen));
+    REQUIRE(predecessors(backwardNfa, stateThirteen) == std::unordered_set<unsigned>{ 12, 5 });
+    REQUIRE(backwardNfa->countSuccessors(stateThirteen) == 2);
 }
 
 std::unordered_set<unsigned> predecessors(BackwardNFAConstSharedPtr backwardNfa, const unsigned state)
@@ -505,9 +516,6 @@ public:
 private:
     void processState(const unsigned state) override
     {
-        INFO("State is " << state);
-        if (!m_backwardNfa->hasSuccessors(state))
-            REQUIRE(m_backwardNfa->isInitialState(state));
     }
 
     void processEdge(const unsigned src, const unsigned dst) override
@@ -532,12 +540,8 @@ void testBackwardNfaInvariant(BackwardNFAConstSharedPtr backwardNfa)
             continue;
         }
 
-        if (!backwardNfa->hasSuccessors(state))
-            REQUIRE(backwardNfa->isInitialState(state)); // no predecessors => Initial state
-
         if (backwardNfa->isAcceptingState(state))
         {
-            REQUIRE(stateDenotation.isSingular()); // Final state => is singular
             REQUIRE(!stateDenotation.isEmpty()); // Final state => denotation IS NOT empty
         }
 

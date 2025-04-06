@@ -27,7 +27,16 @@ PowersetUniquePtr DenotOnTheFly::run() {
             );
 
             std::vector V(m_backwardNfa->totalStates(), Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY });
-            PowersetUniquePtr acceptingStatePatchResult { denot(acceptingState, patchesIt->pointset(), patchesIt->pointset(), V, 0, true) };
+            PowersetUniquePtr acceptingStatePatchResult {
+                denot(
+                    acceptingState,
+                    patchesIt->pointset(),
+                    patchesIt->pointset(),
+                    V,
+                    0,
+                    acceptingStateDenotation.isSingular()
+                )
+            };
 
             Log::log(Verbosity::trace, "Accepting state {}, patch {} result: {}",
                 acceptingState,
