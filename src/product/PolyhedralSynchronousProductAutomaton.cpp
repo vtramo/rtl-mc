@@ -67,6 +67,7 @@ void PolyhedralSynchronousProductAutomaton::buildAutomaton()
     Log::log(Verbosity::verbose, "[{}] Total accepting states: {}.", m_name, totalAcceptingStates());
     Log::log(Verbosity::veryVerbose, "[{}] Initial states: {}.", m_name, fmt::join(initialStates(), ", "));
     Log::log(Verbosity::veryVerbose, "[{}] Accepting states: {}.", m_name, fmt::join(acceptingStates(), ", "));
+    Log::log(Verbosity::debug, "{}", *this);
 }
 
 void PolyhedralSynchronousProductAutomaton::createDummyInitialStateWithEdgesToInitialStates()
@@ -146,4 +147,21 @@ std::pair<unsigned, unsigned> PolyhedralSynchronousProductAutomaton::productStat
 PPL::dimension_type PolyhedralSynchronousProductAutomaton::spaceDimension() const
 {
     return m_abstraction->spaceDimension();
+}
+
+std::ostream& operator<< (std::ostream& os, const PolyhedralSynchronousProductAutomaton& synchronousProduct)
+{
+    os << "[" << synchronousProduct.name() << "]" << std::endl;
+
+    auto polyhedralSystem { synchronousProduct.m_abstraction->polyhedralSystem() };
+    for (unsigned state { 0 }; state < synchronousProduct.totalStates(); ++state)
+    {
+        auto statePoints { synchronousProduct.points(state) };
+        os << "State: " << state << std::endl;
+        os << std::boolalpha << "Is initial: " << synchronousProduct.isInitialState(state) << std::endl;
+        os << "Is accepting: " << synchronousProduct.isAcceptingState(state) << std::endl << std::noboolalpha;
+        os << "Points: " << PPLOutput::toString(*statePoints, polyhedralSystem->symbolTable()) << std::endl << std::endl;
+    }
+
+    return os;
 }

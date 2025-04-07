@@ -28,6 +28,8 @@ public:
     [[nodiscard]] std::pair<unsigned, unsigned> productStatePair(unsigned state) const;
     [[nodiscard]] PPL::dimension_type spaceDimension() const;
 
+    friend std::ostream& operator<< (std::ostream& os, const PolyhedralSynchronousProductAutomaton& synchronousProduct);
+
 private:
     spot::product_states m_productStatePair {};
     PolyhedralLtlAutomatonConstSharedPtr m_ltlAutomaton {};

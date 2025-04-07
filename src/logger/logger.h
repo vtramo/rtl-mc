@@ -9,6 +9,8 @@
 #include "DiscreteLtlFormula.h"
 #include "BackwardNFA.h"
 
+class PolyhedralSynchronousProductAutomaton;
+
 // Formatter specializations.
 template <> struct fmt::formatter<spot::formula> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<PolyhedralSystem> : fmt::ostream_formatter {};
@@ -17,6 +19,7 @@ template <> struct fmt::formatter<BackwardNFA> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<Observable> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<PolyhedralLtlAutomaton> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<spot::twa_run> : fmt::ostream_formatter {};
+template <> struct fmt::formatter<PolyhedralSynchronousProductAutomaton> : fmt::ostream_formatter {};
 
 /*!
  *  \brief Namespace for logging utilities, providing verbosity control and logging functions.
