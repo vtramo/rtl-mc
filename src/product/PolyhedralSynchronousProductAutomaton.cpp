@@ -42,19 +42,29 @@ void PolyhedralSynchronousProductAutomaton::buildAutomaton()
 
     for (unsigned productState { 0 }; productState < m_automaton->num_states(); ++productState)
     {
+        const bool isProductStateAccepting { m_acceptingStates.count(productState) > 0 };
+
         auto [ltlAutomatonState, abstractionState] = m_productStatePair[productState];
         for (auto ltlAutomatonEdge: m_ltlAutomaton->successors(ltlAutomatonState))
         {
+            if (ltlAutomatonEdge.cond == bdd_false())
+            {
+                m_automaton->new_acc_edge(productState, productState, bdd_true(), true);
+                continue;
+            }
+
             for (auto abstractionEdge: m_abstraction->successors(abstractionState))
             {
                 int productStateSuccessor { stateProductByPair[ltlAutomatonEdge.dst][abstractionEdge.dst] };
                 if (productStateSuccessor != -1)
                 {
-                    bdd edgeLabels { ltlAutomatonEdge.cond == bdd_false() ? bdd_true() : ltlAutomatonEdge.cond };
+                    bdd edgeLabels { ltlAutomatonEdge.cond };
                     m_automaton->new_edge(productState, productStateSuccessor, edgeLabels, ltlAutomatonEdge.acc);
                 }
             }
         }
+
+        assert(!isProductStateAccepting || m_automaton->state_is_accepting(productState));
     }
 
     createDummyInitialStateWithEdgesToInitialStates();
