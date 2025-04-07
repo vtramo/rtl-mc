@@ -2,6 +2,33 @@
 
 #include "PolyhedralSynchronousProductAutomaton.h"
 #include <spot/twaalgos/se05.hh>
+#include <spot/twaalgos/tau03.hh>
+#include <spot/twaalgos/magic.hh>
+
+enum class EmptinessCheckAlgorithm
+{
+    se05,
+    tau03,
+    magic
+};
+
+static spot::emptiness_check_ptr emptinessCheckAlgorithm(
+    const EmptinessCheckAlgorithm algorithm,
+    spot::const_twa_graph_ptr twa
+)
+{
+    switch (algorithm)
+    {
+    case EmptinessCheckAlgorithm::se05:
+        return spot::explicit_se05_search(twa);
+    case EmptinessCheckAlgorithm::tau03:
+        return spot::explicit_tau03_search(twa);
+    case EmptinessCheckAlgorithm::magic:
+        return spot::explicit_magic_search(twa);
+    }
+
+    throw std::invalid_argument("Invalid EmptinessCheckAlgorithm");
+}
 
 struct EmptinessCheckDenotationResult
 {
@@ -11,13 +38,16 @@ struct EmptinessCheckDenotationResult
     PowersetSharedPtr result {};
 };
 
-inline EmptinessCheckDenotationResult explicitSe05Search(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton)
+inline EmptinessCheckDenotationResult explicitSe05Search(
+    PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton,
+    const EmptinessCheckAlgorithm algorithm = EmptinessCheckAlgorithm::magic
+)
 {
     PowersetSharedPtr result { std::make_shared<Powerset>(synchronousProductAutomaton->spaceDimension(), PPL::EMPTY) };
-    spot::emptiness_check_ptr explicitSe05Search { spot::explicit_se05_search(synchronousProductAutomaton->twa()) };
+    spot::emptiness_check_ptr emptinessCheckSearch { emptinessCheckAlgorithm(algorithm, synchronousProductAutomaton->twa()) };
 
     std::vector<spot::twa_run> acceptingRuns {};
-    spot::emptiness_check_result_ptr emptinessCheckResult { explicitSe05Search->check() };
+    spot::emptiness_check_result_ptr emptinessCheckResult { emptinessCheckSearch->check() };
     while (emptinessCheckResult != nullptr)
     {
         spot::twa_run_ptr twaRun { emptinessCheckResult->accepting_run() };
@@ -33,7 +63,7 @@ inline EmptinessCheckDenotationResult explicitSe05Search(PolyhedralSynchronousPr
         PowersetConstSharedPtr initialStatePoints { synchronousProductAutomaton->points(initialStateNumber) };
         PPLUtils::fusion(*result, *initialStatePoints);
 
-        emptinessCheckResult = explicitSe05Search->check();
+        emptinessCheckResult = emptinessCheckSearch->check();
     }
 
     return { acceptingRuns, static_cast<int>(acceptingRuns.size()), acceptingRuns.size() == 0, result };
