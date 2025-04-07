@@ -46,6 +46,7 @@ include_directories = [
   include_directories(src_dir / parser_dir / system_dir),
   include_directories(src_dir / parser_dir / 'mc'),
   include_directories(src_dir / mcsolvers_dir),
+  include_directories(src_dir / mcsolvers_dir / 'emptiness'),
   include_directories(src_dir / mcsolvers_dir / onthefly_dir),
   include_directories(src_dir / mcsolvers_dir / onthefly_dir / 'concurrent'),
   include_directories(src_dir / 'cli'),

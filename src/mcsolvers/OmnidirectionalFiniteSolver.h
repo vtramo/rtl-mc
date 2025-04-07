@@ -2,7 +2,7 @@
 
 #include "OmnidirectionalSolver.h"
 #include "automata_builder.h"
-#include "FiniteSemanticsDfs.h"
+#include "FiniteSemanticsEmptiness.h"
 #include "Timer.h"
 
 class OmnidirectionalFiniteSolver: public OmnidirectionalSolver
@@ -34,7 +34,7 @@ public:
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
 
-        return runFiniteSemanticsDfs();
+        return runFiniteEmptinessCheckDenotationSearch();
     }
 protected:
 
@@ -60,9 +60,15 @@ protected:
         m_solverStats->addAutomatonStats(automatonStats);
     }
 
-    virtual PowersetSharedPtr runFiniteSemanticsDfs()
+    virtual PowersetSharedPtr runFiniteEmptinessCheckDenotationSearch()
     {
-        FiniteSemanticsDfs dfs { m_polyhedralSynchronousProduct };
-        return dfs.run();
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Started.");
+        FiniteSemanticsEmptiness dfs { m_polyhedralSynchronousProduct };
+        EmptinessCheckDenotationResult emptinessCheckDenotationResult { dfs.run() };
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Completed. Elapsed time: {} s.", emptinessCheckDenotationResult.elapsedTimeInSeconds);
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Total accepting runs: {}.", emptinessCheckDenotationResult.totalAcceptingRuns);
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Total collected initial states: {}.", emptinessCheckDenotationResult.initialStates.size());
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Collected initial states: {}.", fmt::join(emptinessCheckDenotationResult.initialStates, ", "));
+        return emptinessCheckDenotationResult.result;
     }
 };

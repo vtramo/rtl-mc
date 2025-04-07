@@ -146,35 +146,35 @@ package mcsolvers {
         #constructPolyhedralLtlAutomaton() override: void
         #virtual runFiniteSemanticsDfs(): PowersetSharedPtr
         --protected data members--
-        #m_dfs: std::unique_ptr<FiniteSemanticsDfs>
+        #m_dfs: std::unique_ptr<FiniteSemanticsEmptiness>
     }
 
-    class FiniteSemanticsDfs {
+    class FiniteSemanticsEmptiness {
         --data members--
         -m_transposedSynchronousProduct: spot::twa_graph_ptr
         -m_synchronousProduct: PolyhedralSynchronousProductAutomatonConstSharedPtr
         -m_result: PowersetSharedPtr
         --constructors--
-        +FiniteSemanticsDfs(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProduct)
+        +FiniteSemanticsEmptiness(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProduct)
         --member functions--
         +run(): PowersetSharedPtr
         +result(): PowersetSharedPtr
     }
 
-    FiniteOnTheFlySolver ...> FiniteSemanticsDfs: use
+    FiniteOnTheFlySolver ...> FiniteSemanticsEmptiness: use
 
     class Dfs {
         --data members--
-        #m_parent: FiniteSemanticsDfs*
+        #m_parent: FiniteSemanticsEmptiness*
         --constructors--
-        +Dfs(const spot::const_twa_ptr& a, FiniteSemanticsDfs* parent)
+        +Dfs(const spot::const_twa_ptr& a, FiniteSemanticsEmptiness* parent)
         --member functions--
         +process_state(const spot::state* state, const int _, spot::twa_succ_iterator* __) override: void
         #addInitialStateDenotationToResult(unsigned state): void
     }
 
     Dfs --|> spot::twa_reachable_iterator_depth_first
-    FiniteSemanticsDfs #--> Dfs
+    FiniteSemanticsEmptiness #--> Dfs
 
     class GeneralFiniteSolver {
         --constructors--
@@ -188,7 +188,7 @@ package mcsolvers {
     }
 
     GeneralFiniteSolver --|> GeneralSolver
-    GeneralFiniteSolver ...> FiniteSemanticsDfs: use
+    GeneralFiniteSolver ...> FiniteSemanticsEmptiness: use
     GeneralSolver --|> ExplicitSolver
     ExplicitSolver --|> Solver
     FiniteOnTheFlySolver --|> Solver
@@ -211,7 +211,7 @@ package mcsolvers {
         +run() override: PowersetSharedPtr
         #discretiseRtlFormula() override: double
         #constructPolyhedralLtlAutomaton() override: void
-        #virtual runFiniteSemanticsDfs(): PowersetSharedPtr
+        #virtual runFiniteEmptinessCheckDenotationSearch(): PowersetSharedPtr
     }
 
     class OmnidirectionalInfiniteSolver {
@@ -225,9 +225,30 @@ package mcsolvers {
         #runEmptinessCheckDenotation(): PowersetSharedPtr
     }
 
-    object infinite_semantics_emptiness_h {
-        +inline explicitSe05Search(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton): PowersetSharedPtr
+    package emptiness {
+        struct EmptinessCheckDenotationResult
+        {
+            +acceptingRuns: std::vector<spot::twa_run>
+            +initialStates: std::set<unsigned>
+            +totalAcceptingRuns: int
+            +isEmpty: bool
+            +result: PowersetSharedPtr
+            +elapsedTimeInSeconds: double
+        }
+
+        object infinite_semantics_emptiness_h {
+            +inline emptinessCheckDenotationSearch(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton, const EmptinessCheckAlgorithm algorithm = EmptinessCheckAlgorithm::magic): EmptinessCheckDenotationResult
+            +emptinessCheckAlgorithm(const EmptinessCheckAlgorithm algorithm, spot::const_twa_graph_ptr twa): spot::emptiness_check_ptr
+        }
+
+        enum EmptinessCheckAlgorithm
+        {
+            se05,
+            tau03,
+            magic
+        }
     }
+
 
     OmnidirectionalInfiniteSolver ...> infinite_semantics_emptiness_h: use
 
@@ -246,7 +267,7 @@ package mcsolvers {
     OmnidirectionalMaySolver --|> OmnidirectionalSolver
     OmnidirectionalSolver --|> ExplicitSolver
     OmnidirectionalFiniteSolver --|> OmnidirectionalSolver
-    OmnidirectionalFiniteSolver ...> FiniteSemanticsDfs: use
+    OmnidirectionalFiniteSolver ...> FiniteSemanticsEmptiness: use
     OmnidirectionalInfiniteSolver --|> OmnidirectionalSolver
 }
 @enduml

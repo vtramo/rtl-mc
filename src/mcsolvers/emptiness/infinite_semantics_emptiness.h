@@ -1,9 +1,12 @@
 #pragma once
 
-#include "PolyhedralSynchronousProductAutomaton.h"
 #include <spot/twaalgos/se05.hh>
 #include <spot/twaalgos/tau03.hh>
 #include <spot/twaalgos/magic.hh>
+
+#include "PolyhedralSynchronousProductAutomaton.h"
+#include "EmptinessCheckDenotationResult.h"
+#include "Timer.h"
 
 enum class EmptinessCheckAlgorithm
 {
@@ -29,16 +32,6 @@ static spot::emptiness_check_ptr emptinessCheckAlgorithm(
 
     throw std::invalid_argument("Invalid EmptinessCheckAlgorithm");
 }
-
-struct EmptinessCheckDenotationResult
-{
-    std::vector<spot::twa_run> acceptingRuns {};
-    std::set<unsigned> initialStates {};
-    int totalAcceptingRuns { 0 };
-    bool isEmpty {};
-    PowersetSharedPtr result {};
-    double elapsedTimeInSeconds {};
-};
 
 inline EmptinessCheckDenotationResult emptinessCheckDenotationSearch(
     PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton,
