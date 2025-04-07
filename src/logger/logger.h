@@ -15,6 +15,7 @@ template <> struct fmt::formatter<PolyhedralSystem> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<DiscreteLtlFormula> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<BackwardNFA> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<Observable> : fmt::ostream_formatter {};
+template <> struct fmt::formatter<PolyhedralLtlAutomaton> : fmt::ostream_formatter {};
 
 /*!
  *  \brief Namespace for logging utilities, providing verbosity control and logging functions.

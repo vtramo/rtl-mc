@@ -86,7 +86,6 @@ protected:
         m_finiteOnTheFlySolverStats->addAutomatonStats(backwardNfaStats);
 
         Log::log(Verbosity::verbose, "<<< BackwardNFA automaton construction completed. Elapsed time: {} s.\n", timer.elapsedInSeconds());
-        Log::log(Verbosity::debug, "[BackwardNFA]\n{}\n", *m_backwardNfa);
     }
 
     virtual PowersetUniquePtr startDenotAlgorithm()

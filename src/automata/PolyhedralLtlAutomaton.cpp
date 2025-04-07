@@ -351,6 +351,7 @@ void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSecond
     Log::log(Verbosity::verbose, "[{} - Construction] Total edges: {}.", m_name, totalEdges());
     Log::log(Verbosity::veryVerbose, "[{} - Construction] Initial states: [{}].", m_name, fmt::join(m_initialStates, ", "));
     Log::log(Verbosity::veryVerbose, "[{} - Construction] Accepting states: [{}].", m_name, fmt::join(m_acceptingStates, ", "));
+    Log::log(Verbosity::debug, "[{}]\n{}\n", m_name, *this);
 }
 
 void PolyhedralLtlAutomaton::updatePatchStats(const int totPatches)
