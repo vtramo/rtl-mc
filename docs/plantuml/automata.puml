@@ -134,8 +134,6 @@ package automata {
         +isEmpty() : bool
         +toString(const PolyhedralSystemSymbolTable& symbolTable) : std::string
         +print(std::ostream& ostream, const PolyhedralSystemSymbolTable& symbolTable) : void
-        --static functions--
-        {static} +top(PPL::dimension_type dimension)
     }
 
     struct RenumberingContext

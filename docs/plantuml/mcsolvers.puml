@@ -222,6 +222,7 @@ package mcsolvers {
         +run() override: PowersetSharedPtr
         #discretiseRtlFormula() override: double
         #constructPolyhedralLtlAutomaton() override: void
+        #runEmptinessCheckDenotation(): PowersetSharedPtr
     }
 
     object infinite_semantics_emptiness_h {

@@ -41,9 +41,17 @@ void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& 
     stateByTile.reserve(totalTiles * 3 / 2);
 
     for (int i { 0 }; i < totalTiles; ++i)
+    {
+        const auto& _ = getStateByTileOrCreate(tiles[i], stateByTile);
+
         for (int j { 0 }; j < totalTiles; ++j)
+        {
             for (int k { 0 }; k < totalTiles; ++k)
+            {
                 processTriple(tiles[i], tiles[j], tiles[k], stateByTile);
+            }
+        }
+    }
 
     Log::log(m_automaton, fmt::format("{}-construction-completed", m_name));
     Log::log(Verbosity::verbose, "[{}] Construction completed.", m_name);

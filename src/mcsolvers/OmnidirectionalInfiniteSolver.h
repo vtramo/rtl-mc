@@ -34,7 +34,7 @@ public:
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
 
-        return explicitSe05Search(m_polyhedralSynchronousProduct);
+        return runEmptinessCheckDenotation();
     }
 protected:
     double discretiseRtlFormula() override
@@ -57,5 +57,14 @@ protected:
         );
         const PolyhedralLtlAutomatonStats& automatonStats { m_ltlAutomaton->stats() };
         m_solverStats->addAutomatonStats(automatonStats);
+    }
+
+    PowersetSharedPtr runEmptinessCheckDenotation()
+    {
+        Log::log(Verbosity::verbose, "[Emptiness check denotation] Started.");
+        EmptinessCheckDenotationResult emptinessCheckDenotationResult { explicitSe05Search(m_polyhedralSynchronousProduct) };
+        Log::log(Verbosity::verbose, "[Emptiness check denotation] Total accepting runs: {}.", emptinessCheckDenotationResult.totalAcceptingRuns);
+        Log::log(Verbosity::debug, "[Emptiness check denotation] Accepting runs\n{}.", fmt::join(emptinessCheckDenotationResult.acceptingRuns, "\n\n"));
+        return emptinessCheckDenotationResult.result;
     }
 };
