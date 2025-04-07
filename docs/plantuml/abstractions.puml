@@ -16,6 +16,7 @@ package abstractions {
             +PolyhedralAbstraction(PolyhedralSystemSharedPtr polyhedralSystem, std::string_view name)
             +virtual ~PolyhedralAbstraction() = default
             --member functions--
+            +polyhedralSystem(): PolyhedralSystemConstSharedPtr
             +virtual points(unsigned state): PowersetConstSharedPtr
             +virtual observable(unsigned state): const Observable&
             +virtual initialState(): unsigned

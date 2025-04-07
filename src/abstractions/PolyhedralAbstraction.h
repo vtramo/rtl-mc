@@ -7,10 +7,10 @@
 
 #include <spot/twa/formula2bdd.hh>
 
-#include "logger.h"
 #include "ObservableTraverseNode.h"
 #include "PolyhedralSystem.h"
 #include "Automaton.h"
+#include "logger.h"
 
 class PolyhedralAbstraction;
 
@@ -66,6 +66,12 @@ public:
     }
 
     ~PolyhedralAbstraction() override = default;
+
+    /**
+     * \brief Returns the \c PolyhedralSystem that this \c PolyhedralAbstraction abstracts.
+     * \return The \c PolyhedralSystem that this \c PolyhedralAbstraction abstracts.
+     */
+    [[nodiscard]] PolyhedralSystemConstSharedPtr polyhedralSystem() const { return m_polyhedralSystem;}
 
     /**
      * \brief Retrieves the polyhedron associated with a given \p state
