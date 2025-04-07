@@ -74,5 +74,14 @@ TEST_CASE("isOmnidirectionalFlow")
             INFO("Poly: " + PPLUtils::toString(poly));
             REQUIRE(isOmnidirectionalFlow(poly));
         }
+
+        SECTION("{ x + y >= -2 & x + y <= 2 & x >= -1 & x <= 1 & y >= -2 & y <= 2 }")
+        {
+            Poly poly { PPLUtils::poly({ x + y >= -2, x + y <= 2, x >= -1, x <= 1, y >= -2, y <= 2 }) };
+            REQUIRE(poly.space_dimension() == 2);
+
+            INFO("Poly: " + PPLUtils::toString(poly));
+            REQUIRE(isOmnidirectionalFlow(poly));
+        }
     }
 }
