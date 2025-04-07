@@ -45,6 +45,10 @@ public:
         if (!isSing)
         {
             removeSingFromLabels();
+            if (m_labels->size() == 0)
+            {
+                m_labels->insert(spot::formula::tt());
+            }
         }
 
         assert(!isSing || containsSing(*m_labels));
@@ -64,11 +68,6 @@ public:
         , m_denotation { std::move(other.m_denotation) }
         , m_isSing { other.isSingular() }
     {
-    }
-
-    static StateDenotation top(const PPL::dimension_type dimension)
-    {
-        return { spot::formula::tt(), std::make_shared<Powerset>(dimension, PPL::UNIVERSE) };
     }
 private:
     spot::formula m_formula {};

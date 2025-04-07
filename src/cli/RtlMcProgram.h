@@ -217,7 +217,7 @@ private:
 
     void addAutomatonOptimizationFlagsArguments()
     {
-        m_rtlMcProgram.add_group("Automaton construction optimizations");
+        m_rtlMcProgram.add_group("Automaton formula translation optimizations (Spot library flags)");
         auto& automatonOptimizationGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
         automatonOptimizationGroup.add_argument("--low")
                                   .help("Minimal optimizations during automaton construction (fast, default).")
@@ -242,10 +242,7 @@ private:
                                       m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::high;
                                   });
         m_rtlMcProgram.add_argument("--any")
-                      .help("Tells the translator that it should attempt to \n"
-                          "reduce or produce a deterministic result: any automaton denoting the \n"
-                          "given formula is OK. This effectively disables post-processings and \n"
-                          "speeds up the translation.")
+                      .help("No preference.")
                       .flag()
                       .store_into(m_automatonOptimizationFlags.any);
     }

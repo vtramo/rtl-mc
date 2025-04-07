@@ -43,14 +43,15 @@ void PolyhedralSynchronousProductAutomaton::buildAutomaton()
     for (unsigned productState { 0 }; productState < m_automaton->num_states(); ++productState)
     {
         auto [ltlAutomatonState, abstractionState] = m_productStatePair[productState];
-        for (auto edge: m_ltlAutomaton->successors(ltlAutomatonState))
+        for (auto ltlAutomatonEdge: m_ltlAutomaton->successors(ltlAutomatonState))
         {
             for (auto abstractionEdge: m_abstraction->successors(abstractionState))
             {
-                int productStateSuccessor { stateProductByPair[edge.dst][abstractionEdge.dst] };
+                int productStateSuccessor { stateProductByPair[ltlAutomatonEdge.dst][abstractionEdge.dst] };
                 if (productStateSuccessor != -1)
                 {
-                    m_automaton->new_edge(productState, productStateSuccessor, edge.cond, edge.acc);
+                    bdd edgeLabels { ltlAutomatonEdge.cond == bdd_false() ? bdd_true() : ltlAutomatonEdge.cond };
+                    m_automaton->new_edge(productState, productStateSuccessor, edgeLabels, ltlAutomatonEdge.acc);
                 }
             }
         }

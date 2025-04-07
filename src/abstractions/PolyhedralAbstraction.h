@@ -131,7 +131,7 @@ public:
     virtual bdd observableAsBdd(const Observable& observable) const
     {
         const spot::atomic_prop_set& observableAtoms { observable.atoms() };
-        if (observableAtoms.empty()) return bdd_false();
+        if (observableAtoms.empty()) return bdd_true();
         return spot::formula_to_bdd(andFormulae(observableAtoms), m_automaton->get_dict(), m_automaton);
     }
 
