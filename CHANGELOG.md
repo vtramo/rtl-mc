@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-04-07
+### :sparkles: New Features
+- [`1e745bb`](https://github.com/vtramo/rtl-mc/commit/1e745bb955979166869cd5c0c292da61aff34f91) - **geometry**: add `isClosed` function that checks if a `Powerset` is closed *(commit by [@vtramo](https://github.com/vtramo))*
+- [`31ccefb`](https://github.com/vtramo/rtl-mc/commit/31ccefbf0e612261fb7659bffd3b92060c86c0d1) - **geometric**: add `coneGeometric` and `coneGenerator` functions *(commit by [@vtramo](https://github.com/vtramo))*
+- [`1983015`](https://github.com/vtramo/rtl-mc/commit/1983015651ff3200a6937610b4f749a226af50aa) - **system**: add `hasFlowWithClosedCone()` method in `PolyhedralSystem` *(commit by [@vtramo](https://github.com/vtramo))*
+- [`42428f9`](https://github.com/vtramo/rtl-mc/commit/42428f9c50692fca47a3b45b4cf4d30f18303234) - apply `fastPairwiseReduce` on final result *(commit by [@vtramo](https://github.com/vtramo))*
+- [`b1415e1`](https://github.com/vtramo/rtl-mc/commit/b1415e1c340b4c8c3b96e8d27336b74ba10bae69) - **automata**: add `top()` factory method in `StateDenotation` *(commit by [@vtramo](https://github.com/vtramo))*
+- [`871941e`](https://github.com/vtramo/rtl-mc/commit/871941e4a54d18bbdade27eeeab3ecb50beea326) - **automata**: add `filterEdge` and `isAcceptingEdge` virtual methods in `PolyhedralLtlAutomaton` *(commit by [@vtramo](https://github.com/vtramo))*
+- [`5086362`](https://github.com/vtramo/rtl-mc/commit/5086362d6b4d60cb7cfdd4551da8ea70c7299039) - **logging**: log full automaton at debug level *(commit by [@vtramo](https://github.com/vtramo))*
+- [`de643b2`](https://github.com/vtramo/rtl-mc/commit/de643b2df365a6b57aa31caf201ee8155338e105) - **logging**: log accepting runs at debug level (infinite-time semantics omnidirectional case) *(commit by [@vtramo](https://github.com/vtramo))*
+- [`302ff56`](https://github.com/vtramo/rtl-mc/commit/302ff56ce0bdb27d72a0bb7e8628f4135e160af2) - **abstractions**: add `polyhedralSystem()` method in `PolyhedralAbstraction` *(commit by [@vtramo](https://github.com/vtramo))*
+- [`6490a75`](https://github.com/vtramo/rtl-mc/commit/6490a75933565ea0f3865c06122ad9937ff79c87) - **logging**: log full `PolyhedralSynchronousProductAutomaton` at debug level *(commit by [@vtramo](https://github.com/vtramo))*
+- [`d3e52eb`](https://github.com/vtramo/rtl-mc/commit/d3e52ebfc4958a505e5759d43c01e81291936faa) - **mcsolvers**: add `EmptinessCheckAlgorithm` enumeration *(commit by [@vtramo](https://github.com/vtramo))*
+- [`ba58508`](https://github.com/vtramo/rtl-mc/commit/ba58508f850764395e35f61f40ab1bf006749522) - **mcsolvers**: collect initial states and measure elapsed time in seconds in `emptinessCheckDenotationSearch` *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :bug: Bug Fixes
+- [`be5749f`](https://github.com/vtramo/rtl-mc/commit/be5749fe9e2c023a9a8d226ab523a841af162288) - **abstractions**: return `bdd_false()` when `Observable` is empty *(commit by [@vtramo](https://github.com/vtramo))*
+- [`3f9fd3b`](https://github.com/vtramo/rtl-mc/commit/3f9fd3b0f3eca91c9cc73f9e3ddf0a4cd8823b21) - use `isClosed` instead of `is_topologically_closed` (from PPL) *(commit by [@vtramo](https://github.com/vtramo))*
+- [`aa27f6f`](https://github.com/vtramo/rtl-mc/commit/aa27f6f414e1737ef5de2d1923474e844439c916) - set `bdd_true()` if labels are empty in sync product or abstraction *(commit by [@vtramo](https://github.com/vtramo))*
+- [`9c8b8bc`](https://github.com/vtramo/rtl-mc/commit/9c8b8bc7602a4bbdbc6b6bc5c60fa4b1f6361a96) - **product**: handle self-loop edges labeled with `bdd_false()` *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :zap: Performance Improvements
+- [`047ade1`](https://github.com/vtramo/rtl-mc/commit/047ade186125ce6db6da102026dd24d00d91871a) - **automata**: improve formula denotation calculation *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :recycle: Refactors
+- [`99151ad`](https://github.com/vtramo/rtl-mc/commit/99151ad1824fd18df3d87520acd34af80b567cb2) - **automata**: change acceptance condition and kill accepting states at the end *(commit by [@vtramo](https://github.com/vtramo))*
+- [`1f60ac2`](https://github.com/vtramo/rtl-mc/commit/1f60ac20f9d8f087b1ce5ccfdee9a2a63b74b688) - **cli**: separate input options for polyhedral system and formula *(commit by [@vtramo](https://github.com/vtramo))*
+- [`93e95b4`](https://github.com/vtramo/rtl-mc/commit/93e95b46084bdbab4cc24a17ed5d79ba8de681ad) - **mcsolvers**: move emptiness algorithms to the `emptiness` package *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :white_check_mark: Tests
+- [`1c3bbd6`](https://github.com/vtramo/rtl-mc/commit/1c3bbd6443a3bb1f23ee71dc71c8e3ccb60acdeb) - **geometry**: test `isClosed` function *(commit by [@vtramo](https://github.com/vtramo))*
+- [`f0723e3`](https://github.com/vtramo/rtl-mc/commit/f0723e3cb3525a730bcc6d41c8bdf6d4c0ab2d85) - **geometric**: test `coneGeometric` and `coneGenerator` functions *(commit by [@vtramo](https://github.com/vtramo))*
+- [`7903a13`](https://github.com/vtramo/rtl-mc/commit/7903a1377254e0743d06e6c1fcb08dcb7dcf940b) - **omnidirectional**: add `isOmnidirectional` test case *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :wrench: Chores
+- [`257d9a0`](https://github.com/vtramo/rtl-mc/commit/257d9a02fcdaddd5e5ffdd9f10ba7c02898dc4f5) - add experiment scripts *(commit by [@vtramo](https://github.com/vtramo))*
+
+
 ## [0.1.3] - 2025-03-31
 ### :sparkles: New Features
 - [`dbc3578`](https://github.com/vtramo/rtl-mc/commit/dbc35782d99cb0a64d6ba98075a428de90812d06) - **cli**: add option `--export-dot` to export graph dot files *(commit by [@vtramo](https://github.com/vtramo))*
@@ -75,3 +113,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.1]: https://github.com/vtramo/rtl-mc/compare/0.1.0...0.1.1
 [0.1.2]: https://github.com/vtramo/rtl-mc/compare/0.1.1...0.1.2
 [0.1.3]: https://github.com/vtramo/rtl-mc/compare/0.1.2...0.1.3
+[0.1.4]: https://github.com/vtramo/rtl-mc/compare/0.1.3...0.1.4
