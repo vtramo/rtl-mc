@@ -34,7 +34,7 @@ public:
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
 
-        return runEmptinessCheckDenotation();
+        return runEmptinessCheckDenotationSearch();
     }
 protected:
     double discretiseRtlFormula() override
@@ -59,12 +59,15 @@ protected:
         m_solverStats->addAutomatonStats(automatonStats);
     }
 
-    PowersetSharedPtr runEmptinessCheckDenotation()
+    PowersetSharedPtr runEmptinessCheckDenotationSearch()
     {
-        Log::log(Verbosity::verbose, "[Emptiness check denotation] Started.");
-        EmptinessCheckDenotationResult emptinessCheckDenotationResult { explicitSe05Search(m_polyhedralSynchronousProduct) };
-        Log::log(Verbosity::verbose, "[Emptiness check denotation] Total accepting runs: {}.", emptinessCheckDenotationResult.totalAcceptingRuns);
-        Log::log(Verbosity::debug, "[Emptiness check denotation] Accepting runs\n{}.", fmt::join(emptinessCheckDenotationResult.acceptingRuns, "\n\n"));
+        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Started.");
+        EmptinessCheckDenotationResult emptinessCheckDenotationResult { emptinessCheckDenotationSearch(m_polyhedralSynchronousProduct) };
+        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Completed. Elapsed time: {} s.", emptinessCheckDenotationResult.elapsedTimeInSeconds);
+        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Total accepting runs: {}.", emptinessCheckDenotationResult.totalAcceptingRuns);
+        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Total collected initial states: {}.", emptinessCheckDenotationResult.initialStates.size());
+        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Collected initial states: {}.", fmt::join(emptinessCheckDenotationResult.initialStates, ", "));
+        Log::log(Verbosity::debug, "[Emptiness check denotation search] Accepting runs\n{}.", fmt::join(emptinessCheckDenotationResult.acceptingRuns, "\n\n"));
         return emptinessCheckDenotationResult.result;
     }
 };

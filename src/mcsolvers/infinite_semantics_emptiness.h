@@ -33,20 +33,24 @@ static spot::emptiness_check_ptr emptinessCheckAlgorithm(
 struct EmptinessCheckDenotationResult
 {
     std::vector<spot::twa_run> acceptingRuns {};
+    std::set<unsigned> initialStates {};
     int totalAcceptingRuns { 0 };
     bool isEmpty {};
     PowersetSharedPtr result {};
+    double elapsedTimeInSeconds {};
 };
 
-inline EmptinessCheckDenotationResult explicitSe05Search(
+inline EmptinessCheckDenotationResult emptinessCheckDenotationSearch(
     PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton,
     const EmptinessCheckAlgorithm algorithm = EmptinessCheckAlgorithm::magic
 )
 {
+    Timer timer {};
     PowersetSharedPtr result { std::make_shared<Powerset>(synchronousProductAutomaton->spaceDimension(), PPL::EMPTY) };
     spot::emptiness_check_ptr emptinessCheckSearch { emptinessCheckAlgorithm(algorithm, synchronousProductAutomaton->twa()) };
 
     std::vector<spot::twa_run> acceptingRuns {};
+    std::set<unsigned> initialStates {};
     spot::emptiness_check_result_ptr emptinessCheckResult { emptinessCheckSearch->check() };
     while (emptinessCheckResult != nullptr)
     {
@@ -58,6 +62,7 @@ inline EmptinessCheckDenotationResult explicitSe05Search(
 
         const spot::state* initialState { prefixStepIterator->s };
         const unsigned initialStateNumber { synchronousProductAutomaton->twa()->state_number(initialState) };
+        initialStates.insert(initialStateNumber);
         assert(synchronousProductAutomaton->isInitialState(initialStateNumber));
 
         PowersetConstSharedPtr initialStatePoints { synchronousProductAutomaton->points(initialStateNumber) };
@@ -66,5 +71,5 @@ inline EmptinessCheckDenotationResult explicitSe05Search(
         emptinessCheckResult = emptinessCheckSearch->check();
     }
 
-    return { acceptingRuns, static_cast<int>(acceptingRuns.size()), acceptingRuns.size() == 0, result };
+    return { acceptingRuns, initialStates, static_cast<int>(acceptingRuns.size()), acceptingRuns.size() == 0, result, timer.elapsedInSeconds() };
 }
