@@ -334,6 +334,11 @@ void PolyhedralSystem::setConstraintOutputMinimized(const bool minimize)
     m_minimizeConstraintsOutput = minimize;
 }
 
+void PolyhedralSystem::setOutputExtraInformation(const bool value)
+{
+    m_outputExtraInformation = value;
+}
+
 spot::bdd_dict_ptr PolyhedralSystem::bddDict() const
 {
     return m_bddDict;
@@ -489,17 +494,25 @@ std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralS
     out << "Inv " << PPLOutput::toString(polyhedralSystem.invariant(), symbolTable, minimizeConstraints) << '\n';
     out << "Flow " << PPLOutput::toString(polyhedralSystem.flow(), symbolTable, minimizeConstraints) << '\n';
 
+    bool first { true };
     for (const auto& atom: symbolTable.atoms())
     {
+        if (!first) out << std::endl;
+        first = false;
         const AtomInterpretation* atomInterpretation { *polyhedralSystem.getAtomInterpretation(atom) };
-        out << atom << " " << PPLOutput::toString(atomInterpretation->interpretation(), symbolTable, minimizeConstraints) << '\n';
+        out << atom << " " << PPLOutput::toString(atomInterpretation->interpretation(), symbolTable, minimizeConstraints);
+    }
+
+    if (!polyhedralSystem.m_outputExtraInformation)
+    {
+        return out;
     }
 
     out << "Total atomic propositions: " << polyhedralSystem.totalAtoms() << ".\n";
     out << "PreFlow: " << PPLOutput::toString(polyhedralSystem.preFlow(), polyhedralSystem.symbolTable()) << '\n';
 
     out << "Space dimension: " << polyhedralSystem.spaceDimension() << ".\n";
-    bool first { true };
+    first = true;
     out << "Variables: [";
     for (PPL::dimension_type dim = 0; dim < polyhedralSystem.spaceDimension(); ++dim)
     {

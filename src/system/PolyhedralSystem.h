@@ -230,6 +230,14 @@ public:
     void setConstraintOutputMinimized(bool minimize);
 
     /*!
+     * \brief Determines whether the \c PolyhedralSystem output should include additional details.
+     * \param value If `false`, limits the output to essential, standard-compliant elements (system specification).
+     *              If `true`, allows the inclusion of supplementary information that
+     *              might not adhere to the standard.
+     */
+    void setOutputExtraInformation(bool value);
+
+    /*!
      * \brief Creates a builder for constructing \ref PolyhedralSystem objects.
      * \return A \ref PolyhedralSystemBuilder instance.
      */
@@ -267,6 +275,7 @@ protected:
     std::unordered_map<spot::formula, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
     bool m_minimizeConstraintsOutput { false };
+    bool m_outputExtraInformation { true };
 
     /*!
      * \brief Constructs a polyhedral system with the given invariant, flow, denotation, and symbol table.

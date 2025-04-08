@@ -99,6 +99,7 @@ package system {
         +getAtomInterpretation(std::string_view atom) : std::optional<const AtomInterpretation* const>
         +getAtomInterpretation(const spot::formula& atom) : std::optional<const AtomInterpretation* const>
         +setConstraintOutputMinimized(bool) : void
+        +setOutputExtraInformation(bool) : void
         +atoms() : spot::atomic_prop_set&
         +bddDict() : spot::bdd_dict_ptr
         +getOrGenerateObservables(bool filterEmptyObservables = true) : const std::vector<Observable>&
