@@ -8,6 +8,7 @@
 PolyhedralSystem gap(
     unsigned totalTanks,
     bool includeClock = true,
+    unsigned gapThickness = 1,
     ClosedInterval<int> inPumpInterval = { 1, 2 },
     ClosedInterval<int> transferPumpInterval = { 1, 2 },
     ClosedInterval<int> outPumpInterval = { 0, 3 }

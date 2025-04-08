@@ -6,11 +6,17 @@
 PolyhedralSystem gap(
     const unsigned totalTanks,
     bool includeClock,
+    unsigned gapThickness,
     const ClosedInterval<int> inPumpInterval,
     const ClosedInterval<int> transferPumpInterval,
     const ClosedInterval<int> outPumpInterval
 )
 {
+    if (gapThickness < 1)
+    {
+        throw std::invalid_argument("Gap thickness must be at least 1!");
+    }
+
     Poly flow { tankExperimentFlow(totalTanks, includeClock, inPumpInterval, transferPumpInterval, outPumpInterval) };
 
     PPL::dimension_type spaceDimension { includeClock ? totalTanks + 1 : totalTanks };
@@ -38,8 +44,8 @@ PolyhedralSystem gap(
         .flow(flow)
         .invariant(invariant)
         .denotation({
-            { ap("p"), PPLUtils::powerset({{ lastTankVariable >= firstTankVariable + 1 }}, spaceDimension) },
-            { ap("q"), PPLUtils::powerset({{ firstTankVariable >= lastTankVariable + 1 }}, spaceDimension) }
+            { ap("p"), PPLUtils::powerset({{ lastTankVariable >= firstTankVariable + gapThickness }}, spaceDimension) },
+            { ap("q"), PPLUtils::powerset({{ firstTankVariable >= lastTankVariable + gapThickness }}, spaceDimension) }
         }).symbolTable(symbolTable)
         .build();
 }

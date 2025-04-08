@@ -5,10 +5,14 @@
 #define RTL_MC_VERSION "0.0.0"
 #endif
 
-
 int main(const int argc, char *argv[])
 {
-    PolyhedralSystem polyhedralSystem { gap(2) };
+    SysGenProgram sysGenProgram { argc, argv, RTL_MC_VERSION };
+    unsigned totalTanks { sysGenProgram.totalTanks() };
+    PolyhedralSystem polyhedralSystem { gap(totalTanks, sysGenProgram.includeClock(), sysGenProgram.gapThickness()) };
+
+    polyhedralSystem.setOutputExtraInformation(false);
     std::cout << polyhedralSystem << std::endl;
+
     return 0;
 }
