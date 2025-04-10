@@ -55,7 +55,13 @@ bool PolyhedralSystem::isMovementForced() const
 
 bool PolyhedralSystem::hasFlowWithClosedCone() const
 {
-    return m_hasFlowWithClosedCone;
+    if (!m_hasFlowWithClosedCone.has_value())
+    {
+        PowersetUniquePtr flowCone { coneGeometric(m_flow) };
+        m_hasFlowWithClosedCone = isClosed(*flowCone);
+    }
+
+    return *m_hasFlowWithClosedCone;
 }
 
 const Powerset& PolyhedralSystem::invariant() const
@@ -298,9 +304,6 @@ void PolyhedralSystem::computePreFlow()
 void PolyhedralSystem::evaluateFlowProperties()
 {
     m_hasOmnidirectionalFlow = isOmnidirectionalFlow(m_flow);
-
-    PowersetUniquePtr flowCone { coneGeometric(m_flow) };
-    m_hasFlowWithClosedCone = isClosed(*flowCone);
 
     Poly zeroPoint { PPLUtils::zeroPoint(spaceDimension()) };
     Poly closureFlow { m_flow };

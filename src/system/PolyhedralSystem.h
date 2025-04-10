@@ -98,6 +98,8 @@ public:
     /*!
      * \brief Checks if the cone of the flow is closed.
      * \return `true` if the cone of the flow is closed, `false` otherwise.
+     * \note The result is computed lazily and cached. The first call may be expensive
+     *       for large flows, but subsequent calls are fast.
      * \see coneGeometric
      * \see coneGenerator
      */
@@ -266,7 +268,7 @@ protected:
     Powerset m_invariant { 0, PPL::EMPTY };
     Poly m_flow { 0, PPL::EMPTY };
     bool m_hasOmnidirectionalFlow { false };
-    bool m_hasFlowWithClosedCone { false };
+    mutable std::optional<bool> m_hasFlowWithClosedCone { false };
     bool m_isMovementForced { false };
     Poly m_preFlow { 0, PPL::EMPTY };
     std::optional<std::vector<Observable>> m_observables {};
@@ -274,7 +276,7 @@ protected:
     spot::bdd_dict_ptr m_bddDict {};
     std::unordered_map<spot::formula, AtomInterpretation> m_denotation {};
     PolyhedralSystemSymbolTable m_symbolTable {};
-    bool m_minimizeConstraintsOutput { false };
+    bool m_minimizeConstraintsOutput { true };
     bool m_outputExtraInformation { true };
 
     /*!

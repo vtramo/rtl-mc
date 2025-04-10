@@ -514,10 +514,6 @@ public:
     {
     }
 private:
-    void processState(const unsigned state) override
-    {
-    }
-
     void processEdge(const unsigned src, const unsigned dst) override
     {
         INFO("Edge (" << src << ", " << dst << ")");

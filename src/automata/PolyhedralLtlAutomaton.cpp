@@ -213,7 +213,7 @@ void PolyhedralLtlAutomaton::buildAutomaton(const spot::const_twa_graph_ptr& twa
     postprocessAutomaton();
 }
 
-bool PolyhedralLtlAutomaton::filterEdge(const spot::const_twa_graph_ptr& graph, const Edge& edge)
+bool PolyhedralLtlAutomaton::filterEdge([[maybe_unused]] const spot::const_twa_graph_ptr& graph, const Edge& edge)
 {
     return edge.cond == bdd_false();
 }
