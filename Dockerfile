@@ -11,20 +11,20 @@ ARG ANTLR4_VERSION
 ARG SPOT_VERSION
 
 RUN apt update
-RUN apt install -y cmake=3.28.3-1build7
-RUN apt install -y make=4.3-4.1build2
-RUN apt install -y wget=1.21.4-1ubuntu4.1
-RUN apt install -y pkg-config=1.8.1-2build1
-RUN apt install -y libgmpxx4ldbl=2:6.3.0+dfsg-2ubuntu6
-RUN apt install -y libgmp-dev=2:6.3.0+dfsg-2ubuntu6
-RUN apt install -y libgmp3-dev=2:6.3.0+dfsg-2ubuntu6
-RUN apt install -y m4=1.4.19-4build1
-RUN apt install -y unzip=6.0-28ubuntu4.1
+RUN apt install -y cmake
+RUN apt install -y make
+RUN apt install -y wget
+RUN apt install -y pkg-config
+RUN apt install -y libgmpxx4ldbl
+RUN apt install -y libgmp-dev
+RUN apt install -y libgmp3-dev
+RUN apt install -y m4
+RUN apt install -y unzip
 RUN apt install -y git
 RUN apt install -y g++
-RUN apt install -y libtool=2.4.7-7build1
-RUN apt install -y autoconf=2.71-3
-RUN apt install -y automake=1:1.16.5-1.3ubuntu1
+RUN apt install -y libtool
+RUN apt install -y autoconf
+RUN apt install -y automake
 
 # Install PPL dev (thread-safe, sspeed)
 RUN git clone https://github.com/BUGSENG/PPL.git
@@ -129,5 +129,6 @@ COPY --from=compile-release /libs /libs
 RUN LIB_PATH_DIR=$(cat /lib-path-dir.txt) && mkdir -p ${LIB_PATH_DIR} && mv /libs/* ${LIB_PATH_DIR}
 COPY --from=compile-release /project/buildDir/src/rtl-mc /usr/local/bin
 COPY --from=compile-release /project/buildDir/tools/rtl-gen/src/rtl-gen /usr/local/bin
+COPY --from=compile-release /project/buildDir/tools/sys-gen/src/sys-gen /usr/local/bin
 
 ENTRYPOINT ["/bin/bash", "-c"]
