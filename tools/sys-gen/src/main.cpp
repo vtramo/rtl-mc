@@ -11,6 +11,7 @@ int main(const int argc, char *argv[])
     unsigned totalTanks { sysGenProgram.totalTanks() };
     PolyhedralSystem polyhedralSystem { gap(totalTanks, sysGenProgram.includeClock(), sysGenProgram.gapThickness()) };
 
+    polyhedralSystem.setConstraintOutputMinimized(false);
     polyhedralSystem.setOutputExtraInformation(false);
     std::cout << polyhedralSystem << std::endl;
 
