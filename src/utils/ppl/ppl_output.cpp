@@ -60,11 +60,13 @@ namespace PPLOutput
     {
         std::string result{};
 
-        if (poly.is_empty())
+        const PPL::Constraint_System& constraints { minimizeConstraints ? poly.minimized_constraints() : poly.constraints() };
+        if (constraints.empty())
+        {
             result += "{ }";
+        }
         else
         {
-            const PPL::Constraint_System& constraints { minimizeConstraints ? poly.minimized_constraints() : poly.constraints() };
             result += "{ " + toString(constraints, symbolTable) + " }";
         }
 
