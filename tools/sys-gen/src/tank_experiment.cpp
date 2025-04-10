@@ -3,10 +3,21 @@
 #include "formula.h"
 #include "ppl_utils.h"
 
+/**
+ * This system models a set of tanks connected in sequence, with atomic propositions `p` and `q`
+ * indicating whether the sum of odd-indexed tanks is greater than the sum of even-indexed tanks (plus a gap),
+ * and vice versa. If `maxTime > 0`, a clock variable `t` with derivative 1 is included along with two atomic
+ * propositions:
+ *
+ * - `t0` ≡ { t = 0 }
+ * - `t1` ≡ { t ≤ maxTime }
+ *
+ * These propositions can be used in RTL formulas to express timing constraints. Setting `maxTime = 0` disables the clock (default).
+ */
 PolyhedralSystem gap(
     const unsigned totalTanks,
-    bool includeClock,
-    unsigned gapThickness,
+    const unsigned gapThickness,
+    const unsigned maxTime,
     const ClosedInterval<int> inPumpInterval,
     const ClosedInterval<int> transferPumpInterval,
     const ClosedInterval<int> outPumpInterval
@@ -17,39 +28,56 @@ PolyhedralSystem gap(
         throw std::invalid_argument("Gap thickness must be at least 1!");
     }
 
+    const bool includeClock { maxTime != 0 };
     Poly flow { tankExperimentFlow(totalTanks, includeClock, inPumpInterval, transferPumpInterval, outPumpInterval) };
 
-    PPL::dimension_type spaceDimension { includeClock ? totalTanks + 1 : totalTanks };
+    PPL::dimension_type spaceDimension { maxTime ? totalTanks + 1 : totalTanks };
     PPL::Constraint_System constraintSystemInvariant {};
     constraintSystemInvariant.set_space_dimension(spaceDimension);
     PolyhedralSystemSymbolTable symbolTable {};
     char variableName { 'a' };
+    PPL::Linear_Expression evenTankVariablesSum {};
+    PPL::Linear_Expression oddTankVariablesSum {};
     for (unsigned i { 0 }; i < totalTanks; ++i)
     {
-        constraintSystemInvariant.insert(PPL::Variable { i } >= 0);
-        symbolTable.addVariable(std::string { 1, variableName });
-        ++variableName;
-    }
-    Powerset invariant { Poly { constraintSystemInvariant }};
-    if (includeClock)
-    {
-        symbolTable.addVariable("t");
+        PPL::Variable tankVariable { i };
+        constraintSystemInvariant.insert(tankVariable >= 0);
+        symbolTable.addVariable(std::string { variableName++ });
+        if (i % 2 == 0) evenTankVariablesSum += tankVariable;
+        else oddTankVariablesSum += tankVariable;
     }
 
     symbolTable.addAtom("p");
     symbolTable.addAtom("q");
-    PPL::Variable firstTankVariable { 0 };
-    PPL::Variable lastTankVariable { totalTanks - 1 };
+    std::unordered_map<spot::formula, Powerset> denotation {
+        {
+            { ap("p"), PPLUtils::powerset({{ oddTankVariablesSum >= evenTankVariablesSum + gapThickness }}, spaceDimension) },
+            { ap("q"), PPLUtils::powerset({{ evenTankVariablesSum >= oddTankVariablesSum + gapThickness }}, spaceDimension) },
+        }
+    };
+
+    if (includeClock)
+    {
+        PPL::Variable t { totalTanks };
+        symbolTable.addVariable("t");
+        symbolTable.addAtoms({ "t0", "t1" });
+        denotation.insert({ ap("t0"), PPLUtils::powerset({{ t == 0 }}, spaceDimension) });
+        denotation.insert({ ap("t1"), PPLUtils::powerset({{ t <= maxTime }}, spaceDimension) });
+    }
+    Powerset invariant { Poly { constraintSystemInvariant }};
     return PolyhedralSystem::builder()
         .flow(flow)
         .invariant(invariant)
-        .denotation({
-            { ap("p"), PPLUtils::powerset({{ lastTankVariable >= firstTankVariable + gapThickness }}, spaceDimension) },
-            { ap("q"), PPLUtils::powerset({{ firstTankVariable >= lastTankVariable + gapThickness }}, spaceDimension) }
-        }).symbolTable(symbolTable)
+        .denotation(denotation)
+        .symbolTable(symbolTable)
         .build();
 }
 
+/**
+ * Each tank contributes a set of constraints based on its input and output pump intervals. Additional window-based
+ * constraints are added to model the conservation of flow across contiguous subchains of tanks. Optionally includes
+ * a clock variable `t` with constant derivative 1 if `includeClock` is true.
+ */
 Poly tankExperimentFlow(
     const unsigned totalTanks,
     bool includeClock,

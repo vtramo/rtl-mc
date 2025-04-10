@@ -14,7 +14,7 @@ public:
         }
 
     [[nodiscard]] unsigned totalTanks() const { return m_totalTanks; }
-    [[nodiscard]] bool includeClock() const { return m_includeClock; }
+    [[nodiscard]] bool maxTime() const { return m_maxTime; }
     [[nodiscard]] unsigned gapThickness() const { return m_gapThickness; }
 private:
     static const inline std::string s_gapSubcommandName { "gap" };
@@ -23,7 +23,7 @@ private:
     argparse::ArgumentParser m_gapSubcommand{ s_gapSubcommandName };
     unsigned m_totalTanks { 2 };
     unsigned m_gapThickness { 1 };
-    bool m_includeClock {};
+    unsigned m_maxTime { 0 };
 
     void buildRtlGenProgram()
     {
@@ -48,11 +48,18 @@ private:
             .default_value(2u)
             .scan<'u', unsigned>();
 
-        m_gapSubcommand.add_argument("-c", "--clock")
-            .help("Include a clock t")
-            .default_value(false)
-            .flag()
-            .store_into(m_includeClock);
+        m_gapSubcommand.add_argument("-m", "--max-time")
+            .help(
+                "Includes a clock t with derivative 1 and two atomic propositions:\n"
+                "t0 { t = 0 }\n"
+                "t1 { t <= [max-time] }\n"
+                "These propositions define a time window and can be used in RTL\n"
+                "formulae to express temporal constraints. A value of 0 disables\n"
+                "this feature (default)."
+            )
+            .nargs(1)
+            .default_value(0u)
+            .scan<'u', unsigned>();
 
         m_gapSubcommand.add_argument("-g", "--thickness")
             .help("Gap thickness")
@@ -82,6 +89,8 @@ private:
                 {
                     throw std::invalid_argument("Gap thickness must be at least 1!");
                 }
+
+                m_maxTime = m_gapSubcommand.get<unsigned>("-m");
             }
             else
             {

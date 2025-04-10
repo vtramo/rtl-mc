@@ -9,7 +9,7 @@ int main(const int argc, char *argv[])
 {
     SysGenProgram sysGenProgram { argc, argv, RTL_MC_VERSION };
     unsigned totalTanks { sysGenProgram.totalTanks() };
-    PolyhedralSystem polyhedralSystem { gap(totalTanks, sysGenProgram.includeClock(), sysGenProgram.gapThickness()) };
+    PolyhedralSystem polyhedralSystem { gap(totalTanks, sysGenProgram.gapThickness(), sysGenProgram.maxTime()) };
 
     polyhedralSystem.setConstraintOutputMinimized(false);
     polyhedralSystem.setOutputExtraInformation(false);
