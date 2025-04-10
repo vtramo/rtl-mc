@@ -8,8 +8,11 @@ project('rtl-mc', 'cpp',
     'b_sanitize=none' # https://github.com/google/sanitizers
   ])
 
+link_args = []
 if get_option('enable_profiling') == true
+  add_global_arguments('-no-pie', language : 'cpp')
   add_global_arguments('-pg', language : 'cpp')
+  link_args = ['-pg', '-no-pie']
 endif
 
 src_dir = 'src'

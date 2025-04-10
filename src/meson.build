@@ -44,11 +44,6 @@ subdir('logger')
 subdir('stats')
 subdir('formula')
 
-link_args = []
-if get_option('enable_profiling') == true
-    link_args += ['-pg']
-endif
-
 rtl_mc_static_library = static_library(
     'rtl-mc',
     project_source_files,
