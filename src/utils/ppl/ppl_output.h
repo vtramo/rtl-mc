@@ -12,6 +12,12 @@
  */
 namespace PPLOutput
 {
+    const inline std::string g_defaultAndConstraints { "&" };
+    inline std::string g_andConstraints { g_defaultAndConstraints };
+    inline bool g_wrapConstraintInRoundBrackets { false };
+    const inline std::string g_defaultGeqSign { ">=" };
+    inline std::string g_geqSign { g_defaultGeqSign };
+
     /*!
      * \brief Converts a `Powerset` of polyhedra into a human-readable string representation.
      * \param powerset The `Powerset` object to convert.
@@ -20,6 +26,15 @@ namespace PPLOutput
      * \return A string representation of the `Powerset`.
      */
     std::string toString(const Powerset& powerset, const PolyhedralSystemSymbolTable& symbolTable, bool minimizeConstraints = true);
+
+    /*!
+     * \brief Converts a `Powerset` of polyhedra into a human-readable string representation.
+     * \param powerset The `Powerset` object to convert.
+     * \param symbolTable The symbol table used to map PPL variable names to user-defined names.
+     * \param minimizeConstraints If `true`, the constraints are minimized before conversion.
+     * \return A string representation of the `Powerset`.
+     */
+    std::string toString(const Powerset& powerset, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable, bool minimizeConstraints = true);
 
     /*!
      * \brief Converts a `Poly` (polyhedron) into a human-readable string representation.
@@ -31,12 +46,21 @@ namespace PPLOutput
     std::string toString(const Poly& poly, const PolyhedralSystemSymbolTable& symbolTable, bool minimizeConstraints = true);
 
     /*!
+     * \brief Converts a `Poly` (polyhedron) into a human-readable string representation.
+     * \param poly The `Poly` object to convert.
+     * \param symbolTable The symbol table used to map PPL variable names to user-defined names.
+     * \param minimizeConstraints If `true`, the constraints are minimized before conversion.
+     * \return A string representation of the `Poly`.
+     */
+    std::string toString(const Poly& poly, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable, bool minimizeConstraints = true);
+
+    /*!
      * \brief Converts a `Constraint_System` into a human-readable string representation.
      * \param system The `Constraint_System` object to convert.
      * \param symbolTable The symbol table used to map PPL variable names to user-defined names.
      * \return A string representation of the `Constraint_System`.
      */
-    std::string toString(const PPL::Constraint_System& system, const PolyhedralSystemSymbolTable& symbolTable);
+    std::string toString(const PPL::Constraint_System& system, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable);
 
     /*!
      * \brief Converts a single `Constraint` into a human-readable string representation.
@@ -44,7 +68,7 @@ namespace PPLOutput
      * \param symbolTable The symbol table used to map PPL variable names to user-defined names.
      * \return A string representation of the `Constraint`.
      */
-    std::string toString(const PPL::Constraint& constraint, const PolyhedralSystemSymbolTable& symbolTable);
+    std::string toString(const PPL::Constraint& constraint, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable);
 
     /*!
      * \brief Converts a `Constraint::Type` into a human-readable string representation.
@@ -66,5 +90,5 @@ namespace PPLOutput
      * \param symbolTable The symbol table used to map PPL variable names to user-defined names.
      * \return A string representation of the `Variable`.
      */
-    std::string toString(const PPL::Variable& variable, const PolyhedralSystemSymbolTable& symbolTable);
+    std::string toString(const PPL::Variable& variable, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable);
 }

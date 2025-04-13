@@ -18,11 +18,21 @@ PPL_U(T)& PPL_U(id) = holder_ ## id.item()
 
 namespace PPLOutput
 {
+
     /*!
      * This function takes a `Powerset` object and converts it into a string. The output includes the constraints of each polyhedron
      * in the powerset, using the variable names defined in the `PolyhedralSystemSymbolTable`.
      */
     std::string toString(const Powerset& powerset, const PolyhedralSystemSymbolTable& symbolTable, const bool minimizeConstraints)
+    {
+        return toString(powerset, symbolTable.getVariableNameBySpaceDimension(), minimizeConstraints);
+    }
+
+    /*!
+     * This function takes a `Powerset` object and converts it into a string. The output includes the constraints of each polyhedron
+     * in the powerset, using the variable names defined in the `symbolTable`.
+     */
+    std::string toString(const Powerset& powerset, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable, const bool minimizeConstraints)
     {
         std::string result{};
 
@@ -58,6 +68,15 @@ namespace PPLOutput
      */
     std::string toString(const Poly& poly, const PolyhedralSystemSymbolTable& symbolTable, const bool minimizeConstraints)
     {
+        return toString(poly, symbolTable.getVariableNameBySpaceDimension(), minimizeConstraints);
+    }
+
+    /*!
+     * This function takes a `Poly` object and converts it into a string. The output includes the constraints of the polyhedron,
+     * using the variable names defined in the `PolyhedralSystemSymbolTable`.
+     */
+    std::string toString(const Poly& poly, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable, const bool minimizeConstraints)
+    {
         std::string result{};
 
         const PPL::Constraint_System& constraints { minimizeConstraints ? poly.minimized_constraints() : poly.constraints() };
@@ -77,7 +96,7 @@ namespace PPLOutput
      * This function takes a `Constraint_System` object and converts it into a string. The output includes all constraints in the system,
      * using the variable names defined in the `PolyhedralSystemSymbolTable`.
      */
-    std::string toString(const PPL::Constraint_System& system, const PolyhedralSystemSymbolTable& symbolTable)
+    std::string toString(const PPL::Constraint_System& system, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable)
     {
         std::string result{};
         PPL::Constraint_System_const_iterator constraintIterator { system.begin() };
@@ -91,11 +110,13 @@ namespace PPLOutput
         {
             while (constraintIterator != end)
             {
+                if (g_wrapConstraintInRoundBrackets) result += "(";
                 result += toString(*constraintIterator, symbolTable);
+                if (g_wrapConstraintInRoundBrackets) result += ")";
 
                 if (++constraintIterator != end)
                 {
-                    result += " & ";
+                    result += " " + g_andConstraints + " ";
                 }
             }
         }
@@ -107,7 +128,7 @@ namespace PPLOutput
      * This function takes a `Constraint` object and converts it into a string using the variable names
      * defined in the `PolyhedralSystemSymbolTable`.
      */
-    std::string toString(const PPL::Constraint& constraint, const PolyhedralSystemSymbolTable& symbolTable)
+    std::string toString(const PPL::Constraint& constraint, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable)
     {
         std::string result{};
 
@@ -161,7 +182,7 @@ namespace PPLOutput
             relation_symbol = " = ";
             break;
         case PPL::Constraint::NONSTRICT_INEQUALITY:
-            relation_symbol = " >= ";
+            relation_symbol = (" " + g_geqSign + " ").c_str();
             break;
         case PPL::Constraint::STRICT_INEQUALITY:
             relation_symbol = " > ";
@@ -209,16 +230,16 @@ namespace PPLOutput
      * This function takes a `Variable` object and converts it into a string. The output uses the variable name defined in the
      * `PolyhedralSystemSymbolTable`. If no name is defined, it generates a default name based on the variable's ID.
      */
-    std::string toString(const PPL::Variable& variable, const PolyhedralSystemSymbolTable& symbolTable)
+    std::string toString(const PPL::Variable& variable, const std::unordered_map<PPL::dimension_type, std::string>& symbolTable)
     {
         std::string result {};
 
         static constexpr char varNameLetters[] { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
         constexpr PPL::dimension_type numLetters { sizeof(varNameLetters) - 1 };
 
-        if (const auto variableName { symbolTable.getVariableName(variable) })
+        if (symbolTable.count(variable.space_dimension()))
         {
-            result += *variableName;
+            result += symbolTable.at(variable.space_dimension());
         }
         else
         {
