@@ -110,7 +110,7 @@ RUN meson setup  \
     -Dgenerate_parser=true  \
     -Denable_profiling=false  \
     buildDir
-RUN meson compile -C buildDir -v
+RUN meson install -C buildDir
 
 RUN echo "/usr/lib/$(gcc -dumpmachine)" > /lib-path-dir.txt
 RUN mkdir -p /libs
@@ -120,6 +120,8 @@ RUN find / -regextype posix-extended -regex ".*/lib/.*libantlr4-runtime\.(a|so).
 RUN find / -regextype posix-extended -regex ".*/lib/.*libgmp.*\.(a|so).*" -exec mv {} /libs/ \;
 RUN find / -regextype posix-extended -regex ".*/lib/.*libgmpxx\.(a|so)\.*" -exec mv {} /libs/ \;
 RUN find / -regextype posix-extended -regex ".*/lib/.*libbddx\.(a|so).*" -exec mv {} /libs/ \;
+RUN find / -regextype posix-extended -regex ".*/lib/.*libtinyxml2\.(a|so).*" -exec mv {} /libs/ \;
+RUN find / -regextype posix-extended -regex ".*/lib/.*libminizip\.(a|so).*" -exec mv {} /libs/ \;
 
 
 FROM ubuntu:${UBUNTU_VERSION}
@@ -130,5 +132,6 @@ RUN LIB_PATH_DIR=$(cat /lib-path-dir.txt) && mkdir -p ${LIB_PATH_DIR} && mv /lib
 COPY --from=compile-release /project/buildDir/src/rtl-mc /usr/local/bin
 COPY --from=compile-release /project/buildDir/tools/rtl-gen/src/rtl-gen /usr/local/bin
 COPY --from=compile-release /project/buildDir/tools/sys-gen/src/sys-gen /usr/local/bin
+COPY --from=compile-release /project/buildDir/tools/poly-ggb/src/poly-ggb /usr/local/bin
 
 ENTRYPOINT ["/bin/bash", "-c"]
