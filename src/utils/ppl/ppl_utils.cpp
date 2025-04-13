@@ -26,6 +26,14 @@ std::hash<Parma_Polyhedra_Library::Pointset_Powerset<Parma_Polyhedra_Library::NN
     return powerset.hash_code();
 }
 
+std::size_t std::hash<Parma_Polyhedra_Library::Variable>::operator()
+(
+    const PPL::Variable& variable
+) const noexcept
+{
+    return variable.space_dimension();
+}
+
 /*!
  * The `PPLUtils` namespace contains functions for converting PPL objects to strings, performing operations
  * such as intersection, complement, and fusion on convex polyhedra and powersets, and creating specific types of

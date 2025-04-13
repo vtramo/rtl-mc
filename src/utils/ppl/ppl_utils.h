@@ -33,6 +33,26 @@ template<> struct std::hash<PPL::Pointset_Powerset<Poly>>
     std::size_t operator() (const PPL::Pointset_Powerset<Poly>& powerset) const noexcept;
 };
 
+
+/*!
+ * \brief Specialization of `std::hash` for the `PPL::Variable` type.
+ */
+template<> struct std::hash<PPL::Variable>
+{
+    /*!
+     * \brief Computes the hash value for a `PPL::Variable` object.
+     * \param variable The `PPL::Variable` object to hash.
+     * \return A `std::size_t` value representing the hash of the variable.
+     */
+    std::size_t operator() (const PPL::Variable& variable) const noexcept;
+};
+
+struct PPLVariableEqualTo {
+    bool operator()(const PPL::Variable& lhs, const PPL::Variable& rhs) const {
+        return lhs.id() == rhs.id();
+    }
+};
+
 /*!
  *  \brief A namespace providing utility functions for working with Parma Polyhedra Library (PPL) objects.
  */
