@@ -36,12 +36,30 @@ EOF
     echo "$polyhedralSystem"
 }
 
+source ./../geogebra-path.sh
+
+pdfs=()
 semantics=${1:-"fin"}
 gap=${2:-1}
 max=${3:-10}
 rtl_formula=${4:-"t0 & G(t1) & F(p & F(q))"}
-distance=0
+
 for ((distance = 0 ; distance <= max ; distance++)); do
   polyhedralSystem=$(build_polyhedral_system "$gap" "$distance")
-  rtl-mc --semantics "${semantics}" -ss "${polyhedralSystem}" -fs "${rtl_formula}" --high || usage
+  result=$(rtl-mc --semantics "${semantics}" -ss "${polyhedralSystem}" -fs "${rtl_formula}" --high || usage)
+  polyhedraSpec=$(cat << EOF
+p { a >= b + $gap & b >= 0 } 0x800000
+q { b >= a + $gap & a >= 0 } 0x0099CC
+r $result 0xCCFF66
+EOF
+  )
+
+  geogebra_file="${0::-3}-distance-$semantics-$distance"
+  echo "$polyhedraSpec" | poly-ggb -O "$geogebra_file" -x "a" -y "b"
+  save_geogebra_file_as_pdf "$geogebra_file"
+  rm -rf "$geogebra_file.ggb"
+  pdfs+=("$geogebra_file.pdf")
 done
+
+qpdf --empty --pages "${pdfs[@]}" -- "${0::-3}-$semantics-$gap-$max-($rtl_formula).pdf" 2>/dev/null
+rm -f "${pdfs[@]}"
