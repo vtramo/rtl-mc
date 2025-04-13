@@ -165,6 +165,7 @@ package system {
         +containsAtom(std::string_view atom) : bool
         +containsVariable(std::string_view id) : bool
         +getTotalAtoms() : int
+        +getVariableNameBySpaceDimension() : std::unordered_map<PPL::dimension_type, std::string>
         +atoms() : const spot::atomic_prop_set&
         +getVariable(std::string_view id) : std::optional<PPL::Variable>
         +getVariableName(const PPL::Variable& variable) : std::optional<std::string>

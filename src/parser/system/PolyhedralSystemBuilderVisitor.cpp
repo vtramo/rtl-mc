@@ -90,8 +90,10 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomPoly(
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty(PolyhedralSystemParser::AtomEmptyContext* ctx)
 {
     const std::string atomId { ctx->VARID()->getText() };
-    if (containsAtom(atomId)){}
+    if (containsAtom(atomId))
+    {
         addDuplicateAtomParserError(ctx->VARID());
+    }
 
     auto bottomPowerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
     m_denotation[ap(atomId)] = *bottomPowerset;

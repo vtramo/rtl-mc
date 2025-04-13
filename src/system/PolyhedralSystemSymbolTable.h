@@ -119,6 +119,15 @@ public:
      */
     [[nodiscard]] int getTotalAtoms() const;
 
+    /*!
+     * \brief Returns the mapping between space dimensions and user-defined variable names.
+     * \return An unordered map that associates each space dimension with a corresponding variable name.
+     */
+    [[nodiscard]] std::unordered_map<PPL::dimension_type, std::string> getVariableNameBySpaceDimension() const
+    {
+        return m_idBySpaceDimension;
+    }
+
     friend bool operator== (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2);
     friend bool operator!= (const PolyhedralSystemSymbolTable& symbolTable1, const PolyhedralSystemSymbolTable& symbolTable2);
 
