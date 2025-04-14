@@ -19,7 +19,7 @@ inline PolyUniquePtr characteristicCone(const Poly& poly)
 
     PPL::Generator_System cone {};
     for (const PPL::Generator& generator: generatorSystem)
-        if (generator.is_ray())
+        if (generator.is_ray() || generator.is_line())
             cone.insert(generator);
 
     PPL::Generator origin { PPL::point(PPLUtils::zeroPointLinearExpression(poly.space_dimension())) };
