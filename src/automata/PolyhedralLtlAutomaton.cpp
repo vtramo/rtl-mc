@@ -291,12 +291,16 @@ void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::tw
 
         const auto& [formulaWithoutSing, _] { removeSing(std::move(formula)) };
         PowersetConstSharedPtr denotation { m_polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formulaWithoutSing) };
+
         if (denotation->is_empty())
         {
             outIteraser.erase();
         }
+        else
+        {
+            ++outIteraser;
+        }
 
-        ++outIteraser;
     }
 
     Log::log(twaGraph, fmt::format("{}-erase-empty-denotation-edges", m_name));
