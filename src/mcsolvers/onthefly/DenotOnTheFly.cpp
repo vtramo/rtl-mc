@@ -4,12 +4,13 @@
 #include "Timer.h"
 #include "ppl_utils.h"
 
-PowersetUniquePtr DenotOnTheFly::run() {
+PowersetUniquePtr DenotOnTheFly::run()
+{
     m_iterations = 0;
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
-
-    for (const unsigned acceptingState: m_backwardNfa->acceptingStates()) {
+    for (const unsigned acceptingState: m_backwardNfa->acceptingStates())
+    {
         Log::log(Verbosity::trace, "\n--- Starting from accepting state: {} ---", acceptingState);
 
         const StateDenotation & acceptingStateDenotation { m_backwardNfa->stateDenotation(acceptingState) };
@@ -19,19 +20,22 @@ PowersetUniquePtr DenotOnTheFly::run() {
         PowersetConstSharedPtr denotationAcceptingState { acceptingStateDenotation.denotation() };
         PowersetUniquePtr acceptingStateResult { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
         int patchIndex { 1 };
-        for (Powerset::const_iterator patchesIt { denotationAcceptingState->begin() }; patchesIt != denotationAcceptingState->end(); ++patchesIt) {
+        for (Powerset::const_iterator patchesIt { denotationAcceptingState->begin() }; patchesIt != denotationAcceptingState->end(); ++patchesIt)
+        {
+            auto P { patchesIt->pointset() };
+
             Log::log(Verbosity::trace, "\n------ Accepting state {}, processing patch {}: {} ------\n",
-                acceptingState,
-                patchIndex,
-                PPLOutput::toString(patchesIt->pointset(), m_polyhedralSystem->symbolTable())
+                 acceptingState,
+                 patchIndex,
+                 PPLOutput::toString(P, m_polyhedralSystem->symbolTable())
             );
 
             std::vector V(m_backwardNfa->totalStates(), Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY });
             PowersetUniquePtr acceptingStatePatchResult {
                 denot(
                     acceptingState,
-                    patchesIt->pointset(),
-                    patchesIt->pointset(),
+                    P,
+                    P,
                     V,
                     0,
                     acceptingStateDenotation.isSingular()
@@ -50,6 +54,7 @@ PowersetUniquePtr DenotOnTheFly::run() {
                 acceptingState,
                 PPLOutput::toString(*acceptingStateResult, m_polyhedralSystem->symbolTable())
             );
+
             ++patchIndex;
         }
 
@@ -69,7 +74,8 @@ PowersetUniquePtr DenotOnTheFly::denot(
     std::vector<Powerset> V,
     const int recursionDepth,
     bool isSing
-) {
+)
+{
     assert(recursionDepth <= m_maxRecursionDepth && "Recursion depth exceeded!!!");
 
     m_iterations++;
@@ -98,8 +104,10 @@ PowersetUniquePtr DenotOnTheFly::denot(
     Log::log(Verbosity::trace, "P: {}", PPLOutput::toString(P, m_polyhedralSystem->symbolTable()));
     Log::log(Verbosity::trace, "X: {}\n", PPLOutput::toString(X, m_polyhedralSystem->symbolTable()));
 
-    if (m_backwardNfa->isInitialState(state)) {
-        if (stateDenotation.isSingular()) {
+    if (m_backwardNfa->isInitialState(state))
+    {
+        if (stateDenotation.isSingular())
+        {
             Log::log(Verbosity::trace, "State {} is initial and singular, returning X: {}",
                 state,
                 PPLOutput::toString(X, m_polyhedralSystem->symbolTable())
@@ -108,16 +116,13 @@ PowersetUniquePtr DenotOnTheFly::denot(
             return std::make_unique<Powerset>(X);
         }
 
-        ReachPairs reachPairs {
+        PowersetUniquePtr result {
             reachPlus(
                 Powerset { X },
-                Poly { m_polyhedralSystem->spaceDimension(), PPL::UNIVERSE },
+                Powerset { m_polyhedralSystem->spaceDimension(), PPL::UNIVERSE },
                 m_polyhedralSystem->preFlow()
             )
         };
-        PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
-        for (const auto & [Q, Y] : reachPairs)
-            result->add_disjunct(Q);
 
         Log::log(Verbosity::trace, "State {} is initial and open. Result size: {}. Returning: {}",
             state,
@@ -129,10 +134,13 @@ PowersetUniquePtr DenotOnTheFly::denot(
     }
 
     if (!stateDenotation.isSingular())
+    {
         addDisjunct(V, state, P);
+    }
 
     PowersetUniquePtr result { std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY) };
-    for (const auto & edgePredecessor: m_backwardNfa->successors(state)) {
+    for (const auto & edgePredecessor: m_backwardNfa->successors(state))
+    {
         unsigned predecessor { edgePredecessor.dst };
         const StateDenotation & predecessorStateDenotation { m_backwardNfa->stateDenotation(predecessor) };
 
@@ -153,12 +161,21 @@ PowersetUniquePtr DenotOnTheFly::denot(
 
         Powerset A { *predecessorStateDenotation.denotation() };
         for (Powerset::const_iterator it2 { predecessorVisitedPowerset.begin() }; it2 != predecessorVisitedPowerset.end(); ++it2)
+        {
             for (Powerset::iterator it1 { A.begin() }; it1 != A.end(); ++it1)
-                if (it1->pointset() == it2->pointset()) {
+            {
+                if (it1->pointset() == it2->pointset())
+                {
                     A.drop_disjunct(it1);
                     break;
                 }
-        if (A.is_empty()) continue;
+            }
+        }
+
+        if (A.is_empty())
+        {
+            continue;
+        }
 
         assert(A.space_dimension() == m_polyhedralSystem->spaceDimension());
         assert(A.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
@@ -175,7 +192,8 @@ PowersetUniquePtr DenotOnTheFly::denot(
         Log::log(Verbosity::trace, "Reach pairs computed (size: {}). Elapsed time: {} s.", reachPairs.size(), timer.elapsedInSeconds());
 
         int reachPairIndex { 1 };
-        for (const auto & [Q, Y] : reachPairs) {
+        for (const auto & [Q, Y]: reachPairs)
+        {
             Log::log(Verbosity::trace, "\nReach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
             Log::log(Verbosity::trace, "Q: {}, Y: {}",
                 PPLOutput::toString(Q, m_polyhedralSystem->symbolTable()),
@@ -217,7 +235,8 @@ PowersetUniquePtr DenotOnTheFly::denot(
     return result;
 }
 
-void DenotOnTheFly::addDisjunct(std::vector<Powerset> & V, const int state, const Poly & P) const {
+void DenotOnTheFly::addDisjunct(std::vector<Powerset> & V, const int state, const Poly & P) const
+{
     Log::log(Verbosity::trace, "State {} is not singular, adding P: {}",
         state,
         PPLOutput::toString(P, m_polyhedralSystem->symbolTable())
@@ -231,6 +250,7 @@ void DenotOnTheFly::addDisjunct(std::vector<Powerset> & V, const int state, cons
     );
 }
 
-const Powerset & DenotOnTheFly::getVisitedPowerset(std::vector<Powerset> & V, const int state) {
+const Powerset & DenotOnTheFly::getVisitedPowerset(std::vector<Powerset> & V, const int state)
+{
     return V[state];
 }
