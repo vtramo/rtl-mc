@@ -139,3 +139,13 @@ void Automaton::initialiseStats()
 {
     m_automatonStats = std::make_unique<AutomatonStats>();
 }
+
+/*
+ *  This method returns an \c AutomatonAcceptance object that defines the acceptance criteria
+ *  for the automaton. The acceptance condition specifies which states are considered accepting
+ *  in the automaton. This can vary depending on the automaton type (e.g., NFA, Buchi).
+ */
+AutomatonAcceptance Automaton::acceptance() const
+{
+    return m_automatonAcceptance;
+}

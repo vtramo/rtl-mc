@@ -141,6 +141,8 @@ public:
         return spot::formula_to_bdd(andFormulae(observableAtoms), m_automaton->get_dict(), m_automaton);
     }
 
+    [[nodiscard]] AutomatonAcceptance acceptance() const override { return AutomatonAcceptance::allStatesAreAccepting; }
+
 protected:
     PolyhedralSystemSharedPtr m_polyhedralSystem {}; ///< The \c PolyhedralSystem being abstracted
     PPL::dimension_type m_spaceDimension {}; //< Space dimension of the \c PolyhedralSystem

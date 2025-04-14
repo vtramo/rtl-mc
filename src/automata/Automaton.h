@@ -9,6 +9,7 @@
 #include <spot/twaalgos/sccinfo.hh>
 
 #include "AutomatonStats.h"
+#include "AutomatonAcceptance.h"
 
 /**
  * \class Automaton
@@ -129,6 +130,12 @@ public:
     [[nodiscard]] virtual spot::twa_graph_ptr transpose() const;
 
     /**
+     * \brief Retrieves the acceptance condition of the automaton.
+     * \return An \c AutomatonAcceptance object representing the automaton's acceptance condition.
+     */
+    [[nodiscard]] virtual AutomatonAcceptance acceptance() const;
+
+    /**
      * \brief Gets \c Automaton statistics
      * \return Const reference to collected metrics
      */
@@ -144,6 +151,7 @@ protected:
     spot::twa_graph_ptr m_automaton {}; ///< Core graph
     std::string m_name {}; ///< Descriptive identifier
     std::shared_ptr<AutomatonStats> m_automatonStats {}; ///< Analysis metrics
+    AutomatonAcceptance m_automatonAcceptance {};
 
     /**
      * \brief Initializes the \c Automaton structure

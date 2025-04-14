@@ -2,6 +2,7 @@ current_source_dir = meson.current_source_dir()
 
 automaton_source_files = [
     current_source_dir / 'Automaton.h',
+    current_source_dir / 'AutomatonAcceptance.h',
     current_source_dir / 'Automaton.cpp',
     current_source_dir / 'AutomatonOptimization.h',
     current_source_dir / 'PolyhedralLtlAutomaton.h',

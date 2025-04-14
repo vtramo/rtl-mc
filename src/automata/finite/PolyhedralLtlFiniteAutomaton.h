@@ -23,6 +23,7 @@ public:
         std::string_view name = "PolyhedralLtlFiniteAutomaton"
     );
 
+    [[nodiscard]] AutomatonAcceptance acceptance() const override { return AutomatonAcceptance::nfa; }
     [[nodiscard]] const PolyhedralLtlFiniteAutomatonStats& stats() const override;
 
 protected:

@@ -18,6 +18,8 @@ public:
         std::string_view name = "PolyhedralLtlBüchiAutomaton"
     );
 
+    [[nodiscard]] AutomatonAcceptance acceptance() const override { return AutomatonAcceptance::buchi; }
+
 protected:
     PolyhedralLtlBüchiAutomaton();
 
