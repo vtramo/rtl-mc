@@ -1,8 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
-#include <subprojects/spdlog-1.15.0/include/spdlog/fmt/bundled/format.h>
-#include <subprojects/spdlog-1.15.0/include/spdlog/fmt/bundled/ranges.h>
 
 #include "ppl_output.h"
 #include "spot_utils.h"

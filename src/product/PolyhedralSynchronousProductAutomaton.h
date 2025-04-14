@@ -27,6 +27,7 @@ public:
     [[nodiscard]] PowersetConstSharedPtr points(unsigned state) const;
     [[nodiscard]] std::pair<unsigned, unsigned> productStatePair(unsigned state) const;
     [[nodiscard]] PPL::dimension_type spaceDimension() const;
+    [[nodiscard]] AutomatonAcceptance acceptance() const override { return m_ltlAutomaton->acceptance(); }
 
     friend std::ostream& operator<< (std::ostream& os, const PolyhedralSynchronousProductAutomaton& synchronousProduct);
 

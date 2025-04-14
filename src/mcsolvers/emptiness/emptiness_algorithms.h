@@ -107,7 +107,9 @@ inline std::unordered_set<unsigned> collectInitialStatesWithAcceptingRuns(const 
         const Automaton& m_automaton {};
     };
 
-    return CollectReachableInitialStatesDfs { transposedTwa, automaton }.m_reachableInitialStates;
+    auto dfs { CollectReachableInitialStatesDfs { transposedTwa, automaton } };
+	dfs.run();
+	return dfs.m_reachableInitialStates;
 }
 
 static spot::twa_graph_ptr buildTransposedTwaWithInitialStateWithEdgesToAcceptingStatesInNonTrivialScc(const PolyhedralSynchronousProductAutomaton& automaton)
@@ -119,10 +121,6 @@ static spot::twa_graph_ptr buildTransposedTwaWithInitialStateWithEdgesToAcceptin
     for (auto sccNode: sccInfo)
     {
         const auto& sccStates { sccNode.states() };
-        if (sccStates.size() <= 1)
-        {
-            continue;
-        }
 
         for (unsigned sccState: sccStates)
         {
