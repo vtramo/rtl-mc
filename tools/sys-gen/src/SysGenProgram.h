@@ -14,7 +14,7 @@ public:
         }
 
     [[nodiscard]] unsigned totalTanks() const { return m_totalTanks; }
-    [[nodiscard]] bool maxTime() const { return m_maxTime; }
+    [[nodiscard]] unsigned maxTime() const { return m_maxTime; }
     [[nodiscard]] unsigned gapThickness() const { return m_gapThickness; }
 private:
     static const inline std::string s_gapSubcommandName { "gap" };
