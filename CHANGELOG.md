@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2025-04-14
+### :sparkles: New Features
+- [`d75b7c5`](https://github.com/vtramo/rtl-mc/commit/d75b7c5a2a920fa87e865815ca738dd73b1be3f2) - **sys-gen**: add `sys-gen`, a tool for generating polyhedral systems *(commit by [@vtramo](https://github.com/vtramo))*
+- [`3fa2d38`](https://github.com/vtramo/rtl-mc/commit/3fa2d38788477732f88dd56724a432115a4c845c) - **system**: add `setOutputExtraInformation` method in `PolyhedralSystem` *(commit by [@vtramo](https://github.com/vtramo))*
+- [`f1166f9`](https://github.com/vtramo/rtl-mc/commit/f1166f91ffa30ca7f4d1ba773658f3ec8b108721) - **sys-gen**: add additional gap parameters *(commit by [@vtramo](https://github.com/vtramo))*
+- [`376846f`](https://github.com/vtramo/rtl-mc/commit/376846f4f93736cbed9f209e651e6ae5ff527bca) - **sys-gen**: enriched atomic props p and q with even/odd tank sums, optional maxTime adds t0/t1 *(commit by [@vtramo](https://github.com/vtramo))*
+- [`c48bafa`](https://github.com/vtramo/rtl-mc/commit/c48bafa63342b4750910139433af4fa365ace5e4) - **system**: add `getVariableNameBySpaceDimension` getter method in `PolyhedralSystemSymbolTable` *(commit by [@vtramo](https://github.com/vtramo))*
+- [`042b510`](https://github.com/vtramo/rtl-mc/commit/042b510f891df6f81ccc743ddf9c797143cc121b) - **utils**: implement `std::hash` and custom equality for `PPL::Variable` *(commit by [@vtramo](https://github.com/vtramo))*
+- [`529b298`](https://github.com/vtramo/rtl-mc/commit/529b29834441ba1ba1eaa41bd62a2aaa3484de89) - allow you to customize certain aspects of PPL output *(commit by [@vtramo](https://github.com/vtramo))*
+- [`b6380d8`](https://github.com/vtramo/rtl-mc/commit/b6380d8af9c9a6e2e897c29840de14a742d69646) - **poly-ggb**: add `poly-ggb`, a tool to generate 2D Geogebra files from a polyhedra specification *(commit by [@vtramo](https://github.com/vtramo))*
+- [`3620079`](https://github.com/vtramo/rtl-mc/commit/3620079ecfd5862c3127e479bc7269c916033729) - **automata**: introduce `AutomatonAcceptance` enum *(commit by [@vtramo](https://github.com/vtramo))*
+- [`d52c3bc`](https://github.com/vtramo/rtl-mc/commit/d52c3bcecb1e25c55c6f6b1a36d142bceff5c91d) - **emptiness**: add ad-hoc emptiness algorithms *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :bug: Bug Fixes
+- [`e361e75`](https://github.com/vtramo/rtl-mc/commit/e361e75afae9bfc1aad87cd6fa0146fa64503efd) - **automata**: fix `eraseInitialEdgesWithEmptyDenotation` method *(commit by [@vtramo](https://github.com/vtramo))*
+- [`2f6482b`](https://github.com/vtramo/rtl-mc/commit/2f6482b7c1648bb8c7c629808a22b2a8f406a581) - **geometry**: fix `characteristicCone` function (add `is_line`) *(commit by [@vtramo](https://github.com/vtramo))*
+- [`fae6f03`](https://github.com/vtramo/rtl-mc/commit/fae6f035f16a4a7bd32d36e2e985fad137f4ae54) - **denot**: return `reachPlus(X, Rn)` when is open initial state *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :recycle: Refactors
+- [`c451492`](https://github.com/vtramo/rtl-mc/commit/c451492b089802b0a8fbec3619f3962a83591a07) - **system**: lazily compute flow cone *(commit by [@vtramo](https://github.com/vtramo))*
+- [`dfd9486`](https://github.com/vtramo/rtl-mc/commit/dfd9486d01cb526747faadfe50031ab593280295) - enable constraint minimization based on flag *(commit by [@vtramo](https://github.com/vtramo))*
+- [`73657e3`](https://github.com/vtramo/rtl-mc/commit/73657e36483a8efbf28a320a9a24aa5bf280bb42) - **sys-gen**: disable constraint minimization in default tank experiment *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :white_check_mark: Tests
+- [`483dd32`](https://github.com/vtramo/rtl-mc/commit/483dd32967338a9b31015a6b4cf95c6ff378fb69) - add brink test cases *(commit by [@vtramo](https://github.com/vtramo))*
+- [`32feeea`](https://github.com/vtramo/rtl-mc/commit/32feeea646d642a99c7d9f5e0ef0c84690be0c1e) - add finite automaton test case with `brink` proposition *(commit by [@vtramo](https://github.com/vtramo))*
+- [`ae2a067`](https://github.com/vtramo/rtl-mc/commit/ae2a06729f03288dca7337e6ee00dd11f22bf7f9) - add more test cases for `PolyhedralSystemFormulaDenotationMap` *(commit by [@vtramo](https://github.com/vtramo))*
+- [`485a1fa`](https://github.com/vtramo/rtl-mc/commit/485a1fa8e1d2872696d856f44024141b65afe0cc) - add more test cases for `removeSing` function *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :wrench: Chores
+- [`edb2575`](https://github.com/vtramo/rtl-mc/commit/edb2575e18dc3dbab969efce7c6ee8fe5b963048) - add experiment results *(commit by [@vtramo](https://github.com/vtramo))*
+
+
 ## [0.1.4] - 2025-04-07
 ### :sparkles: New Features
 - [`1e745bb`](https://github.com/vtramo/rtl-mc/commit/1e745bb955979166869cd5c0c292da61aff34f91) - **geometry**: add `isClosed` function that checks if a `Powerset` is closed *(commit by [@vtramo](https://github.com/vtramo))*
@@ -114,3 +147,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.2]: https://github.com/vtramo/rtl-mc/compare/0.1.1...0.1.2
 [0.1.3]: https://github.com/vtramo/rtl-mc/compare/0.1.2...0.1.3
 [0.1.4]: https://github.com/vtramo/rtl-mc/compare/0.1.3...0.1.4
+[0.1.5]: https://github.com/vtramo/rtl-mc/compare/0.1.4...0.1.5
