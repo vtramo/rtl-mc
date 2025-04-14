@@ -28,6 +28,7 @@ package automata {
         +virtual hasSuccessors(unsigned state): bool
         +virtual countSuccessors(unsigned state): int
         +virtual twa(): spot::const_twa_graph_ptr
+        +virtual acceptance() : AutomatonAcceptance
         +virtual transpose(): spot::twa_graph_ptr
         +virtual stats(): const AutomatonStats&
         +printDotFormat(std::ostream& os): void
@@ -37,6 +38,14 @@ package automata {
         #virtual assertThatStateIsInRange(const unsigned state): void
     }
 
+    Automaton --> "1" AutomatonAcceptance
+
+    enum AutomatonAcceptance
+    {
+        buchi,
+        nfa,
+        allStatesAreAccepting
+    }
 
     abstract PolyhedralLtlAutomaton
     {
@@ -162,6 +171,7 @@ package automata {
             #PolyhedralLtlFiniteAutomaton(const DiscreteLtlFormula&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
             #PolyhedralLtlFiniteAutomaton(DiscreteLtlFormula&&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
             --member functions--
+            +acceptance() const override: AutomatonAcceptance
             +stats(): const PolyhedralLtlFiniteAutomatonStats&
             #convertToNfa(spot::twa_graph_ptr tgba): spot::twa_graph_ptr
             #setNfaStats((double executionTimeSecond): void
@@ -318,7 +328,7 @@ package automata {
             BackwardNFADepthFirstSearch --|> twa_reachable_iterator_depth_first
         }
 
-        package Büchi {
+        package büchi {
             class PolyhedraliLtlBüchiAutomaton
             {
                 --type aliases--
@@ -329,6 +339,7 @@ package automata {
                 #PolyhedraliLtlBüchiAutomaton(const DiscreteLtlFormula&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
                 #PolyhedraliLtlBüchiAutomaton(DiscreteLtlFormula&&, PolyhedralSystemFormulaDenotationMap&&, std::string_view name)
                 --member functions--
+                +acceptance() const: AutomatonAcceptance
                 #convertToNfa(spot::twa_graph_ptr tgba): spot::twa_graph_ptr
                 #setNfaStats((double executionTimeSecond): void
                 -- static functions --

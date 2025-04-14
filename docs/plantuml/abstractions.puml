@@ -22,6 +22,7 @@ package abstractions {
             +virtual initialState(): unsigned
             +virtual setInitialState(unsigned state): void
             +virtual spaceDimension(): PPL::dimension_type
+            +acceptance(): AutomatonAcceptance
             #virtual observableAsBdd(const Observable& observable): bdd
             --friends--
             friend class PolyhedralSynchronousProductAutomaton

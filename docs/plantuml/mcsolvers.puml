@@ -1,5 +1,36 @@
 @startuml
 package mcsolvers {
+    package emptiness
+    {
+        enum ExplicitEmptinessCheckAlgorithm
+        {
+            se05,
+            tau03,
+            magic
+        }
+
+        object emptiness_algorithms_h {
+            -static emptinessCheckAlgorithm(const EmptinessCheckAlgorithm algorithm, spot::const_twa_graph_ptr twa): spot::emptiness_check_ptr
+
+            +inline explicitEmptinessCheckDenotationSearch(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton, const EmptinessCheckAlgorithm algorithm = EmptinessCheckAlgorithm::magic): ExplicitEmptinessCheckDenotationResult
+
+            -static buildTransposedTwaWithInitialStateWithEdgesToAcceptingStatesInNonTrivialScc(const PolyhedralSynchronousProductAutomaton& automaton): spot::twa_graph_ptr
+            -static buildTransposedTwaWithInitialStateWithEdgesToAcceptingStates(const PolyhedralSynchronousProductAutomaton& automaton): spot::twa_graph_ptr
+
+            +inline collectInitialStatesWithAcceptingRuns(const PolyhedralSynchronousProductAutomaton& automaton): std::unordered_set<unsigned>
+        }
+
+        struct ExplicitEmptinessCheckDenotationResult
+        {
+            +acceptingRuns: std::vector<spot::twa_run>
+            +initialStates: std::set<unsigned>
+            +totalAcceptingRuns: int
+            +isEmpty: int
+            +result: PowersetSharedPtr
+            +elapsedTimeInSeconds: double
+        }
+    }
+
     class DenotOnTheFly {
         --data members--
         -m_iterations: int
@@ -138,46 +169,6 @@ package mcsolvers {
 
     class GeneralFiniteSolver {
         --constructors--
-        +GeneralFiniteSolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
-        +~GeneralFiniteSolver() override
-        --member functions--
-        +run() override: PowersetSharedPtr
-        #discretiseRtlFormula() override: void
-        #constructPolyhedralLtlAutomaton() override: void
-        #virtual runFiniteSemanticsDfs(): PowersetSharedPtr
-        --protected data members--
-        #m_dfs: std::unique_ptr<FiniteSemanticsEmptiness>
-    }
-
-    class FiniteSemanticsEmptiness {
-        --data members--
-        -m_transposedSynchronousProduct: spot::twa_graph_ptr
-        -m_synchronousProduct: PolyhedralSynchronousProductAutomatonConstSharedPtr
-        -m_result: PowersetSharedPtr
-        --constructors--
-        +FiniteSemanticsEmptiness(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProduct)
-        --member functions--
-        +run(): PowersetSharedPtr
-        +result(): PowersetSharedPtr
-    }
-
-    FiniteOnTheFlySolver ...> FiniteSemanticsEmptiness: use
-
-    class Dfs {
-        --data members--
-        #m_parent: FiniteSemanticsEmptiness*
-        --constructors--
-        +Dfs(const spot::const_twa_ptr& a, FiniteSemanticsEmptiness* parent)
-        --member functions--
-        +process_state(const spot::state* state, const int _, spot::twa_succ_iterator* __) override: void
-        #addInitialStateDenotationToResult(unsigned state): void
-    }
-
-    Dfs --|> spot::twa_reachable_iterator_depth_first
-    FiniteSemanticsEmptiness #--> Dfs
-
-    class GeneralFiniteSolver {
-        --constructors--
         +GeneralFiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
         +~GeneralFiniteSolver() override
         --member functions--
@@ -188,7 +179,6 @@ package mcsolvers {
     }
 
     GeneralFiniteSolver --|> GeneralSolver
-    GeneralFiniteSolver ...> FiniteSemanticsEmptiness: use
     GeneralSolver --|> ExplicitSolver
     ExplicitSolver --|> Solver
     FiniteOnTheFlySolver --|> Solver
@@ -225,32 +215,8 @@ package mcsolvers {
         #runEmptinessCheckDenotation(): PowersetSharedPtr
     }
 
-    package emptiness {
-        struct EmptinessCheckDenotationResult
-        {
-            +acceptingRuns: std::vector<spot::twa_run>
-            +initialStates: std::set<unsigned>
-            +totalAcceptingRuns: int
-            +isEmpty: bool
-            +result: PowersetSharedPtr
-            +elapsedTimeInSeconds: double
-        }
-
-        object infinite_semantics_emptiness_h {
-            +inline emptinessCheckDenotationSearch(PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton, const EmptinessCheckAlgorithm algorithm = EmptinessCheckAlgorithm::magic): EmptinessCheckDenotationResult
-            +emptinessCheckAlgorithm(const EmptinessCheckAlgorithm algorithm, spot::const_twa_graph_ptr twa): spot::emptiness_check_ptr
-        }
-
-        enum EmptinessCheckAlgorithm
-        {
-            se05,
-            tau03,
-            magic
-        }
-    }
-
-
-    OmnidirectionalInfiniteSolver ...> infinite_semantics_emptiness_h: use
+    OmnidirectionalInfiniteSolver ...> emptiness_algorithms_h: use
+    OmnidirectionalFiniteSolver ...> emptiness_algorithms_h: use
 
     class OmnidirectionalMaySolver {
         --constructors--
@@ -267,7 +233,6 @@ package mcsolvers {
     OmnidirectionalMaySolver --|> OmnidirectionalSolver
     OmnidirectionalSolver --|> ExplicitSolver
     OmnidirectionalFiniteSolver --|> OmnidirectionalSolver
-    OmnidirectionalFiniteSolver ...> FiniteSemanticsEmptiness: use
     OmnidirectionalInfiniteSolver --|> OmnidirectionalSolver
 }
 @enduml

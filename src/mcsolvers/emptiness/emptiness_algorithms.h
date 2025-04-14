@@ -9,7 +9,7 @@
 #include "ExplicitEmptinessCheckDenotationResult.h"
 #include "Timer.h"
 
-enum class EmptinessCheckAlgorithm
+enum class ExplicitEmptinessCheckAlgorithm
 {
     se05,
     tau03,
@@ -17,17 +17,17 @@ enum class EmptinessCheckAlgorithm
 };
 
 static spot::emptiness_check_ptr emptinessCheckAlgorithm(
-    const EmptinessCheckAlgorithm algorithm,
+    const ExplicitEmptinessCheckAlgorithm algorithm,
     spot::const_twa_graph_ptr twa
 )
 {
     switch (algorithm)
     {
-    case EmptinessCheckAlgorithm::se05:
+    case ExplicitEmptinessCheckAlgorithm::se05:
         return spot::explicit_se05_search(twa);
-    case EmptinessCheckAlgorithm::tau03:
+    case ExplicitEmptinessCheckAlgorithm::tau03:
         return spot::explicit_tau03_search(twa);
-    case EmptinessCheckAlgorithm::magic:
+    case ExplicitEmptinessCheckAlgorithm::magic:
         return spot::explicit_magic_search(twa);
     }
 
@@ -36,7 +36,7 @@ static spot::emptiness_check_ptr emptinessCheckAlgorithm(
 
 inline ExplicitEmptinessCheckDenotationResult explicitEmptinessCheckDenotationSearch(
     PolyhedralSynchronousProductAutomatonConstSharedPtr synchronousProductAutomaton,
-    const EmptinessCheckAlgorithm algorithm = EmptinessCheckAlgorithm::magic
+    const ExplicitEmptinessCheckAlgorithm algorithm = ExplicitEmptinessCheckAlgorithm::magic
 )
 {
     Timer timer {};
