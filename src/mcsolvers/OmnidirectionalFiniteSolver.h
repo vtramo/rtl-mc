@@ -2,7 +2,7 @@
 
 #include "OmnidirectionalSolver.h"
 #include "automata_builder.h"
-#include "FiniteSemanticsEmptiness.h"
+#include "emptiness_algorithms.h"
 #include "Timer.h"
 
 class OmnidirectionalFiniteSolver: public OmnidirectionalSolver
@@ -63,12 +63,19 @@ protected:
     virtual PowersetSharedPtr runFiniteEmptinessCheckDenotationSearch()
     {
         Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Started.");
-        FiniteSemanticsEmptiness dfs { m_polyhedralSynchronousProduct };
-        EmptinessCheckDenotationResult emptinessCheckDenotationResult { dfs.run() };
-        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Completed. Elapsed time: {} s.", emptinessCheckDenotationResult.elapsedTimeInSeconds);
-        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Total accepting runs: {}.", emptinessCheckDenotationResult.totalAcceptingRuns);
-        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Total collected initial states: {}.", emptinessCheckDenotationResult.initialStates.size());
-        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Collected initial states: {}.", fmt::join(emptinessCheckDenotationResult.initialStates, ", "));
-        return emptinessCheckDenotationResult.result;
+        Timer timer {};
+
+        std::unordered_set<unsigned> initialStatesWithAcceptingRuns { collectInitialStatesWithAcceptingRuns(*m_polyhedralSynchronousProduct) };
+        PowersetSharedPtr result { std::make_shared<Powerset>(m_polyhedralSynchronousProduct->spaceDimension(), PPL::EMPTY) };
+        for (unsigned initialState: initialStatesWithAcceptingRuns)
+        {
+            PPLUtils::fusion(*result, *m_polyhedralSynchronousProduct->points(initialState));
+        }
+
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Completed. Elapsed time: {} s.", timer.elapsedInSeconds());
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Total collected initial states: {}.", initialStatesWithAcceptingRuns.size());
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Collected initial states: {}.", fmt::join(initialStatesWithAcceptingRuns, ", "));
+
+        return result;
     }
 };

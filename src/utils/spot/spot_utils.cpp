@@ -48,7 +48,7 @@ namespace SpotUtils
      * This function transposes a given Spot automaton, effectively reversing all its edges. The resulting automaton
      * represents the reverse of the original automaton's transition relation.
      */
-    spot::twa_graph_ptr transpose(const spot::twa_graph_ptr& twaGraph)
+    spot::twa_graph_ptr transpose(const spot::const_twa_graph_ptr& twaGraph)
     {
         unsigned totalStates { twaGraph->num_states() };
         spot::twa_graph_ptr transposedTwaGraph { spot::make_twa_graph(twaGraph->get_dict()) };

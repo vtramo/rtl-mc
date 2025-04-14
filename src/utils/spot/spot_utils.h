@@ -29,7 +29,7 @@ namespace SpotUtils
      * \param twaGraph The Spot automaton (as a `spot::twa_graph_ptr`) to transpose.
      * \return A `spot::twa_graph_ptr` representing the transposed automaton.
      */
-    spot::twa_graph_ptr transpose(const spot::twa_graph_ptr& twaGraph);
+    spot::twa_graph_ptr transpose(const spot::const_twa_graph_ptr& twaGraph);
 
     /*!
      * \brief Collects all accepting states from a Spot automaton with state-based acceptance.
