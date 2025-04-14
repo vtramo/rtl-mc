@@ -1,3 +1,4 @@
+#include <brink_stay_atoms.h>
 #include <catch2/catch_test_macros.hpp>
 #include "BackwardNFA.h"
 #include "DiscreteFiniteLtlFormula.h"
@@ -200,6 +201,42 @@ TEST_CASE("GAP experiment t0 & G(t1) & F(p & F(q)) with HIGH optimization")
     REQUIRE(!backwardNfa->hasSuccessors(stateThirteen));
     REQUIRE(predecessors(backwardNfa, stateThirteen) == std::unordered_set<unsigned>{ });
     REQUIRE(backwardNfa->countSuccessors(stateThirteen) == 0);
+}
+
+TEST_CASE("GAP experiment t0 & Gt1 & F(p & Fq) & F(brink & last) with HIGH optimization")
+{
+    PolyhedralSystemSharedPtr polyhedralSystem {
+        std::make_shared<PolyhedralSystem>(
+            std::move(
+                *parsePolyhedralSystem(
+                    "Inv ( { a >= 0 & b >= 0 } )"
+                    "Flow { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 & t = 1 }"
+                    "p { a >= b + 1 }"
+                    "q { b >= a + 1 }"
+                    "t0 { t = 0 }"
+                    "t1 { t <= 10 }"
+                )
+            )
+        )
+    };
+
+    auto [brink, brinkInterpretation] = brinkMay(polyhedralSystem);
+    polyhedralSystem = polyhedralSystem->extend(brink, *brinkInterpretation);
+
+    DiscreteFiniteLtlFormula discreteFiniteLtlFormula { DiscreteFiniteLtlFormula::discretiseRtlFinite(spot::parse_infix_psl("t0 & Gt1 & F(p & Fq) & F(brink & last)").f) };
+    DiscreteLtlFormula discreteLtlFormula { discreteFiniteLtlFormula.toLtl() };
+    PolyhedralSystemFormulaDenotationMap formulaDenotationMap { polyhedralSystem };
+
+    BackwardNFAConstSharedPtr backwardNfa {
+        BackwardNFA::buildAutomaton(
+            std::move(discreteLtlFormula),
+            std::move(formulaDenotationMap),
+            spot::postprocessor::High
+        )
+    };
+
+    REQUIRE(backwardNfa->totalStates() == 16);
+    REQUIRE(backwardNfa->totalEdges() == 29);
 }
 
 std::unordered_set<unsigned> predecessors(BackwardNFAConstSharedPtr backwardNfa, const unsigned state)
