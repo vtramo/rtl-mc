@@ -1,4 +1,7 @@
 #include "DenotOnTheFly.h"
+
+#include <pairwise_reduce.h>
+
 #include "logger.h"
 #include "reach.h"
 #include "Timer.h"
@@ -30,6 +33,10 @@ PowersetUniquePtr DenotOnTheFly::run()
                  PPLOutput::toString(P, m_polyhedralSystem->symbolTable())
             );
 
+            #ifdef DEBUG
+                m_stackStatePatchPairs.push_back({ acceptingState, P });
+            #endif
+
             std::vector V(m_backwardNfa->totalStates(), Powerset { m_polyhedralSystem->spaceDimension(), PPL::EMPTY });
             PowersetUniquePtr acceptingStatePatchResult {
                 denot(
@@ -41,6 +48,10 @@ PowersetUniquePtr DenotOnTheFly::run()
                     acceptingStateDenotation.isSingular()
                 )
             };
+
+            #ifdef DEBUG
+                m_stackStatePatchPairs.pop_back();
+            #endif
 
             Log::log(Verbosity::trace, "Accepting state {}, patch {} result: {}",
                 acceptingState,
@@ -76,6 +87,7 @@ PowersetUniquePtr DenotOnTheFly::denot(
     bool isSing
 )
 {
+    assert(!containsDuplicatePairs());
     assert(recursionDepth <= m_maxRecursionDepth && "Recursion depth exceeded!!!");
 
     m_iterations++;
@@ -160,13 +172,15 @@ PowersetUniquePtr DenotOnTheFly::denot(
         );
 
         Powerset A { *predecessorStateDenotation.denotation() };
-        for (Powerset::const_iterator it2 { predecessorVisitedPowerset.begin() }; it2 != predecessorVisitedPowerset.end(); ++it2)
+        for (auto predecessorVisitedPatch { predecessorVisitedPowerset.begin() };
+             predecessorVisitedPatch != predecessorVisitedPowerset.end();
+             ++predecessorVisitedPatch)
         {
-            for (Powerset::iterator it1 { A.begin() }; it1 != A.end(); ++it1)
+            for (auto predecessorPatch { A.begin() }; predecessorPatch != A.end(); ++predecessorPatch)
             {
-                if (it1->pointset() == it2->pointset())
+                if (predecessorPatch->pointset() == predecessorVisitedPatch->pointset())
                 {
-                    A.drop_disjunct(it1);
+                    A.drop_disjunct(predecessorPatch);
                     break;
                 }
             }
@@ -204,7 +218,15 @@ PowersetUniquePtr DenotOnTheFly::denot(
             assert(Y.space_dimension() == m_polyhedralSystem->spaceDimension());
             assert(PPLUtils::containsDisjunct(*predecessorStateDenotation.denotation(), Q));
 
+            #ifdef DEBUG
+                m_stackStatePatchPairs.push_back({ predecessor, Q });
+            #endif
+
             PowersetUniquePtr denotResult { denot(predecessor, Q, Y, V, recursionDepth + 1, !isSing) };
+
+            #ifdef DEBUG
+                m_stackStatePatchPairs.pop_back();
+            #endif
 
             Log::log(Verbosity::trace, "Reach pair {} (State: {}, Predecessor {})", reachPairIndex, state, predecessor);
             Log::log(Verbosity::trace, "(State: {}, Predecessor {}) Result size: {}. Result: {}",
@@ -233,6 +255,33 @@ PowersetUniquePtr DenotOnTheFly::denot(
     );
 
     return result;
+}
+
+bool DenotOnTheFly::containsDuplicatePairs() const
+{
+    std::unordered_set<std::string> pairs {};
+    for (auto& [state, patch]: m_stackStatePatchPairs)
+    {
+        std::string stringHash { std::to_string(state) + " " + PPLOutput::toString(patch, m_polyhedralSystem->symbolTable()) };
+        pairs.insert(stringHash);
+    }
+
+    const bool duplicateFound { pairs.size() != m_stackStatePatchPairs.size() };
+    if (duplicateFound)
+    {
+        for (auto& [state, patch]: m_stackStatePatchPairs)
+        {
+            const StateDenotation& stateDenotation { m_backwardNfa->stateDenotation(state) };
+            std::cout << "("
+                      << state << ", "
+                      << (stateDenotation.isSingular() ? "sing" : "open") << ", "
+                      << PPLOutput::toString(patch, m_polyhedralSystem->symbolTable())
+                      << ")"
+                      << std::endl;
+        }
+    }
+
+    return duplicateFound;
 }
 
 void DenotOnTheFly::addDisjunct(std::vector<Powerset> & V, const int state, const Poly & P) const

@@ -25,6 +25,7 @@ private:
     PolyhedralSystemConstSharedPtr m_polyhedralSystem {};
     BackwardNFAConstSharedPtr m_backwardNfa {};
     int m_maxRecursionDepth {};
+    std::vector<std::pair<unsigned, Poly>> m_stackStatePatchPairs {};
 
     PowersetUniquePtr denot(
         int state,
@@ -36,5 +37,6 @@ private:
     );
 
     void addDisjunct(std::vector<Powerset>& V, int state, const Poly& P) const;
+    bool containsDuplicatePairs() const;
     static const Powerset& getVisitedPowerset(std::vector<Powerset>& V, int state);
 };
