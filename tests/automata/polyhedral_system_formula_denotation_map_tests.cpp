@@ -199,6 +199,32 @@ TEST_CASE("Formula formulaDenotation map TEST 1")
 
         REQUIRE(*expectedFormulaDenotation == *formulaDenotation);
     }
+
+    SECTION("p & !q & t0 & t1")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        spot::formula formula { spot::parse_infix_psl("p & !q & t0 & t1").f };
+
+        PowersetConstUniquePtr t0_t1 { PPLUtils::intersect(t0Powerset, t1Powerset) };
+        PowersetConstUniquePtr p_notq { PPLUtils::intersect(pPowerset, not_qPowerset) };
+        PowersetConstUniquePtr expectedFormulaDenotation { PPLUtils::intersect(*t0_t1, *p_notq) };
+
+        PowersetConstSharedPtr formulaDenotation { polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formula) };
+
+        REQUIRE(*expectedFormulaDenotation == *formulaDenotation);
+    }
+
+    SECTION("!t0 | !t1")
+    {
+        PolyhedralSystemFormulaDenotationMap polyhedralSystemFormulaDenotationMap { polyhedralSystem };
+        spot::formula formula { spot::parse_infix_psl("!t0 | !t1").f };
+
+        PowersetConstUniquePtr expectedFormulaDenotation { PPLUtils::fusion(not_t0Powerset, not_t1Powerset) };
+
+        PowersetConstSharedPtr formulaDenotation { polyhedralSystemFormulaDenotationMap.getOrComputeDenotation(formula) };
+
+        REQUIRE(*expectedFormulaDenotation == *formulaDenotation);
+    }
 }
 
 TEST_CASE("Formula formulaDenotation map TEST 1 extended with brink atom")

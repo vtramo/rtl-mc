@@ -96,11 +96,13 @@ protected:
         std::unique_ptr denotUniquePtr { createDenotAlgorithm() };
         Denot& denot { *denotUniquePtr };
 
-        PowersetUniquePtr denotResult {
-            m_universalDenotation
-                ? PPLUtils::minus(m_polyhedralSystem->invariant(), *denot())
-                : denot()
-        };
+        PowersetUniquePtr result { denot() };
+        if (m_universalDenotation)
+        {
+            Log::log(Verbosity::verbose, "[Negated result] Total patches: {}", result->size());
+            Log::log(Verbosity::verbose, "[Negated result]: {}", PPLOutput::toString(*result, m_polyhedralSystem->symbolTable()));
+            result = PPLUtils::minus(m_polyhedralSystem->invariant(), *result);
+        }
 
         const double denotExecutionTimeSeconds { timer.elapsedInSeconds() };
         DenotOnTheFlyStats denotStats { collectDenotStats(denot, denotExecutionTimeSeconds) };
@@ -108,7 +110,7 @@ protected:
         Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.getExecutionTimeSeconds());
         Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.getTotalIterations());
 
-        return denotResult;
+        return result;
     }
 
     std::unique_ptr<Denot> createDenotAlgorithm()

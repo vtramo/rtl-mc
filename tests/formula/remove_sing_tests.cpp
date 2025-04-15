@@ -257,4 +257,92 @@ TEST_CASE("Remove sing from formula")
         REQUIRE(formulaWithoutSing == expectedFormula);
         REQUIRE(removedAtLeastOneSing);
     }
+
+    SECTION("(!sing & !t1) | (!sing & !t0)")
+    {
+        spot::formula formula { spot::parse_infix_psl("(!sing & !t1) | (!sing & !t0)").f };
+        spot::formula expectedFormula { spot::parse_infix_psl("!t1 | !t0").f };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(!removedAtLeastOneSing);
+    }
+
+    SECTION("(sing & !t1) | (sing & !t0)")
+    {
+        spot::formula formula { spot::parse_infix_psl("(sing & !t1) | (sing & !t0)").f };
+        spot::formula expectedFormula { spot::parse_infix_psl("!t1 | !t0").f };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(removedAtLeastOneSing);
+    }
+
+    SECTION("!sing & t1")
+    {
+        spot::formula formula { spot::parse_infix_psl("!sing & t1").f };
+        spot::formula expectedFormula { spot::parse_infix_psl("t1").f };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(!removedAtLeastOneSing);
+    }
+
+    SECTION("!sing & !t1")
+    {
+        spot::formula formula { spot::parse_infix_psl("!sing & !t1").f };
+        spot::formula expectedFormula { spot::parse_infix_psl("!t1").f };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(!removedAtLeastOneSing);
+    }
+
+    SECTION("sing & t1")
+    {
+        spot::formula formula { spot::parse_infix_psl("sing & t1").f };
+        spot::formula expectedFormula { spot::parse_infix_psl("t1").f };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(removedAtLeastOneSing);
+    }
+
+    SECTION("!p & sing & t1")
+    {
+        spot::formula formula { spot::parse_infix_psl("!p & sing & t1").f };
+        spot::formula expectedFormula { spot::parse_infix_psl("!p & t1").f };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(removedAtLeastOneSing);
+    }
+
+    SECTION("p & !q & sing & t1")
+    {
+        spot::formula formula { spot::parse_infix_psl("p & !q & sing & t1").f };
+        spot::formula expectedFormula { spot::parse_infix_psl("p & !q & t1").f };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(removedAtLeastOneSing);
+    }
+
+    SECTION("q & !sing & t1")
+    {
+        spot::formula formula { spot::parse_infix_psl("q & !sing & t1").f };
+        spot::formula expectedFormula { spot::parse_infix_psl("q & t1").f };
+
+        const auto& [formulaWithoutSing, removedAtLeastOneSing] { removeSing(std::move(formula)) };
+
+        REQUIRE(formulaWithoutSing == expectedFormula);
+        REQUIRE(!removedAtLeastOneSing);
+    }
 }

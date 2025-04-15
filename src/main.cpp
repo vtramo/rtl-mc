@@ -18,8 +18,7 @@
 void run(
     const RtlMcProgram& rtlMcProgram,
     PolyhedralSystemConstSharedPtr polyhedralSystem,
-    SolverUniquePtr solver,
-    bool isUniversalDenotation
+    SolverUniquePtr solver
 );
 
 int main(const int argc, char *argv[])
@@ -203,22 +202,16 @@ int main(const int argc, char *argv[])
         break;
     }
 
-    run(rtlMcProgram, polyhedralSystem, std::move(solver), isUniversalDenotation);
+    run(rtlMcProgram, polyhedralSystem, std::move(solver));
 }
 
 void run(
     const RtlMcProgram& rtlMcProgram,
     PolyhedralSystemConstSharedPtr polyhedralSystem,
-    SolverUniquePtr solver,
-    const bool isUniversalDenotation
+    SolverUniquePtr solver
 )
 {
-    PowersetSharedPtr result {
-        isUniversalDenotation
-            ? PPLUtils::minus(polyhedralSystem->invariant(), *solver->run())
-            : solver->run()
-    };
-
+    PowersetSharedPtr result { solver->run() };
     Log::log(Verbosity::verbose, "[Result] Total patches: {}", result->size());
     Log::log(Verbosity::verbose, "[Result] Running pairwise reduce...");
     fastPairwiseReduce(*result);
