@@ -54,10 +54,15 @@ r $result 0xCCFF66
 EOF
   )
 
+  flow="f { a + b >= -1 & a + b <= 3 & a >= -1 & a <= 1 & 10*b >= $distance & b <= 2 } 0x800000"
+  flow_geogebra_file="flow-$distance"
+  echo "$flow" | poly-ggb -O "$flow_geogebra_file" -x "a" -y "b" --euclidean-view 962 461 60 60
+  save_geogebra_file_as_pdf "$flow_geogebra_file"
+  pdfs+=("$flow_geogebra_file.pdf")
+
   geogebra_file="${0::-3}-distance-$semantics-$distance"
-  echo "$polyhedraSpec" | poly-ggb -O "$geogebra_file" -x "a" -y "b"
+  echo "$polyhedraSpec" | poly-ggb -O "$geogebra_file" -x "a" -y "b"  --euclidean-view 77 828 30 30
   save_geogebra_file_as_pdf "$geogebra_file"
-  rm -rf "$geogebra_file.ggb"
   pdfs+=("$geogebra_file.pdf")
 done
 

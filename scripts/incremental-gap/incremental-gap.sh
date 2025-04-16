@@ -37,6 +37,10 @@ EOF
 
 source ./../geogebra-path.sh
 
+flow="f { a + b >= -2 & a + b <= 2 & a >= -1 & a <= 1 & b >= -2 & b <= 2 } 0x800000"
+echo "$flow" | poly-ggb -O "flow" -x "a" -y "b" --euclidean-view 962 461 132 132
+save_geogebra_file_as_pdf "flow"
+
 pdfs=()
 semantics=${1:-"fin"}
 max=${2:-11}
@@ -52,9 +56,8 @@ EOF
   )
 
   geogebra_file="${0::-3}-gap-$semantics-$gap"
-  echo "$polyhedraSpec" | poly-ggb -O "$geogebra_file" -x "a" -y "b"
+  echo "$polyhedraSpec" | poly-ggb -O "$geogebra_file" -x "a" -y "b" --euclidean-view 77 828 30 30
   save_geogebra_file_as_pdf "$geogebra_file"
-  rm -rf "$geogebra_file.ggb"
   pdfs+=("$geogebra_file.pdf")
 done
 

@@ -37,7 +37,13 @@ EOF
 
 source ./../geogebra-path.sh
 
+
 pdfs=()
+
+flow="f { a + b >= -3 & a + b <= 3 & a >= -1 & a <= 1 & b >= -2 & b <= 2 } 0x800000"
+echo "$flow" | poly-ggb -O "rectangle-flow" -x "a" -y "b" --euclidean-view 962 461 132 132
+save_geogebra_file_as_pdf "rectangle-flow"
+
 semantics=${1:-"fin"}
 max=${2:-11}
 rtl_formula=${3:-"t0 & G(t1) & F(p & F(q))"}
@@ -51,10 +57,10 @@ r $result 0xCCFF66
 EOF
   )
 
-  geogebra_file="${0::-3}-gap-$semantics-$gap"
-  echo "$polyhedraSpec" | poly-ggb -O "$geogebra_file" -x "a" -y "b"
+  geogebra_file="${0::-3}-gap-$semantics-$gap-($rtl_formula)"
+  echo "$polyhedraSpec" | poly-ggb -O "$geogebra_file" -x "a" -y "b" --euclidean-view 77 828 30 30
   save_geogebra_file_as_pdf "$geogebra_file"
-  rm -rf "$geogebra_file.ggb"
+#  rm -rf "$geogebra_file.ggb"
   pdfs+=("$geogebra_file.pdf")
 done
 
