@@ -3,6 +3,21 @@
 #include "formula.h"
 #include "ppl_utils.h"
 
+std::string generateVariableName(const unsigned index)
+{
+    static const std::string alphabet { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" };
+    static const unsigned alphabetSize { static_cast<unsigned>(alphabet.size()) };
+
+    if (index < alphabetSize)
+    {
+        return std::string(1, alphabet[index]);
+    }
+
+    unsigned suffixIndex { (index - alphabetSize) / alphabetSize };
+    unsigned charIndex { (index - alphabetSize) % alphabetSize };
+    return alphabet[charIndex] + std::to_string(suffixIndex);
+}
+
 /**
  * This system models a set of tanks connected in sequence, with atomic propositions `p` and `q`
  * indicating whether the sum of odd-indexed tanks is greater than the sum of even-indexed tanks (plus a gap),
@@ -35,14 +50,13 @@ PolyhedralSystem gap(
     PPL::Constraint_System constraintSystemInvariant {};
     constraintSystemInvariant.set_space_dimension(spaceDimension);
     PolyhedralSystemSymbolTable symbolTable {};
-    char variableName { 'a' };
     PPL::Linear_Expression evenTankVariablesSum {};
     PPL::Linear_Expression oddTankVariablesSum {};
     for (unsigned i { 0 }; i < totalTanks; ++i)
     {
         PPL::Variable tankVariable { i };
         constraintSystemInvariant.insert(tankVariable >= 0);
-        symbolTable.addVariable(std::string { variableName++ });
+        symbolTable.addVariable(generateVariableName(i));
         if (i % 2 == 0) evenTankVariablesSum += tankVariable;
         else oddTankVariablesSum += tankVariable;
     }
@@ -51,8 +65,8 @@ PolyhedralSystem gap(
     symbolTable.addAtom("q");
     std::unordered_map<spot::formula, Powerset> denotation {
         {
-            { ap("p"), PPLUtils::powerset({{ oddTankVariablesSum >= evenTankVariablesSum + gapThickness }}, spaceDimension) },
-            { ap("q"), PPLUtils::powerset({{ evenTankVariablesSum >= oddTankVariablesSum + gapThickness }}, spaceDimension) },
+            { ap("q"), PPLUtils::powerset({{ oddTankVariablesSum >= evenTankVariablesSum + gapThickness }}, spaceDimension) },
+            { ap("p"), PPLUtils::powerset({{ evenTankVariablesSum >= oddTankVariablesSum + gapThickness }}, spaceDimension) },
         }
     };
 
