@@ -6,15 +6,15 @@
 #include "GeogebraPatch.h"
 #include "PolyhedraLexer.h"
 #include "SymbolTableListener.h"
-#include "SymbolTable.h"
+#include "SimpleSymbolTable.h"
 #include "ErrorListener.h"
 #include "GeogebraPatchGenerator.h"
 #include "ParserError.h"
 
-using GeogebraParsingSuccess = std::pair<std::vector<GeogebraPatch>, SymbolTable>;
+using GeogebraParsingSuccess = std::pair<std::vector<GeogebraPatch>, SimpleSymbolTable>;
 using GeogebraPolyhedraParsingResult =
     std::variant<
-        std::pair<std::vector<GeogebraPatch>, SymbolTable>,
+        std::pair<std::vector<GeogebraPatch>, SimpleSymbolTable>,
         std::vector<ParserError>
     >;
 
@@ -57,7 +57,7 @@ inline GeogebraPolyhedraParsingResult parseGeogebraPolyhedra(antlr4::ANTLRInputS
     SymbolTableListener symbolTableListener {};
     walker.walk(&symbolTableListener, parseTree);
 
-    SymbolTable symbolTable { symbolTableListener.symbolTable() };
+    SimpleSymbolTable symbolTable { symbolTableListener.symbolTable() };
     GeogebraPatchGenerator geogebraPatchGenerator { symbolTable };
     std::vector<GeogebraPatch> geogebraPatches { geogebraPatchGenerator.generateGeogebraPatches(parseTree) };
     if (geogebraPatchGenerator.hasErrors())
@@ -65,5 +65,5 @@ inline GeogebraPolyhedraParsingResult parseGeogebraPolyhedra(antlr4::ANTLRInputS
         return geogebraPatchGenerator.errors();
     }
 
-    return std::make_pair<std::vector<GeogebraPatch>, SymbolTable>(std::move(geogebraPatches), std::move(symbolTable));
+    return std::make_pair<std::vector<GeogebraPatch>, SimpleSymbolTable>(std::move(geogebraPatches), std::move(symbolTable));
 }

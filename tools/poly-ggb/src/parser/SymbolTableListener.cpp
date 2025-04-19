@@ -10,7 +10,7 @@ void SymbolTableListener::enterVar(PolyhedraParser::VarContext* ctx)
     addVariable(ctx->VARID()->getText());
 }
 
-[[nodiscard]] SymbolTable SymbolTableListener::symbolTable() const
+[[nodiscard]] SimpleSymbolTable SymbolTableListener::symbolTable() const
 {
     return m_symbolTable;
 }

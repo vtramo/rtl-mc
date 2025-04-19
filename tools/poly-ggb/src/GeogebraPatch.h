@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SymbolTable.h"
+#include "SimpleSymbolTable.h"
 #include "ppl_utils.h"
 #include "RGBColor.h"
 #include "ppl_output.h"
@@ -29,7 +29,7 @@ public:
     [[nodiscard]] PPL::dimension_type spaceDimension() const { return m_patch.space_dimension(); }
 
     [[nodiscard]] std::string toGeogebraExpression(
-        SymbolTable symbolTable,
+        SimpleSymbolTable symbolTable,
         std::unordered_map<PPL::Variable, PPL::Coefficient, std::hash<PPL::Variable>, PPLVariableEqualTo> fixedValues,
         const PPL::dimension_type x = 0,
         const PPL::dimension_type y = 1
@@ -74,7 +74,7 @@ public:
     }
 
     std::string buildFullGeogebraExpression(
-        SymbolTable symbolTable,
+        SimpleSymbolTable symbolTable,
         std::vector<std::pair<PPL::Variable, bool>> variables,
         std::unordered_map<PPL::Variable, PPL::Coefficient, std::hash<PPL::Variable>, PPLVariableEqualTo> fixedValues
     ) const
@@ -87,7 +87,7 @@ public:
     }
 
     static std::string buildUniverseGeogebraExpression(
-        SymbolTable symbolTable,
+        SimpleSymbolTable symbolTable,
         const std::vector<std::pair<PPL::Variable, bool>>& variables
     )
     {
@@ -107,7 +107,7 @@ public:
     }
 
     std::string buildFunctionSignatureGeogebra(
-        SymbolTable symbolTable,
+        SimpleSymbolTable symbolTable,
         const std::vector<std::pair<PPL::Variable, bool>>& variables
     ) const
     {
@@ -126,7 +126,7 @@ public:
     }
 
     std::string buildPatchGeogebraExpression(
-        SymbolTable symbolTable,
+        SimpleSymbolTable symbolTable,
         const std::vector<std::pair<PPL::Variable, bool>>& variables,
         const std::unordered_map<PPL::Variable, PPL::Coefficient, std::hash<PPL::Variable>, PPLVariableEqualTo>& fixedValues
     ) const

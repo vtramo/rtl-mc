@@ -64,14 +64,14 @@ RationalPoint RationalPointBuilderVisitor::computeRationalPoint()
     {
         const auto & [variableName, fraction] = *m_visitor.m_valueByVariable.begin();
         PPL::Variable variable { *m_visitor.m_symbolTable.getVariable(variableName) };
-        valueByDimension.insert({ variable.space_dimension(), fraction });
+        valueByDimension.insert({ variable.id(), fraction });
         return RationalPoint { PPL::point(fraction.get_num() * variable, fraction.get_den()), valueByDimension };
     }
 
     auto variableNameAndFractionIt { m_visitor.m_valueByVariable.begin() };
     const auto& [firstVariableName, firstFraction] = *variableNameAndFractionIt++;
     const PPL::Variable firstVariable { *m_visitor.m_symbolTable.getVariable(firstVariableName) };
-    valueByDimension.insert({ firstVariable.space_dimension(), firstFraction });
+    valueByDimension.insert({ firstVariable.id(), firstFraction });
     PPL::Linear_Expression pointLinearExpression { firstFraction.get_num() * firstVariable };
     PPL::GMP_Integer mcd { firstFraction.get_num() };
     PPL::GMP_Integer mcm { firstFraction.get_den() };
@@ -81,7 +81,7 @@ RationalPoint RationalPointBuilderVisitor::computeRationalPoint()
         mcm = lcm(mcm, fraction.get_den());
         mcd = gcd(mcd, fraction.get_num());
         const PPL::Variable variable { *m_visitor.m_symbolTable.getVariable(variableName) };
-        valueByDimension.insert({ variable.space_dimension(), fraction });
+        valueByDimension.insert({ variable.id(), fraction });
         pointLinearExpression += fraction.get_num() * variable;
     }
     const auto mcdFraction { mcd / mcm };

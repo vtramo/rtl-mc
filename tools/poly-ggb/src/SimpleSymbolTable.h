@@ -3,17 +3,20 @@
 #include "ppl_aliases.h"
 #include <optional>
 
-class SymbolTable
+#include "SymbolTable.h"
+
+class SimpleSymbolTable: public SymbolTable
 {
 public:
-    [[nodiscard]] const PPL::dimension_type& spaceDimension() const { return m_spaceDimension; }
+
+    [[nodiscard]] const PPL::dimension_type& spaceDimension() const override { return m_spaceDimension; }
 
     /*!
      * \brief Adds a new variable with a user-defined name to the symbol table.
      * \param id The user-defined name of the variable.
      * \return A reference to the current symbol table for method chaining.
      */
-    SymbolTable& addVariable(const std::string_view id)
+    SimpleSymbolTable& addVariable(const std::string_view id) override
     {
         if (containsVariable(id))
         {
@@ -34,7 +37,7 @@ public:
      * \param ids A list of user-defined variable names.
      * \return A reference to the current symbol table for method chaining.
      */
-    SymbolTable& addVariables(const std::initializer_list<std::string_view> ids)
+    SimpleSymbolTable& addVariables(const std::initializer_list<std::string_view> ids) override
     {
         for (const auto &id: ids)
         {
@@ -44,7 +47,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] bool containsVariable(const std::string_view id) const
+    [[nodiscard]] bool containsVariable(const std::string_view id) const override
     {
         return m_variableByVariableName.count(std::string { id });
     }
@@ -54,7 +57,7 @@ public:
      * \param id The user-defined name of the variable.
      * \return An optional containing the PPL variable if the name exists, or \c std::nullopt otherwise.
      */
-    [[nodiscard]] std::optional<PPL::Variable> getVariable(const std::string_view id) const
+    [[nodiscard]] std::optional<PPL::Variable> getVariable(const std::string_view id) const override
     {
         if (const auto it { m_variableByVariableName.find(std::string { id }) }; it != m_variableByVariableName.end())
         {
@@ -70,7 +73,7 @@ public:
      * \param variable The PPL variable.
      * \return An optional containing the user-defined name if the variable exists, or \c std::nullopt otherwise.
      */
-    [[nodiscard]] std::optional<std::string> getVariableName(const PPL::Variable& variable) const
+    [[nodiscard]] std::optional<std::string> getVariableName(const PPL::Variable& variable) const override
     {
         if (const auto it { m_variableNameBySpaceDimension.find(variable.space_dimension()) }; it != m_variableNameBySpaceDimension.end())
         {
@@ -85,7 +88,7 @@ public:
      * \brief Returns the mapping between space dimensions and user-defined variable names.
      * \return An unordered map that associates each space dimension with a corresponding variable name.
      */
-    [[nodiscard]] std::unordered_map<PPL::dimension_type, std::string> getVariableNameBySpaceDimension() const
+    [[nodiscard]] std::unordered_map<PPL::dimension_type, std::string> getVariableNameBySpaceDimension() const override
     {
         return m_variableNameBySpaceDimension;
     }

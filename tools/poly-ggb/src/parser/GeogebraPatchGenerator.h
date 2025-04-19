@@ -1,14 +1,14 @@
 #pragma once
 
 #include "PolyhedraBaseVisitor.h"
-#include "SymbolTable.h"
+#include "SimpleSymbolTable.h"
 #include "ParserError.h"
 #include "GeogebraPatch.h"
 
 class GeogebraPatchGenerator
 {
 public:
-    explicit GeogebraPatchGenerator(SymbolTable& symbolTable);
+    explicit GeogebraPatchGenerator(SimpleSymbolTable& symbolTable);
 
     /*!
      * \brief Checks if any errors were encountered during the parsing process.
@@ -28,7 +28,7 @@ private:
     class GeogebraPatchVisitor final : public PolyhedraBaseVisitor
     {
     public:
-        explicit GeogebraPatchVisitor(SymbolTable& symbolTable);
+        explicit GeogebraPatchVisitor(SimpleSymbolTable& symbolTable);
 
         std::any visitPolyhedra(PolyhedraParser::PolyhedraContext* ctx) override;
         std::any visitAtomPowerset(PolyhedraParser::AtomPowersetContext* ctx) override;
@@ -54,7 +54,7 @@ private:
     private:
         int m_visitKey {}; ///< Key used to track visited nodes.
         std::vector<ParserError> m_errors {};
-        std::reference_wrapper<SymbolTable> m_symbolTable;
+        std::reference_wrapper<SimpleSymbolTable> m_symbolTable;
         std::unordered_map<int, Powerset> m_powersets {};
         std::unordered_map<int, Poly> m_patches {};
         std::unordered_map<int, PPL::Constraint> m_constraints {};

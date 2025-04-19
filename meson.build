@@ -47,7 +47,7 @@ include_directories = [
   include_directories(src_dir / parser_dir),
   include_directories(src_dir / parser_dir / 'rtl'),
   include_directories(src_dir / parser_dir / system_dir),
-  include_directories(src_dir / parser_dir / 'mc'),
+  include_directories(src_dir / parser_dir / 'point'),
   include_directories(src_dir / mcsolvers_dir),
   include_directories(src_dir / mcsolvers_dir / 'emptiness'),
   include_directories(src_dir / mcsolvers_dir / onthefly_dir),

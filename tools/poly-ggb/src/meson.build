@@ -1,7 +1,7 @@
 poly_ggb_project_source_files = [
     'main.cpp',
     'PolyGgbProgram.h',
-    'SymbolTable.h',
+    'SimpleSymbolTable.h',
     'GeogebraPatch.h',
     'RGBColor.h',
     'RGBColor.cpp',

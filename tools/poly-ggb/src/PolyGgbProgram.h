@@ -19,6 +19,7 @@ public:
     [[nodiscard]] bool outputOnlyGeogebraXml() const { return m_onlyGeogebraXml; }
     [[nodiscard]] const std::optional<std::string>& xAxisVariable() const { return m_xAxisVariable; }
     [[nodiscard]] const std::optional<std::string>& yAxisVariable() const { return m_yAxisVariable; }
+    [[nodiscard]] const std::optional<std::string>& fixedVariableValues() const { return m_fixedVariableValuesString; }
     [[nodiscard]] int width() const { return m_width; }
     [[nodiscard]] int height() const { return m_height; }
     [[nodiscard]] double xZero() const { return m_xZero; }
@@ -35,11 +36,27 @@ private:
     bool m_onlyGeogebraXml { false };
     int m_width {};
     int m_height {};
+    std::optional<std::string> m_fixedVariableValuesString {};
 
     int m_xZero {};
     int m_yZero {};
     int m_xScale {};
     int m_yScale {};
+
+    void addFixedVariableValuesArgument()
+    {
+        m_polyGgbProgram.add_group("Variables options");
+        m_polyGgbProgram.add_argument("--fixed")
+                .help(
+                    "Specifies fixed rational values for variables. \n"
+                    "Use square brackets and assign values to variables \n"
+                    "Example format: [x=1/3, y=-2/3, z=1]")
+                .action([&](const std::string& mcPoint)
+                {
+                    m_fixedVariableValuesString.emplace(mcPoint);
+                    assert(m_modelCheckingPointString.has_value());
+                });
+    }
 
     void buildPolyGgbProgram()
     {
@@ -48,6 +65,7 @@ private:
         addOutputFileNameArgument();
         addOnlyXmlArgument();
         addAxisArguments();
+        addFixedVariableValuesArgument();
         addEuclidianViewArguments();
     }
 

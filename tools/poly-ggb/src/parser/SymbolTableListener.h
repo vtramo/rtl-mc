@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PolyhedraBaseListener.h"
-#include "SymbolTable.h"
+#include "SimpleSymbolTable.h"
 #include "PolyhedraParser.h"
 
 class SymbolTableListener final : public PolyhedraBaseListener
@@ -13,10 +13,10 @@ public:
     void enterAtomEmpty(PolyhedraParser::AtomEmptyContext* ctx) override;
     void enterAtomPoly(PolyhedraParser::AtomPolyContext* ctx) override;
 
-    [[nodiscard]] SymbolTable symbolTable() const;
+    [[nodiscard]] SimpleSymbolTable symbolTable() const;
 
 private:
-    SymbolTable m_symbolTable {};
+    SimpleSymbolTable m_symbolTable {};
 
     void addVariable(std::string_view varId);
 };
