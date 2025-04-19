@@ -54,7 +54,7 @@ private:
                 .action([&](const std::string& mcPoint)
                 {
                     m_fixedVariableValuesString.emplace(mcPoint);
-                    assert(m_modelCheckingPointString.has_value());
+                    assert(m_fixedVariableValuesString.has_value());
                 });
     }
 

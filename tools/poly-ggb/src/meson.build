@@ -30,7 +30,7 @@ poly_ggb_exe = executable(
     poly_ggb_project_source_files,
     link_whole: [rtl_mc_static_library],
     link_args: link_args,
-    dependencies: [argparse_dep, tinyxml2_dep, minizip_ng_dep],
+    dependencies: [argparse_dep, tinyxml2_dep, minizip_ng_dep, spdlog_dep],
     cpp_args: '-DRTL_MC_VERSION="' + meson.project_version() + '"',
     include_directories : include_directories,
     install : true

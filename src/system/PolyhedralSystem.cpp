@@ -239,7 +239,7 @@ PolyhedralSystem::PolyhedralSystem(
     makeBddDict();
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
-    assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_symbolTable.spaceDimension());
 }
 
 PolyhedralSystem::PolyhedralSystem(
@@ -257,7 +257,7 @@ PolyhedralSystem::PolyhedralSystem(
     makeBddDict();
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
-    assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_symbolTable.spaceDimension());
 }
 
 PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
@@ -273,7 +273,7 @@ PolyhedralSystem::PolyhedralSystem(PolyhedralSystem&& polyhedralSystem) noexcept
     m_preFlow.m_swap(polyhedralSystem.m_preFlow);
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
-    assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_symbolTable.spaceDimension());
 }
 
 PolyhedralSystem& PolyhedralSystem::operator= (PolyhedralSystem&& polyhedralSystem) noexcept
@@ -289,7 +289,7 @@ PolyhedralSystem& PolyhedralSystem::operator= (PolyhedralSystem&& polyhedralSyst
     m_minimizeConstraintsOutput = polyhedralSystem.m_minimizeConstraintsOutput;
     assert(m_preFlow.space_dimension() == m_flow.space_dimension());
     assert(m_preFlow.space_dimension() == spaceDimension());
-    assert(m_preFlow.space_dimension() == m_symbolTable.getSpaceDimension());
+    assert(m_preFlow.space_dimension() == m_symbolTable.spaceDimension());
     return *this;
 }
 

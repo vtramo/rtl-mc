@@ -219,7 +219,11 @@ private:
                 }
             }
 
-            slicedConstraintSystem.insert(expression >= -constraint.inhomogeneous_term());
+            auto finalConstraint { expression >= -constraint.inhomogeneous_term() };
+            if (!finalConstraint.is_inconsistent())
+            {
+                slicedConstraintSystem.insert(finalConstraint);
+            }
         }
 
         return Poly { slicedConstraintSystem };
