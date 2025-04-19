@@ -95,7 +95,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitAtomEmpty
         addDuplicateAtomParserError(ctx->VARID());
     }
 
-    auto bottomPowerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
+    auto bottomPowerset { std::make_unique<Powerset>(m_symbolTable.get().spaceDimension(), PPL::EMPTY) };
     m_denotation[ap(atomId)] = *bottomPowerset;
     m_powersets[m_visitKey] = std::move(bottomPowerset);
     return m_visitKey++;
@@ -113,7 +113,7 @@ void PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::addDuplicateAtomPa
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowersetEmptyOrNotEmpty(PolyhedralSystemParser::PowersetEmptyOrNotEmptyContext* ctx)
 {
-    auto powerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::EMPTY) };
+    auto powerset { std::make_unique<Powerset>(m_symbolTable.get().spaceDimension(), PPL::EMPTY) };
 
     const std::vector polyContexts { ctx->poly() };
     for (PolyhedralSystemParser::PolyContext* polyContext: polyContexts)
@@ -129,7 +129,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowersetE
 
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowersetTrue([[maybe_unused]] PolyhedralSystemParser::PowersetTrueContext* ctx)
 {
-    auto powerset { std::make_unique<Powerset>(m_symbolTable.get().getSpaceDimension(), PPL::UNIVERSE) };
+    auto powerset { std::make_unique<Powerset>(m_symbolTable.get().spaceDimension(), PPL::UNIVERSE) };
     m_powersets[m_visitKey] = std::move(powerset);
     return m_visitKey++;
 }
@@ -137,7 +137,7 @@ std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPowersetT
 std::any PolyhedralSystemBuilderVisitor::PolyhedralSystemVisitor::visitPolyAtLeastOneConstr(PolyhedralSystemParser::PolyAtLeastOneConstrContext* ctx)
 {
     PPL::Constraint_System constraintSystem {};
-    constraintSystem.set_space_dimension(m_symbolTable.get().getSpaceDimension());
+    constraintSystem.set_space_dimension(m_symbolTable.get().spaceDimension());
 
     const std::vector constraintContexts { ctx->constr() };
     for (PolyhedralSystemParser::ConstrContext* constraintContext: constraintContexts)

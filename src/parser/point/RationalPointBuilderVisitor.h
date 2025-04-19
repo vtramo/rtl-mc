@@ -1,6 +1,6 @@
 /*!
-* \file McPointBuilderVisitor.h
- * \brief Visitor for parsing and building rational points (a.k.a. model-checking points) from input strings.
+* \file RationalPointBuilderVisitor.h
+ * \brief Visitor for parsing and building rational points from input strings.
  *
  * This visitor handles the parsing of rational points specified in the format:
  * [var1=value1, var2=value2, ...] where values can be integers or fractions.
@@ -8,12 +8,14 @@
  */
 #pragma once
 
-#include "McPointBaseVisitor.h"
+#include "RationalPointBaseVisitor.h"
 #include "PolyhedralSystemSymbolTable.h"
 #include "ParserError.h"
+#include "RationalPoint.h"
+#include "SymbolTable.h"
 
 /*!
- * \class McPointBuilderVisitor
+ * \class RationalPointBuilderVisitor
  * \brief Main visitor class for parsing rational points.
  *
  * The visitor validates and converts string representations of rational points (e.g., [x=1/3, y=-2/3, z=1])
@@ -22,27 +24,28 @@
  * - Undefined variables
  * - Duplicate variable assignments
  * - Division by zero
- * - Missing required variables
+ * - Missing required variables (optional)
  *
  */
-class McPointBuilderVisitor final
+class RationalPointBuilderVisitor final
 {
 public:
     /*!
      * \brief Constructs a visitor with a symbol table reference.
      * \param symbolTable The symbol table containing variable definitions.
      */
-    explicit McPointBuilderVisitor(const PolyhedralSystemSymbolTable& symbolTable);
+    explicit RationalPointBuilderVisitor(const SymbolTable& symbolTable);
 
     /*!
      * \brief Parses and builds a rational point from the parse tree.
      * \param parseTree The ANTLR parse tree of the point specification.
+     * \param requireAllVariables If true, signals an error if not all variables in the symbol table are defined
      * \return PPL generator representing the point.
      *
      * The input should follow the format:
      * [x=1/3, y=-2/3, z=1]
      */
-    PPL::Generator buildMcPoint(McPointParser::ArrayContext* parseTree);
+    RationalPoint buildRationalPoint(RationalPointParser::ArrayContext* parseTree, bool requireAllVariables = false);
 
     /*!
      * \brief Checks if any errors occurred during parsing.
@@ -55,58 +58,56 @@ private:
     /*!
      * \brief Computes the final point after successful parsing.
      * \return PPL generator representing the point.
-     * \pre Requires that parsing was successful (\ref McPointBuilderVisitor::hasErrors() == \c false)
-     * \throws McPointComputationError if called when errors are present or if computation fails
+     * \pre Requires that parsing was successful (\ref RationalPointBuilderVisitor::hasErrors() == \c false)
+     * \throws std::runtime_error if called when errors are present or if computation fails
      */
-    PPL::Generator computeMcPoint();
+    RationalPoint computeRationalPoint();
 
     /*!
-     * \class McPointVisitor
+     * \class RationalPointVisitor
      * \brief Internal visitor class for traversing the parse tree and constructing the model-checking point (rational point).
      */
-    class McPointVisitor final : public McPointBaseVisitor
+    class RationalPointVisitor final : public RationalPointBaseVisitor
     {
     public:
-        friend class McPointBuilderVisitor;
+        friend class RationalPointBuilderVisitor;
 
         /*!
          * \brief Constructs the internal visitor with symbol table.
          * \param symbolTable Reference to the symbol table.
          */
-        explicit McPointVisitor(const PolyhedralSystemSymbolTable& symbolTable);
+        explicit RationalPointVisitor(const SymbolTable& symbolTable);
 
         /*!
          * \brief Visits a valid array node in the parse tree.
          */
-        std::any visitValidArray(McPointParser::ValidArrayContext* context) override;
+        std::any visitValidArray(RationalPointParser::ValidArrayContext* context) override;
 
         /*!
          * \brief Visits a valid variable=value pair.
          */
-        std::any visitValidPair(McPointParser::ValidPairContext* context) override;
+        std::any visitValidPair(RationalPointParser::ValidPairContext* context) override;
 
         /*!
          * \brief Visits an integer value (e.g., "5" or "-3").
          */
-        std::any visitValidIntegerValue(McPointParser::ValidIntegerValueContext* context) override;
+        std::any visitValidIntegerValue(RationalPointParser::ValidIntegerValueContext* context) override;
 
         /*!
          * \brief Visits a rational value (e.g., "1/2" or "-3/4").
          */
-        std::any visitValidRationalValue(McPointParser::ValidRationalValueContext* context) override;
+        std::any visitValidRationalValue(RationalPointParser::ValidRationalValueContext* context) override;
     private:
-        using Rational = mpq_class; ///< Type for rational number representation
-
-        const PolyhedralSystemSymbolTable& m_symbolTable {};
+        const SymbolTable& m_symbolTable;
         std::unordered_map<std::string, Rational> m_valueByVariable {};
         std::vector<ParserError> m_errors {};
 
         bool symbolTableHasVariable(std::string_view variable) const;
         void addDuplicateVariableParserError(antlr4::tree::TerminalNode* ctx);
-        void addVariableNotPresentInPolySystemError(antlr4::tree::TerminalNode* ctx);
-        void addMissingVariablesError(const McPointParser::ArrayContext* parseTree, std::vector<std::string>&& missingVariables);
-        void addDivisionByZeroError(const McPointParser::ValidRationalValueContext* ctx);
+        void addVariableNotPresentInSymbolTableError(antlr4::tree::TerminalNode* ctx);
+        void addMissingVariablesError(const RationalPointParser::ArrayContext* parseTree, std::vector<std::string>&& missingVariables);
+        void addDivisionByZeroError(const RationalPointParser::ValidRationalValueContext* ctx);
     };
 
-    McPointVisitor m_visitor;
+    RationalPointVisitor m_visitor;
 };

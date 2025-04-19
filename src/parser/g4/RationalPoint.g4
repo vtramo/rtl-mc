@@ -1,4 +1,4 @@
-grammar McPoint;
+grammar RationalPoint;
 import CommonLexerRules;
 
 array: '[' pair (',' pair)* ']'  # validArray

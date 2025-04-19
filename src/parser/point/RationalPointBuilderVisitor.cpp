@@ -1,64 +1,77 @@
 #include <spdlog/fmt/fmt.h>
-#include "McPointBuilderVisitor.h"
 
-static bool startsWithMinusSign(const McPointParser::ValidIntegerValueContext* valueContext);
+#include "RationalPointBuilderVisitor.h"
+
+static bool startsWithMinusSign(const RationalPointParser::ValidIntegerValueContext* valueContext);
 static bool startsWithMinusSign(const antlr4::Token* token);
 
-McPointBuilderVisitor::McPointBuilderVisitor(const PolyhedralSystemSymbolTable& symbolTable)
-    : m_visitor { McPointVisitor { symbolTable } }
+RationalPointBuilderVisitor::RationalPointBuilderVisitor(const SymbolTable& symbolTable)
+    : m_visitor { RationalPointVisitor { symbolTable } }
 {
 }
 
-McPointBuilderVisitor::McPointVisitor::McPointVisitor(const PolyhedralSystemSymbolTable& symbolTable)
+RationalPointBuilderVisitor::RationalPointVisitor::RationalPointVisitor(const SymbolTable& symbolTable)
     : m_symbolTable { symbolTable }
 {
 }
 
-const std::vector<ParserError>& McPointBuilderVisitor::McPointBuilderVisitor::errors() const
+const std::vector<ParserError>& RationalPointBuilderVisitor::RationalPointBuilderVisitor::errors() const
 {
     return m_visitor.m_errors;
 }
 
-bool McPointBuilderVisitor::McPointBuilderVisitor::hasErrors() const
+bool RationalPointBuilderVisitor::RationalPointBuilderVisitor::hasErrors() const
 {
     return !m_visitor.m_errors.empty();
 }
 
-PPL::Generator McPointBuilderVisitor::buildMcPoint(McPointParser::ArrayContext* parseTree)
+RationalPoint RationalPointBuilderVisitor::buildRationalPoint(RationalPointParser::ArrayContext* parseTree,
+                                                              const bool requireAllVariables)
 {
     m_visitor.visit(parseTree);
 
     std::vector<std::string> missingVariables {};
-    for (const auto& variable: m_visitor.m_symbolTable.getVariableNames())
-        if (m_visitor.m_valueByVariable.count(variable) == 0)
-            missingVariables.push_back(variable);
+
+    if (requireAllVariables)
+    {
+        for (const auto& [_, variable]: m_visitor.m_symbolTable.getVariableNameBySpaceDimension())
+        {
+            if (m_visitor.m_valueByVariable.count(variable) == 0)
+            {
+                missingVariables.push_back(variable);
+            }
+        }
+    }
 
     if (!missingVariables.empty())
     {
         m_visitor.addMissingVariablesError(parseTree, std::move(missingVariables));
-        return PPL::point();
+        return RationalPoint { PPL::point(), {} };
     }
 
-    return computeMcPoint();
+    return computeRationalPoint();
 }
 
-PPL::Generator McPointBuilderVisitor::computeMcPoint()
+RationalPoint RationalPointBuilderVisitor::computeRationalPoint()
 {
     if (hasErrors())
     {
         throw std::runtime_error("Cannot compute point with parsing errors");
     }
 
+    std::unordered_map<PPL::dimension_type, Rational> valueByDimension {};
     if (m_visitor.m_valueByVariable.size() == 1)
     {
         const auto & [variableName, fraction] = *m_visitor.m_valueByVariable.begin();
         PPL::Variable variable { *m_visitor.m_symbolTable.getVariable(variableName) };
-        return PPL::point(fraction.get_num() * variable, fraction.get_den());
+        valueByDimension.insert({ variable.space_dimension(), fraction });
+        return RationalPoint { PPL::point(fraction.get_num() * variable, fraction.get_den()), valueByDimension };
     }
 
     auto variableNameAndFractionIt { m_visitor.m_valueByVariable.begin() };
     const auto& [firstVariableName, firstFraction] = *variableNameAndFractionIt++;
     const PPL::Variable firstVariable { *m_visitor.m_symbolTable.getVariable(firstVariableName) };
+    valueByDimension.insert({ firstVariable.space_dimension(), firstFraction });
     PPL::Linear_Expression pointLinearExpression { firstFraction.get_num() * firstVariable };
     PPL::GMP_Integer mcd { firstFraction.get_num() };
     PPL::GMP_Integer mcm { firstFraction.get_den() };
@@ -68,30 +81,31 @@ PPL::Generator McPointBuilderVisitor::computeMcPoint()
         mcm = lcm(mcm, fraction.get_den());
         mcd = gcd(mcd, fraction.get_num());
         const PPL::Variable variable { *m_visitor.m_symbolTable.getVariable(variableName) };
+        valueByDimension.insert({ variable.space_dimension(), fraction });
         pointLinearExpression += fraction.get_num() * variable;
     }
     const auto mcdFraction { mcd / mcm };
     const auto mcdFractionNumerator { mcdFraction.get_val1() };
     const auto mcdFractionDenominator { mcdFraction.get_val2() };
-    return PPL::point(pointLinearExpression * mcdFractionNumerator, mcdFractionDenominator);
+    return RationalPoint { PPL::point(pointLinearExpression * mcdFractionNumerator, mcdFractionDenominator), valueByDimension };
 }
 
-std::any McPointBuilderVisitor::McPointVisitor::visitValidArray(McPointParser::ValidArrayContext* context)
+std::any RationalPointBuilderVisitor::RationalPointVisitor::visitValidArray(RationalPointParser::ValidArrayContext* context)
 {
     const std::vector pairContexts { context->pair() };
-    for (McPointParser::PairContext* pairContext: pairContexts)
+    for (RationalPointParser::PairContext* pairContext: pairContexts)
         visit(pairContext);
 
     return 0;
 }
 
-std::any McPointBuilderVisitor::McPointVisitor::visitValidPair(McPointParser::ValidPairContext* context)
+std::any RationalPointBuilderVisitor::RationalPointVisitor::visitValidPair(RationalPointParser::ValidPairContext* context)
 {
     const std::string variable { context->VARID()->getText() };
     const Rational rational { std::any_cast<Rational>(visit(context->value())) };
 
     if (!symbolTableHasVariable(variable))
-        addVariableNotPresentInPolySystemError(context->VARID());
+        addVariableNotPresentInSymbolTableError(context->VARID());
 
     if (m_valueByVariable.count(variable) == 1)
         addDuplicateVariableParserError(context->VARID());
@@ -101,7 +115,7 @@ std::any McPointBuilderVisitor::McPointVisitor::visitValidPair(McPointParser::Va
     return 0;
 }
 
-std::any McPointBuilderVisitor::McPointVisitor::visitValidIntegerValue(McPointParser::ValidIntegerValueContext* context)
+std::any RationalPointBuilderVisitor::RationalPointVisitor::visitValidIntegerValue(RationalPointParser::ValidIntegerValueContext* context)
 {
     static constexpr int denominator { 1 };
     const PPL::GMP_Integer numerator { context->UNSIGNED_INT()->getText() };
@@ -109,7 +123,7 @@ std::any McPointBuilderVisitor::McPointVisitor::visitValidIntegerValue(McPointPa
     return startsWithMinusSign(context) ? -rational : rational;
 }
 
-std::any McPointBuilderVisitor::McPointVisitor::visitValidRationalValue(McPointParser::ValidRationalValueContext* context)
+std::any RationalPointBuilderVisitor::RationalPointVisitor::visitValidRationalValue(RationalPointParser::ValidRationalValueContext* context)
 {
     const bool numeratorStartsWithMinusSign { startsWithMinusSign(context->opNum) };
     const bool denominatorStartsWithMinusSign { startsWithMinusSign(context->opDen) };
@@ -127,7 +141,7 @@ std::any McPointBuilderVisitor::McPointVisitor::visitValidRationalValue(McPointP
     return minus ? -rational : rational;
 }
 
-void McPointBuilderVisitor::McPointVisitor::addDivisionByZeroError(const McPointParser::ValidRationalValueContext* ctx)
+void RationalPointBuilderVisitor::RationalPointVisitor::addDivisionByZeroError(const RationalPointParser::ValidRationalValueContext* ctx)
 {
     antlr4::Token* start { ctx->getStart() };
     antlr4::Token* end { ctx->getStop() };
@@ -137,12 +151,12 @@ void McPointBuilderVisitor::McPointVisitor::addDivisionByZeroError(const McPoint
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
 
-bool McPointBuilderVisitor::McPointVisitor::symbolTableHasVariable(const std::string_view variable) const
+bool RationalPointBuilderVisitor::RationalPointVisitor::symbolTableHasVariable(const std::string_view variable) const
 {
     return m_symbolTable.containsVariable(variable);
 }
 
-void McPointBuilderVisitor::McPointVisitor::addDuplicateVariableParserError(antlr4::tree::TerminalNode* ctx)
+void RationalPointBuilderVisitor::RationalPointVisitor::addDuplicateVariableParserError(antlr4::tree::TerminalNode* ctx)
 {
     antlr4::Token* start { ctx->getSymbol() };
     Position startPositionError { start->getLine(), start->getCharPositionInLine() };
@@ -152,7 +166,7 @@ void McPointBuilderVisitor::McPointVisitor::addDuplicateVariableParserError(antl
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
 
-void McPointBuilderVisitor::McPointVisitor::addVariableNotPresentInPolySystemError(antlr4::tree::TerminalNode* ctx)
+void RationalPointBuilderVisitor::RationalPointVisitor::addVariableNotPresentInSymbolTableError(antlr4::tree::TerminalNode* ctx)
 {
     antlr4::Token* start { ctx->getSymbol() };
     Position startPositionError { start->getLine(), start->getCharPositionInLine() };
@@ -162,8 +176,8 @@ void McPointBuilderVisitor::McPointVisitor::addVariableNotPresentInPolySystemErr
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
 
-void McPointBuilderVisitor::McPointVisitor::addMissingVariablesError(
-    const McPointParser::ArrayContext* parseTree,
+void RationalPointBuilderVisitor::RationalPointVisitor::addMissingVariablesError(
+    const RationalPointParser::ArrayContext* parseTree,
     std::vector<std::string>&& missingVariables
 ) {
     std::string variablesList { antlrcpp::join(missingVariables, ", ") };
@@ -176,7 +190,7 @@ void McPointBuilderVisitor::McPointVisitor::addMissingVariablesError(
     m_errors.emplace_back(startPositionError, endPositionError, errorMessage, ParserError::Type::semantic);
 }
 
-static bool startsWithMinusSign(const McPointParser::ValidIntegerValueContext* valueContext)
+static bool startsWithMinusSign(const RationalPointParser::ValidIntegerValueContext* valueContext)
 {
     return startsWithMinusSign(valueContext->op);
 }
@@ -186,5 +200,5 @@ static bool startsWithMinusSign(const antlr4::Token* token)
     if (!token)
         return false;
 
-    return token->getType() == McPointParser::MINUS;
+    return token->getType() == RationalPointParser::MINUS;
 }
