@@ -8,8 +8,7 @@ class DenotConcurrentV1: public Denot
 {
 public:
     DenotConcurrentV1(const PolyhedralSystemConstSharedPtr polyhedralSystem, BackwardNFAConstSharedPtr backwardNfa)
-      : m_polyhedralSystem { polyhedralSystem }
-      , m_backwardNfa { backwardNfa }
+        : Denot(polyhedralSystem, backwardNfa)
     {
         const std::unordered_set<unsigned>& acceptingStates { backwardNfa->acceptingStates() };
         m_denotationAcceptingStates.reserve(acceptingStates.size());

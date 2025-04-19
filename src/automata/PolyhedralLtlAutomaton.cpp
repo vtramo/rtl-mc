@@ -454,7 +454,6 @@ spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(
     m_polyhedralLtlAutomatonStats->setTranslationTotalAcceptingSets(formulaTgba->num_sets());
     m_polyhedralLtlAutomatonStats->setTranslationTotalInitialStates(1);
     m_polyhedralLtlAutomatonStats->setTranslationSccInfo(spot::scc_info { formulaTgba });
-    // m_polyhedralLtlAutomatonStats->setTranslationTotalAcceptingStates(SpotUtils::collectAcceptingStates(formulaTgba).size());
 
     return formulaTgba;
 }

@@ -18,11 +18,13 @@ public:
         const AutomatonOptimizationFlags automatonOptimizationFlags,
         const bool universalDenotation = false,
         const bool concurrent = false,
-        const bool discretiseRtlfDirectToLtl = false
+        const bool discretiseRtlfDirectToLtl = false,
+        const bool collectPaths = false
     ) : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
       , m_finiteOnTheFlySolverStats { std::make_shared<FiniteOnTheFlySolverStats>() }
       , m_concurrent { concurrent }
       , m_discretiseRtlfDirectToLtl { discretiseRtlfDirectToLtl }
+      , m_collectPaths { collectPaths }
     {
        m_solverStats = m_finiteOnTheFlySolverStats;
     }
@@ -55,6 +57,7 @@ protected:
     std::shared_ptr<FiniteOnTheFlySolverStats> m_finiteOnTheFlySolverStats {};
     bool m_concurrent {};
     bool m_discretiseRtlfDirectToLtl {};
+    bool m_collectPaths {};
 
     void preprocessPolyhedralSystem() override {}
 
@@ -109,6 +112,14 @@ protected:
         m_finiteOnTheFlySolverStats->addDenotOnTheFlyStats(denotStats);
         Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.getExecutionTimeSeconds());
         Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.getTotalIterations());
+        Log::log(Verbosity::verbose, "[Denot algorithm] Total iterations: {}.\n", denotStats.getTotalIterations());
+
+        if (m_collectPaths && !m_concurrent)
+        {
+            const auto& denotPaths { denot.paths() };
+            Log::log(Verbosity::debug, "[Denot algorithm] Total paths: {}", denotPaths.size());
+            Log::log(Verbosity::debug, "[Denot algorithm] Paths:\n{}", fmt::join(denotPaths, "\n\n\n"));
+        }
 
         return result;
     }

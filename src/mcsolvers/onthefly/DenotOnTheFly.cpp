@@ -1,4 +1,6 @@
 #include "DenotOnTheFly.h"
+
+#include "DenotPathNode.h"
 #include "logger.h"
 #include "reach.h"
 #include "Timer.h"
@@ -64,6 +66,7 @@ PowersetUniquePtr DenotOnTheFly::run()
         Log::log(Verbosity::trace, "--- Accepting state {} completed ---\n", acceptingState);
     }
 
+    m_result = std::make_shared<Powerset>(*result);
     return result;
 }
 
@@ -76,9 +79,21 @@ PowersetUniquePtr DenotOnTheFly::denot(
     bool isSing
 )
 {
+    if (m_maxIterationReached)
+    {
+        return std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY);
+    }
+
     assert(recursionDepth <= m_maxRecursionDepth && "Recursion depth exceeded!!!");
 
     m_iterations++;
+    if (m_iterations > m_maxIterations)
+    {
+        Log::log(Verbosity::debug, "[Denot] Max iterations reached! {}.", m_maxIterations);
+        m_maxIterationReached = true;
+        return std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY);
+    }
+
     Log::log(Verbosity::trace, "--------- Denot iteration {} ---------", m_iterations);
     Log::log(Verbosity::trace, "Recursion Depth: {}", recursionDepth);
 
@@ -89,6 +104,11 @@ PowersetUniquePtr DenotOnTheFly::denot(
 
     const StateDenotation & stateDenotation { m_backwardNfa->stateDenotation(state) };
     assert(isSing == stateDenotation.isSingular() && "Sing invariant violated.");
+
+    if (m_collectPaths)
+    {
+        pushPathNode(P, X, stateDenotation, state);
+    }
 
     Log::log(Verbosity::trace, "State: {}. Denotation size {}.", state, stateDenotation.denotation()->size());
     Log::log(Verbosity::trace, "State: {}. Denotation {}.", state, stateDenotation.toString(m_polyhedralSystem->symbolTable()));
@@ -106,6 +126,11 @@ PowersetUniquePtr DenotOnTheFly::denot(
 
     if (m_backwardNfa->isInitialState(state))
     {
+        if (m_collectPaths )
+        {
+            addCurrentPath();
+        }
+
         if (stateDenotation.isSingular())
         {
             Log::log(Verbosity::trace, "State {} is initial and singular, returning X: {}",
@@ -123,6 +148,7 @@ PowersetUniquePtr DenotOnTheFly::denot(
                 m_polyhedralSystem->preFlow()
             )
         };
+        m_totalReachCalls++;
 
         Log::log(Verbosity::trace, "State {} is initial and open. Result size: {}. Returning: {}",
             state,
@@ -190,6 +216,7 @@ PowersetUniquePtr DenotOnTheFly::denot(
                 : reachPlus(A, X, m_polyhedralSystem->preFlow())
         };
         Log::log(Verbosity::trace, "Reach pairs computed (size: {}). Elapsed time: {} s.", reachPairs.size(), timer.elapsedInSeconds());
+        m_totalReachCalls++;
 
         int reachPairIndex { 1 };
         for (const auto & [Q, Y]: reachPairs)
@@ -232,6 +259,11 @@ PowersetUniquePtr DenotOnTheFly::denot(
         PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
     );
 
+    if (m_collectPaths)
+    {
+        popPathNode();
+    }
+
     return result;
 }
 
@@ -254,3 +286,26 @@ const Powerset & DenotOnTheFly::getVisitedPowerset(std::vector<Powerset> & V, co
 {
     return V[state];
 }
+
+void DenotOnTheFly::pushPathNode(const Poly& P, const Poly& X, const StateDenotation& stateDenotation, const int state)
+{
+    m_currentPath.push_back(DenotPathNode { state, P, X, stateDenotation.formula(), m_polyhedralSystem->symbolTable() });
+}
+
+DenotPathNode DenotOnTheFly::popPathNode()
+{
+    if (m_currentPath.empty())
+    {
+        throw std::invalid_argument("Cannot pop from empty path.");
+    }
+
+    auto denotPathNode { m_currentPath.back() };
+    m_currentPath.pop_back();
+    return denotPathNode;
+}
+
+void DenotOnTheFly::addCurrentPath()
+{
+    m_paths.push_back(m_currentPath);
+}
+

@@ -8,6 +8,7 @@
 #include "PolyhedralSystem.h"
 #include "DiscreteLtlFormula.h"
 #include "BackwardNFA.h"
+#include "DenotPathNode.h"
 
 class PolyhedralSynchronousProductAutomaton;
 
@@ -20,6 +21,7 @@ template <> struct fmt::formatter<Observable> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<PolyhedralLtlAutomaton> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<spot::twa_run> : fmt::ostream_formatter {};
 template <> struct fmt::formatter<PolyhedralSynchronousProductAutomaton> : fmt::ostream_formatter {};
+template <> struct fmt::formatter<std::vector<DenotPathNode>> : fmt::ostream_formatter {};
 
 /*!
  *  \brief Namespace for logging utilities, providing verbosity control and logging functions.

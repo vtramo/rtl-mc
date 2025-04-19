@@ -10,8 +10,7 @@ class DenotConcurrentV3: public Denot
 {
 public:
     DenotConcurrentV3(const PolyhedralSystemConstSharedPtr polyhedralSystem, BackwardNFAConstSharedPtr backwardNfa)
-        : m_polyhedralSystem { polyhedralSystem }
-        , m_backwardNfa { backwardNfa }
+        : Denot(polyhedralSystem, backwardNfa)
     {}
     ~DenotConcurrentV3() override = default;
 

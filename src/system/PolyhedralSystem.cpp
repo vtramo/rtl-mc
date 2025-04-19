@@ -511,7 +511,7 @@ std::ostream& operator<< (std::ostream& out, const PolyhedralSystem& polyhedralS
         return out;
     }
 
-    out << "Total atomic propositions: " << polyhedralSystem.totalAtoms() << ".\n";
+    out << "\nTotal atomic propositions: " << polyhedralSystem.totalAtoms() << ".\n";
     out << "PreFlow: " << PPLOutput::toString(polyhedralSystem.preFlow(), polyhedralSystem.symbolTable()) << '\n';
 
     out << "Space dimension: " << polyhedralSystem.spaceDimension() << ".\n";

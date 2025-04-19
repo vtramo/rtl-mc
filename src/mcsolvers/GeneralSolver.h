@@ -21,7 +21,7 @@ protected:
 
     void constructPolyhedralAbstraction() override
     {
-        std::vector observables { m_polyhedralSystem->generateObservables() };
+        std::vector observables { m_polyhedralSystem->getOrGenerateObservables() };
         const unsigned sufficientHorizon { 2 * m_ltlAutomaton->totalStates() * maxPatches(observables) };
         m_polyhedralAbstraction = std::make_shared<GeneralPolyhedralAbstraction>(m_polyhedralSystem, std::move(observables), sufficientHorizon);
     }

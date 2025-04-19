@@ -34,10 +34,10 @@ package mc <<Frame>> {
     class McPointBaseVisitor <<antlr4>> {}
 
     object mcparser_h_cpp {
-        +using McPointParsingResult = std::variant<PPL::Generator, std::vector<ParserError>>
-        +parseMcPoint(std::string_view input, const PolyhedralSystemSymbolTable& symbolTable) : McPointParsingResult
-        +parseMcPoint(std::istream& input, const PolyhedralSystemSymbolTable& symbolTable) : McPointParsingResult
-        +parseMcPoint(antlr4::ANTLRInputStream* input, const PolyhedralSystemSymbolTable& symbolTable) : McPointParsingResult
+        +using RationalPointParsingResult = std::variant<PPL::Generator, std::vector<ParserError>>
+        +parseRationalPoint(std::string_view input, const PolyhedralSystemSymbolTable& symbolTable) : RationalPointParsingResult
+        +parseRationalPoint(std::istream& input, const PolyhedralSystemSymbolTable& symbolTable) : RationalPointParsingResult
+        +parseRationalPoint(antlr4::ANTLRInputStream* input, const PolyhedralSystemSymbolTable& symbolTable) : RationalPointParsingResult
     }
 
     McPointBuilderVisitor::McPointVisitor ..|> McPointBaseVisitor

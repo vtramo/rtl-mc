@@ -39,7 +39,13 @@ template<typename D>
 DenotOnTheFlyStats collectDenotStats(const D& denot, const double executionTimeSeconds)
 {
     DenotOnTheFlyStats denotStats {};
+    const auto& totalPaths { denot.paths().size() };
     denotStats.setTotalIterations(denot.totalIterations());
     denotStats.setExecutionTimeSeconds(executionTimeSeconds);
+    denotStats.setTotalPaths(totalPaths);
+    denotStats.setResult(denot.result(), denot.polyhedralSystem().symbolTable());
+    denotStats.setTotalReachCalls(denot.totalReachCalls());
+    denotStats.setIsIncompleteResult(denot.isIncompleteResult());
+    denotStats.setMaxNumberIterations(denot.maxIterations());
     return denotStats;
 }

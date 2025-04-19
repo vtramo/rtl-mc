@@ -61,9 +61,22 @@ protected:
         m_solverStats->addAutomatonStats(automatonStats);
     }
 
-    virtual PowersetSharedPtr runFiniteSemanticsDfs()
+    virtual PowersetSharedPtr runFiniteEmptinessCheckDenotationSearch()
     {
-        FiniteSemanticsDfs dfs { m_polyhedralSynchronousProduct };
-        return dfs.run();
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Started.");
+        Timer timer {};
+
+        std::unordered_set<unsigned> initialStatesWithAcceptingRuns { collectInitialStatesWithAcceptingRuns(*m_polyhedralSynchronousProduct) };
+        PowersetSharedPtr result { std::make_shared<Powerset>(m_polyhedralSynchronousProduct->spaceDimension(), PPL::EMPTY) };
+        for (unsigned initialState: initialStatesWithAcceptingRuns)
+        {
+            PPLUtils::fusion(*result, *m_polyhedralSynchronousProduct->points(initialState));
+        }
+
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Completed. Elapsed time: {} s.", timer.elapsedInSeconds());
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Total collected initial states: {}.", initialStatesWithAcceptingRuns.size());
+        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Collected initial states: {}.", fmt::join(initialStatesWithAcceptingRuns, ", "));
+
+        return result;
     }
 };

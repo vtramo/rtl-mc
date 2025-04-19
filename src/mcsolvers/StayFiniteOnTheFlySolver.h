@@ -12,8 +12,9 @@ public:
         const AutomatonOptimizationFlags automatonOptimizationFlags,
         const bool universalDenotation = false,
         const bool concurrent = false,
-        const bool discretiseRtlfDirectToLtl = false
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl)
+        const bool discretiseRtlfDirectToLtl = false,
+        const bool collectPaths = false
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths)
     {}
 
     ~StayFiniteOnTheFlySolver() override = default;

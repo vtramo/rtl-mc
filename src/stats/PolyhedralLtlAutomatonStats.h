@@ -11,7 +11,6 @@ public:
     static const inline std::string s_translationExecutionTimeSecondsPlaceHolder { "%ATx" };
     static const inline std::string s_translationTotalStatesPlaceHolder { "%ATs" };
     static const inline std::string s_translationTotalInitialStatesPlaceHolder { "%ATis" };
-    static const inline std::string s_translationTotalAcceptingStatesPlaceHolder { "%ATas" };
     static const inline std::string s_translationTotalAcceptingSetsPlaceHolder { "%ATase" };
     static const inline std::string s_translationTotalEdgesPlaceHolder { "%ATe" };
     static const inline std::string s_translationTotalSccInfoPlaceHolder { "%ATscc" };
@@ -61,12 +60,6 @@ public:
     {
         m_translationTotalInitialStates = totalInitialStates;
         m_valueByPlaceholder[s_translationTotalInitialStatesPlaceHolder] = std::to_string(totalInitialStates);
-    }
-
-    void setTranslationTotalAcceptingStates(const int totalAcceptingStates)
-    {
-        m_translationTotalAcceptingStates = totalAcceptingStates;
-        m_valueByPlaceholder[s_translationTotalAcceptingStatesPlaceHolder] = std::to_string(totalAcceptingStates);
     }
 
     void setTranslationTotalEdges(const int totalEdges)
@@ -142,7 +135,6 @@ protected:
     int m_translationTotalStates {};
     int m_translationTotalEdges {};
     int m_translationTotalInitialStates {};
-    int m_translationTotalAcceptingStates {};
     int m_translationTotalAcceptingSets {};
     std::optional<spot::scc_info> m_translationSccInfo {};
 

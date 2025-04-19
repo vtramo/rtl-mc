@@ -16,8 +16,9 @@ public:
         const bool universalDenotation = false,
         const bool concurrent = false,
         const BrinkSemantics brinkSemantics = BrinkSemantics::may,
-        const bool discretiseRtlfDirectToLtl = false
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl)
+        const bool discretiseRtlfDirectToLtl = false,
+        const bool collectPaths = false
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths)
       , m_brinkSemantics { brinkSemantics }
     {
         PolyhedralSystemSharedPtr stayPolyhedralSystem { m_polyhedralSystem };
