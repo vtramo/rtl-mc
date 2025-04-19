@@ -3,8 +3,9 @@
 #include "OmnidirectionalPolyhedralAbstraction.h"
 #include "GeneralSolver.h"
 #include "automata_builder.h"
-#include "FiniteSemanticsDfs.h"
+#include "emptiness_algorithms.h"
 #include "Timer.h"
+#include "fmt/ranges.h"
 
 class GeneralFiniteSolver: public GeneralSolver
 {
@@ -20,7 +21,7 @@ public:
 
     ~GeneralFiniteSolver() override = default;
 
-    PowersetSharedPtr run() override
+    SolverResult run() override
     {
         preprocessPolyhedralSystem();
         logPolyhedralSystemAndCollectStats();
@@ -35,7 +36,7 @@ public:
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
 
-        return runFiniteSemanticsDfs();
+        return SolverResult { false, runFiniteEmptinessCheckDenotationSearch() };
     }
 protected:
 

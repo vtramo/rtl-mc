@@ -29,7 +29,7 @@ public:
 
     ~BrinkStayFiniteOnTheFlySolver() override = default;
 
-    PowersetSharedPtr run() override
+    SolverResult run() override
     {
         Timer timer {};
 
@@ -39,21 +39,22 @@ public:
         PolyhedralSystemSharedPtr stayPolyhedralSystem { m_polyhedralSystem };
         PolyhedralSystemSharedPtr brinkPolyhedralSystem { std::make_shared<PolyhedralSystem>(*m_polyhedralSystem) };
 
-        StayFiniteOnTheFlySolver staySolver { stayPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent };
-        BrinkFiniteOnTheFlySolver brinkSolver { brinkPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent, m_brinkSemantics };
+        StayFiniteOnTheFlySolver staySolver { stayPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent, m_discretiseRtlfDirectToLtl, m_collectPaths };
+        BrinkFiniteOnTheFlySolver brinkSolver { brinkPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent, m_brinkSemantics, m_discretiseRtlfDirectToLtl, m_collectPaths };
 
-        PowersetConstSharedPtr stayResult { staySolver.run() };
-        PowersetConstSharedPtr brinkResult { brinkSolver.run() };
+        SolverResult staySolverResult { staySolver.run() };
+        SolverResult brinkSolverResult { brinkSolver.run() };
 
         const FiniteOnTheFlySolverStats& staySolverStats { staySolver.stats() };
         const FiniteOnTheFlySolverStats& brinkSolverStats { brinkSolver.stats() };
         FiniteOnTheFlySolverStats brinkStayMergedStats { staySolverStats.merge(brinkSolverStats) };
         m_finiteOnTheFlySolverStats->merge(brinkStayMergedStats);
 
-        PowersetUniquePtr result { PPLUtils::fusion(*stayResult, *brinkResult) };
+        PowersetConstSharedPtr stayResult { staySolverResult.result() };
+        PowersetSharedPtr result { PPLUtils::fusion(*stayResult, *brinkSolverResult.result()) };
         m_finiteOnTheFlySolverStats->addExecutionTime(timer.elapsedInSeconds());
 
-        return result;
+        return SolverResult { staySolverResult.isIncompleteResult() || brinkSolverResult.isIncompleteResult(), result };
     }
 
 protected:

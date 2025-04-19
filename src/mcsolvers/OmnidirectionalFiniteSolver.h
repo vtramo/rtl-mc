@@ -19,7 +19,7 @@ public:
 
     ~OmnidirectionalFiniteSolver() override = default;
 
-    PowersetSharedPtr run() override
+    SolverResult run() override
     {
         preprocessPolyhedralSystem();
         logPolyhedralSystemAndCollectStats();
@@ -34,7 +34,7 @@ public:
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
 
-        return runFiniteEmptinessCheckDenotationSearch();
+        return SolverResult { false, runFiniteEmptinessCheckDenotationSearch() };
     }
 protected:
 

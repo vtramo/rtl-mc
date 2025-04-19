@@ -5,6 +5,7 @@
 #include "stats_collectors.h"
 #include "AutomatonOptimization.h"
 #include "DiscreteFiniteLtlFormula.h"
+#include "SolverResult.h"
 #include "spot_utils.h"
 #include "SolverStats.h"
 
@@ -31,12 +32,12 @@ public:
       , m_solverStats { std::make_shared<SolverStats>() }
     {}
 
-    PowersetSharedPtr operator() ()
+    SolverResult operator() ()
     {
         return run();
     }
 
-    virtual PowersetSharedPtr run() = 0;
+    virtual SolverResult run() = 0;
 
     [[nodiscard]] virtual const SolverStats& stats() const { return *m_solverStats; }
 

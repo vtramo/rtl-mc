@@ -33,7 +33,7 @@ public:
 
     [[nodiscard]] const FiniteOnTheFlySolverStats& stats() const override { return *m_finiteOnTheFlySolverStats; }
 
-    PowersetSharedPtr run() override
+    SolverResult run() override
     {
         Timer timer {};
         preprocessPolyhedralSystem();
@@ -47,16 +47,17 @@ public:
 
         constructBackwardFiniteLtlAutomaton();
 
-        PowersetUniquePtr result { startDenotAlgorithm() };
+        PowersetSharedPtr result { startDenotAlgorithm() };
         m_finiteOnTheFlySolverStats->addExecutionTime(timer.elapsedInSeconds());
 
-        return result;
+        return SolverResult { m_isIncompleteResult, result };
     }
 protected:
     BackwardNFAConstSharedPtr m_backwardNfa {};
     std::shared_ptr<FiniteOnTheFlySolverStats> m_finiteOnTheFlySolverStats {};
     bool m_concurrent {};
     bool m_discretiseRtlfDirectToLtl {};
+    bool m_isIncompleteResult {};
     bool m_collectPaths {};
 
     void preprocessPolyhedralSystem() override {}
@@ -109,9 +110,9 @@ protected:
 
         const double denotExecutionTimeSeconds { timer.elapsedInSeconds() };
         DenotOnTheFlyStats denotStats { collectDenotStats(denot, denotExecutionTimeSeconds) };
+        m_isIncompleteResult = denotStats.getIsIncompleteResult();
         m_finiteOnTheFlySolverStats->addDenotOnTheFlyStats(denotStats);
         Log::log(Verbosity::verbose, "<<< Denot algorithm terminated. Elapsed time: {} s.", denotStats.getExecutionTimeSeconds());
-        Log::log(Verbosity::verbose, "<<< Denot algorithm total iterations: {}.\n", denotStats.getTotalIterations());
         Log::log(Verbosity::verbose, "[Denot algorithm] Total iterations: {}.\n", denotStats.getTotalIterations());
 
         if (m_collectPaths && !m_concurrent)
@@ -126,11 +127,38 @@ protected:
 
     std::unique_ptr<Denot> createDenotAlgorithm()
     {
+        int maxIterations { getMaxIterationsFromEnvVar() };
+
         if (m_concurrent)
         {
             return std::make_unique<DenotConcurrentV1>(m_polyhedralSystem, m_backwardNfa);
         }
 
-        return std::make_unique<DenotOnTheFly>(m_polyhedralSystem, m_backwardNfa);
+        return std::make_unique<DenotOnTheFly>(m_polyhedralSystem, m_backwardNfa, m_collectPaths, maxIterations);
+    }
+
+    static int getMaxIterationsFromEnvVar()
+    {
+        int maxIterations { 100000 };
+
+        if (const char* envMaxIter { std::getenv("DENOT_MAX") })
+        {
+            try
+            {
+                maxIterations = std::stoi(envMaxIter);
+                if (maxIterations <= 0)
+                {
+                    Log::log(Verbosity::verbose, "DENOT_MAX must be positive, using default value 100000");
+                    maxIterations = 100000;
+                }
+            }
+            catch ([[maybe_unused]] const std::exception& e)
+            {
+                Log::log(Verbosity::verbose, "Invalid DENOT_MAX value '{}', using default value 100000", envMaxIter);
+                maxIterations = 100000;
+            }
+        }
+
+        return maxIterations;
     }
 };
