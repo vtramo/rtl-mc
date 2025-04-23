@@ -79,8 +79,18 @@ PowersetUniquePtr DenotOnTheFly::denot(
     bool isSing
 )
 {
+    const StateDenotation& stateDenotation { m_backwardNfa->stateDenotation(state) };
+    assert(isSing == stateDenotation.isSingular() && "Sing invariant violated.");
+
+    if (m_collectPaths)
+    {
+        pushPathNode(P, X, stateDenotation, state);
+    }
+
     if (m_maxIterationReached)
     {
+        if (m_collectPaths) popPathNode();
+
         return std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY);
     }
 
@@ -91,6 +101,9 @@ PowersetUniquePtr DenotOnTheFly::denot(
     {
         Log::log(Verbosity::debug, "[Denot] Max iterations reached! {}.", m_maxIterations);
         m_maxIterationReached = true;
+
+        if (m_collectPaths) popPathNode();
+
         return std::make_unique<Powerset>(m_polyhedralSystem->spaceDimension(), PPL::EMPTY);
     }
 
@@ -102,20 +115,12 @@ PowersetUniquePtr DenotOnTheFly::denot(
     assert(X.space_dimension() == m_polyhedralSystem->spaceDimension());
     assert(X.space_dimension() == m_polyhedralSystem->preFlow().space_dimension());
 
-    const StateDenotation & stateDenotation { m_backwardNfa->stateDenotation(state) };
-    assert(isSing == stateDenotation.isSingular() && "Sing invariant violated.");
-
-    if (m_collectPaths)
-    {
-        pushPathNode(P, X, stateDenotation, state);
-    }
-
     Log::log(Verbosity::trace, "State: {}. Denotation size {}.", state, stateDenotation.denotation()->size());
     Log::log(Verbosity::trace, "State: {}. Denotation {}.", state, stateDenotation.toString(m_polyhedralSystem->symbolTable()));
     Log::log(Verbosity::trace, "State: {}. Is initial {}", state, m_backwardNfa->isInitialState(state));
     Log::log(Verbosity::trace, "State: {}. Is accepting {}", state, m_backwardNfa->isAcceptingState(state));
 
-    const Powerset & visitedPowerset { getVisitedPowerset(V, state) };
+    const Powerset& visitedPowerset { getVisitedPowerset(V, state) };
     Log::log(Verbosity::trace, "Visited region. Size: {}. V[{}]: {}.",
         visitedPowerset.size(),
         state,
@@ -126,10 +131,7 @@ PowersetUniquePtr DenotOnTheFly::denot(
 
     if (m_backwardNfa->isInitialState(state))
     {
-        if (m_collectPaths )
-        {
-            addCurrentPath();
-        }
+        if (m_collectPaths) addCurrentPath();
 
         if (stateDenotation.isSingular())
         {
@@ -137,6 +139,8 @@ PowersetUniquePtr DenotOnTheFly::denot(
                 state,
                 PPLOutput::toString(X, m_polyhedralSystem->symbolTable())
             );
+
+            if (m_collectPaths) popPathNode();
 
             return std::make_unique<Powerset>(X);
         }
@@ -155,6 +159,8 @@ PowersetUniquePtr DenotOnTheFly::denot(
             result->size(),
             PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
         );
+
+        if (m_collectPaths) popPathNode();
 
         return result;
     }
@@ -259,10 +265,7 @@ PowersetUniquePtr DenotOnTheFly::denot(
         PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
     );
 
-    if (m_collectPaths)
-    {
-        popPathNode();
-    }
+    if (m_collectPaths) popPathNode();
 
     return result;
 }
