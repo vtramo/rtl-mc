@@ -26,13 +26,22 @@ int main(const int argc, char *argv[])
     Log::configureLogger();
     RtlMcProgram rtlMcProgram { argc, argv, RTL_MC_VERSION };
     Log::setVerbosityLevel(rtlMcProgram.verbosityLevel());
-    Log::setExportDot(rtlMcProgram.isExportDotEnabled());
+    Log::setExportAutomatonDot(rtlMcProgram.isExportAutomatonDotEnabled());
+    Log::setExportDenotPathTreeDot(rtlMcProgram.isExportDenotPathTreeDotEnabled());
 
-    PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
+    const PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
     spot::formula rtlFormula { rtlMcProgram.rtlFormula() };
-    AutomatonOptimizationFlags automatonOptimizationFlags { rtlMcProgram.automatonOptimizationFlags() };
-    Semantics semantics { rtlMcProgram.semantics() };
-    bool isUniversalDenotation { rtlMcProgram.universal() };
+    const AutomatonOptimizationFlags automatonOptimizationFlags { rtlMcProgram.automatonOptimizationFlags() };
+    const Semantics semantics { rtlMcProgram.semantics() };
+    const bool isUniversalDenotation { rtlMcProgram.universal() };
+    const bool collectDenotPaths{
+#ifdef DEBUG
+        true ||
+#endif
+        rtlMcProgram.verbosityLevel() == Verbosity::debug ||
+        rtlMcProgram.outputFormat() == OutputFormat::stats ||
+        rtlMcProgram.isExportDenotPathTreeDotEnabled()
+    };
 
     SolverUniquePtr solver {};
     switch (semantics)
@@ -58,7 +67,9 @@ int main(const int argc, char *argv[])
                 rtlFormula,
                 automatonOptimizationFlags,
                 isUniversalDenotation,
-                rtlMcProgram.concurrent()
+                rtlMcProgram.concurrent(),
+                rtlMcProgram.directLtl(),
+                collectDenotPaths
             );
         }
         break;
@@ -83,7 +94,9 @@ int main(const int argc, char *argv[])
                 rtlFormula,
                 automatonOptimizationFlags,
                 isUniversalDenotation,
-                rtlMcProgram.concurrent()
+                rtlMcProgram.concurrent(),
+                rtlMcProgram.directLtl(),
+                collectDenotPaths
             );
         }
         else
@@ -120,7 +133,9 @@ int main(const int argc, char *argv[])
                 automatonOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
-                BrinkSemantics::may
+                BrinkSemantics::may,
+                rtlMcProgram.directLtl(),
+                collectDenotPaths
             );
         }
         else if (polyhedralSystem->hasCompactFlow() && isNonRecurrent(rtlFormula))
@@ -133,7 +148,9 @@ int main(const int argc, char *argv[])
                 automatonOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
-                BrinkSemantics::may
+                BrinkSemantics::may,
+                rtlMcProgram.directLtl(),
+                collectDenotPaths
             );
         }
         else
@@ -171,7 +188,9 @@ int main(const int argc, char *argv[])
                 automatonOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
-                BrinkSemantics::must
+                BrinkSemantics::must,
+                rtlMcProgram.directLtl(),
+                collectDenotPaths
             );
         }
         else if (polyhedralSystem->hasCompactFlow() && isNonRecurrent(rtlFormula))
@@ -184,7 +203,9 @@ int main(const int argc, char *argv[])
                 automatonOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
-                BrinkSemantics::must
+                BrinkSemantics::must,
+                rtlMcProgram.directLtl(),
+                collectDenotPaths
             );
         }
         else
@@ -211,7 +232,8 @@ void run(
     SolverUniquePtr solver
 )
 {
-    PowersetSharedPtr result { solver->run() };
+    SolverResult solverResult { solver->run() };
+    PowersetSharedPtr result { solverResult.result() };
     Log::log(Verbosity::verbose, "[Result] Total patches: {}", result->size());
     Log::log(Verbosity::verbose, "[Result] Running pairwise reduce...");
     fastPairwiseReduce(*result);
@@ -220,6 +242,13 @@ void run(
     switch (rtlMcProgram.outputFormat())
     {
     case OutputFormat::normal:
+        if (solverResult.isIncompleteResult())
+        {
+            std::cout <<
+                "WARNING: The result is incomplete because the solver reached the maximum number of iterations "
+                "(can be configured via DENOT_MAX environment variable, default value: 100000)\n";
+        }
+        
         if (rtlMcProgram.modelChecking())
         {
             Poly point { rtlMcProgram.modelCheckingPoint() };

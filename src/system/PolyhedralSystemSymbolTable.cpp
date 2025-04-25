@@ -87,7 +87,7 @@ std::optional<std::string> PolyhedralSystemSymbolTable::getVariableName(const PP
     return std::nullopt;
 }
 
-PPL::dimension_type PolyhedralSystemSymbolTable::getSpaceDimension() const
+const PPL::dimension_type& PolyhedralSystemSymbolTable::spaceDimension() const
 {
     return m_dimensions;
 }

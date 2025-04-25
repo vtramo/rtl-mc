@@ -12,14 +12,15 @@ public:
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
-        const bool universalDenotation = false
+        const bool universalDenotation = false,
+        const std::string_view solverName = "OmnidirectionalInfiniteSolver"
     )
-      : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+      : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~OmnidirectionalInfiniteSolver() override = default;
 
-    PowersetSharedPtr run() override
+    SolverResult run() override
     {
         preprocessPolyhedralSystem();
         logPolyhedralSystemAndCollectStats();
@@ -34,16 +35,16 @@ public:
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
 
-        return runEmptinessCheckDenotationSearch();
+        return SolverResult { false, runEmptinessCheckDenotationSearch() };
     }
 protected:
     double discretiseRtlFormula() override
     {
-        Log::log(Verbosity::verbose, ">>> RTL formula discretisation started.");
+        Log::log(Verbosity::verbose, ">>> {} - RTL formula discretisation started.", name());
         Timer timer {};
         m_discreteLtlFormula = DiscreteLtlFormula::discretiseRtl(std::move(m_rtlFormula));
         const double discretisationExecutionTimeSeconds { timer.elapsedInSeconds() };
-        Log::log(Verbosity::verbose, "<<< Discretisation completed. Elapsed time: {} s.", discretisationExecutionTimeSeconds);
+        Log::log(Verbosity::verbose, "<<< {} - Discretisation completed. Elapsed time: {} s.", name(), discretisationExecutionTimeSeconds);
         return discretisationExecutionTimeSeconds;
     }
 
@@ -61,7 +62,7 @@ protected:
 
     PowersetSharedPtr runEmptinessCheckDenotationSearch()
     {
-        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Started.");
+        Log::log(Verbosity::verbose, "[{} - Emptiness check denotation search] Started.", name());
         Timer timer {};
 
         std::unordered_set initialStatesWithAcceptingRuns { collectInitialStatesWithAcceptingRuns(*m_polyhedralSynchronousProduct) };
@@ -71,9 +72,9 @@ protected:
             PPLUtils::fusion(*result, *m_polyhedralSynchronousProduct->points(initialState));
         }
 
-        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Completed. Elapsed time: {} s.", timer.elapsedInSeconds());
-        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Total collected initial states: {}.", initialStatesWithAcceptingRuns.size());
-        Log::log(Verbosity::verbose, "[Emptiness check denotation search] Collected initial states: {}.", fmt::join(initialStatesWithAcceptingRuns, ", "));
+        Log::log(Verbosity::verbose, "[{} - Emptiness check denotation search] Completed. Elapsed time: {} s.", name(), timer.elapsedInSeconds());
+        Log::log(Verbosity::verbose, "[{} - Emptiness check denotation search] Total collected initial states: {}.", name(), initialStatesWithAcceptingRuns.size());
+        Log::log(Verbosity::verbose, "[{} - Emptiness check denotation search] Collected initial states: {}.", name(), fmt::join(initialStatesWithAcceptingRuns, ", "));
         return result;
     }
 };

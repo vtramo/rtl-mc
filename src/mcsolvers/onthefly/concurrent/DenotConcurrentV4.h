@@ -9,8 +9,7 @@ class DenotConcurrentV4: public Denot
 {
 public:
     DenotConcurrentV4(const PolyhedralSystemConstSharedPtr polyhedralSystem, BackwardNFAConstSharedPtr backwardNfa)
-      : m_polyhedralSystem { polyhedralSystem }
-      , m_backwardNfa { backwardNfa }
+        : Denot(polyhedralSystem, backwardNfa)
     {
         m_spaceDimension = m_polyhedralSystem->spaceDimension();
     }

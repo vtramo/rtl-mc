@@ -42,7 +42,6 @@ void PolyhedralSynchronousProductAutomaton::buildAutomaton()
 
     for (unsigned productState { 0 }; productState < m_automaton->num_states(); ++productState)
     {
-        const bool isProductStateAccepting { m_acceptingStates.count(productState) > 0 };
 
         auto [ltlAutomatonState, abstractionState] = m_productStatePair[productState];
         for (auto ltlAutomatonEdge: m_ltlAutomaton->successors(ltlAutomatonState))
@@ -64,12 +63,13 @@ void PolyhedralSynchronousProductAutomaton::buildAutomaton()
             }
         }
 
+        const bool isProductStateAccepting { m_acceptingStates.count(productState) > 0 };
         assert(!isProductStateAccepting || m_automaton->state_is_accepting(productState));
     }
 
     createDummyInitialStateWithEdgesToInitialStates();
 
-    Log::log(m_automaton, fmt::format("{}-construction-completed", m_name));
+    Log::logAutomaton(m_automaton, fmt::format("{}-construction-completed", m_name));
     Log::log(Verbosity::verbose, "[{}] Construction completed.", m_name);
     Log::log(Verbosity::verbose, "[{}] Total states: {}.", m_name, totalStates());
     Log::log(Verbosity::verbose, "[{}] Total edges: {}.", m_name, totalEdges());

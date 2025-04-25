@@ -85,7 +85,7 @@ spot::twa_graph_ptr PolyhedralLtlFiniteAutomaton::convertToNfa(spot::twa_graph_p
     Timer timer {};
 
     spot::twa_graph_ptr nfa { spot::to_finite(tgba) };
-    Log::log(nfa, fmt::format("{}-nfa", m_name));
+    Log::logAutomaton(nfa, fmt::format("{}-nfa", m_name));
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
     Log::log(Verbosity::veryVerbose, "[{} - TGBA to NFA] Conversion from TGBA to NFA completed. Elapsed time: {} s.", m_name, executionTimeSeconds);

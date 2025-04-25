@@ -2,11 +2,11 @@
 
 #include <tinyxml2.h>
 #include "GeogebraPatch.h"
-#include "SymbolTable.h"
+#include "SimpleSymbolTable.h"
 
 static void addExpressionElement(
     tinyxml2::XMLElement* element,
-    const SymbolTable& symbolTable,
+    const SimpleSymbolTable& symbolTable,
     const std::unordered_map<PPL::Variable, PPL::Coefficient, std::hash<PPL::Variable>, PPLVariableEqualTo>& fixedValues,
     const GeogebraPatch& geogebraPatch,
     const PPL::dimension_type x = 0,
@@ -44,7 +44,7 @@ static void addExpressionElement(
 
 inline tinyxml2::XMLDocument* geogebraXml(
     const std::vector<GeogebraPatch>& geogebraPatches,
-    const SymbolTable& symbolTable,
+    const SimpleSymbolTable& symbolTable,
     const std::unordered_map<PPL::Variable, PPL::Coefficient, std::hash<PPL::Variable>, PPLVariableEqualTo>& fixedValues,
     const double xZero, const double yZero, const double scale, const double yscale,
     const std::pair<int, int> euclidianViewSize = { 1980, 1080 },

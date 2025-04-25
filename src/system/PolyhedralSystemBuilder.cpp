@@ -99,7 +99,7 @@ void PolyhedralSystemBuilder::assertThatAllDimensionsAreEqual() const
     const PPL::dimension_type flowSpaceDimension = m_flow->space_dimension();
 
     assertDimensionEquality(flowSpaceDimension, m_invariant->space_dimension(), "Invariant");
-    assertDimensionEquality(flowSpaceDimension, m_symbolTable->getSpaceDimension(), "Symbol Table");
+    assertDimensionEquality(flowSpaceDimension, m_symbolTable->spaceDimension(), "Symbol Table");
 
     for (auto& [atom, atomPowerset]: *m_denotation)
     {

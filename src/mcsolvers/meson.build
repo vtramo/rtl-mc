@@ -13,6 +13,7 @@ mc_solvers_source_files = [
     current_source_dir / 'BrinkFiniteOnTheFlySolver.h',
     current_source_dir / 'StayFiniteOnTheFlySolver.h',
     current_source_dir / 'BrinkStayFiniteOnTheFlySolver.h',
+    current_source_dir / 'SolverResult.h',
 ]
 
 subdir('emptiness')

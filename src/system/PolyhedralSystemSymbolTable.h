@@ -4,6 +4,8 @@
 #include <optional>
 #include <spot/tl/apcollect.hh>
 
+#include "SymbolTable.h"
+
 /*!
  * \class PolyhedralSystemSymbolTable
  * \brief Manages the mapping between user-defined variable names and their corresponding dimensions in the state space.
@@ -30,21 +32,21 @@
  * \see PolyhedralSystemSymbolTableListener
  * \see PolyhedralSystemBuilderVisitor
  */
-class PolyhedralSystemSymbolTable {
+class PolyhedralSystemSymbolTable: public SymbolTable {
 public:
     /*!
      * \brief Adds a new variable with a user-defined name to the symbol table.
      * \param id The user-defined name of the variable.
      * \return A reference to the current symbol table for method chaining.
      */
-    PolyhedralSystemSymbolTable& addVariable(std::string_view id);
+    PolyhedralSystemSymbolTable& addVariable(std::string_view id) override;
 
     /*!
      * \brief Adds multiple variables with user-defined names to the symbol table.
      * \param ids A list of user-defined variable names.
      * \return A reference to the current symbol table for method chaining.
      */
-    PolyhedralSystemSymbolTable& addVariables(std::initializer_list<std::string_view> ids);
+    PolyhedralSystemSymbolTable& addVariables(std::initializer_list<std::string_view> ids) override;
 
     /*!
      * \brief Adds an atomic proposition to the symbol table.
@@ -72,7 +74,7 @@ public:
      * \param id The user-defined name of the variable to check.
      * \return \c true if the variable exists, \c false otherwise.
      */
-    [[nodiscard]] bool containsVariable(std::string_view id) const;
+    [[nodiscard]] bool containsVariable(std::string_view id) const override;
 
     /*!
      * \brief Checks if an atomic proposition with the given name exists in the symbol table.
@@ -92,14 +94,14 @@ public:
      * \param id The user-defined name of the variable.
      * \return An optional containing the PPL variable if the name exists, or \c std::nullopt otherwise.
      */
-    [[nodiscard]] std::optional<PPL::Variable> getVariable(std::string_view id) const;
+    [[nodiscard]] std::optional<PPL::Variable> getVariable(std::string_view id) const override;
 
     /*!
      * \brief Retrieves the user-defined name corresponding to a PPL variable.
      * \param variable The PPL variable.
      * \return An optional containing the user-defined name if the variable exists, or \c std::nullopt otherwise.
      */
-    [[nodiscard]] std::optional<std::string> getVariableName(const PPL::Variable& variable) const;
+    [[nodiscard]] std::optional<std::string> getVariableName(const PPL::Variable& variable) const override;
 
     /*!
      * \brief Returns a list of all user-defined variable names in the symbol table.
@@ -111,7 +113,7 @@ public:
      * \brief Returns the total number of dimensions in the state space.
      * \return The space dimension as a \f$\text{dimension\_type}\f$.
      */
-    [[nodiscard]] PPL::dimension_type getSpaceDimension() const;
+    [[nodiscard]] const PPL::dimension_type& spaceDimension() const override;
 
     /*!
      * \brief Returns the total number of atomic propositions in the symbol table.
@@ -123,7 +125,7 @@ public:
      * \brief Returns the mapping between space dimensions and user-defined variable names.
      * \return An unordered map that associates each space dimension with a corresponding variable name.
      */
-    [[nodiscard]] std::unordered_map<PPL::dimension_type, std::string> getVariableNameBySpaceDimension() const
+    [[nodiscard]] std::unordered_map<PPL::dimension_type, std::string> getVariableNameBySpaceDimension() const override
     {
         return m_idBySpaceDimension;
     }

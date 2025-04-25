@@ -3,8 +3,9 @@
 #include "OmnidirectionalPolyhedralAbstraction.h"
 #include "GeneralSolver.h"
 #include "automata_builder.h"
-#include "FiniteSemanticsDfs.h"
+#include "emptiness_algorithms.h"
 #include "Timer.h"
+#include "fmt/ranges.h"
 
 class GeneralFiniteSolver: public GeneralSolver
 {
@@ -13,14 +14,15 @@ public:
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
-        const bool universalDenotation = false
+        const bool universalDenotation = false,
+        const std::string_view solverName = "GeneralFiniteSolver"
     )
-      : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+      : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~GeneralFiniteSolver() override = default;
 
-    PowersetSharedPtr run() override
+    SolverResult run() override
     {
         preprocessPolyhedralSystem();
         logPolyhedralSystemAndCollectStats();
@@ -35,17 +37,17 @@ public:
         constructPolyhedralAbstraction();
         constructSynchronousProductAutomaton();
 
-        return runFiniteSemanticsDfs();
+        return SolverResult { false, runFiniteEmptinessCheckDenotationSearch() };
     }
 protected:
 
     double discretiseRtlFormula() override
     {
-        Log::log(Verbosity::verbose, ">>> RTL formula discretisation started.");
+        Log::log(Verbosity::verbose, ">>> {} - RTL formula discretisation started.", name());
         Timer timer {};
         m_discreteLtlFormula = DiscreteLtlFormula::discretiseRtlFinite(std::move(m_rtlFormula));
         const double discretisationExecutionTimeSeconds { timer.elapsedInSeconds() };
-        Log::log(Verbosity::verbose, "<<< Discretisation completed. Elapsed time: {} s.", discretisationExecutionTimeSeconds);
+        Log::log(Verbosity::verbose, "<<< {} - Discretisation completed. Elapsed time: {} s.", name(), discretisationExecutionTimeSeconds);
         return discretisationExecutionTimeSeconds;
     }
 
@@ -61,9 +63,22 @@ protected:
         m_solverStats->addAutomatonStats(automatonStats);
     }
 
-    virtual PowersetSharedPtr runFiniteSemanticsDfs()
+    virtual PowersetSharedPtr runFiniteEmptinessCheckDenotationSearch()
     {
-        FiniteSemanticsDfs dfs { m_polyhedralSynchronousProduct };
-        return dfs.run();
+        Log::log(Verbosity::verbose, "[{} - Finite emptiness check denotation search] Started.", name());
+        Timer timer {};
+
+        std::unordered_set<unsigned> initialStatesWithAcceptingRuns { collectInitialStatesWithAcceptingRuns(*m_polyhedralSynchronousProduct) };
+        PowersetSharedPtr result { std::make_shared<Powerset>(m_polyhedralSynchronousProduct->spaceDimension(), PPL::EMPTY) };
+        for (unsigned initialState: initialStatesWithAcceptingRuns)
+        {
+            PPLUtils::fusion(*result, *m_polyhedralSynchronousProduct->points(initialState));
+        }
+
+        Log::log(Verbosity::verbose, "[{} - Finite emptiness check denotation search] Completed. Elapsed time: {} s.",  name(), timer.elapsedInSeconds());
+        Log::log(Verbosity::verbose, "[{} - Finite emptiness check denotation search] Total collected initial states: {}.",  name(), initialStatesWithAcceptingRuns.size());
+        Log::log(Verbosity::verbose, "[{} - Finite emptiness check denotation search] Collected initial states: {}.",  name(), fmt::join(initialStatesWithAcceptingRuns, ", "));
+
+        return result;
     }
 };

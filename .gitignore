@@ -3,4 +3,5 @@ subprojects/*
 !subprojects/*.wrap
 .idea
 src/parser/system/generated/g4
-src/parser/mc/generated/g4
+/src/parser/point/generated/g4/*
+tools/poly-ggb/src/parser/generated/g4

@@ -13,8 +13,10 @@ public:
         const bool universalDenotation = false,
         const bool concurrent = false,
         const BrinkSemantics brinkSemantics = BrinkSemantics::may,
-        const bool discretiseRtlfDirectToLtl = false
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl)
+        const bool discretiseRtlfDirectToLtl = false,
+        const bool collectPaths = false,
+        const std::string_view solverName = "BrinkFiniteOnTheFlySolver"
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths, solverName)
       , m_brinkSemantics { brinkSemantics }
     {}
 

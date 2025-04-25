@@ -12,29 +12,34 @@ public:
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
-        const bool universalDenotation = false
+        const bool universalDenotation = false,
+        const std::string_view solverName = "OmnidirectionalMaySolver"
     )
-      : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+      : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~OmnidirectionalMaySolver() override = default;
 
-    PowersetSharedPtr run() override
+    SolverResult run() override
     {
         OmnidirectionalInfiniteSolver infiniteSolver { m_polyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation };
-        PowersetConstSharedPtr infiniteResult { infiniteSolver.run() };
+        SolverResult infiniteSolverResult { infiniteSolver.run() };
         const SolverStats& infiniteSolverStats { infiniteSolver.stats() };
 
         preprocessPolyhedralSystem();
         preprocessRtlFormula();
 
         OmnidirectionalFiniteSolver finiteSolver { m_polyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation };
-        PowersetConstSharedPtr finiteResult { finiteSolver.run() };
+        SolverResult finiteSolverResult { finiteSolver.run() };
         const SolverStats& finiteSolverStats { finiteSolver.stats() };
 
         m_solverStats = std::make_shared<SolverStats>(infiniteSolverStats.merge(finiteSolverStats));
 
-        return PPLUtils::fusion(*finiteResult, *infiniteResult);
+        PowersetConstSharedPtr infiniteResult { infiniteSolverResult.result() };
+        return SolverResult {
+            infiniteSolverResult.isIncompleteResult() || finiteSolverResult.isIncompleteResult(),
+            PPLUtils::fusion(*infiniteResult, *infiniteSolverResult.result())
+        };
     }
 protected:
     void preprocessRtlFormula() override

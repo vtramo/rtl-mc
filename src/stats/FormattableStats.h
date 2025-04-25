@@ -14,10 +14,17 @@ public:
         std::string result { s };
         size_t pos { 0 };
 
-        while ((pos = result.find(s_placeholderPrefix, pos)) != std::string::npos) {
+        while ((pos = result.find(s_placeholderPrefix, pos)) != std::string::npos)
+        {
             size_t endPos { result.find(' ', pos) };
-            if (endPos == std::string::npos) {
-                endPos = result.length();
+            if (endPos == std::string::npos)
+            {
+                endPos = result.find(',', pos);
+
+                if (endPos == std::string::npos)
+                {
+                    endPos = result.length();
+                }
             }
 
             std::string placeholder { result.substr(pos, endPos - pos) };

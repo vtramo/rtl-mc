@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2025-04-22
+### :sparkles: New Features
+- [`fa9b44c`](https://github.com/vtramo/rtl-mc/commit/fa9b44c1559e17788f37c82cf69e23c47008a998) - **sys-gen**: generate unique variable names for tank experiment *(commit by [@vtramo](https://github.com/vtramo))*
+- [`2d39d95`](https://github.com/vtramo/rtl-mc/commit/2d39d95e3a27edae9331ead7469d7b9867316be6) - **denot**: add more stats for Denot + max iterations *(commit by [@vtramo](https://github.com/vtramo))*
+- [`663684b`](https://github.com/vtramo/rtl-mc/commit/663684b07712c9a2cad28e3f09762919c8e550bc) - **mcsolver**: add `SolverResult` class *(commit by [@vtramo](https://github.com/vtramo))*
+- [`4d02b5d`](https://github.com/vtramo/rtl-mc/commit/4d02b5d980ff6869ade1100ceda1d9394a6f66c1) - extract `SymbolTable` interface and refactor rational point parser *(commit by [@vtramo](https://github.com/vtramo))*
+- [`accaf16`](https://github.com/vtramo/rtl-mc/commit/accaf16f48c54e3f5b35970b9ff92594a783a66f) - **poly-ggb**: add `--fixed` argument *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :bug: Bug Fixes
+- [`90dd2b2`](https://github.com/vtramo/rtl-mc/commit/90dd2b290f1cbebe9d584268b925cbed5131e9ad) - **sys-gen**: fix `maxTime` flag *(commit by [@vtramo](https://github.com/vtramo))*
+- [`010ea67`](https://github.com/vtramo/rtl-mc/commit/010ea67bc26a6fa4260f35f96990e0a42724fbec) - **emptiness**: fix emptiness algorithms *(commit by [@vtramo](https://github.com/vtramo))*
+- [`ea1f46d`](https://github.com/vtramo/rtl-mc/commit/ea1f46de01a9d836a77923446da56a326561a290) - **mcsolvers**: fix universal denotation calculation *(commit by [@vtramo](https://github.com/vtramo))*
+- [`a0acc6b`](https://github.com/vtramo/rtl-mc/commit/a0acc6baa57079e7845875bc0f9e158f4d2f4c81) - **poly-ggb**: avoid inconsistent constraints *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :wrench: Chores
+- [`90a583f`](https://github.com/vtramo/rtl-mc/commit/90a583fb07afb72f9aa4bb63b97508dd79b4f322) - update gap omnidirectional inf semantics pdf result *(commit by [@vtramo](https://github.com/vtramo))*
+- [`6b03252`](https://github.com/vtramo/rtl-mc/commit/6b032529ce05db0e09895b3e818cc4e3d6c993ea) - add incremental tanks script and results *(commit by [@vtramo](https://github.com/vtramo))*
+- [`7a041bd`](https://github.com/vtramo/rtl-mc/commit/7a041bd661ee734f2850f458c362b846400d04e1) - update scripts and add flow pdfs *(commit by [@vtramo](https://github.com/vtramo))*
+- [`6fdb6f0`](https://github.com/vtramo/rtl-mc/commit/6fdb6f0879252da3b029d92cdeb757f5106e551e) - add certificates and visualization for incremental gap flow *(commit by [@vtramo](https://github.com/vtramo))*
+- [`396c1ab`](https://github.com/vtramo/rtl-mc/commit/396c1ab6726bb20be60e8dc574eb6a37997fff39) - add incremental tanks experiment results *(commit by [@vtramo](https://github.com/vtramo))*
+
+
 ## [0.1.5] - 2025-04-14
 ### :sparkles: New Features
 - [`d75b7c5`](https://github.com/vtramo/rtl-mc/commit/d75b7c5a2a920fa87e865815ca738dd73b1be3f2) - **sys-gen**: add `sys-gen`, a tool for generating polyhedral systems *(commit by [@vtramo](https://github.com/vtramo))*
@@ -148,3 +170,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.3]: https://github.com/vtramo/rtl-mc/compare/0.1.2...0.1.3
 [0.1.4]: https://github.com/vtramo/rtl-mc/compare/0.1.3...0.1.4
 [0.1.5]: https://github.com/vtramo/rtl-mc/compare/0.1.4...0.1.5
+[0.1.6]: https://github.com/vtramo/rtl-mc/compare/0.1.5...0.1.6

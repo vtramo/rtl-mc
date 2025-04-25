@@ -4,7 +4,7 @@
 #include "RtlParsingResult.h"
 #include "PolyhedralSystemParsingResult.h"
 #include "systemparser.h"
-#include "mcparser.h"
+#include "pointparser.h"
 #include "parsertl.h"
 #include "Verbosity.h"
 #include "AutomatonOptimization.h"
@@ -48,7 +48,8 @@ public:
     [[nodiscard]] OutputFormat outputFormat() const { return m_outputFormat; }
     [[nodiscard]] std::string statsFormat() const { return m_statsFormat; }
     [[nodiscard]] Semantics semantics() const { return m_semantics; }
-    [[nodiscard]] bool isExportDotEnabled() const { return m_exportDot; }
+    [[nodiscard]] bool isExportAutomatonDotEnabled() const { return m_exportAutomatonDot; }
+    [[nodiscard]] bool isExportDenotPathTreeDotEnabled() const { return m_exportDenotPathTreeDot; }
 
 private:
     argparse::ArgumentParser m_rtlMcProgram{};
@@ -72,7 +73,8 @@ private:
     Verbosity m_verbosityLevel{Verbosity::silent};
     OutputFormat m_outputFormat{OutputFormat::normal};
     std::string m_statsFormat{};
-    bool m_exportDot{};
+    bool m_exportAutomatonDot{};
+    bool m_exportDenotPathTreeDot{};
 
     void buildRtlMcProgram()
     {
@@ -313,11 +315,17 @@ private:
     void addExportDotArguments()
     {
         m_rtlMcProgram
-            .add_argument("--export-dot")
+            .add_argument("--export-automaton-dot")
             .help("Create a .dot file for each graph/automaton created (including any intermediate changes)\n"
                 "during the solving process.")
             .flag()
-            .store_into(m_exportDot);
+            .store_into(m_exportAutomatonDot);
+
+        m_rtlMcProgram
+            .add_argument("--export-denot-path-tree-dot")
+            .help("Create dot files representing path trees generated during the on-the-fly algorithm execution.")
+            .flag()
+            .store_into(m_exportDenotPathTreeDot);
     }
 
     void parseArgs(const int argc, char* argv[])
@@ -330,6 +338,11 @@ private:
             {
                 throw std::runtime_error(
                     "It is not possible to read both the polyhedral system and the RTL formula from stdin!");
+            }
+
+            if (!m_existential && !m_universal)
+            {
+                m_existential = true;
             }
         }
         catch (const std::exception& e)
@@ -378,27 +391,23 @@ private:
 
     void parseModelCheckingPoint()
     {
-        McPointParsingResult mcPointParsingResult{
-            parseMcPoint(
+        RationalPointParsingResult rationalPointParsingResult{
+            parseRationalPoint(
                 std::string_view{*m_modelCheckingPointString},
                 m_polyhedralSystem->symbolTable()
             )
         };
 
-        if (std::holds_alternative<std::vector<ParserError>>(mcPointParsingResult))
+        if (std::holds_alternative<std::vector<ParserError>>(rationalPointParsingResult))
         {
             spdlog::error("Errors while parsing model-checking point:");
-            std::vector errors{std::get<std::vector<ParserError>>(mcPointParsingResult)};
+            std::vector errors{std::get<std::vector<ParserError>>(rationalPointParsingResult)};
             for (auto& error : errors)
                 spdlog::error("- {}", error.errorMessage());
             exit(1);
         }
 
-        m_modelCheckingPoint =
-            Poly{
-                PPL::Generator_System{
-                    std::get<PPL::Generator>(mcPointParsingResult)
-                }
-            };
+        RationalPoint rationalPoint { std::get<RationalPoint>(rationalPointParsingResult) };
+        m_modelCheckingPoint = Poly { PPL::Generator_System { rationalPoint.generator() } };
     }
 };

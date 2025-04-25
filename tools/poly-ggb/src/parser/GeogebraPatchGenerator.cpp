@@ -10,7 +10,7 @@ namespace
     RGBColor toRGBColor(const antlr4::tree::TerminalNode* atomContext);
 }
 
-GeogebraPatchGenerator::GeogebraPatchGenerator(SymbolTable& symbolTable): m_visitor { symbolTable }
+GeogebraPatchGenerator::GeogebraPatchGenerator(SimpleSymbolTable& symbolTable): m_visitor { symbolTable }
 {
 }
 
@@ -24,7 +24,7 @@ const std::vector<ParserError>& GeogebraPatchGenerator::errors() const
     return m_visitor.m_errors;
 }
 
-GeogebraPatchGenerator::GeogebraPatchVisitor::GeogebraPatchVisitor(SymbolTable& symbolTable)
+GeogebraPatchGenerator::GeogebraPatchVisitor::GeogebraPatchVisitor(SimpleSymbolTable& symbolTable)
     : m_symbolTable { symbolTable }
 {
 }

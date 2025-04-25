@@ -1,8 +1,12 @@
 #include <iostream>
 #include <ostream>
+#include <spdlog/spdlog.h>
+
 #include "geogebra_polyhedra_parser.h"
 #include "geogebra_xml.h"
 #include "geogebra_zip.h"
+#include "logger.h"
+#include "pointparser.h"
 #include "PolyGgbProgram.h"
 
 #ifndef RTL_MC_VERSION
@@ -13,14 +17,15 @@ using PPL::IO_Operators::operator<<;
 
 std::pair<PPL::dimension_type, PPL::dimension_type> getXYVariables(
     const PolyGgbProgram& polyGgbProgram,
-    const SymbolTable& symbolTable
+    const SimpleSymbolTable& symbolTable
 );
 
 std::unordered_map<PPL::Variable, PPL::Coefficient, std::hash<PPL::Variable>, PPLVariableEqualTo>
-computeFixedValues(
+parseFixedValues(
     PPL::dimension_type x,
     PPL::dimension_type y,
-    PPL::dimension_type spaceDimension
+    const SymbolTable& symbolTable,
+    std::optional<std::string> fixedValuesString
 );
 
 int main(const int argc, char* argv[])
@@ -34,7 +39,7 @@ int main(const int argc, char* argv[])
     {
         auto [geogebraPatches, symbolTable]{std::get<GeogebraParsingSuccess>(geogebraPolyhedraParsingResult)};
         auto [x, y] { getXYVariables(polyGgbProgram, symbolTable) };
-        auto fixedValues { computeFixedValues(x, y, symbolTable.spaceDimension()) };
+        auto fixedValues { parseFixedValues(x, y, symbolTable, polyGgbProgram.fixedVariableValues()) };
 
         auto euclidianViewSize { std::make_pair<int, int>(polyGgbProgram.width(), polyGgbProgram.height()) };
         tinyxml2::XMLDocument* geogebraXmlDocument{
@@ -86,7 +91,7 @@ int main(const int argc, char* argv[])
 
 std::pair<PPL::dimension_type, PPL::dimension_type> getXYVariables(
     const PolyGgbProgram& polyGgbProgram,
-    const SymbolTable& symbolTable
+    const SimpleSymbolTable& symbolTable
 )
 {
     std::string xVariableName {
@@ -127,20 +132,53 @@ std::pair<PPL::dimension_type, PPL::dimension_type> getXYVariables(
 }
 
 std::unordered_map<PPL::Variable, PPL::Coefficient, std::hash<PPL::Variable>, PPLVariableEqualTo>
-computeFixedValues(
+parseFixedValues(
     const PPL::dimension_type x,
     const PPL::dimension_type y,
-    const PPL::dimension_type spaceDimension
+    const SymbolTable& symbolTable,
+    std::optional<std::string> fixedValuesString
 )
 {
     std::unordered_map<PPL::Variable, PPL::Coefficient, std::hash<PPL::Variable>, PPLVariableEqualTo> fixedValues {};
 
-    for (PPL::dimension_type dim { 0 }; dim < spaceDimension; ++dim)
+    if (fixedValuesString.has_value())
     {
-        PPL::Variable variable { dim };
-        if (dim != x && dim != y)
+        RationalPointParsingResult rationalPointParsingResult { parseRationalPoint(*fixedValuesString, symbolTable) };
+
+        if (std::holds_alternative<std::vector<ParserError>>(rationalPointParsingResult))
         {
-            fixedValues.insert({ variable, 0 });
+            spdlog::error("Errors while parsing model-checking point:");
+            std::vector errors{std::get<std::vector<ParserError>>(rationalPointParsingResult)};
+            for (auto& error : errors)
+            {
+                spdlog::error("- {}", error.errorMessage());
+            }
+            exit(1);
+        }
+
+        RationalPoint rationalPoint { std::get<RationalPoint>(rationalPointParsingResult) };
+        for (auto& [dim, coefficient]: rationalPoint.coefficients())
+        {
+            if (dim == x || dim == y)
+            {
+                Log::configureLogger();
+                spdlog::error("Cannot set a fixed value for variable '{}' since it has been assigned to {} axis",
+                              *symbolTable.getVariableName(PPL::Variable{dim}), dim == x ? "X" : "Y");
+                exit(1);
+            }
+
+            fixedValues.insert({PPL::Variable{dim}, PPL::Coefficient { coefficient } });
+        }
+    }
+    else
+    {
+        for (PPL::dimension_type dim { 0 }; dim < symbolTable.spaceDimension(); ++dim)
+        {
+            PPL::Variable variable { dim };
+            if (dim != x && dim != y)
+            {
+                fixedValues.insert({ variable, 0 });
+            }
         }
     }
 

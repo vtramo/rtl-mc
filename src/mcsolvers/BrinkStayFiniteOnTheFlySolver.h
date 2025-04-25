@@ -16,8 +16,10 @@ public:
         const bool universalDenotation = false,
         const bool concurrent = false,
         const BrinkSemantics brinkSemantics = BrinkSemantics::may,
-        const bool discretiseRtlfDirectToLtl = false
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl)
+        const bool discretiseRtlfDirectToLtl = false,
+        const bool collectPaths = false,
+        const std::string_view solverName = "BrinkStayFiniteOnTheFlySolver"
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths, solverName)
       , m_brinkSemantics { brinkSemantics }
     {
         PolyhedralSystemSharedPtr stayPolyhedralSystem { m_polyhedralSystem };
@@ -28,7 +30,7 @@ public:
 
     ~BrinkStayFiniteOnTheFlySolver() override = default;
 
-    PowersetSharedPtr run() override
+    SolverResult run() override
     {
         Timer timer {};
 
@@ -38,21 +40,22 @@ public:
         PolyhedralSystemSharedPtr stayPolyhedralSystem { m_polyhedralSystem };
         PolyhedralSystemSharedPtr brinkPolyhedralSystem { std::make_shared<PolyhedralSystem>(*m_polyhedralSystem) };
 
-        StayFiniteOnTheFlySolver staySolver { stayPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent };
-        BrinkFiniteOnTheFlySolver brinkSolver { brinkPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent, m_brinkSemantics };
+        StayFiniteOnTheFlySolver staySolver { stayPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent, m_discretiseRtlfDirectToLtl, m_collectPaths };
+        BrinkFiniteOnTheFlySolver brinkSolver { brinkPolyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation, m_concurrent, m_brinkSemantics, m_discretiseRtlfDirectToLtl, m_collectPaths };
 
-        PowersetConstSharedPtr stayResult { staySolver.run() };
-        PowersetConstSharedPtr brinkResult { brinkSolver.run() };
+        SolverResult staySolverResult { staySolver.run() };
+        SolverResult brinkSolverResult { brinkSolver.run() };
 
         const FiniteOnTheFlySolverStats& staySolverStats { staySolver.stats() };
         const FiniteOnTheFlySolverStats& brinkSolverStats { brinkSolver.stats() };
         FiniteOnTheFlySolverStats brinkStayMergedStats { staySolverStats.merge(brinkSolverStats) };
         m_finiteOnTheFlySolverStats->merge(brinkStayMergedStats);
 
-        PowersetUniquePtr result { PPLUtils::fusion(*stayResult, *brinkResult) };
+        PowersetConstSharedPtr stayResult { staySolverResult.result() };
+        PowersetSharedPtr result { PPLUtils::fusion(*stayResult, *brinkSolverResult.result()) };
         m_finiteOnTheFlySolverStats->addExecutionTime(timer.elapsedInSeconds());
 
-        return result;
+        return SolverResult { staySolverResult.isIncompleteResult() || brinkSolverResult.isIncompleteResult(), result };
     }
 
 protected:
@@ -62,16 +65,16 @@ protected:
 
     void logPolyhedralSystemAndCollectStats() override
     {
-        Log::log(Verbosity::verbose, "[Original Polyhedral System]\n{}", *m_polyhedralSystem);
+        Log::log(Verbosity::verbose, "[{} - Original Polyhedral System]\n{}", name(), *m_polyhedralSystem);
         m_solverStats->addPolyhedralSystemStats(collectPolyhedralSystemStats(*m_polyhedralSystem));
     }
 
     void logRtlFormulaAndCollectStats() override
     {
-        Log::log(Verbosity::verbose, "[Original RTL Formula] Formula: {}.", m_rtlFormula);
+        Log::log(Verbosity::verbose, "[{} - Original RTL Formula] Formula: {}.", name(), m_rtlFormula);
         RtlFormulaStats rtlFormulaStats { collectRtlStats(m_rtlFormula) };
         m_solverStats->addRtlFormulaStats(rtlFormulaStats);
-        Log::log(Verbosity::verbose, "[Original RTL Formula] Total atomic propositions: {}.", rtlFormulaStats.getTotalAtomicPropositions());
-        Log::log(Verbosity::verbose, "[Original RTL Formula] Length: {}.\n", rtlFormulaStats.getLength());
+        Log::log(Verbosity::verbose, "[{} - Original RTL Formula] Total atomic propositions: {}.", name(), rtlFormulaStats.getTotalAtomicPropositions());
+        Log::log(Verbosity::verbose, "[{} - Original RTL Formula] Length: {}.\n", name(), rtlFormulaStats.getLength());
     }
 };

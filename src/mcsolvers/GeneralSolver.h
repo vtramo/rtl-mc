@@ -10,9 +10,10 @@ public:
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
-        const bool universalDenotation = false
+        const bool universalDenotation = false,
+        const std::string_view solverName = "GeneralSolver"
     )
-      : ExplicitSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+      : ExplicitSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~GeneralSolver() override = default;
@@ -21,7 +22,7 @@ protected:
 
     void constructPolyhedralAbstraction() override
     {
-        std::vector observables { m_polyhedralSystem->generateObservables() };
+        std::vector observables { m_polyhedralSystem->getOrGenerateObservables() };
         const unsigned sufficientHorizon { 2 * m_ltlAutomaton->totalStates() * maxPatches(observables) };
         m_polyhedralAbstraction = std::make_shared<GeneralPolyhedralAbstraction>(m_polyhedralSystem, std::move(observables), sufficientHorizon);
     }
