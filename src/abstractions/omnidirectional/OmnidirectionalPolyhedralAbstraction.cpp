@@ -53,7 +53,7 @@ void OmnidirectionalPolyhedralAbstraction::buildAbstraction(std::vector<Tile>&& 
         }
     }
 
-    Log::log(m_automaton, fmt::format("{}-construction-completed", m_name));
+    Log::logAutomaton(m_automaton, fmt::format("{}-construction-completed", m_name));
     Log::log(Verbosity::verbose, "[{}] Construction completed.", m_name);
     Log::log(Verbosity::verbose, "[{}] Total states: {}.", m_name, totalStates());
     Log::log(Verbosity::verbose, "[{}] Total edges: {}.", m_name, totalEdges());

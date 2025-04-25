@@ -17,9 +17,9 @@ public:
         const bool concurrent = false,
         const BrinkSemantics brinkSemantics = BrinkSemantics::may,
         const bool discretiseRtlfDirectToLtl = false,
-        const bool collectPaths = false
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths)
+        const bool collectPaths = false,
         const std::string_view solverName = "BrinkStayFiniteOnTheFlySolver"
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths, solverName)
       , m_brinkSemantics { brinkSemantics }
     {
         PolyhedralSystemSharedPtr stayPolyhedralSystem { m_polyhedralSystem };
@@ -65,16 +65,16 @@ protected:
 
     void logPolyhedralSystemAndCollectStats() override
     {
-        Log::log(Verbosity::verbose, "[Original Polyhedral System]\n{}", *m_polyhedralSystem);
+        Log::log(Verbosity::verbose, "[{} - Original Polyhedral System]\n{}", name(), *m_polyhedralSystem);
         m_solverStats->addPolyhedralSystemStats(collectPolyhedralSystemStats(*m_polyhedralSystem));
     }
 
     void logRtlFormulaAndCollectStats() override
     {
-        Log::log(Verbosity::verbose, "[Original RTL Formula] Formula: {}.", m_rtlFormula);
+        Log::log(Verbosity::verbose, "[{} - Original RTL Formula] Formula: {}.", name(), m_rtlFormula);
         RtlFormulaStats rtlFormulaStats { collectRtlStats(m_rtlFormula) };
         m_solverStats->addRtlFormulaStats(rtlFormulaStats);
-        Log::log(Verbosity::verbose, "[Original RTL Formula] Total atomic propositions: {}.", rtlFormulaStats.getTotalAtomicPropositions());
-        Log::log(Verbosity::verbose, "[Original RTL Formula] Length: {}.\n", rtlFormulaStats.getLength());
+        Log::log(Verbosity::verbose, "[{} - Original RTL Formula] Total atomic propositions: {}.", name(), rtlFormulaStats.getTotalAtomicPropositions());
+        Log::log(Verbosity::verbose, "[{} - Original RTL Formula] Length: {}.\n", name(), rtlFormulaStats.getLength());
     }
 };

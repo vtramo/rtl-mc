@@ -26,14 +26,19 @@ int main(const int argc, char *argv[])
     Log::configureLogger();
     RtlMcProgram rtlMcProgram { argc, argv, RTL_MC_VERSION };
     Log::setVerbosityLevel(rtlMcProgram.verbosityLevel());
-    Log::setExportDot(rtlMcProgram.isExportDotEnabled());
+    Log::setExportAutomatonDot(rtlMcProgram.isExportAutomatonDotEnabled());
+    Log::setExportDenotPathTreeDot(rtlMcProgram.isExportDenotPathTreeDotEnabled());
 
     const PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
     spot::formula rtlFormula { rtlMcProgram.rtlFormula() };
     const AutomatonOptimizationFlags automatonOptimizationFlags { rtlMcProgram.automatonOptimizationFlags() };
     const Semantics semantics { rtlMcProgram.semantics() };
     const bool isUniversalDenotation { rtlMcProgram.universal() };
-    const bool collectDenotPaths { rtlMcProgram.verbosityLevel() == Verbosity::debug || rtlMcProgram.outputFormat() == OutputFormat::stats };
+    const bool collectDenotPaths {
+        rtlMcProgram.verbosityLevel() == Verbosity::debug  ||
+        rtlMcProgram.outputFormat() == OutputFormat::stats ||
+        rtlMcProgram.isExportDenotPathTreeDotEnabled()
+    };
 
     SolverUniquePtr solver {};
     switch (semantics)

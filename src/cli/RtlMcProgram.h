@@ -48,7 +48,8 @@ public:
     [[nodiscard]] OutputFormat outputFormat() const { return m_outputFormat; }
     [[nodiscard]] std::string statsFormat() const { return m_statsFormat; }
     [[nodiscard]] Semantics semantics() const { return m_semantics; }
-    [[nodiscard]] bool isExportDotEnabled() const { return m_exportDot; }
+    [[nodiscard]] bool isExportAutomatonDotEnabled() const { return m_exportAutomatonDot; }
+    [[nodiscard]] bool isExportDenotPathTreeDotEnabled() const { return m_exportDenotPathTreeDot; }
 
 private:
     argparse::ArgumentParser m_rtlMcProgram{};
@@ -72,7 +73,8 @@ private:
     Verbosity m_verbosityLevel{Verbosity::silent};
     OutputFormat m_outputFormat{OutputFormat::normal};
     std::string m_statsFormat{};
-    bool m_exportDot{};
+    bool m_exportAutomatonDot{};
+    bool m_exportDenotPathTreeDot{};
 
     void buildRtlMcProgram()
     {
@@ -313,11 +315,17 @@ private:
     void addExportDotArguments()
     {
         m_rtlMcProgram
-            .add_argument("--export-dot")
+            .add_argument("--export-automaton-dot")
             .help("Create a .dot file for each graph/automaton created (including any intermediate changes)\n"
                 "during the solving process.")
             .flag()
-            .store_into(m_exportDot);
+            .store_into(m_exportAutomatonDot);
+
+        m_rtlMcProgram
+            .add_argument("--export-denot-path-tree-dot")
+            .help("Create dot files representing path trees generated during the on-the-fly algorithm execution.")
+            .flag()
+            .store_into(m_exportDenotPathTreeDot);
     }
 
     void parseArgs(const int argc, char* argv[])

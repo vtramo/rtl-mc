@@ -12,7 +12,7 @@ public:
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
-        const bool universalDenotation = false
+        const bool universalDenotation = false,
         const std::string_view solverName = "ExplicitSolver"
     )
       : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)

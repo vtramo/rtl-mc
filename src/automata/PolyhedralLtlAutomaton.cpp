@@ -218,7 +218,7 @@ bool PolyhedralLtlAutomaton::filterEdge([[maybe_unused]] const spot::const_twa_g
     return edge.cond == bdd_false();
 }
 
-bool PolyhedralLtlAutomaton::isAcceptingEdge(const spot::const_twa_graph_ptr& graph, const Edge& edge)
+bool PolyhedralLtlAutomaton::isAcceptingEdge([[maybe_unused]] const spot::const_twa_graph_ptr& graph, const Edge& edge)
 {
     return edge.acc.has(0);
 }
@@ -303,7 +303,7 @@ void PolyhedralLtlAutomaton::eraseInitialEdgesWithEmptyDenotation(const spot::tw
 
     }
 
-    Log::log(twaGraph, fmt::format("{}-erase-empty-denotation-edges", m_name));
+    Log::logAutomaton(twaGraph, fmt::format("{}-erase-empty-denotation-edges", m_name));
 }
 
 void PolyhedralLtlAutomaton::createNewEdge(const unsigned srcState, const unsigned dstState)
@@ -332,7 +332,7 @@ void PolyhedralLtlAutomaton::purgeUnreachableStates(const spot::twa_graph_ptr tw
     Timer timer {};
 
     twaGraph->purge_unreachable_states();
-    Log::log(twaGraph, fmt::format("{}-purge-unreachable-states", m_name));
+    Log::logAutomaton(twaGraph, fmt::format("{}-purge-unreachable-states", m_name));
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
     Log::log(Verbosity::veryVerbose, "[{} - Purge unreachable states] Removal of unreachable states from automaton completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
@@ -347,7 +347,7 @@ void PolyhedralLtlAutomaton::purgeUnreachableStates(const spot::twa_graph_ptr tw
 
 void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSeconds)
 {
-    Log::log(m_automaton, fmt::format("{}-construction-completed", m_name));
+    Log::logAutomaton(m_automaton, fmt::format("{}-construction-completed", m_name));
     Log::log(Verbosity::verbose, "[{} - Construction] Construction completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
     Log::log(Verbosity::verbose, "[{} - Construction] Total states: {}.", m_name, totalStates());
     Log::log(Verbosity::verbose, "[{} - Construction] Total initial states: {}.", m_name, totalInitialStates());
@@ -440,7 +440,7 @@ spot::twa_graph_ptr PolyhedralLtlAutomaton::translateDiscreteLtlFormulaIntoTgba(
     Timer timer {};
 
     spot::twa_graph_ptr formulaTgba { ltlToNbaTranslator.run(m_discreteLtlFormula.formula()) };
-    Log::log(formulaTgba, fmt::format("{}-translation", m_name));
+    Log::logAutomaton(formulaTgba, fmt::format("{}-translation", m_name));
 
     const double executionTimeSeconds { timer.elapsedInSeconds() };
     Log::log(Verbosity::veryVerbose, "[{} - Translation] Translation of the discretised LTL formula into a TGBA completed. Elapsed time: {} s.", m_name, executionTimeSeconds);

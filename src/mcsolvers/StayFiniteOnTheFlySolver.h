@@ -13,10 +13,9 @@ public:
         const bool universalDenotation = false,
         const bool concurrent = false,
         const bool discretiseRtlfDirectToLtl = false,
-        const bool collectPaths = false
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths)
+        const bool collectPaths = false,
         const std::string_view solverName = "StayFiniteOnTheFlySolver"
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths, exportPathTree, solverName)
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths, solverName)
     {}
 
     ~StayFiniteOnTheFlySolver() override = default;
