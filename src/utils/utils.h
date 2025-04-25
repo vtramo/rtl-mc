@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <algorithm>
+#include <ctime>
+#include <iomanip>
 
 /*!
  * \brief Generates all simple combinations of size `k` from a range of `n` elements.
@@ -145,4 +147,13 @@ inline bool endsWith(const std::string_view str, const std::string_view suffix) 
     }
 
     return std::equal(suffix.rbegin(), suffix.rend(), str.rbegin());
+}
+
+inline std::string nowToString(const std::string_view format = "%d-%m-%YT%H:%M:%S")
+{
+    auto t { std::time(nullptr) };
+    auto tm { *std::localtime(&t) };
+    std::ostringstream tmStringStream {};
+    tmStringStream << std::put_time(&tm, std::string { format }.c_str());
+    return tmStringStream.str();
 }
