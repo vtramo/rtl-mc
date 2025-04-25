@@ -10,9 +10,10 @@ public:
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
-        const bool universalDenotation = false
+        const bool universalDenotation = false,
+        const std::string_view solverName = "OmnidirectionalSolver"
     )
-      : ExplicitSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+      : ExplicitSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~OmnidirectionalSolver() override = default;

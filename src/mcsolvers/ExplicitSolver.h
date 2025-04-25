@@ -13,8 +13,9 @@ public:
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
         const bool universalDenotation = false
+        const std::string_view solverName = "ExplicitSolver"
     )
-      : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+      : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~ExplicitSolver() override = default;

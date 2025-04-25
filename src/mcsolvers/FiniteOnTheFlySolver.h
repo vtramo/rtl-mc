@@ -21,6 +21,7 @@ public:
         const bool discretiseRtlfDirectToLtl = false,
         const bool collectPaths = false
     ) : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+        const std::string_view solverName = "FiniteOnTheFlySolver"
       , m_finiteOnTheFlySolverStats { std::make_shared<FiniteOnTheFlySolverStats>() }
       , m_concurrent { concurrent }
       , m_discretiseRtlfDirectToLtl { discretiseRtlfDirectToLtl }

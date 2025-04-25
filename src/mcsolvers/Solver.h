@@ -23,13 +23,15 @@ public:
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
-        const bool universalDenotation = false
+        const bool universalDenotation = false,
+        const std::string_view solverName = "Solver"
     )
       : m_polyhedralSystem { polyhedralSystem }
       , m_rtlFormula { rtlFormula }
       , m_universalDenotation { universalDenotation }
       , m_automatonOptimizationFlags { automatonOptimizationFlags }
       , m_solverStats { std::make_shared<SolverStats>() }
+      , m_solverName { solverName }
     {}
 
     SolverResult operator() ()
@@ -40,6 +42,7 @@ public:
     virtual SolverResult run() = 0;
 
     [[nodiscard]] virtual const SolverStats& stats() const { return *m_solverStats; }
+    [[nodiscard]] virtual std::string_view name() const { return m_solverName; }
 
 protected:
     PolyhedralSystemSharedPtr m_polyhedralSystem {};
@@ -48,6 +51,7 @@ protected:
     AutomatonOptimizationFlags m_automatonOptimizationFlags {};
     DiscreteLtlFormula m_discreteLtlFormula {};
     std::shared_ptr<SolverStats> m_solverStats {};
+    std::string m_solverName {};
 
     virtual void preprocessPolyhedralSystem() {}
     virtual void preprocessRtlFormula()

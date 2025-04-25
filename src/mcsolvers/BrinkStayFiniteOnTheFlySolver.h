@@ -19,6 +19,7 @@ public:
         const bool discretiseRtlfDirectToLtl = false,
         const bool collectPaths = false
     ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths)
+        const std::string_view solverName = "BrinkStayFiniteOnTheFlySolver"
       , m_brinkSemantics { brinkSemantics }
     {
         PolyhedralSystemSharedPtr stayPolyhedralSystem { m_polyhedralSystem };

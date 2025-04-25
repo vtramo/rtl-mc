@@ -14,9 +14,10 @@ public:
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
         const AutomatonOptimizationFlags automatonOptimizationFlags,
-        const bool universalDenotation = false
+        const bool universalDenotation = false,
+        const std::string_view solverName = "GeneralFiniteSolver"
     )
-      : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation)
+      : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~GeneralFiniteSolver() override = default;
@@ -42,11 +43,11 @@ protected:
 
     double discretiseRtlFormula() override
     {
-        Log::log(Verbosity::verbose, ">>> RTL formula discretisation started.");
+        Log::log(Verbosity::verbose, ">>> {} - RTL formula discretisation started.", name());
         Timer timer {};
         m_discreteLtlFormula = DiscreteLtlFormula::discretiseRtlFinite(std::move(m_rtlFormula));
         const double discretisationExecutionTimeSeconds { timer.elapsedInSeconds() };
-        Log::log(Verbosity::verbose, "<<< Discretisation completed. Elapsed time: {} s.", discretisationExecutionTimeSeconds);
+        Log::log(Verbosity::verbose, "<<< {} - Discretisation completed. Elapsed time: {} s.", name(), discretisationExecutionTimeSeconds);
         return discretisationExecutionTimeSeconds;
     }
 
@@ -64,7 +65,7 @@ protected:
 
     virtual PowersetSharedPtr runFiniteEmptinessCheckDenotationSearch()
     {
-        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Started.");
+        Log::log(Verbosity::verbose, "[{} - Finite emptiness check denotation search] Started.", name());
         Timer timer {};
 
         std::unordered_set<unsigned> initialStatesWithAcceptingRuns { collectInitialStatesWithAcceptingRuns(*m_polyhedralSynchronousProduct) };
@@ -74,9 +75,9 @@ protected:
             PPLUtils::fusion(*result, *m_polyhedralSynchronousProduct->points(initialState));
         }
 
-        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Completed. Elapsed time: {} s.", timer.elapsedInSeconds());
-        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Total collected initial states: {}.", initialStatesWithAcceptingRuns.size());
-        Log::log(Verbosity::verbose, "[Finite emptiness check denotation search] Collected initial states: {}.", fmt::join(initialStatesWithAcceptingRuns, ", "));
+        Log::log(Verbosity::verbose, "[{} - Finite emptiness check denotation search] Completed. Elapsed time: {} s.",  name(), timer.elapsedInSeconds());
+        Log::log(Verbosity::verbose, "[{} - Finite emptiness check denotation search] Total collected initial states: {}.",  name(), initialStatesWithAcceptingRuns.size());
+        Log::log(Verbosity::verbose, "[{} - Finite emptiness check denotation search] Collected initial states: {}.",  name(), fmt::join(initialStatesWithAcceptingRuns, ", "));
 
         return result;
     }
