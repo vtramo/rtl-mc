@@ -6,6 +6,7 @@ denot_on_the_fly_source_files = [
     current_source_dir / 'DenotOnTheFly.h',
     current_source_dir / 'DenotPathNode.h',
     current_source_dir / 'DenotOnTheFly.cpp',
+    current_source_dir / 'denot_path_tree.h',
     current_source_dir / concurrent_dir / 'DenotConcurrentV1.h',
     current_source_dir / concurrent_dir / 'DenotConcurrentV1.cpp',
     current_source_dir / concurrent_dir / 'DenotConcurrentV2.h',
