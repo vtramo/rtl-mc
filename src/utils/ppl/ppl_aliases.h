@@ -29,6 +29,14 @@ using PolyUniquePtr = std::unique_ptr<Poly>;
 using PolySharedPtr = std::shared_ptr<Poly>;
 
 /*!
+ *  \brief Type alias for a shared pointer to a constant not necessarily closed polyhedron (const Poly).
+ *
+ * This type is used to manage shared ownership of a dynamically allocated `const Poly` object.
+ * The object will be automatically deleted when the last shared pointer referencing it goes out of scope.
+ */
+using PolyConstSharedPtr = std::shared_ptr<const Poly>;
+
+/*!
  *  \brief Type alias for a unique pointer to a constant not necessarily closed polyhedron (const Poly).
  *
  * This type is used to manage the lifetime of a dynamically allocated `const Poly` object, ensuring

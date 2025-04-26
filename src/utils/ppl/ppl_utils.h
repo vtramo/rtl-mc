@@ -33,6 +33,19 @@ template<> struct std::hash<PPL::Pointset_Powerset<Poly>>
     std::size_t operator() (const PPL::Pointset_Powerset<Poly>& powerset) const noexcept;
 };
 
+/*!
+ * \brief A hasher struct that converts a `Poly` object to a string before hashing.
+ */
+struct StringPolyHasher
+{
+    /*!
+     * \brief Computes the hash value for a `Poly` object using string conversion.
+     * \param poly The `Poly` object to hash.
+     * \return A `std::size_t` value representing the hash of the `Poly` object's string representation.
+     */
+    std::size_t operator()(const Poly& poly) const noexcept;
+};
+
 
 /*!
  * \brief Specialization of `std::hash` for the `PPL::Variable` type.

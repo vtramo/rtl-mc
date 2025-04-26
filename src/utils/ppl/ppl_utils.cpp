@@ -35,6 +35,17 @@ std::size_t std::hash<Parma_Polyhedra_Library::Variable>::operator()
 }
 
 /*!
+ * This struct provides an alternative hash function for `Poly` objects that first converts
+ * the polyhedron to a string representation and then hashes the resulting string.
+ */
+std::size_t StringPolyHasher::operator()(const Poly& poly) const noexcept
+{
+    std::ostringstream iss;
+    iss << poly;
+    return std::hash<std::string>{}(iss.str());
+}
+
+/*!
  * The `PPLUtils` namespace contains functions for converting PPL objects to strings, performing operations
  * such as intersection, complement, and fusion on convex polyhedra and powersets, and creating specific types of
  * polyhedra (e.g., zero points or points defined by linear expressions). It also provides helper functions

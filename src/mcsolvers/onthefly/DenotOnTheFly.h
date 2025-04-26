@@ -22,11 +22,13 @@ public:
       {
         const auto& stats { m_backwardNfa->stats() };
         m_maxRecursionDepth = stats.getNfaMaxRecursiveDepth();
+        m_cache.resize(backwardNfa->totalStates());
       }
 
     ~DenotOnTheFly() override = default;
 
     PowersetUniquePtr run() override;
+    void cacheResult(int state, const Poly& P, PolyConstSharedPtr X, PowersetConstSharedPtr result);
 
     [[nodiscard]] int totalIterations() const override { return m_iterations; }
     [[nodiscard]] const std::vector<std::vector<DenotPathNode>>& paths() const override { return m_paths; }
@@ -44,6 +46,11 @@ private:
     int m_totalReachCalls { };
     std::vector<std::vector<DenotPathNode>> m_paths {};
     std::vector<DenotPathNode> m_currentPath {};
+    std::vector<std::unordered_map<
+        Poly,
+        std::vector<std::pair<PolyConstSharedPtr, PowersetConstSharedPtr>>,
+        StringPolyHasher
+    >> m_cache{};
 
     PowersetUniquePtr denot(
         int state,

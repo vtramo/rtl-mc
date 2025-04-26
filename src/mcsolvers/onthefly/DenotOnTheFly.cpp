@@ -82,6 +82,19 @@ PowersetUniquePtr DenotOnTheFly::denot(
     bool isSing
 )
 {
+    auto& solutionsByPatchP{m_cache[state]};
+    auto cachedPairs { solutionsByPatchP.find(P) };
+    if (cachedPairs != solutionsByPatchP.end())
+    {
+        for (const auto& [cachedX, cachedResult]: cachedPairs->second)
+        {
+            if (cachedX->contains(X))
+            {
+                return std::make_unique<Powerset>(*cachedResult);
+            }
+        }
+    }
+
     const StateDenotation& stateDenotation { m_backwardNfa->stateDenotation(state) };
     assert(isSing == stateDenotation.isSingular() && "Sing invariant violated.");
 
@@ -269,6 +282,9 @@ PowersetUniquePtr DenotOnTheFly::denot(
         PPLOutput::toString(*result, m_polyhedralSystem->symbolTable())
     );
 
+    PolyConstSharedPtr patchX{std::make_shared<const Poly>(X)};
+    cacheResult(state, P, patchX, std::make_shared<Powerset>(*result));
+
     if (m_collectPaths) popPathNode();
 
     return result;
@@ -347,5 +363,13 @@ DenotPathNode DenotOnTheFly::popPathNode()
 void DenotOnTheFly::addCurrentPath()
 {
     m_paths.push_back(m_currentPath);
+}
+
+void DenotOnTheFly::cacheResult(const int state, const Poly& P, PolyConstSharedPtr X, PowersetConstSharedPtr result)
+{
+    auto& solutionsByPatchP{m_cache[state]};
+    auto [it, inserted] = solutionsByPatchP.try_emplace(P, std::vector<std::pair<PolyConstSharedPtr, PowersetConstSharedPtr>>{});
+    auto& pairs { it->second };
+    pairs.push_back(std::make_pair(X, result));
 }
 
