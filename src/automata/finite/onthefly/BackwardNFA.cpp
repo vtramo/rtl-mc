@@ -107,7 +107,7 @@ void BackwardNFA::createDummyInitialStateWithEdgesToReachableAcceptingStates()
     {
         if (isInitialState(acceptingState) || hasSuccessors(acceptingState))
         {
-            m_automaton->new_edge(m_dummyInitialState, acceptingState, bdd_true());
+            m_automaton->new_edge(m_dummyInitialState, acceptingState, stateLabelsAsBdd(acceptingState));
             ++m_dummyEdges;
         }
     }
