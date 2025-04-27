@@ -127,6 +127,13 @@ const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const std::str
 
 const AtomInterpretation& PolyhedralSystem::addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation)
 {
+    if (interpretation.space_dimension() != spaceDimension())
+    {
+        throw std::invalid_argument("PolyhedralSystem::addAtomInterpretation: interpretation space dimension (" +
+            std::to_string(interpretation.space_dimension()) + ") does not match system space dimension (" +
+            std::to_string(spaceDimension()) + ")!");
+    }
+
     if (!atom.is(spot::op::ap))
     {
         throw std::invalid_argument("PolyhedralSystem::addAtomInterpretation: formula is not an atomic proposition! " + toFormulaString(atom));

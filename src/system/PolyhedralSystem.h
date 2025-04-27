@@ -185,6 +185,7 @@ public:
      * \param atomInterpretations A vector of pairs, each consisting of an atomic proposition and its corresponding interpretation.
      * \return A new \ref PolyhedralSystem instance that extends the original system with the added atomic proposition interpretations.
      * \throws std::invalid_argument If any of the atoms already exists or are not valid atomic propositions.
+     * \throws std::invalid_argument If any of the interpretations have a different space dimension than the polyhedral system.
      */
     [[nodiscard]] PolyhedralSystemUniquePtr extend(const std::vector<std::pair<spot::formula, Powerset>>& atomInterpretations) const;
 
@@ -351,6 +352,7 @@ protected:
      * \param interpretation The polyhedron representing the interpretation of the atomic proposition.
      * \return A reference to the newly added \ref AtomInterpretation.
      * \throws std::invalid_argument If the atom already exists or is not an atomic proposition.
+     * \throws std::invalid_argument If the interpretation's space dimension doesn't match the polyhedral system's dimension.
      */
     const AtomInterpretation& addAtomInterpretation(const spot::formula& atom, const Powerset& interpretation);
 
