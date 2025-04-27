@@ -347,6 +347,11 @@ void PolyhedralLtlAutomaton::purgeUnreachableStates(const spot::twa_graph_ptr tw
 
 void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSeconds)
 {
+    if (Log::g_includeStateDenotationInAutomatonDot)
+    {
+        addStateNames();
+    }
+
     Log::logAutomaton(m_automaton, fmt::format("{}-construction-completed", m_name));
     Log::log(Verbosity::verbose, "[{} - Construction] Construction completed. Elapsed time: {} s.", m_name, executionTimeSeconds);
     Log::log(Verbosity::verbose, "[{} - Construction] Total states: {}.", m_name, totalStates());
@@ -356,6 +361,30 @@ void PolyhedralLtlAutomaton::logConstructionCompleted(double executionTimeSecond
     Log::log(Verbosity::veryVerbose, "[{} - Construction] Initial states: [{}].", m_name, fmt::join(m_initialStates, ", "));
     Log::log(Verbosity::veryVerbose, "[{} - Construction] Accepting states: [{}].", m_name, fmt::join(m_acceptingStates, ", "));
     Log::log(Verbosity::debug, "[{}]\n{}\n", m_name, *this);
+}
+
+void PolyhedralLtlAutomaton::addStateNames()
+{
+    unsigned totalStates { m_automaton->num_states() };
+    std::vector<std::string>* stateToName { new std::vector<std::string>{} };
+    stateToName->reserve(totalStates);
+    const auto& polyhedralSystem { m_polyhedralSystemFormulaDenotationMap.polyhedralSystem() };
+    for (unsigned state { 0 }; state < totalStates; ++state)
+    {
+        std::string stateName {
+            state == m_dummyInitialState
+                ? "Dummy Initial State"
+                : fmt::format("{}\n{}",
+                              state,
+                              PPLOutput::toString(
+                                  *m_stateDenotationById.at(state).denotation(),
+                                  polyhedralSystem->symbolTable()
+                              )
+                )
+        };
+        stateToName->push_back(stateName);
+    }
+    m_automaton->set_named_prop("state-names", stateToName);
 }
 
 void PolyhedralLtlAutomaton::updatePatchStats(const int totPatches)

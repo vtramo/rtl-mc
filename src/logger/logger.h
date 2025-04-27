@@ -30,6 +30,7 @@ namespace Log
 {
     inline Verbosity g_loggerVerbosity { Verbosity::silent }; //!< Global verbosity level for logging.
     inline bool g_exportAutomatonDot {}; //!< Create a dot file for each graph/automaton created during the solving process.
+    inline bool g_includeStateDenotationInAutomatonDot { true }; //!< Include state denotation in the final \ref PolyhedralLtlAutomaton
     inline bool g_exportDenotPathTreeDot{}; //!< Create dot files representing path trees generated during the on-the-fly algorithm execution.
 
     /*!

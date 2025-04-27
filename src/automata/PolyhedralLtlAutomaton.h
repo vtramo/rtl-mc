@@ -93,6 +93,7 @@ protected:
     virtual void eraseInitialEdgesWithEmptyDenotation(spot::twa_graph_ptr twaGraph);
     virtual void createNewEdge(unsigned srcState, unsigned dstState);
     virtual void purgeUnreachableStates(spot::twa_graph_ptr twaGraph);
+    void addStateNames();
     virtual void purgeUnreachableStates();
     virtual void postprocessAutomaton();
     virtual void onConstructionCompleted(double executionTimeSeconds);
