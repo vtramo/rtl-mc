@@ -47,5 +47,6 @@ DenotOnTheFlyStats collectDenotStats(const D& denot, const double executionTimeS
     denotStats.setTotalReachCalls(denot.totalReachCalls());
     denotStats.setIsIncompleteResult(denot.isIncompleteResult());
     denotStats.setMaxNumberIterations(denot.maxIterations());
+    denotStats.setTotalRedundantPaths(denot.totalRedundantPaths());
     return denotStats;
 }

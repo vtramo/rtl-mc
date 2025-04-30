@@ -178,6 +178,8 @@ PowersetUniquePtr DenotOnTheFly::denot(
     for (const auto & edgePredecessor: m_backwardNfa->successors(state))
     {
         unsigned predecessor { edgePredecessor.dst };
+        assert(predecessor != state);
+
         const StateDenotation & predecessorStateDenotation { m_backwardNfa->stateDenotation(predecessor) };
 
         Log::log(Verbosity::trace, "\n>>> State: {} -> Processing Predecessor: {}\n{}",
@@ -346,6 +348,9 @@ DenotPathNode DenotOnTheFly::popPathNode()
 
 void DenotOnTheFly::addCurrentPath()
 {
+    const DenotPathNode& lastNode { m_currentPath.back() };
+    const auto& [_, inserted] { m_allContributionsAsStrings.insert(std::string { lastNode.reachPointsString() }) };
+    if (!inserted) m_totalRedundantPaths++;
     m_paths.push_back(m_currentPath);
 }
 

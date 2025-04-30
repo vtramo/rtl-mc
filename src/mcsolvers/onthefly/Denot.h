@@ -19,6 +19,7 @@ public:
     virtual PowersetUniquePtr run() { return PowersetUniquePtr(); }
     virtual int totalIterations() const { return 0; }
     virtual int totalReachCalls() const { return 0; }
+    virtual int totalRedundantPaths() const { return 0; }
     virtual const std::vector<std::vector<DenotPathNode>>& paths() const
     {
         static std::vector<std::vector<DenotPathNode>> empty {};

@@ -30,6 +30,7 @@ public:
 
     [[nodiscard]] int totalIterations() const override { return m_iterations; }
     [[nodiscard]] const std::vector<std::vector<DenotPathNode>>& paths() const override { return m_paths; }
+    [[nodiscard]] int totalRedundantPaths() const override { return m_totalRedundantPaths; }
     [[nodiscard]] int totalReachCalls() const override { return m_totalReachCalls; }
     [[nodiscard]] int maxIterations() const override { return m_maxIterations; }
     [[nodiscard]] bool isIncompleteResult() const override { return m_maxIterationReached; }
@@ -42,6 +43,8 @@ private:
     bool m_collectPaths { false };
     bool m_maxIterationReached { false };
     int m_totalReachCalls { };
+    std::unordered_set<std::string> m_allContributionsAsStrings {};
+    int m_totalRedundantPaths {};
     std::vector<std::vector<DenotPathNode>> m_paths {};
     std::vector<DenotPathNode> m_currentPath {};
 

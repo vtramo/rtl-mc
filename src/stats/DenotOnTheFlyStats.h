@@ -8,6 +8,7 @@ public:
     static const inline std::string s_totalIterationsPlaceHolder{"%Di"};
     static const inline std::string s_executionTimeSecondsPlaceHolder{"%Dx"};
     static const inline std::string s_totalPaths{"%Dp"};
+    static const inline std::string s_totalRedundantPaths{"%Dpr"};
     static const inline std::string s_totalReachCalls{"%Drc"};
     static const inline std::string s_result{"%Dr"};
     static const inline std::string s_resultIsIncomplete{"%Dd"};
@@ -16,6 +17,7 @@ public:
     [[nodiscard]] int getTotalIterations() const { return m_totalIterations; }
     [[nodiscard]] double getExecutionTimeSeconds() const { return m_executionTimeSeconds; }
     [[nodiscard]] int getTotalPaths() const { return m_totalPaths; }
+    [[nodiscard]] int getTotalRedundantPaths() const { return m_totalRedundantPaths; }
     [[nodiscard]] int getTotalReachCalls() const { return m_totalReachCalls; }
     [[nodiscard]] PowersetConstSharedPtr getResult() const { return m_result; }
     [[nodiscard]] bool getIsIncompleteResult() const { return m_isIncompleteResult; }
@@ -37,6 +39,12 @@ public:
     {
         m_totalPaths = totalPaths;
         m_valueByPlaceholder[s_totalPaths] = std::to_string(m_totalPaths);
+    }
+
+    void setTotalRedundantPaths(const int totalRedundantPaths)
+    {
+        m_totalRedundantPaths = totalRedundantPaths;
+        m_valueByPlaceholder[s_totalRedundantPaths] = std::to_string(totalRedundantPaths);
     }
 
     void setTotalReachCalls(const int totalReachCalls)
@@ -67,6 +75,7 @@ protected:
     int m_totalIterations{};
     double m_executionTimeSeconds{};
     int m_totalPaths{};
+    int m_totalRedundantPaths{};
     int m_totalReachCalls{};
     int m_maxNumberIterations{};
     bool m_isIncompleteResult{};

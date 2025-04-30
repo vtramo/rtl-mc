@@ -121,6 +121,7 @@ protected:
         {
             const auto& denotPaths { denot.paths() };
             Log::log(Verbosity::debug, "[{} - Denot algorithm] Total paths: {}", name(), denotPaths.size());
+            Log::log(Verbosity::debug, "[{} - Denot algorithm] Total redundant paths:\n{}", name(), denot.totalRedundantPaths());
             Log::log(Verbosity::debug, "[{} - Denot algorithm] Paths:\n{}", name(), fmt::join(denotPaths, "\n\n\n"));
             spot::twa_graph_ptr denotPathTree { buildDenotPathTree(*m_backwardNfa, denotPaths) };
             Log::logDenotPathTree(denotPathTree, fmt::format("{}-denot-path-tree", name()), "v");

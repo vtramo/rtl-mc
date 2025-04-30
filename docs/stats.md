@@ -60,6 +60,7 @@ different types might be generated during execution.
 | `%Di[i]`                           | Denotation On-The-Fly `i`                   | Total iterations for the `i`-th Denotation On-The-Fly                                   |
 | `%Dx[i]`                           | Denotation On-The-Fly `i`                   | Execution time (seconds) for the `i`-th Denotation On-The-Fly                           |
 | `%Dp[i]`                           | Denotation On-The-Fly `i`                   | Total paths for the `i`-th Denotation On-The-Fly                                        |
+| `%Dpr[i]`                          | Denotation On-The-Fly `i`                   | Total redundant paths for the `i`-th Denotation On-The-Fly                              |
 | `%Drc[i]`                          | Denotation On-The-Fly `i`                   | Total reach operations for the `i`-th Denotation On-The-Fly                             |
 | `%Dr[i]`                           | Denotation On-The-Fly `i`                   | Result for the `i`-th Denotation On-The-Fly                                             |
 | `%Dd[i]`                           | Denotation On-The-Fly `i`                   | `true` if the result is incomplete (Denot has reached the maximum number of iterations) |
