@@ -11,25 +11,25 @@ public:
     OmnidirectionalMaySolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const TranslationOptimizationFlags translationOptimizationFlags,
         const bool universalDenotation = false,
         const std::string_view solverName = "OmnidirectionalMaySolver"
     )
-      : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
+      : OmnidirectionalSolver(polyhedralSystem, rtlFormula, translationOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~OmnidirectionalMaySolver() override = default;
 
     SolverResult run() override
     {
-        OmnidirectionalInfiniteSolver infiniteSolver { m_polyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation };
+        OmnidirectionalInfiniteSolver infiniteSolver { m_polyhedralSystem, m_rtlFormula, m_translationOptimizationFlags, m_universalDenotation };
         SolverResult infiniteSolverResult { infiniteSolver.run() };
         const SolverStats& infiniteSolverStats { infiniteSolver.stats() };
 
         preprocessPolyhedralSystem();
         preprocessRtlFormula();
 
-        OmnidirectionalFiniteSolver finiteSolver { m_polyhedralSystem, m_rtlFormula, m_automatonOptimizationFlags, m_universalDenotation };
+        OmnidirectionalFiniteSolver finiteSolver { m_polyhedralSystem, m_rtlFormula, m_translationOptimizationFlags, m_universalDenotation };
         SolverResult finiteSolverResult { finiteSolver.run() };
         const SolverStats& finiteSolverStats { finiteSolver.stats() };
 

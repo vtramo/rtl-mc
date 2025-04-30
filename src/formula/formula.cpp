@@ -8,6 +8,7 @@
 #include "formula_constants.h"
 #include "formula.h"
 
+
 /*!
  *  Returns the logical constant 'true' formula (tt).
  */

@@ -13,7 +13,7 @@ package cli {
         -m_universal: bool
         -m_modelCheckingPointString: std::optional<string>
         -m_modelCheckingPoint: Poly
-        -m_automatonOptimizationFlags: AutomatonOptimizationFlags
+        -m_translationOptimizationFlags: translationOptimizationFlags
         -m_directLtl: bool
         -m_concurrent: bool
         -m_exportDot: bool
@@ -25,7 +25,7 @@ package cli {
         --member functions--
         +polyhedralSystem(): PolyhedralSystemSharedPtr
         +rtlFormula(): const spot::formula&
-        +automatonOptimizationFlags(): const AutomatonOptimizationFlags&
+        +translationOptimizationFlags(): const translationOptimizationFlags&
         +universal(): bool
         +existential(): bool
         +modelChecking(): bool
@@ -44,7 +44,7 @@ package cli {
         -addSemanticsTypeArgument(): void
         -addUniversalOrExistentialArguments(): void
         -addModelCheckingArgument(): void
-        -addAutomatonOptimizationFlagsArguments(): void
+        -addtranslationOptimizationFlagsArguments(): void
         -addOutputFormatArguments(): void
         -addAdvancedArguments(): void
         -addExportDotArguments(): void

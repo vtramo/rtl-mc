@@ -7,7 +7,7 @@
 #include "pointparser.h"
 #include "parsertl.h"
 #include "Verbosity.h"
-#include "AutomatonOptimization.h"
+#include "TranslationOptimization.h"
 #include "OutputFormat.h"
 #include "Semantics.h"
 
@@ -33,9 +33,9 @@ public:
     [[nodiscard]] PolyhedralSystemSharedPtr polyhedralSystem() const { return m_polyhedralSystem; }
     [[nodiscard]] const spot::formula& rtlFormula() const { return m_rtlFormula; }
 
-    [[nodiscard]] const AutomatonOptimizationFlags& automatonOptimizationFlags() const
+    [[nodiscard]] const TranslationOptimizationFlags& translationOptimizationFlags() const
     {
-        return m_automatonOptimizationFlags;
+        return m_translationOptimizationFlags;
     }
 
     [[nodiscard]] bool universal() const { return m_universal; }
@@ -66,7 +66,7 @@ private:
     std::optional<std::string> m_modelCheckingPointString{};
     Poly m_modelCheckingPoint{};
 
-    AutomatonOptimizationFlags m_automatonOptimizationFlags{};
+    TranslationOptimizationFlags m_translationOptimizationFlags{};
     bool m_directLtl{};
     bool m_concurrent{};
 
@@ -81,7 +81,7 @@ private:
         addDescription();
         addInputArguments();
         addSemanticsArguments();
-        addAutomatonOptimizationFlagsArguments();
+        addtranslationOptimizationFlagsArguments();
         addOutputFormatArguments();
         addAdvancedArguments();
     }
@@ -217,7 +217,7 @@ private:
                       });
     }
 
-    void addAutomatonOptimizationFlagsArguments()
+    void addtranslationOptimizationFlagsArguments()
     {
         m_rtlMcProgram.add_group("Automaton formula translation optimizations (Spot library flags)");
         auto& automatonOptimizationGroup{m_rtlMcProgram.add_mutually_exclusive_group()};
@@ -226,27 +226,27 @@ private:
                                   .flag()
                                   .action([&](const auto&)
                                   {
-                                      m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::low;
+                                      m_translationOptimizationFlags.optimizationLevel = TranslationOptimizationLevel::low;
                                   });
         automatonOptimizationGroup.add_argument("--medium")
                                   .help("Moderate optimizations during automaton construction.")
                                   .flag()
                                   .action([&](const auto&)
                                   {
-                                      m_automatonOptimizationFlags.optimizationLevel =
-                                          AutomatonOptimizationLevel::medium;
+                                      m_translationOptimizationFlags.optimizationLevel =
+                                          TranslationOptimizationLevel::medium;
                                   });
         automatonOptimizationGroup.add_argument("--high")
                                   .help("All available optimizations during automaton construction (slow).")
                                   .flag()
                                   .action([&](const auto&)
                                   {
-                                      m_automatonOptimizationFlags.optimizationLevel = AutomatonOptimizationLevel::high;
+                                      m_translationOptimizationFlags.optimizationLevel = TranslationOptimizationLevel::high;
                                   });
         m_rtlMcProgram.add_argument("--any")
                       .help("No preference.")
                       .flag()
-                      .store_into(m_automatonOptimizationFlags.any);
+                      .store_into(m_translationOptimizationFlags.any);
     }
 
     void addOutputFormatArguments()

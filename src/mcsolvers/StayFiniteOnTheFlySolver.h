@@ -9,13 +9,13 @@ public:
     StayFiniteOnTheFlySolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const TranslationOptimizationFlags translationOptimizationFlags,
         const bool universalDenotation = false,
         const bool concurrent = false,
         const bool discretiseRtlfDirectToLtl = false,
         const bool collectPaths = false,
         const std::string_view solverName = "StayFiniteOnTheFlySolver"
-    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths, solverName)
+    ) : FiniteOnTheFlySolver(polyhedralSystem, rtlFormula, translationOptimizationFlags, universalDenotation, concurrent, discretiseRtlfDirectToLtl, collectPaths, solverName)
     {}
 
     ~StayFiniteOnTheFlySolver() override = default;

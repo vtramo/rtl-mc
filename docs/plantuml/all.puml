@@ -1,11 +1,13 @@
 @startuml
+!include abstractions.puml
 !include parser.puml
 !include system.puml
-!include automaton.puml
+!include automata.puml
 !include discretisation.puml
-!include core.puml
+!include mcsolvers.puml
 !include cli.puml
 !include stats.puml
+!include product.puml
 
 
 BackwardNFA ---> "1" DiscreteLtlFormula

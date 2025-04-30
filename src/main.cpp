@@ -31,7 +31,7 @@ int main(const int argc, char *argv[])
 
     const PolyhedralSystemSharedPtr polyhedralSystem { rtlMcProgram.polyhedralSystem() };
     spot::formula rtlFormula { rtlMcProgram.rtlFormula() };
-    const AutomatonOptimizationFlags automatonOptimizationFlags { rtlMcProgram.automatonOptimizationFlags() };
+    const TranslationOptimizationFlags translationOptimizationFlags { rtlMcProgram.translationOptimizationFlags() };
     const Semantics semantics { rtlMcProgram.semantics() };
     const bool isUniversalDenotation { rtlMcProgram.universal() };
     const bool collectDenotPaths{
@@ -54,7 +54,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<OmnidirectionalFiniteSolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation
             );
         }
@@ -65,7 +65,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<FiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
                 rtlMcProgram.directLtl(),
@@ -81,7 +81,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<OmnidirectionalInfiniteSolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation
             );
         }
@@ -92,7 +92,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<StayFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
                 rtlMcProgram.directLtl(),
@@ -119,7 +119,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<OmnidirectionalMaySolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation
             );
         }
@@ -130,7 +130,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<BrinkFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
                 BrinkSemantics::may,
@@ -145,7 +145,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<BrinkStayFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
                 BrinkSemantics::may,
@@ -174,7 +174,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<OmnidirectionalInfiniteSolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation
             );
         }
@@ -185,7 +185,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<BrinkFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
                 BrinkSemantics::must,
@@ -200,7 +200,7 @@ int main(const int argc, char *argv[])
             solver = std::make_unique<BrinkStayFiniteOnTheFlySolver>(
                 polyhedralSystem,
                 rtlFormula,
-                automatonOptimizationFlags,
+                translationOptimizationFlags,
                 isUniversalDenotation,
                 rtlMcProgram.concurrent(),
                 BrinkSemantics::must,

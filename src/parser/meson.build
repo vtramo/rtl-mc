@@ -12,10 +12,10 @@ if get_option('generate_parser')
                 '4.13.2',
                 system_grammar_relative_path,
                 '-o', system_parser_generated_dir_relative_path,  check: true)
-    message('Parser generation complete! (Location: ' + current_source_dir / system_parser_generated_dir_relative_path + ')')
+    message('PolyhedralSystem parser generation complete! (Location: ' + current_source_dir / system_parser_generated_dir_relative_path + ')')
 
     mc_point_grammar_relative_path = 'g4' / 'RationalPoint.g4'
-    mc_point_parser_generated_dir_relative_path = 'point' / 'generated'
+    rational_point_parser_generated_dir_relative_path = 'point' / 'generated'
     message('Generating RationalPoint parser... ')
     run_command('antlr4',
                 '-listener',
@@ -24,8 +24,8 @@ if get_option('generate_parser')
                 '-v',
                 '4.13.2',
                 mc_point_grammar_relative_path,
-                '-o', mc_point_parser_generated_dir_relative_path,  check: true)
-    message('Parser generation complete! (Location: ' + current_source_dir / mc_point_parser_generated_dir_relative_path + ')')
+                '-o', rational_point_parser_generated_dir_relative_path,  check: true)
+    message('RationalPoint parser generation complete! (Location: ' + current_source_dir / rational_point_parser_generated_dir_relative_path + ')')
 endif
 
 common_parser_source_files = [

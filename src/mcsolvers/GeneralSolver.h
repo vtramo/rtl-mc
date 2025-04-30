@@ -9,11 +9,11 @@ public:
     GeneralSolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const translationOptimizationFlags translationOptimizationFlags,
         const bool universalDenotation = false,
         const std::string_view solverName = "GeneralSolver"
     )
-      : ExplicitSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
+      : ExplicitSolver(polyhedralSystem, rtlFormula, translationOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~GeneralSolver() override = default;

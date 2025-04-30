@@ -56,11 +56,11 @@ package mcsolvers {
         #m_polyhedralSystem: PolyhedralSystemSharedPtr
         #m_rtlFormula: spot::formula
         #m_universalDenotation: bool
-        #m_automatonOptimizationFlags: AutomatonOptimizationFlags
+        #m_translationOptimizationFlags: translationOptimizationFlags
         #m_discreteLtlFormula: DiscreteLtlFormula
         #m_solverStats: std::shared_ptr<SolverStats>
         --constructors--
-        +Solver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +Solver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false)
         +virtual ~Solver() = default
         --member functions--
         +virtual run() = 0: PowersetSharedPtr
@@ -83,7 +83,7 @@ package mcsolvers {
         #m_concurrent: bool
         #m_discretiseRtlfDirectToLtl: bool
         --constructors--
-        +FiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, spot::formula rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false)
+        +FiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, spot::formula rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false, bool concurrent = false)
         +~FiniteOnTheFlySolver() override
         --member functions--
         +stats(): const FiniteOnTheFlySolverStats&
@@ -97,7 +97,7 @@ package mcsolvers {
 
     class StayFiniteOnTheFlySolver {
         --constructors--
-        +StayFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
+        +StayFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
         +~StayFiniteOnTheFlySolver() override
         --member functions--
         #preprocessPolyhedralSystem() override: void
@@ -108,7 +108,7 @@ package mcsolvers {
         --data members--
         #m_brinkSemantics: BrinkSemantics
         --constructors--
-        +BrinkFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
+        +BrinkFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
         +~BrinkFiniteOnTheFlySolver() override
         --member functions--
         #preprocessPolyhedralSystem() override: void
@@ -121,7 +121,7 @@ package mcsolvers {
         #m_brinkSolver: std::shared_Ptr<BrinkFiniteOnTheFlySolver>
         #m_brinkSemantics: BrinkSemantics
         --constructors--
-        +BrinkStayFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
+        +BrinkStayFiniteOnTheFlySolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false, bool concurrent = false, bool m_discretiseRtlfDirectToLtl = false)
         +~BrinkStayFiniteOnTheFlySolver() override
         --member functions--
         #run() override: PowersetSharedPtr
@@ -150,7 +150,7 @@ package mcsolvers {
         #m_ltlAutomaton: PolyhedralLtlAutomatonSharedPtr
         #m_polyhedralSynchronousProduct: PolyhedralSynchronousProductAutomatonSharedPtr
         --constructors--
-        +ExplicitSolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +ExplicitSolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false)
         +~ExplicitSolver() override
         --member functions--
         #virtual constructPolyhedralAbstraction() = 0: void
@@ -160,7 +160,7 @@ package mcsolvers {
 
     abstract GeneralSolver {
         --constructors--
-        +GeneralSolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +GeneralSolver(PolyhedralSystemSharedPtr polyhedralSystem, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false)
         +virtual ~GeneralSolver() = default
         --member functions--
         #constructPolyhedralAbstraction() override: void
@@ -169,7 +169,7 @@ package mcsolvers {
 
     class GeneralFiniteSolver {
         --constructors--
-        +GeneralFiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +GeneralFiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false)
         +~GeneralFiniteSolver() override
         --member functions--
         +run(): PowersetSharedPtr
@@ -187,7 +187,7 @@ package mcsolvers {
 
     abstract OmnidirectionalSolver {
         --constructors--
-        +OmnidirectionalSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +OmnidirectionalSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false)
         +~OmnidirectionalSolver() override
         --member functions--
         #constructPolyhedralAbstraction() override: void
@@ -195,7 +195,7 @@ package mcsolvers {
 
     class OmnidirectionalFiniteSolver {
         --constructors--
-        +OmnidirectionalFiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +OmnidirectionalFiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false)
         +~OmnidirectionalFiniteSolver() override
         --member functions--
         +run() override: PowersetSharedPtr
@@ -206,7 +206,7 @@ package mcsolvers {
 
     class OmnidirectionalInfiniteSolver {
         --constructors--
-        +OmnidirectionalInfiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +OmnidirectionalInfiniteSolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false)
         +~OmnidirectionalInfiniteSolver()
         --member functions--
         +run() override: PowersetSharedPtr
@@ -220,7 +220,7 @@ package mcsolvers {
 
     class OmnidirectionalMaySolver {
         --constructors--
-        +OmnidirectionalMaySolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, AutomatonOptimizationFlags automatonOptimizationFlags, bool universalDenotation = false)
+        +OmnidirectionalMaySolver(PolyhedralSystemSharedPtr, const spot::formula& rtlFormula, translationOptimizationFlags translationOptimizationFlags, bool universalDenotation = false)
         +~OmnidirectionalMaySolver()
         --member functions--
         +run() override: PowersetSharedPtr

@@ -16,13 +16,13 @@ public:
     FiniteOnTheFlySolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const TranslationOptimizationFlags translationOptimizationFlags,
         const bool universalDenotation = false,
         const bool concurrent = false,
         const bool discretiseRtlfDirectToLtl = false,
         const bool collectPaths = false,
         const std::string_view solverName = "FiniteOnTheFlySolver"
-    ) : Solver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
+    ) : Solver(polyhedralSystem, rtlFormula, translationOptimizationFlags, universalDenotation, solverName)
       , m_finiteOnTheFlySolverStats { std::make_shared<FiniteOnTheFlySolverStats>() }
       , m_concurrent { concurrent }
       , m_discretiseRtlfDirectToLtl { discretiseRtlfDirectToLtl }
@@ -86,7 +86,7 @@ protected:
             buildBackwardNfa(
                 std::move(m_discreteLtlFormula),
                 std::move(polyhedralSystemFormulaDenotationMap),
-                m_automatonOptimizationFlags
+                m_translationOptimizationFlags
             );
         const PolyhedralLtlFiniteAutomatonStats& backwardNfaStats { m_backwardNfa->stats() };
         m_finiteOnTheFlySolverStats->addAutomatonStats(backwardNfaStats);

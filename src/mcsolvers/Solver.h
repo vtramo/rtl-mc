@@ -3,7 +3,7 @@
 #include "PolyhedralSystem.h"
 #include "logger.h"
 #include "stats_collectors.h"
-#include "AutomatonOptimization.h"
+#include "TranslationOptimization.h"
 #include "DiscreteFiniteLtlFormula.h"
 #include "SolverResult.h"
 #include "spot_utils.h"
@@ -22,14 +22,14 @@ public:
     Solver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const TranslationOptimizationFlags translationOptimizationFlags,
         const bool universalDenotation = false,
         const std::string_view solverName = "Solver"
     )
       : m_polyhedralSystem { polyhedralSystem }
       , m_rtlFormula { rtlFormula }
       , m_universalDenotation { universalDenotation }
-      , m_automatonOptimizationFlags { automatonOptimizationFlags }
+      , m_translationOptimizationFlags { translationOptimizationFlags }
       , m_solverStats { std::make_shared<SolverStats>() }
       , m_solverName { solverName }
     {}
@@ -48,7 +48,7 @@ protected:
     PolyhedralSystemSharedPtr m_polyhedralSystem {};
     spot::formula m_rtlFormula {};
     bool m_universalDenotation { false };
-    AutomatonOptimizationFlags m_automatonOptimizationFlags {};
+    TranslationOptimizationFlags m_translationOptimizationFlags {};
     DiscreteLtlFormula m_discreteLtlFormula {};
     std::shared_ptr<SolverStats> m_solverStats {};
     std::string m_solverName {};

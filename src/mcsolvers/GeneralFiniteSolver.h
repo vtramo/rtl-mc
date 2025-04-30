@@ -13,11 +13,11 @@ public:
     GeneralFiniteSolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const translationOptimizationFlags translationOptimizationFlags,
         const bool universalDenotation = false,
         const std::string_view solverName = "GeneralFiniteSolver"
     )
-      : GeneralSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
+      : GeneralSolver(polyhedralSystem, rtlFormula, translationOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~GeneralFiniteSolver() override = default;
@@ -57,7 +57,7 @@ protected:
         m_ltlAutomaton = buildPolyhedralLtlFiniteAutomaton(
             std::move(m_discreteLtlFormula),
             polyhedralSystemFormulaDenotationMap,
-            m_automatonOptimizationFlags
+            m_translationOptimizationFlags
         );
         const PolyhedralLtlAutomatonStats& automatonStats { m_ltlAutomaton->stats() };
         m_solverStats->addAutomatonStats(automatonStats);

@@ -11,11 +11,11 @@ public:
     OmnidirectionalFiniteSolver(
         PolyhedralSystemSharedPtr polyhedralSystem,
         const spot::formula& rtlFormula,
-        const AutomatonOptimizationFlags automatonOptimizationFlags,
+        const TranslationOptimizationFlags translationOptimizationFlags,
         const bool universalDenotation = false,
         const std::string_view solverName = "OmnidirectionalFiniteSolver"
     )
-      : OmnidirectionalSolver(polyhedralSystem, rtlFormula, automatonOptimizationFlags, universalDenotation, solverName)
+      : OmnidirectionalSolver(polyhedralSystem, rtlFormula, translationOptimizationFlags, universalDenotation, solverName)
     {}
 
     ~OmnidirectionalFiniteSolver() override = default;
@@ -55,7 +55,7 @@ protected:
         m_ltlAutomaton = buildPolyhedralLtlFiniteAutomaton(
             std::move(m_discreteLtlFormula),
             polyhedralSystemFormulaDenotationMap,
-            m_automatonOptimizationFlags
+            m_translationOptimizationFlags
         );
         const PolyhedralLtlAutomatonStats& automatonStats { m_ltlAutomaton->stats() };
         m_solverStats->addAutomatonStats(automatonStats);
