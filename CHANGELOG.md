@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7] - 2025-04-30
+### :sparkles: New Features
+- [`d629637`](https://github.com/vtramo/rtl-mc/commit/d6296370d7a71263da50cc19a19043ed60c58440) - **denot**: add debug assert to check for duplicate pairs in recursive call stack *(commit by [@vtramo](https://github.com/vtramo))*
+- [`58d10e3`](https://github.com/vtramo/rtl-mc/commit/58d10e344d86d22f18f2dee558c9bebec952a3ad) - **utils**: add utility function to format current time as a string *(commit by [@vtramo](https://github.com/vtramo))*
+- [`862442e`](https://github.com/vtramo/rtl-mc/commit/862442e8f2b96e3568df60c2c1c3a490f07a5acd) - **mcsolvers**: Add solver name parameter and logging enhancements *(commit by [@vtramo](https://github.com/vtramo))*
+- [`32ca34f`](https://github.com/vtramo/rtl-mc/commit/32ca34f55837d4afbb65416aa5c508910737ae7f) - **denot**: Add `denot_path_tree.h` for building Denot path trees *(commit by [@vtramo](https://github.com/vtramo))*
+- [`7c59f81`](https://github.com/vtramo/rtl-mc/commit/7c59f812228cfb05e56071af1fa4f63d1736028f) - add support for denot path tree export and enhance solver logging *(commit by [@vtramo](https://github.com/vtramo))*
+- [`14c1c04`](https://github.com/vtramo/rtl-mc/commit/14c1c046f3722435d7651cd4a0659a01c5d6cc30) - **denot**: add duplicate pair check logic *(commit by [@vtramo](https://github.com/vtramo))*
+- [`ed3debb`](https://github.com/vtramo/rtl-mc/commit/ed3debbdadc01b1c8eef0247f39ca59323239b35) - **automata**: add state denotation to state names in automata logging *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :bug: Bug Fixes
+- [`2c3f314`](https://github.com/vtramo/rtl-mc/commit/2c3f314eb46dd9604694a710f8df131728fd2258) - **denot**: fix collect paths logic *(commit by [@vtramo](https://github.com/vtramo))*
+- [`ab143fe`](https://github.com/vtramo/rtl-mc/commit/ab143fe113d134921864538f928fa42040c55e76) - **system**: throw `std::invalid_argument` when extending `PolyhedralSystem` with mismatched dimension interpretation *(commit by [@vtramo](https://github.com/vtramo))*
+- [`53dea3a`](https://github.com/vtramo/rtl-mc/commit/53dea3a71c2de46cc2981ec7057598b1792eed68) - **automata**: add labels to dummy edges for improved visualization *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :wrench: Chores
+- [`45fd041`](https://github.com/vtramo/rtl-mc/commit/45fd041898b0f1ecc5ed433e3c9dfbc4716caa0f) - add stl examples *(commit by [@vtramo](https://github.com/vtramo))*
+- [`a49689a`](https://github.com/vtramo/rtl-mc/commit/a49689a404f2fe4240957f7d747f846ef229cb0b) - update solutions for incremental gap flow rectangle *(commit by [@vtramo](https://github.com/vtramo))*
+- [`c62c7b5`](https://github.com/vtramo/rtl-mc/commit/c62c7b52ee792091eb69c46cfa9ded8d087f3349) - add denot path trees for incremental gap flow rectangle experiment *(commit by [@vtramo](https://github.com/vtramo))*
+- [`6062b37`](https://github.com/vtramo/rtl-mc/commit/6062b37bd5a2f18756fade1f8b10fbdbdb66f2a8) - add dot/pdf files graph visualizations for denot (k=254) *(commit by [@vtramo](https://github.com/vtramo))*
+
+
 ## [0.1.6] - 2025-04-22
 ### :sparkles: New Features
 - [`fa9b44c`](https://github.com/vtramo/rtl-mc/commit/fa9b44c1559e17788f37c82cf69e23c47008a998) - **sys-gen**: generate unique variable names for tank experiment *(commit by [@vtramo](https://github.com/vtramo))*
@@ -171,3 +193,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.4]: https://github.com/vtramo/rtl-mc/compare/0.1.3...0.1.4
 [0.1.5]: https://github.com/vtramo/rtl-mc/compare/0.1.4...0.1.5
 [0.1.6]: https://github.com/vtramo/rtl-mc/compare/0.1.5...0.1.6
+[0.1.7]: https://github.com/vtramo/rtl-mc/compare/0.1.6...0.1.7
