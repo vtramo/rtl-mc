@@ -51,4 +51,10 @@ TEST_CASE("Is non-recurrent LTL formula")
         spot::formula formula { spot::parse_infix_psl("(false R p0) & (p1 R (G(p2)))").f };
         REQUIRE(!isNonRecurrent(formula));
     }
+
+    SECTION("t0 & G(t1) & F(p & F(q))")
+    {
+        spot::formula formula { spot::parse_infix_psl("t0 & G(t1) & F(p & F(q))").f };
+        REQUIRE(isNonRecurrent(formula));
+    }
 }

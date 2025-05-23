@@ -61,4 +61,11 @@ TEST_CASE("isClosed function")
         REQUIRE(isClosed(powerset));
         REQUIRE(!powerset.is_topologically_closed());
     }
+
+    SECTION("{ x <= 0, x >= -1, y <= 0, y >= -1 } is compact")
+    {
+        Poly poly { PPLUtils::poly({ -x >= 0, -y >= 0, y >= -1, x >= -1 }) };
+        REQUIRE(poly.is_topologically_closed());
+        REQUIRE(poly.is_bounded());
+    }
 }

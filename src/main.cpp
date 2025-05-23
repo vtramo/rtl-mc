@@ -224,6 +224,8 @@ int main(const int argc, char *argv[])
     }
 
     run(rtlMcProgram, polyhedralSystem, std::move(solver));
+
+    return 0;
 }
 
 void run(
