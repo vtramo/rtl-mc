@@ -47,7 +47,7 @@ max=${2:-11}
 rtl_formula=${3:-"t0 & G(t1) & F(p & F(q))"}
 for ((gap = 1 ; gap <= max ; gap++)); do
   polyhedralSystem=$(build_polyhedral_system_gap $gap)
-  result=$(rtl-mc --semantics "${semantics}" -ss "${polyhedralSystem}" -fs "${rtl_formula}" --high || usage)
+  result=$(rtl-mc --semantics "${semantics}" -ss "${polyhedralSystem}" -fs "${rtl_formula}" --high && usage)
   polyhedraSpec=$(cat << EOF
 p { a >= b + $gap & b >= 0 } 0x800000
 q { b >= a + $gap & a >= 0 } 0x0099CC

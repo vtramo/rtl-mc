@@ -73,7 +73,7 @@ for ((tanks = 2 ; tanks <= max_tanks ; tanks++)); do
       --semantics "$semantics" \
       --high \
       --stats "$stats_format" \
-      || usage)
+      && usage)
     end=$(microtime)
     execution_time=$(echo "$end - $start" | bc)
     result+="$execution_time,$rtl_mc_result"
