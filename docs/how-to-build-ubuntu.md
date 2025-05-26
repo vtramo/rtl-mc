@@ -1,22 +1,25 @@
-# Ubuntu 24.04
-### 1. Installare **meson**:
+# Ubuntu 24.04 Setup
+
+### 1. Install **meson**
 ```bash
 sudo apt install meson
 ```
-oppure
+or
 ```bash
 pip3 install --user meson
 ```
-### 2. Installare **pkg-config**:
+
+### 2. Install **pkg-config**
 ```bash
 sudo apt install -y pkg-config
 ```
-### 3. Installare **GMP**
+
+### 3. Install **GMP**
 ```bash
 sudo apt install -y libgmp3-dev
 ```
 
-### 4. Installare **PPL** (Parma Polyhedral Library)
+### 4. Install **PPL** (Parma Polyhedra Library)
 ```bash
 sudo apt-get install libtool autoconf automake
 git clone https://github.com/BUGSENG/PPL.git
@@ -26,16 +29,19 @@ autoreconf --force --install
 sudo make
 sudo make install
 ```
-Individuare dove è stato installato PPL:
+
+To find where PPL was installed:
 ```bash
 ppl-config --libdir
 ```
-nel mio caso l'output è:
-```text
+
+Example output:
+```
 /usr/lib/x86_64-linux-gnu
 ```
-Creare un pkg config file chiamato `ppl.pc` in `/usr/lib/x86_64-linux-gnu/pkgconfig` (cambiare il percorso in base all'output del precedente comando):
-```text
+
+Create a `ppl.pc` file in `/usr/lib/x86_64-linux-gnu/pkgconfig` (adjust the path if needed):
+```
 prefix=/usr
 includedir=${prefix}/include/x86_64-linux-gnu
 exec_prefix=${prefix}
@@ -48,37 +54,44 @@ Version: 1.2
 Cflags: -I${includedir}
 Libs: -L${libdir} -L${libdir}/ppl -lppl -lppl_c
 ```
-questo pkg config file verrà letto da meson per individuare la dipendenza sul sistema.
 
-### 6. Installare ANTLR4 CLI
-Necessita di una JDK >= 11:
+---
+
+### 5. Install **ANTLR4 CLI**
+Requires JDK >= 11:
 ```bash
 sudo apt-get install -y openjdk-11-jdk
 ```
+
+Install CLI via pip:
 ```bash
 sudo apt-get install -y python3-pip
 python3 -m pip install --break-system-packages antlr4-tools
 ```
 
-### 7. Installare ANTLR4 Runtime
-Installare CMake se assente:
+---
+
+### 6. Install **ANTLR4 Runtime**
+
+If CMake is not installed:
 ```bash
 sudo apt install -y cmake
 ```
-Scaricare da [qui](https://www.antlr.org/download/antlr4-cpp-runtime-4.13.2-source.zip) il codice sorgente C++.
 
-Successivamente, entrare nella directory del progetto ed eseguire:
+Download the C++ runtime from [ANTLR's website](https://www.antlr.org/download/antlr4-cpp-runtime-4.13.2-source.zip), unzip it, then:
 ```bash
 mkdir build && mkdir run && cd build
-sudo cmake .. 
+sudo cmake ..
 sudo make && sudo make install
 ```
-Successivamente, eseguire:
+
+Then clean up the include path:
 ```bash
 cd /usr/local/include/antlr4-runtime && mv * .. && cd .. && rm -rf antlr4-runtime
 ```
-Infine, creare un pkg config file `antlr4-runtime.pc` in `/usr/local/lib/pkgconfig`:
-```text
+
+Create `antlr4-runtime.pc` in `/usr/local/lib/pkgconfig`:
+```
 prefix=/usr/local
 includedir=${prefix}/include
 exec_prefix=${prefix}
@@ -91,25 +104,34 @@ Version: 4.13.2
 Cflags: -I${includedir}
 Libs: -L${libdir} -lantlr4-runtime
 ```
-### 8. Installare spot
-Installare spot (https://spot.lre.epita.fr/install.html):
+
+---
+
+### 7. Install **SPOT**
+Install from the official repository:
 ```bash
-wget -q -O - https://www.lrde.epita.fr/repo/debian.gpg | apt-key add -
-echo 'deb http://www.lrde.epita.fr/repo/debian/ stable/' >> /etc/apt/sources.list
-apt-get update
-apt-get install spot libspot-dev spot-doc python3-spot # Or a subset of those
+wget -q -O - https://www.lrde.epita.fr/repo/debian.gpg | sudo apt-key add -
+echo 'deb http://www.lrde.epita.fr/repo/debian/ stable/' | sudo tee -a /etc/apt/sources.list
+sudo apt-get update
+sudo apt-get install spot libspot-dev spot-doc python3-spot
 ```
-### 9. Compilare il progetto
-Compilare il progetto con meson:
+
+---
+
+### 8. Build the project
+
+Configure and build with Meson:
 ```bash
 meson setup buildDir
 meson compile -C buildDir
 ```
-Per eseguire i test:
+
+To run the tests:
 ```bash
 meson test -C buildDir
 ```
-Per eseguire i benchmarks:
+
+To run the benchmarks:
 ```bash
 meson test -C buildDir --benchmark
 ```

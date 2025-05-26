@@ -1,67 +1,85 @@
-# Statistics
+# 🔍 Built-in Statistics Engine
 
-All placeholders listed below require a numerical index starting from 0 (e.g., `%As[0]`, `%ATs[1]`, etc.).
-This index identifies the specific automaton the statistic refers to, as multiple automata of the same or
-different types might be generated during execution.
+The `rtl-mc` tool provides a built-in statistics engine for collecting detailed metrics about each phase of the model-checking pipeline.
 
-| Placeholder                        | Scope / Context                             | Description                                                                             |
-|------------------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------|
-| **General Solver Stats**           | Overall Process                             | *(General solver process statistics)*                                                   |
-| `%x[i]`                            | Overall Process                             | Execution time (seconds) for the `i`-th recorded solver execution phase                 |
-|                                    |                                             |                                                                                         |
-| **RTL Formula Stats**              | RTL Formula                                 | *(RTL formula properties)*                                                              |
-| `%rta[i]`                          | RTL Formula `i`                             | Total atomic propositions for RTL formula `i`                                           |
-| `%rl[i]`                           | RTL Formula `i`                             | Length of RTL formula `i`                                                               |
-|                                    |                                             |                                                                                         |
-| **Polyhedral System Stats**        | Polyhedral System                           | *(Polyhedral system properties)*                                                        |
-| `%Pta[i]`                          | Polyhedral System `i`                       | Total atomic propositions for polyhedral system `i`                                     |
-| `%Psp[i]`                          | Polyhedral System `i`                       | Space dimension for polyhedral system `i`                                               |
-|                                    |                                             |                                                                                         |
-| **Discretisation Stats**           | Discretisation Process                      | *(Discretisation process statistics)*                                                   |
-| `%da[i]`                           | Discretisation (RTL formula `i`)            | Total atomic propositions in discrete LTL formula for RTL formula `i`                   |
-| `%dl[i]`                           | Discretisation (RTL formula `i`)            | Length of discrete LTL formula for RTL formula `i`                                      |
-| `%dx[i]`                           | Discretisation (RTL formula `i`)            | Discretisation execution time (seconds) for RTL formula `i`                             |
-|                                    |                                             |                                                                                         |
-| **Base Automaton Stats**           | All Automata                                | *(General properties for any automaton)*                                                |
-| `%As[i]`                           | Automaton `i`                               | Total states for automaton `i`                                                          |
-| `%Ais[i]`                          | Automaton `i`                               | Total initial states for automaton `i`                                                  |
-| `%Aas[i]`                          | Automaton `i`                               | Total accepting states for automaton `i`                                                |
-| `%Ae[i]`                           | Automaton `i`                               | Total edges for automaton `i`                                                           |
-| `%Ax[i]`                           | Automaton `i`                               | Execution time (seconds) for automaton `i`                                              |
-| `%Ascc[i]`                         | Automaton `i`                               | Total SCC count for automaton `i`                                                       |
-|                                    |                                             |                                                                                         |
-| **Polyhedral LTL Automaton Stats** | Polyhedral LTL Automata                     | *(Includes base automaton stats, plus specifics for Polyhedral LTL Automaton)*          |
-| `%ATo[i]`                          | Polyhedral LTL Automaton `i` (Translation)  | Translation optimization level for automaton `i`                                        |
-| `%ATx[i]`                          | Polyhedral LTL Automaton `i` (Translation)  | Translation execution time (seconds) for automaton `i`                                  |
-| `%ATs[i]`                          | Polyhedral LTL Automaton `i` (Translation)  | Translation total states for automaton `i`                                              |
-| `%ATis[i]`                         | Polyhedral LTL Automaton `i` (Translation)  | Translation total initial states for automaton `i`                                      |
-| `%ATase[i]`                        | Polyhedral LTL Automaton `i` (Translation)  | Translation total accepting sets for automaton `i`                                      |
-| `%ATe[i]`                          | Polyhedral LTL Automaton `i` (Translation)  | Translation total edges for automaton `i`                                               |
-| `%ATscc[i]`                        | Polyhedral LTL Automaton `i` (Translation)  | Translation total SCC count for automaton `i`                                           |
-| `%AOx[i]`                          | Polyhedral LTL Automaton `i` (Optimization) | Optimized automaton execution time (s) for automaton `i`                                |
-| `%AOs[i]`                          | Polyhedral LTL Automaton `i` (Optimization) | Optimized automaton total states for automaton `i`                                      |
-| `%AOis[i]`                         | Polyhedral LTL Automaton `i` (Optimization) | Optimized automaton total initial states for automaton `i`                              |
-| `%AOas[i]`                         | Polyhedral LTL Automaton `i` (Optimization) | Optimized automaton total accepting states for automaton `i`                            |
-| `%AOe[i]`                          | Polyhedral LTL Automaton `i` (Optimization) | Optimized automaton total edges for automaton `i`                                       |
-| `%AOscc[i]`                        | Polyhedral LTL Automaton `i` (Optimization) | Optimized automaton total SCC count for automaton `i`                                   |
-| `%Amp[i]`                          | Polyhedral LTL Automaton `i`                | Max number of patches in the denotation of any state for automaton `i`                  |
-| `%Atp[i]`                          | Polyhedral LTL Automaton `i`                | Total number of patches for automaton `i`                                               |
-|                                    |                                             |                                                                                         |
-| **Finite Automaton (NFA) Stats**   | Finite Automata (NFA)                       | *(Includes Polyhedral LTL stats, plus specifics for NFA)*                               |
-| `%ANx[i]`                          | Finite (NFA) `i`                            | NFA execution time (seconds) for automaton `i`                                          |
-| `%ANs[i]`                          | Finite (NFA) `i`                            | NFA total states for automaton `i`                                                      |
-| `%ANis[i]`                         | Finite (NFA) `i`                            | NFA total initial states for automaton `i`                                              |
-| `%ANas[i]`                         | Finite (NFA) `i`                            | NFA total accepting states for automaton `i`                                            |
-| `%ANe[i]`                          | Finite (NFA) `i`                            | NFA total edges for automaton `i`                                                       |
-| `%ANscc[i]`                        | Finite (NFA) `i`                            | NFA total SCC count for automaton `i`                                                   |
-| `%ANr[i]`                          | Finite (NFA - On-the-fly) `i`               | NFA max recursive depth (on the fly) for automaton `i`                                  |
-|                                    |                                             |                                                                                         |
-| **Denotation On-The-Fly Stats**    | Denotation On-The-Fly Process               | *(Statistics for the "Denotation On-The-Fly" process)*                                  |
-| `%Di[i]`                           | Denotation On-The-Fly `i`                   | Total iterations for the `i`-th Denotation On-The-Fly                                   |
-| `%Dx[i]`                           | Denotation On-The-Fly `i`                   | Execution time (seconds) for the `i`-th Denotation On-The-Fly                           |
-| `%Dp[i]`                           | Denotation On-The-Fly `i`                   | Total paths for the `i`-th Denotation On-The-Fly                                        |
-| `%Dpr[i]`                          | Denotation On-The-Fly `i`                   | Total redundant paths for the `i`-th Denotation On-The-Fly                              |
-| `%Drc[i]`                          | Denotation On-The-Fly `i`                   | Total reach operations for the `i`-th Denotation On-The-Fly                             |
-| `%Dr[i]`                           | Denotation On-The-Fly `i`                   | Result for the `i`-th Denotation On-The-Fly                                             |
-| `%Dd[i]`                           | Denotation On-The-Fly `i`                   | `true` if the result is incomplete (Denot has reached the maximum number of iterations) |
-| `%Dmi[i]`                          | Denotation On-The-Fly `i`                   | Maximum number of iterations allowed (settable via `DENOT_MAX` environment variable)    |
+## 🚀 Enabling Statistics
+
+Use the `--stats` (or `-s`) command-line option followed by a format string containing one or more placeholders:
+
+```bash
+rtl-mc --stats "Solver time: %x[0] s, RTL length: %rl[0]"
+```
+
+Each placeholder must be indexed with `[i]` to indicate which instance it refers to (e.g., solver 0, formula 1, etc.).
+
+---
+
+## 📊 Example
+
+The following example checks a polyhedral system and extracts the total execution time of the solver using `%x[0]`:
+
+```bash
+sys-gen gap -t 2 -m 10 \
+  | rtl-mc --semantics fin \
+           -fs "t0 & G(t1) & $(rtl-gen alternation -k 4)" \
+           --stats "Total solver execution time: %x[0] seconds."
+```
+
+### Output
+```
+Total solver execution time: 0.027833 seconds.
+```
+
+---
+
+## 🧩 Placeholder Reference
+
+All placeholders require an index `[i]`, starting from 0.
+
+| Placeholder | Scope                   | Description                           |
+|-------------|-------------------------|---------------------------------------|
+| `%x[i]`     | General Solver          | Solver execution time (seconds)       |
+| `%rta[i]`   | RTL Formula             | Number of atomic propositions         |
+| `%rl[i]`    | RTL Formula             | Formula length                        |
+| `%Pta[i]`   | Polyhedral System       | APs in the system                     |
+| `%Psp[i]`   | Polyhedral System       | Space dimension                       |
+| `%da[i]`    | Discretised RTL Formula | APs after discretisation              |
+| `%dl[i]`    | Discretised RTL Formula | Length after discretisation           |
+| `%dx[i]`    | Discretised RTL Formula | Time to discretise                    |
+| `%As[i]`    | Automaton               | Number of states                      |
+| `%Ais[i]`   | Automaton               | Initial states                        |
+| `%Aas[i]`   | Automaton               | Accepting states                      |
+| `%Ae[i]`    | Automaton               | Transitions (edges)                   |
+| `%Ax[i]`    | Automaton               | Construction time                     |
+| `%Ascc[i]`  | Automaton               | SCC count                             |
+| `%ATx[i]`   | Translated Automaton    | Translation time                      |
+| `%ATs[i]`   | Translated Automaton    | States count                          |
+| `%ATis[i]`  | Translated Automaton    | Initial states                        |
+| `%ATase[i]` | Translated Automaton    | Accepting sets                        |
+| `%ATe[i]`   | Translated Automaton    | Edges                                 |
+| `%ATscc[i]` | Translated Automaton    | SCCs                                  |
+| `%AOx[i]`   | Optimised Automaton     | Optimisation time                     |
+| `%AOs[i]`   | Optimised Automaton     | States after optimisation             |
+| `%AOis[i]`  | Optimised Automaton     | Initial states                        |
+| `%AOas[i]`  | Optimised Automaton     | Accepting states                      |
+| `%AOe[i]`   | Optimised Automaton     | Edges                                 |
+| `%AOscc[i]` | Optimised Automaton     | SCCs                                  |
+| `%Amp[i]`   | Patches                 | Max patches in any state              |
+| `%Atp[i]`   | Patches                 | Total patches                         |
+| `%ANx[i]`   | Finite Automaton (NFA)  | NFA generation time                   |
+| `%ANs[i]`   | Finite Automaton (NFA)  | Number of states                      |
+| `%ANis[i]`  | Finite Automaton (NFA)  | Initial states                        |
+| `%ANas[i]`  | Finite Automaton (NFA)  | Accepting states                      |
+| `%ANe[i]`   | Finite Automaton (NFA)  | Edges                                 |
+| `%ANscc[i]` | Finite Automaton (NFA)  | SCCs                                  |
+| `%ANr[i]`   | On-the-Fly NFA          | Max recursive depth                   |
+| `%Di[i]`    | DenotOnTheFly           | Total iterations                      |
+| `%Dx[i]`    | DenotOnTheFly           | Execution time                        |
+| `%Dp[i]`    | DenotOnTheFly           | Total paths                           |
+| `%Dpr[i]`   | DenotOnTheFly           | Redundant paths                       |
+| `%Drc[i]`   | DenotOnTheFly           | Reach operations                      |
+| `%Dr[i]`    | DenotOnTheFly           | Final result                          |
+| `%Dd[i]`    | DenotOnTheFly           | `true` if result incomplete           |
+| `%Dmi[i]`   | DenotOnTheFly           | Max iteration limit (env `DENOT_MAX`) |
+
+---

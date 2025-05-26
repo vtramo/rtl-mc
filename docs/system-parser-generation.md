@@ -1,24 +1,36 @@
-# Prerequisiti
+# Prerequisites
+
 - ANTLR4 Runtime >= 4.13.0: https://www.antlr.org/
 - ANTLR4 CLI Tools: https://github.com/antlr/antlr4-tools/blob/master/README.md
 
-## Generazione parser
-The generation of the ANTLR4 PolyhedralSystem parser can be enabled or disabled using the `generate_parser` option (default: enabled).
-Displays the message "Generating ANTLR4 PolyhedralSystem parser..." before running the appropriate script to generate the parser.
-Once the generation is complete, the message "Parser generation complete!" is shown,indicating the parser has been generated successfully at the specified location:
-`/home/vincenzo/projects/rtl-mc/src/parser/antlr4/generated/g4`.
+## Parser Generation
 
-Per disabilitare la generazione del parser:
-```shell
-meson configure -Dgenerate_parser=false <BUILD_DIRECTORY_PATH> 
+The generation of the ANTLR4 parsers can be toggled via the `generate_parser` build option (default: enabled).  
+When enabled, a message is printed before the parser is generated:
+
+```
+Generating ANTLR4 <parser_name> parser...
 ```
 
-La generazione del parser avviene a tempo di configurazione del progetto, sarebbe a dire ogni qualvolta viene eseguito
-uno di questi comandi meson:
-- `meson setup <BUILD_DIR_PATH>` (per creare una nuova build directory)
-- `meson setup <BUILD_DIR_PATH> --reconfigure` (per riflettere i cambiamenti di configurazione in una build directory gia' esistente)
+Once completed, a confirmation message is shown:
 
-Ricordarsi di settare la build option `generate_parser` uguale a true (default).
+```
+Parser generation completed! (Location: ...)'
+```
 
-## Tools per testing della grammatica
+### To disable parser generation:
+
+```sh
+meson configure -Dgenerate_parser=false <BUILD_DIRECTORY_PATH>
+```
+
+Parser generation occurs during the project configuration phase. This happens whenever you run one of the following Meson commands:
+
+- `meson setup <BUILD_DIR_PATH>` (to create a new build directory)
+- `meson setup <BUILD_DIR_PATH> --reconfigure` (to update an existing build directory)
+
+Make sure the `generate_parser` build option is set to `true` when you want the parser to be generated (this is the default).
+
+## Grammar Testing Tools
+
 - http://lab.antlr.org/

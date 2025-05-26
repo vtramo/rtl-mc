@@ -1,4 +1,4 @@
-# RTL Model Checking Tool on Polyhedral Systems ![](https://github.com/vtramo/rtl-mc/.github/workflows/compile-test-image.yaml/badge.svg)
+# RTL Model Checking Tool on Polyhedral Systems [![Compile & Test & Push](https://github.com/vtramo/rtl-mc/actions/workflows/compile-test-image.yaml/badge.svg)](https://github.com/vtramo/rtl-mc/actions/workflows/compile-test-image.yaml)
 
 `rtl-mc` is a C++ tool for model checking temporal properties over *polyhedral systems*, continuous-time systems
 governed by linear differential inclusions. These systems correspond to a decidable class of

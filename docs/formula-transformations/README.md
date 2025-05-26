@@ -1,16 +1,21 @@
-## Discretizzazione di una formula RTLf
-Una formula RTLf deve subire una serie di trasformazioni tra cui:
-- **1. Discretizzazione secondo le regole del paper**: la formula RTLf viene discretiszata, trasformandola in una formula LTLf;
-- **2. Trasformazione in una formula LTL**: La formula LTLf ottenuta viene successivamente trasformata in una formula LTL.
+## Discretisation of an RTLf Formula
 
-Presumibilmente, queste trasformazioni possono essere eseguite visitando l'albero della formula (utilizzando Spot) solo una volta, riducendo così il numero di passaggi necessari.
+An RTLf formula undergoes a series of transformations, including:
 
-Spot fornisce una funzione `spot::from_ltlf` per convertire una formula con semantica LTLf in una formula con semantica LTL.
-Esistono quindi due implementazioni per eseguire i due passi di sopra:
-1. una implementazione che discretisza e trasforma in LTL in un solo colpo (non usa `spot::from_ltlf` ma implementa da zero la conversione, `--direct-ltl`)
-2. una implementazione che discretisza, e poi usa `from_ltlf` per trasformare in LTL (default).
+- **1. Discretisation according to the paper rules**: the RTLf formula is discretised and transformed into an LTLf formula;
+- **2. Conversion to an LTL formula**: the resulting LTLf formula is then transformed into an LTL formula.
 
-Entrambe le versioni sono state testate. La versione 1 risulta essere più performante:
+These transformations can likely be applied in a single pass over the formula tree (using Spot), reducing the number of required steps.
+
+Spot provides a `spot::from_ltlf` function to convert a formula with LTLf semantics into a formula with LTL semantics.
+
+There are two implementations to handle the above transformations:
+
+1. An implementation that performs both discretisation and LTL conversion in one go (does not use `spot::from_ltlf`, but implements the conversion from scratch — `--direct-ltl`).
+2. An implementation that discretises first, then uses `from_ltlf` to convert to LTL (default).
+
+Both versions have been tested. Version 1 is more performant:
+
 ```
 -------------------------------------------------------------------------------
 Discretisation benchmarks
@@ -33,10 +38,6 @@ RTLf to LTL (spot)                             100             1    160.943 ms
 
 ===============================================================================
 All tests passed (838 assertions in 1 test case)
-
 ```
 
-
-Le trasformazioni specifiche per ogni caso sono contenute nella directory `rules`.
-
-![img.png](spot-ltl.png)
+The transformation rules for each case are implemented under the `rules` directory.

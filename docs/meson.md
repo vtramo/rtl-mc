@@ -1,61 +1,65 @@
 ### Getting Meson
-https://mesonbuild.com/Getting-meson.html
-### Meson build directory
-Per compilare il progetto, Meson richiede una directory dedicata per archiviare tutti gli artefatti generati durante
-il processo di build. Questa directory, chiamata build directory, conterrà tutti i file risultanti dalla compilazione.
+See: https://mesonbuild.com/Getting-meson.html
 
-Il vantaggio di utilizzare directory separate è che è possibile gestire più build directories contemporaneamente,
-ciascuna con una configurazione diversa. Questo permette di testare vari settaggi o versioni del progetto senza dover
-ricompilare tutto da zero ogni volta, migliorando così la flessibilità e l'efficienza del processo di sviluppo.
+### Meson Build Directory
 
-La build directory è locale e non va pushata sulla repository.
+To compile the project, Meson requires a dedicated directory to store all build artifacts. This directory, called the *build directory*, will contain all files generated during the compilation process.
 
-Per creare una build directory, eseguire il seguente comando dalla root del progetto:
+The main advantage of using separate build directories is that you can manage multiple builds simultaneously, each with different configurations. This allows testing various settings or project versions without needing to rebuild everything from scratch, increasing flexibility and efficiency in the development process.
+
+The build directory is local and **should not** be pushed to the repository.
+
+To create a build directory, run the following command from the project root:
 ```sh
 meson setup buildDir
 ```
-dove _buildDir_ è il nome della build directory. Il nome della build directory è arbitrario.
-Meson creerà una build directory chiamata _buildDir_ configurata in base ai files `meson.build`s e `meson_options.txt`.
+Here, `buildDir` is the name of the build directory (you can choose any name). Meson will configure a build environment using the `meson.build` and `meson_options.txt` files.
 
-Per compilare il progetto:
+To compile the project:
 ```sh
 meson compile -C buildDir
 ```
-Si noti che è necessario specificare il percorso della build directory. L'opzione `-C` sta per _change directory_. Prima
-di eseguire il comando, Meson entra nella directory specificata.
+Note: the `-C` flag means *change directory* — Meson will enter the specified directory before compiling.
 
-Per eseguire i tests:
+To run the tests:
 ```sh
 meson test -C buildDir
 ```
 
-### Dipendenze
-Il progetto ha bisogno delle seguenti dipendenze:
+---
+
+### Dependencies
+
+This project depends on the following libraries:
 - PPL >= 14.0.0
 - GMP >= 6.3.0
 - GMPXX >= 6.3.0
-- ANTLR4 Runtime >= 4.13.0: https://www.antlr.org/
-- Catch2 >=3.7.1 (test framework)
+- ANTLR4 Runtime >= 4.13.0 → https://www.antlr.org/
+- Catch2 >= 3.7.1 (test framework)
 - SPOT 2.12.1
 
-Un ulteriore dipendenza è [ANTLR4 CLI Tools](https://github.com/antlr/antlr4-tools/blob/master/README.md). In particolare, deve essere possibile usare il comando `antlr4` per generare
-automaticamente il parser durante la build.
+An additional requirement is the [ANTLR4 CLI Tools](https://github.com/antlr/antlr4-tools/blob/master/README.md). In particular, the `antlr4` command must be available to automatically generate the parser during the build process.
 
-Meson provvederà a installare automaticamente Catch2 come [subproject](https://mesonbuild.com/Subprojects.html).
-Il resto delle dipendenze devono essere installate manualmente. Un modo per farlo è installare le dipendenze manualmente
-sul proprio sistema e successivamente creare/generare dei pkg config files per ogni dipendenza in uno dei percorsi
-specificati dal seguente comando:
-```
+Meson will automatically install Catch2 as a [subproject](https://mesonbuild.com/Subprojects.html).
+
+All other dependencies must be installed manually. One way to do this is to install them system-wide and provide `pkg-config` files for each dependency in one of the paths listed by:
+```bash
 pkg-config --variable pc_path pkg-config
 ```
-Meson cercherà in uno di questo percorsi il pkg config file corrispondente a ogni dipendenza. Un pkg config file specifica
-dove si trova la dipendenza sul sistema.
-#### Esempio pkg config file
-Su un sistema Ubuntu, tipicamente uno dei percorsi in cui vengono posizionati i pkg config files è `/usr/local/lib/pkgconfig`.
-Per specificare, ad esempio, dove si trova la dipendenza ANTLR4 Runtime sul sistema, creiamo in questa directory un file
-con lo stesso nome della dipendenza `antlr4-runtime.pc`. Il nome deve essere uguale a quello specificato in `src/meson.build`
-dalla funzione `dependency('antlr4-runtime', version: '>=4.13.0')`:
-```text
+
+Meson will search these paths for `.pc` files corresponding to the dependencies. Each `.pc` file describes where the dependency is located on the system.
+
+#### Example `pkg-config` file
+
+On Ubuntu systems, a common path for `.pc` files is `/usr/local/lib/pkgconfig`.
+
+To make ANTLR4 Runtime available, create a file named `antlr4-runtime.pc` in that directory. The name must match what is referenced in `src/meson.build` like so:
+```meson
+dependency('antlr4-runtime', version: '>=4.13.0')
+```
+
+Example `antlr4-runtime.pc`:
+```
 prefix=/usr/local
 includedir=${prefix}/include
 exec_prefix=${prefix}
@@ -68,65 +72,84 @@ URL:
 Cflags: -I${includedir}
 Libs: -L${libdir} -lantlr4-runtime
 ```
-Quando si installa una libreria, tipicamente si usa make install per generare automaticamente un pkg config file. Questo
-non viene sempre fatto. Ad esempio, ANTLR4 e PPL non generano questo file, mentre spot sì.
+
+When installing libraries, `make install` often generates this file automatically. However, this is not always the case (e.g., ANTLR4 and PPL do not generate it, but SPOT does).
+
+---
+
 ### Meson Options
-In Meson esistono due tipi di options:
+
+Meson supports two kinds of options:
 - [Built-in options](https://mesonbuild.com/Builtin-options.html)
 - [Build options](https://mesonbuild.com/Build-options.html)
 
-Le build options sono quelle che definiamo noi per il nostro progetto. Queste si trovano nel file `meson_options.txt`.
-Attualmente sono state definite due opzioni:
+Build options are user-defined and declared in the `meson_options.txt` file.
+
+Currently, three options are defined:
 ```meson
-option('enable_tests', type : 'boolean', value : true) # abilita/disabilita i tests 
-option('generate_parser', type : 'boolean', value : true)  # genera il parser
-option('debug', type: 'boolean', value: true, description: 'Enable debug mode') # se false, disabilita gli assert, debug logging, ecc...
-
+option('enable_tests', type : 'boolean', value : true) # enable/disable unit tests
+option('generate_parser', type : 'boolean', value : true) # auto-generate parser
+option('debug', type: 'boolean', value: true, description: 'Enable debug mode') # disables assertions and logging if false
 ```
 
-Per modificare una opzione qualsiasi, eseguire questo comando:
+To configure a specific option:
 ```sh
-meson configure -D${OPTION_NAME}=${OPTION_VALUE} ${BUILD_DIRECTORY_PATH} 
+meson configure -D${OPTION_NAME}=${OPTION_VALUE} ${BUILD_DIRECTORY_PATH}
 ```
 
-### Visualizzare la configurazione corrente di una build directory
-Per visualizzare la configurazione corrente di una build directory (i valori concreti delle [Meson Options](#meson-options)) eseguire questo comando:
-```
+---
+
+### View Current Build Directory Configuration
+
+To inspect the current configuration of a build directory:
+```sh
 meson configure <BUILD_DIRECTORY_PATH>
 ```
-Per visualizzare la configurazione di default determinata dai meson files, eseguire dalla root del progetto:
-```
+
+To see the default configuration values defined by the Meson files:
+```sh
 meson configure
 ```
-Questi comandi mostrano tutte le possibili opzioni/configurazioni, i loro valori attuali e i loro possibili valori.
 
-### Riflettere le nuove configurazioni in una build directory già esistente
-Quando si aggiungono nuove opzioni nel file `meson_options.txt` oppure quando si modifica uno o più `meson.build` files 
-oppure quando si aggiunge un nuovo `meson.build` file, per riflettere le nuove configurazioni in una build directory
-già esistente, eseguire il seguente comando:
+These commands list all options, their current values, and available settings.
+
+---
+
+### Reflect Changes in an Existing Build Directory
+
+When new options are added to `meson_options.txt`, or when you modify/add `meson.build` files, you can reflect the changes using:
+```sh
+meson setup <BUILD_DIRECTORY_PATH> --reconfigure
 ```
-meson setup <BUILD_DIR_PATH> --reconfigure
+
+Or start from scratch:
+```sh
+meson setup <BUILD_DIRECTORY_PATH> --wipe
 ```
-oppure per ripartire da zero:
-```
-meson setup <BUILD_DIR_PATH> --wipe
-```
+
+---
+
 ### Sanitizers
-Add Address and Undefined Behaviour sanitizers as built-in base options in the Meson build configuration via b_sanitize=address,undefined.
 
-Commit SHA: [bd3e75d5985c8429ce341ce27aed495e53645362](https://github.com/vtramo/rtl-mc/commit/bd3e75d5985c8429ce341ce27aed495e53645362)
+You can enable built-in AddressSanitizer and UndefinedBehaviorSanitizer via:
+```sh
+-Db_sanitize=address,undefined
+```
 
-- Meson Builtin-options: https://mesonbuild.com/Builtin-options.html
-- Sanitizers: https://github.com/google/sanitizers
+Reference commit: [bd3e75d](https://github.com/vtramo/rtl-mc/commit/bd3e75d5985c8429ce341ce27aed495e53645362)
 
-Per disabilitare i sanitizers:
-```shell
+- Meson Built-in Options: https://mesonbuild.com/Builtin-options.html
+- Sanitizers documentation: https://github.com/google/sanitizers
+
+To disable sanitizers:
+```sh
 meson configure -Db_sanitize=none <BUILD_DIRECTORY_PATH>
 ```
-I possibili valori di `-Db_sanitize` sono:
-- none (questo è il valore di default)
-- address
-- thread
-- undefined
-- memory
-- address,undefined
+
+Possible values for `-Db_sanitize`:
+- `none` (default)
+- `address`
+- `thread`
+- `undefined`
+- `memory`
+- Multiple (e.g. `address,undefined`)
