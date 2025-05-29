@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2025-05-29
+### :sparkles: New Features
+- [`7407caf`](https://github.com/vtramo/rtl-mc/commit/7407caf93234d0e7b1d7c072601a5767b552008c) - **denot**: add `totalRedundantPaths` stats in `Denot` *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :recycle: Refactors
+- [`de08664`](https://github.com/vtramo/rtl-mc/commit/de086640416ee838024c026fd0f3bb9e7f9754fe) - **automata**: replace 'AutomatonOptimizationFlags' with 'TranslationOptimizationFlags' *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :white_check_mark: Tests
+- [`1e3f67a`](https://github.com/vtramo/rtl-mc/commit/1e3f67af5a09498bbeb54d08d74c8f7cbd6e890a) - add is compact and is non-recurrent test cases *(commit by [@vtramo](https://github.com/vtramo))*
+
+### :wrench: Chores
+- [`a8002d0`](https://github.com/vtramo/rtl-mc/commit/a8002d0ac9479d3bb485070a536e37f5e6a45765) - update experiment scripts *(commit by [@vtramo](https://github.com/vtramo))*
+- [`f154199`](https://github.com/vtramo/rtl-mc/commit/f1541994dc6e96c5b4fa2caf77285e1090e725b3) - add must experiment *(commit by [@vtramo](https://github.com/vtramo))*
+- [`5f8d848`](https://github.com/vtramo/rtl-mc/commit/5f8d848dc85543cba27409ac7973864ce52024fb) - add incremental tanks and alternations experiment *(commit by [@vtramo](https://github.com/vtramo))*
+- [`e0acc5d`](https://github.com/vtramo/rtl-mc/commit/e0acc5da99e1d542cd7d9fd4f3b66f6971ea0e41) - add incremental gap experiment gbb files *(commit by [@vtramo](https://github.com/vtramo))*
+
+
 ## [0.1.7] - 2025-04-30
 ### :sparkles: New Features
 - [`d629637`](https://github.com/vtramo/rtl-mc/commit/d6296370d7a71263da50cc19a19043ed60c58440) - **denot**: add debug assert to check for duplicate pairs in recursive call stack *(commit by [@vtramo](https://github.com/vtramo))*
@@ -194,3 +211,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.5]: https://github.com/vtramo/rtl-mc/compare/0.1.4...0.1.5
 [0.1.6]: https://github.com/vtramo/rtl-mc/compare/0.1.5...0.1.6
 [0.1.7]: https://github.com/vtramo/rtl-mc/compare/0.1.6...0.1.7
+[1.0.0]: https://github.com/vtramo/rtl-mc/compare/0.1.7...1.0.0
