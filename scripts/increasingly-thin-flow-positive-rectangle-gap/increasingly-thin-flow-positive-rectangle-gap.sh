@@ -46,7 +46,7 @@ rtl_formula=${4:-"t0 & G(t1) & F(p & F(q))"}
 
 for ((distance = 0 ; distance <= max ; distance++)); do
   polyhedralSystem=$(build_polyhedral_system "$gap" "$distance")
-  result=$(rtl-mc --semantics "${semantics}" -ss "${polyhedralSystem}" -fs "${rtl_formula}" --high && usage)
+  result=$(rtl-mc --semantics "${semantics}" -ss "${polyhedralSystem}" -fs "${rtl_formula}" --high || usage)
   polyhedraSpec=$(cat << EOF
 p { a >= b + $gap & b >= 0 } 0x800000
 q { b >= a + $gap & a >= 0 } 0x0099CC

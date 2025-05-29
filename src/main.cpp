@@ -34,7 +34,7 @@ int main(const int argc, char *argv[])
     const TranslationOptimizationFlags translationOptimizationFlags { rtlMcProgram.translationOptimizationFlags() };
     const Semantics semantics { rtlMcProgram.semantics() };
     const bool isUniversalDenotation { rtlMcProgram.universal() };
-    const bool collectDenotPaths{
+    const bool collectDenotPaths {
 #ifdef DEBUG
         true ||
 #endif

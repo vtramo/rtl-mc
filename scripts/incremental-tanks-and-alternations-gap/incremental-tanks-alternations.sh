@@ -57,6 +57,7 @@ else
   stats_format="%Dd[1],%Di[1],%Dx[1],%Dp[1],%Drc[1],%Dmi[1],%Dr[1],%As[1],%Ais[1],%Aas[1],%Ae[1],%Atp[1],%Amp[1],%ANr[1],%Ascc[1],%Ax[1],%ATo[1],%ATx[1],%ATs[1],%ATis[1],%ATe[1],%ATscc[1]"
 fi
 
+export DENOT_MAX=30000
 for ((tanks = 2 ; tanks <= max_tanks ; tanks++)); do
 
   pdfs=()
@@ -73,7 +74,7 @@ for ((tanks = 2 ; tanks <= max_tanks ; tanks++)); do
       --semantics "$semantics" \
       --high \
       --stats "$stats_format" \
-      && usage)
+      || usage)
     end=$(microtime)
     execution_time=$(echo "$end - $start" | bc)
     result+="$execution_time,$rtl_mc_result"
