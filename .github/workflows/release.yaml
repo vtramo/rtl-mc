@@ -10,7 +10,7 @@ jobs:
     name: Tag and Push release Docker image
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Add SHORT_SHA Environment Variable
         id: short-sha
@@ -42,7 +42,7 @@ jobs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Update CHANGELOG
         id: changelog
@@ -77,7 +77,7 @@ jobs:
     container:
       image: vtramo/rtl-mc:build-${{ github.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: .
 
